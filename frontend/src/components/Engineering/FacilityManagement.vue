@@ -330,7 +330,6 @@ const handleAdd = () => {
           emptyData[field.prop] = null
           break
         case 'select':
-        case 'cascader':
           emptyData[field.prop] = null
           break
         default:

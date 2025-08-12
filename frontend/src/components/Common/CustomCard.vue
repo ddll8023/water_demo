@@ -84,6 +84,11 @@ const cardClasses = computed(() => {
         classes.push('hoverable')
     }
 
+    // 头部状态
+    if (hasHeader.value) {
+        classes.push('has-header')
+    }
+
     // 内边距
     classes.push(`padding-${props.padding}`)
 
@@ -116,24 +121,24 @@ const hasHeader = computed(() => {
  * 通用卡片组件样式
  */
 .custom-card {
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--bg-primary);
     border-radius: var(--border-radius-large);
     overflow: hidden;
-    transition: var(--transition-normal);
+    transition: var(--transition-base);
 
     // 边框样式
     &.bordered {
-        border: 1px solid rgba(0, 0, 0, 0.08);
+        border: 1px solid var(--black-transparent-light);
     }
 
     // 阴影样式
     &.shadow-always {
-        box-shadow: var(--shadow-base);
+        box-shadow: var(--shadow-card);
     }
 
     &.shadow-hover {
         &:hover {
-            box-shadow: var(--shadow-base);
+            box-shadow: var(--shadow-card);
         }
     }
 
@@ -143,7 +148,7 @@ const hasHeader = computed(() => {
 
         &:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow-elevated);
+            box-shadow: var(--shadow-card-hover);
         }
     }
 
@@ -151,11 +156,9 @@ const hasHeader = computed(() => {
      * 卡片头部
      */
     .custom-card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-        background: rgba(255, 255, 255, 0.95);
+        @include flex-between;
+        border-bottom: 1px solid var(--black-transparent-thin);
+        background: var(--bg-primary);
 
         .header-content {
             flex: 1;
@@ -173,16 +176,11 @@ const hasHeader = computed(() => {
         }
     }
 
-    /**
-     * 卡片内容
-     */
-    .custom-card-content {
-        background: rgba(255, 255, 255, 0.3);
 
-        // 当没有头部时，保持顶部圆角
-        .custom-card:not(.has-header) & {
-            border-radius: var(--border-radius-large) var(--border-radius-large) 0 0;
-        }
+
+    // 当没有头部时，内容区域保持顶部圆角
+    &:not(.has-header) .custom-card-content {
+        border-radius: var(--border-radius-large) var(--border-radius-large) 0 0;
     }
 
     /**
@@ -241,8 +239,7 @@ const hasHeader = computed(() => {
 
             .header-extra {
                 width: 100%;
-                display: flex;
-                justify-content: flex-end;
+                @include flex-end;
             }
         }
 

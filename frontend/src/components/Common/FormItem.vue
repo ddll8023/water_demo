@@ -27,11 +27,7 @@
       :remote="item.remote" :remote-method="item.remoteMethod" :loading="item.loading" value-key="value"
       label-key="label" style="width: 100%" />
 
-    <!-- 级联选择器 -->
-    <CustomCascader v-else-if="item.type === 'cascader'" :model-value="formData[item.prop]"
-      @update:model-value="handleChange" :options="item.options || []" :props="item.cascaderProps"
-      :placeholder="item.placeholder" :disabled="disabled" :clearable="item.clearable !== false"
-      :filterable="item.filterable" :show-all-levels="item.showAllLevels !== false" style="width: 100%" />
+
 
     <!-- 日期选择器 -->
     <el-date-picker v-else-if="item.type === 'date'" :model-value="getSafeValue(item.prop)"
@@ -121,7 +117,6 @@ import CustomInput from './CustomInput.vue'
 import CustomTextarea from './CustomTextarea.vue'
 import CustomInputNumber from './CustomInputNumber.vue'
 import CustomSelect from './CustomSelect.vue'
-import CustomCascader from './CustomCascader.vue'
 import CustomDatePicker from './CustomDatePicker.vue'
 import CustomSwitch from './CustomSwitch.vue'
 import CustomRadioGroup from './CustomRadioGroup.vue'

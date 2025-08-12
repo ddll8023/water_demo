@@ -251,7 +251,6 @@ const getDefaultValue = (type) => {
     case 'time':
       return null
     case 'select':
-    case 'cascader':
       return undefined
     default:
       return ''

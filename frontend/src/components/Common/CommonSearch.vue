@@ -21,11 +21,7 @@
               :filterable="item.filterable" :remote="item.remote" :remote-method="item.remoteMethod"
               :loading="item.loading" style="width: 100%" />
 
-            <!-- 级联选择器 -->
-            <CustomCascader v-else-if="item.type === 'cascader'" v-model="searchData[item.prop]" :options="item.options"
-              :props="item.cascaderProps" :placeholder="item.placeholder || `请选择${item.label}`"
-              :clearable="item.clearable !== false" :disabled="item.disabled" :filterable="item.filterable"
-              style="width: 100%" />
+
 
             <!-- 日期选择器 -->
             <CustomDatePicker v-else-if="item.type === 'date'" v-model="searchData[item.prop]" type="date"
@@ -123,7 +119,6 @@
 import { ref, reactive, computed, watch } from 'vue'
 import CustomInput from './CustomInput.vue'
 import CustomSelect from './CustomSelect.vue'
-import CustomCascader from './CustomCascader.vue'
 import CustomDatePicker from './CustomDatePicker.vue'
 import EnhancedDateTimePicker from './EnhancedDateTimePicker.vue'
 import CustomInputNumber from './CustomInputNumber.vue'
@@ -238,8 +233,6 @@ const getColumnSpan = (item) => {
       return 3  // 减少日期选择器列宽
     case 'daterange':
       return 4  // 减少日期范围选择器列宽
-    case 'cascader':
-      return 3  // 减少级联选择器列宽
     default:
       return 3
   }
