@@ -10,6 +10,8 @@
   --primary-light: #4080FF;
   --primary-lighter: #7AA3FF;
   --primary-dark: #0E4FCC;
+  --primary-hover: #a0cfff;
+  --primary-bg-light: #ecf5ff;
 
   // 功能色系（来自index.html标准设计）
   --secondary-color: #6B7280;
@@ -20,6 +22,7 @@
   --warning-dark-color: #d98200;
   --danger-color: #F53F3F;
   --danger-dark: #E53E3E;
+  --danger-bg-light: #fef0f0;
   --info-color: #6B7280;
 
   // 中性色系（来自index.html标准设计）
@@ -30,9 +33,12 @@
   --text-primary: #1D2129;
   --text-secondary: #4E5969;
   --text-tertiary: #86909C;
+  --text-disabled: #C0C4CC;
+  --text-placeholder: #C0C4CC;
 
   // 边框色系（来自index.html标准设计）
   --border-color: #C9CDD4;
+  --border-light: #EBEEF5;
 
   // 深色边框系列
   --border-dark: #434a50;
@@ -41,32 +47,11 @@
   --bg-primary: #FFFFFF;
   --bg-secondary: #F2F3F5;
   --bg-tertiary: #FAFAFA;
+  --bg-disabled: #f5f7fa;
 
   // 深色背景系列
   --bg-dark-primary: #2b2f3a;
   --bg-dark-secondary: #304156;
-
-  // ==================== Element Plus 兼容性变量 ====================
-  // 保持与Element Plus组件的兼容性
-  --el-color-primary: var(--primary-color);
-  --el-color-success: var(--success-color);
-  --el-color-warning: var(--warning-color);
-  --el-color-danger: var(--danger-color);
-  --el-color-info: var(--secondary-color);
-
-  --el-text-color-primary: var(--text-primary);
-  --el-text-color-regular: var(--text-secondary);
-  --el-text-color-secondary: var(--text-tertiary);
-  --el-text-color-placeholder: #C0C4CC;
-
-  --el-bg-color: var(--bg-primary);
-  --el-bg-color-page: var(--bg-secondary);
-  --el-bg-color-overlay: var(--bg-tertiary);
-
-  --el-border-color: var(--border-color);
-  --el-border-color-light: #E4E7ED;
-  --el-border-color-lighter: #EBEEF5;
-  --el-border-color-extra-light: #F2F6FC;
 
   // ==================== 向后兼容性变量 ====================
   // 保持旧版本变量的兼容性，避免破坏现有代码
@@ -74,23 +59,12 @@
   --text-color-primary: var(--text-primary);
   --text-color-regular: var(--text-secondary);
   --text-color-secondary: var(--text-tertiary);
-  --text-color-placeholder: var(--el-text-color-placeholder);
-  --text-regular: var(--text-secondary);
-  --text-placeholder: var(--el-text-color-placeholder);
+  --text-placeholder: var(--text-placeholder);
 
   // 背景颜色兼容
   --background-color-white: var(--bg-primary);
   --background-color-base: var(--bg-secondary);
   --background-color-light: var(--bg-tertiary);
-
-  // 边框颜色兼容（使用Element Plus标准）
-  --border-color-base: var(--el-border-color);
-  --border-color-light: var(--el-border-color-light);
-  --border-color-lighter: var(--el-border-color-lighter);
-  --border-color-extra-light: var(--el-border-color-extra-light);
-  --border-primary: var(--el-border-color);
-  --border-secondary: var(--el-border-color-light);
-  --border-tertiary: var(--el-border-color-lighter);
 }
 
 // ==================== SCSS变量（用于计算和混入）====================
@@ -274,6 +248,7 @@ $breakpoint-xl: 1920px;
   --icon-size-md: 16px; // 中等图标
   --icon-size-lg: 20px; // 大图标
   --icon-size-xl: 24px; // 超大图标
+  --icon-size-xxxl: 28px; // 页面主标题图标
   --icon-size-xxl: 48px; // 巨大图标
 
   // 通用卡片阴影层级
@@ -305,6 +280,10 @@ $breakpoint-xl: 1920px;
   --white-transparent-base: rgba(255, 255, 255, 0.2);
   --white-transparent-strong: rgba(255, 255, 255, 0.8);
   --white-transparent-full: rgba(255, 255, 255, 0.95);
+
+  // Primary颜色透明度系列
+  --primary-transparent-light: rgba(22, 93, 255, 0.1);
+  --primary-transparent-medium: rgba(22, 93, 255, 0.3);
 
   // 玻璃面板通用变量
   --glass-panel-bg: var(--white-transparent-full);

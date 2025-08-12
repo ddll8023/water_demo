@@ -42,11 +42,8 @@
               <h3>工程规模</h3>
               <el-row :gutter="16" class="stats-row">
                 <el-col :span="8" v-for="stat in projectStats" :key="stat.key">
-                  <div class="stat-card">
-                    <div class="stat-value">{{ stat.value }}</div>
-                    <div class="stat-label">{{ stat.label }}</div>
-                    <div class="stat-unit">{{ stat.unit }}</div>
-                  </div>
+                  <StatCard :title="stat.label" :value="stat.value" :unit="stat.unit" type="primary" size="small"
+                    :show-header="false" />
                 </el-col>
               </el-row>
             </div>
@@ -81,6 +78,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import StatCard from '@/components/Common/StatCard.vue'
 
 // 响应式数据
 const videoPlayer = ref(null)
@@ -255,31 +253,7 @@ onMounted(() => {
   }
 
   .stats-row {
-    .stat-card {
-      text-align: center;
-      padding: 16px;
-      background: #f8f9fa;
-      border-radius: 8px;
-      border: 1px solid #e4e7ed;
-
-      .stat-value {
-        font-size: 24px;
-        font-weight: 600;
-        color: #409eff;
-        margin-bottom: 4px;
-      }
-
-      .stat-label {
-        font-size: 12px;
-        color: #303133;
-        margin-bottom: 2px;
-      }
-
-      .stat-unit {
-        font-size: 10px;
-        color: #909399;
-      }
-    }
+    // StatCard组件已替换自定义样式
   }
 
   .significance-list {
@@ -354,9 +328,7 @@ onMounted(() => {
   }
 
   .stats-row {
-    .stat-card {
-      margin-bottom: 12px;
-    }
+    // 响应式布局已由StatCard组件处理
   }
 }
 </style>

@@ -93,12 +93,11 @@ const searchFields = ref([
   {
     prop: 'timeRange',
     label: '监测时间',
-    type: 'enhanced-datetime-range',
+    type: 'datetimerange',
     startPlaceholder: '请选择开始时间',
     endPlaceholder: '请选择结束时间',
-    showShortcuts: false,
     showDuration: true,
-    span: 5,
+    span: 8,
     labelWidth: '60px'
   }
 ])
@@ -434,36 +433,7 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 .water-level-monitoring {
-  .page-header {
-    background: var(--bg-primary);
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    box-shadow: var(--shadow-card);
 
-    .header-content {
-      .page-title {
-        color: var(--text-primary);
-        font-size: 24px;
-        font-weight: 600;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-
-        .fa {
-          color: var(--primary-color);
-          margin-right: 12px;
-          font-size: 28px;
-        }
-      }
-
-      .page-description {
-        color: var(--text-secondary);
-        font-size: 14px;
-        margin: 0;
-      }
-    }
-  }
 
   .filter-section,
   .chart-carousel-section,

@@ -54,41 +54,42 @@ const handleTabChange = (tabName) => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 .tab-section {
     background: var(--bg-primary);
-    border-radius: 8px;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--shadow-card);
     border: 1px solid var(--neutral-dark);
 
     .custom-tabs {
-        padding: 0 20px;
+        padding: 0 var(--spacing-large);
 
         .tab-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            @include flex-start;
+            gap: var(--spacing-small);
             color: var(--text-secondary);
-            transition: color 0.15s ease;
+            transition: color var(--transition-duration-fast) var(--transition-timing-function);
 
             .fa {
-                font-size: 14px;
+                font-size: var(--font-size-base);
             }
         }
 
         :deep(.el-tabs__item.is-active) .tab-label {
             color: var(--primary-color);
-            font-weight: 500;
+            font-weight: var(--font-weight-medium);
         }
     }
 }
 
-@media (max-width: 768px) {
+@include respond-to(sm) {
     .tab-section {
         .custom-tabs {
-            padding: 0 10px;
+            padding: 0 var(--spacing-sm);
 
             :deep(.el-tabs__nav-wrap) {
-                padding: 0 5px;
+                padding: 0 var(--spacing-xs);
             }
         }
     }

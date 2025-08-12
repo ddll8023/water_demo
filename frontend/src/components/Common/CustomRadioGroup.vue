@@ -298,35 +298,27 @@ watch(() => props.options, () => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 /* ===================================
  * 基础样式定义
  * =================================== */
 .custom-radio-group {
   display: inline-flex;
-  font-size: 14px;
+  font-size: var(--font-size-base);
   line-height: 1;
-
-  // CSS变量定义
-  --radio-size: 14px;
-  --radio-inner-size: 6px;
-  --radio-color: #409eff;
-  --radio-border-color: #dcdfe6;
-  --radio-text-color: var(--el-text-color-regular);
-  --radio-fill-color: #409eff;
-  --radio-gap: 12px;
 
   /* ===================================
    * 单选项样式
    * =================================== */
   .radio-item {
     position: relative;
-    display: inline-flex;
-    align-items: center;
+    @include flex-start;
     cursor: pointer;
-    user-select: none;
+    @include user-select(none);
 
     &:not(:last-child) {
-      margin-right: var(--radio-gap);
+      margin-right: var(--spacing-medium);
     }
 
     .radio-input {
@@ -338,36 +330,35 @@ watch(() => props.options, () => {
     }
 
     .radio-label {
-      display: inline-flex;
-      align-items: center;
+      @include flex-start;
       cursor: pointer;
 
       .radio-indicator {
         position: relative;
         display: inline-block;
-        width: var(--radio-size);
-        height: var(--radio-size);
-        border: 1px solid var(--radio-border-color);
-        border-radius: 50%;
-        background-color: #ffffff;
-        transition: all 0.3s;
+        width: 14px;
+        height: 14px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-round);
+        background-color: var(--bg-primary);
+        transition: var(--transition-base);
 
         .radio-inner {
           position: absolute;
           top: 50%;
           left: 50%;
-          width: var(--radio-inner-size);
-          height: var(--radio-inner-size);
-          background-color: var(--radio-fill-color);
-          border-radius: 50%;
+          width: 6px;
+          height: 6px;
+          background-color: var(--primary-color);
+          border-radius: var(--border-radius-round);
           transform: translate(-50%, -50%) scale(0);
-          transition: transform 0.15s ease-in;
+          transition: var(--transition-transform);
         }
       }
 
       .radio-text {
-        margin-left: 8px;
-        color: var(--radio-text-color);
+        margin-left: var(--spacing-small);
+        color: var(--el-text-color-regular);
         font-size: inherit;
         line-height: 1;
       }
@@ -379,8 +370,8 @@ watch(() => props.options, () => {
     // 选中状态
     &.is-checked {
       .radio-indicator {
-        border-color: var(--radio-color);
-        background-color: #ffffff;
+        border-color: var(--primary-color);
+        background-color: var(--bg-primary);
 
         .radio-inner {
           transform: translate(-50%, -50%) scale(1);
@@ -388,7 +379,7 @@ watch(() => props.options, () => {
       }
 
       .radio-text {
-        color: var(--radio-color);
+        color: var(--primary-color);
       }
     }
 
@@ -402,17 +393,17 @@ watch(() => props.options, () => {
       }
 
       .radio-indicator {
-        background-color: #f5f7fa;
-        border-color: #e4e7ed;
+        background-color: var(--bg-disabled);
+        border-color: var(--el-border-color-light);
       }
 
       &.is-checked {
         .radio-indicator {
-          background-color: #f5f7fa;
-          border-color: #e4e7ed;
+          background-color: var(--bg-disabled);
+          border-color: var(--el-border-color-light);
 
           .radio-inner {
-            background-color: #c0c4cc;
+            background-color: var(--text-disabled);
           }
         }
       }
@@ -420,32 +411,32 @@ watch(() => props.options, () => {
 
     // 边框样式
     &.is-bordered {
-      padding: 8px 12px;
-      border: 1px solid var(--radio-border-color);
-      border-radius: 4px;
-      margin-right: 8px;
+      padding: var(--spacing-small) var(--spacing-medium);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius-base);
+      margin-right: var(--spacing-small);
 
       &.is-checked {
-        border-color: var(--radio-color);
-        background-color: rgba(64, 158, 255, 0.1);
+        border-color: var(--primary-color);
+        background-color: var(--primary-bg-light);
       }
 
       &.is-disabled {
-        border-color: #e4e7ed;
-        background-color: #f5f7fa;
+        border-color: var(--el-border-color-light);
+        background-color: var(--bg-disabled);
       }
     }
 
     // 悬停效果
     &:hover:not(.is-disabled) {
       .radio-indicator {
-        border-color: var(--radio-color);
+        border-color: var(--primary-color);
       }
     }
 
     // 聚焦效果
     .radio-input:focus+.radio-label .radio-indicator {
-      box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+      box-shadow: 0 0 0 2px var(--primary-transparent-light);
     }
   }
 
@@ -459,7 +450,7 @@ watch(() => props.options, () => {
 
     .radio-item {
       margin-right: 0;
-      margin-bottom: var(--radio-gap);
+      margin-bottom: var(--spacing-medium);
 
       &:last-child {
         margin-bottom: 0;
@@ -477,49 +468,140 @@ watch(() => props.options, () => {
    * 尺寸变体样式
    * =================================== */
   &--large {
-    --radio-size: 16px;
-    --radio-inner-size: 8px;
-    --radio-gap: 16px;
-    font-size: 16px;
+    font-size: var(--font-size-medium);
+
+    .radio-item {
+      &:not(:last-child) {
+        margin-right: var(--spacing-base);
+      }
+
+      .radio-indicator {
+        width: 16px;
+        height: 16px;
+
+        .radio-inner {
+          width: 8px;
+          height: 8px;
+        }
+      }
+    }
+
+    &.custom-radio-group--vertical .radio-item {
+      margin-bottom: var(--spacing-base);
+    }
   }
 
   &--small {
-    --radio-size: 12px;
-    --radio-inner-size: 4px;
-    --radio-gap: 8px;
-    font-size: 12px;
+    font-size: var(--font-size-extra-small);
+
+    .radio-item {
+      &:not(:last-child) {
+        margin-right: var(--spacing-small);
+      }
+
+      .radio-indicator {
+        width: 12px;
+        height: 12px;
+
+        .radio-inner {
+          width: 4px;
+          height: 4px;
+        }
+      }
+    }
+
+    &.custom-radio-group--vertical .radio-item {
+      margin-bottom: var(--spacing-small);
+    }
   }
 
   /* ===================================
    * 验证状态样式
    * =================================== */
   &.is-error {
-    --radio-border-color: var(--el-color-danger);
-    --radio-color: var(--el-color-danger);
+    .radio-item {
+      .radio-indicator {
+        border-color: var(--el-color-danger);
+      }
+
+      &.is-checked {
+        .radio-indicator {
+          border-color: var(--el-color-danger);
+        }
+
+        .radio-text {
+          color: var(--el-color-danger);
+        }
+      }
+
+      &:hover:not(.is-disabled) {
+        .radio-indicator {
+          border-color: var(--el-color-danger);
+        }
+      }
+    }
   }
 
   &.is-warning {
-    --radio-border-color: var(--el-color-warning);
-    --radio-color: var(--el-color-warning);
+    .radio-item {
+      .radio-indicator {
+        border-color: var(--el-color-warning);
+      }
+
+      &.is-checked {
+        .radio-indicator {
+          border-color: var(--el-color-warning);
+        }
+
+        .radio-text {
+          color: var(--el-color-warning);
+        }
+      }
+
+      &:hover:not(.is-disabled) {
+        .radio-indicator {
+          border-color: var(--el-color-warning);
+        }
+      }
+    }
   }
 
   &.is-success {
-    --radio-border-color: var(--el-color-success);
-    --radio-color: var(--el-color-success);
+    .radio-item {
+      .radio-indicator {
+        border-color: var(--el-color-success);
+      }
+
+      &.is-checked {
+        .radio-indicator {
+          border-color: var(--el-color-success);
+        }
+
+        .radio-text {
+          color: var(--el-color-success);
+        }
+      }
+
+      &:hover:not(.is-disabled) {
+        .radio-indicator {
+          border-color: var(--el-color-success);
+        }
+      }
+    }
   }
 }
 
 /* ===================================
  * 响应式设计
  * =================================== */
-@media (max-width: 768px) {
+@include respond-to(sm) {
   .custom-radio-group {
     &--horizontal {
       flex-direction: column;
 
       .radio-item {
         margin-right: 0;
-        margin-bottom: 8px;
+        margin-bottom: var(--spacing-small);
 
         &:last-child {
           margin-bottom: 0;

@@ -96,12 +96,12 @@
     </el-upload>
 
     <!-- 未知类型，显示警告 -->
-    <div v-else class="unknown-type-warning">
+    <div v-else class="form-item__unknown-type-warning">
       <el-alert title="未知的表单项类型" :description="`类型 '${item.type}' 不被支持`" type="warning" show-icon :closable="false" />
     </div>
 
     <!-- 帮助文本 -->
-    <div v-if="item.help" class="form-item-help">
+    <div v-if="item.help" class="form-item__help">
       <el-text type="info" size="small">{{ item.help }}</el-text>
     </div>
   </el-form-item>
@@ -205,16 +205,18 @@ const handleDateChange = (prop, value) => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 /**
  * 组件样式
  * ---------------------------------------------------------------------------
  */
-.form-item-help {
-  margin-top: 4px;
-  line-height: 1.4;
+.form-item__help {
+  margin-top: var(--spacing-mini);
+  line-height: var(--line-height-small);
 }
 
-.unknown-type-warning {
-  margin: 8px 0;
+.form-item__unknown-type-warning {
+  margin: var(--spacing-small) 0;
 }
 </style>

@@ -6,7 +6,7 @@
       <div v-if="currentStep === 1" class="upload-section">
         <el-upload ref="uploadRef" class="upload-dragger" drag :auto-upload="false" :show-file-list="false"
           :accept="'.xlsx'" :on-change="handleFileChange" :before-upload="beforeUpload">
-          <i class="fa fa-upload fa-3x" style="color: #409eff; margin-bottom: 16px;"></i>
+          <i class="fa fa-upload fa-3x" style="color: var(--primary-color); margin-bottom: var(--spacing-base);"></i>
           <div class="el-upload__text">
             将Excel文件拖拽到此处，或<em>点击选择文件</em>
           </div>
@@ -18,10 +18,11 @@
         <div v-if="selectedFile" class="file-info">
           <el-card>
             <div class="file-details">
-              <i class="fa fa-file-excel-o" style="color: #67c23a; margin-right: 8px;"></i>
+              <i class="fa fa-file-excel-o"
+                style="color: var(--success-color); margin-right: var(--spacing-small);"></i>
               <span>{{ selectedFile.name }}</span>
               <span class="file-size">({{ formatFileSize(selectedFile.size) }})</span>
-              <CustomButton type="danger" size="small" @click="removeFile" style="margin-left: 16px;">
+              <CustomButton type="danger" size="small" @click="removeFile" style="margin-left: var(--spacing-base);">
                 <i class="fa fa-times"></i>
                 移除
               </CustomButton>
@@ -30,10 +31,10 @@
         </div>
 
         <!-- Excel格式说明 -->
-        <el-card class="format-info" style="margin-top: 20px;">
+        <el-card class="format-info" style="margin-top: var(--spacing-large);">
           <template #header>
             <div class="card-header">
-              <i class="fa fa-info-circle" style="margin-right: 8px;"></i>
+              <i class="fa fa-info-circle" style="margin-right: var(--spacing-small);"></i>
               Excel文件格式要求
             </div>
           </template>
@@ -99,8 +100,8 @@
         <div class="preview-header">
           <div class="stats-info">
             <el-tag type="info">总行数: {{ totalRows }}</el-tag>
-            <el-tag type="success" style="margin-left: 8px;">有效数据: {{ validRows }}</el-tag>
-            <el-tag v-if="errorRows > 0" type="danger" style="margin-left: 8px;">
+            <el-tag type="success" style="margin-left: var(--spacing-small);">有效数据: {{ validRows }}</el-tag>
+            <el-tag v-if="errorRows > 0" type="danger" style="margin-left: var(--spacing-small);">
               错误数据: {{ errorRows }}
             </el-tag>
           </div>
@@ -108,10 +109,10 @@
 
         <!-- 错误信息展示 -->
         <div v-if="errors.length > 0" class="error-section">
-          <el-alert title="数据验证错误" type="error" :closable="false" style="margin-bottom: 16px;">
+          <el-alert title="数据验证错误" type="error" :closable="false" style="margin-bottom: var(--spacing-base);">
             <template #default>
               <div>发现 {{ errors.length }} 个错误，请检查以下问题：</div>
-              <ul style="margin: 8px 0 0 20px;">
+              <ul style="margin: var(--spacing-small) 0 0 var(--spacing-large);">
                 <li v-for="error in errors.slice(0, 10)" :key="error.row">
                   第{{ error.row }}行：{{ error.error }}
                 </li>
@@ -145,10 +146,12 @@
               <template #header>
                 <div class="card-header">
                   <i v-if="importResult.successRows > 0 && importResult.errorRows === 0" class="fa fa-check-circle"
-                    style="color: #67c23a; margin-right: 8px;"></i>
+                    style="color: var(--success-color); margin-right: var(--spacing-small);"></i>
                   <i v-else-if="importResult.successRows > 0 && importResult.errorRows > 0"
-                    class="fa fa-exclamation-triangle" style="color: #e6a23c; margin-right: 8px;"></i>
-                  <i v-else class="fa fa-times-circle" style="color: #f56c6c; margin-right: 8px;"></i>
+                    class="fa fa-exclamation-triangle"
+                    style="color: var(--warning-color); margin-right: var(--spacing-small);"></i>
+                  <i v-else class="fa fa-times-circle"
+                    style="color: var(--danger-color); margin-right: var(--spacing-small);"></i>
                   {{ importResult.successRows > 0 && importResult.errorRows === 0 ? '导入成功' :
                     importResult.successRows > 0 && importResult.errorRows > 0 ? '导入完成' : '导入失败' }}
                 </div>
@@ -776,6 +779,8 @@ const startImport = async () => {
 </script>
 
 <style scoped>
+@use "@/assets/styles/index.scss" as *;
+
 /**
  * ----------------------------------------
  * 主容器样式
@@ -805,25 +810,21 @@ const startImport = async () => {
 .upload-dragger .el-upload-dragger {
   width: 100%;
   height: 200px;
-  display: flex;
+  @include flex-center;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
 }
 
 .file-info {
-  margin-top: 20px;
+  margin-top: var(--spacing-large);
 }
 
 .file-details {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include flex-center;
 }
 
 .file-size {
-  color: #909399;
-  margin-left: 8px;
+  color: var(--text-tertiary);
+  margin-left: var(--spacing-small);
 }
 
 /**
@@ -832,9 +833,8 @@ const startImport = async () => {
  * ----------------------------------------
  */
 .format-info .card-header {
-  display: flex;
-  align-items: center;
-  font-weight: 500;
+  @include flex-start;
+  font-weight: var(--font-weight-medium);
 }
 
 .format-details {
@@ -842,20 +842,20 @@ const startImport = async () => {
 }
 
 .format-details ol {
-  margin: 8px 0;
-  padding-left: 20px;
+  margin: var(--spacing-small) 0;
+  padding-left: var(--spacing-large);
 }
 
 .example-data {
-  background: #f5f7fa;
-  padding: 8px 12px;
-  border-radius: 4px;
-  margin-top: 8px;
+  background: var(--bg-disabled);
+  padding: var(--spacing-small) var(--spacing-medium);
+  border-radius: var(--border-radius-base);
+  margin-top: var(--spacing-small);
 }
 
 .example-data code {
-  font-family: 'Courier New', monospace;
-  color: #e6a23c;
+  font-family: var(--font-family-number);
+  color: var(--warning-color);
 }
 
 /**
@@ -869,24 +869,21 @@ const startImport = async () => {
 }
 
 .preview-header {
-  margin-bottom: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  margin-bottom: var(--spacing-base);
+  @include flex-between;
 }
 
 .stats-info {
-  display: flex;
-  align-items: center;
+  @include flex-start;
 }
 
 .error-section {
-  margin-bottom: 16px;
+  margin-bottom: var(--spacing-base);
 }
 
 .preview-table {
-  border: 1px solid #ebeef5;
-  border-radius: 4px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius-base);
 }
 
 /**
@@ -896,7 +893,7 @@ const startImport = async () => {
  */
 .progress-section {
   text-align: center;
-  padding: 40px 20px;
+  padding: calc(var(--spacing-extra-large) * 2) var(--spacing-large);
 }
 
 .progress-content {
@@ -905,13 +902,13 @@ const startImport = async () => {
 }
 
 .progress-text {
-  margin-top: 16px;
-  font-size: 16px;
-  color: #606266;
+  margin-top: var(--spacing-base);
+  font-size: var(--font-size-medium);
+  color: var(--text-secondary);
 }
 
 .import-result {
-  margin-top: 24px;
+  margin-top: var(--spacing-extra-large);
 }
 
 .result-stats {
@@ -919,11 +916,9 @@ const startImport = async () => {
 }
 
 .stat-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid #f0f0f0;
+  @include flex-between;
+  padding: var(--spacing-small) 0;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .stat-item:last-child {
@@ -931,24 +926,24 @@ const startImport = async () => {
 }
 
 .stat-item .label {
-  font-weight: 500;
-  color: #606266;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
 }
 
 .stat-item .value {
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
 }
 
 .stat-item .value.success {
-  color: #67c23a;
+  color: var(--success-color);
 }
 
 .stat-item .value.error {
-  color: #f56c6c;
+  color: var(--danger-color);
 }
 
 .stat-item .value.warning {
-  color: #e6a23c;
+  color: var(--warning-color);
 }
 
 /**
@@ -957,9 +952,8 @@ const startImport = async () => {
  * ----------------------------------------
  */
 .dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
+  @include flex-end;
+  gap: var(--spacing-medium);
 }
 
 /**
@@ -967,7 +961,7 @@ const startImport = async () => {
  * 响应式设计
  * ----------------------------------------
  */
-@media (max-width: 768px) {
+@include respond-to(sm) {
   .excel-importer {
     min-height: 300px;
   }
@@ -981,7 +975,7 @@ const startImport = async () => {
   }
 
   .progress-section {
-    padding: 20px 10px;
+    padding: var(--spacing-large) var(--spacing-sm);
   }
 }
 </style>

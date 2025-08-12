@@ -170,8 +170,7 @@ const handleJumper = (event) => {
 </script>
 
 <style scoped lang="scss">
-@use '../../assets/styles/variables.scss' as *;
-@use '../../assets/styles/mixins.scss' as *;
+@use "@/assets/styles/index.scss" as *;
 
 .custom-pagination {
     display: flex;
@@ -228,7 +227,7 @@ const handleJumper = (event) => {
             cursor: not-allowed;
             color: var(--text-tertiary);
             background-color: var(--bg-secondary);
-            border-color: var(--el-border-color-lighter);
+            border-color: var(--border-light);
         }
     }
 

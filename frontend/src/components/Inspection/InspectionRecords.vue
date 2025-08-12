@@ -243,12 +243,11 @@ const recordSearchFields = ref([
     {
         prop: 'recordTime',
         label: '巡检时间',
-        type: 'enhanced-datetime-range',
+        type: 'datetimerange',
         startPlaceholder: '请选择开始时间',
         endPlaceholder: '请选择结束时间',
-        showShortcuts: false,
         showDuration: true,
-        span: 4,
+        span: 8,
         labelWidth: '60px'
     },
     {

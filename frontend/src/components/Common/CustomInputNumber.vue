@@ -384,13 +384,15 @@ watch(() => props.modelValue, () => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 /**
  * 自定义数字输入框基础样式
  */
 .custom-input-number {
   position: relative;
   width: 100%;
-  font-size: 14px;
+  font-size: var(--font-size-base);
 
   /**
    * 输入框容器
@@ -399,13 +401,13 @@ watch(() => props.modelValue, () => {
     position: relative;
     display: flex;
     align-items: center;
-    background: #FFFFFF;
-    border: 1px solid var(--el-border-color);
-    border-radius: 4px;
-    transition: all 0.3s ease;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-base);
+    transition: var(--transition-base);
 
     &:hover {
-      border-color: var(--el-color-primary-light-7);
+      border-color: var(--primary-light);
     }
 
     /**
@@ -416,21 +418,21 @@ watch(() => props.modelValue, () => {
 
       .input-inner {
         width: 100%;
-        padding: 8px 12px;
+        padding: var(--spacing-small) var(--spacing-medium);
         border: none;
         outline: none;
         background: transparent;
-        color: var(--el-text-color-primary);
+        color: var(--text-primary);
         font-size: inherit;
-        line-height: 1.5;
+        line-height: var(--line-height-base);
         text-align: center;
 
         &::placeholder {
-          color: var(--el-text-color-placeholder);
+          color: var(--text-placeholder);
         }
 
         &:disabled {
-          color: var(--el-text-color-disabled);
+          color: var(--text-disabled);
           cursor: not-allowed;
         }
       }
@@ -441,40 +443,38 @@ watch(() => props.modelValue, () => {
      */
     .input-number-decrease,
     .input-number-increase {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      @include flex-center;
       width: 32px;
       height: 100%;
       border: none;
       background: transparent;
-      color: var(--el-text-color-regular);
+      color: var(--text-secondary);
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: var(--transition-base);
 
       &:hover:not(.is-disabled) {
-        color: var(--el-color-primary);
-        background: var(--el-color-primary-light-9);
+        color: var(--primary-color);
+        background: var(--primary-bg-light);
       }
 
       &.is-disabled {
-        color: var(--el-text-color-disabled);
+        color: var(--text-disabled);
         cursor: not-allowed;
       }
 
       .fa {
-        font-size: 12px;
+        font-size: var(--font-size-extra-small);
       }
     }
 
     .input-number-decrease {
-      border-right: 1px solid var(--el-border-color-lighter);
-      border-radius: 4px 0 0 4px;
+      border-right: 1px solid var(--border-light);
+      border-radius: var(--border-radius-base) 0 0 var(--border-radius-base);
     }
 
     .input-number-increase {
-      border-left: 1px solid var(--el-border-color-lighter);
-      border-radius: 0 4px 4px 0;
+      border-left: 1px solid var(--border-light);
+      border-radius: 0 var(--border-radius-base) var(--border-radius-base) 0;
     }
   }
 
@@ -482,11 +482,11 @@ watch(() => props.modelValue, () => {
    * 尺寸变体样式
    */
   &.custom-input-number--large {
-    font-size: 16px;
+    font-size: var(--font-size-medium);
 
     .input-number-wrapper {
       .input-number-input .input-inner {
-        padding: 12px 16px;
+        padding: var(--spacing-medium) var(--spacing-base);
       }
 
       .input-number-decrease,
@@ -497,11 +497,11 @@ watch(() => props.modelValue, () => {
   }
 
   &.custom-input-number--small {
-    font-size: 12px;
+    font-size: var(--font-size-extra-small);
 
     .input-number-wrapper {
       .input-number-input .input-inner {
-        padding: 6px 8px;
+        padding: var(--spacing-xs) var(--spacing-small);
       }
 
       .input-number-decrease,
@@ -526,38 +526,38 @@ watch(() => props.modelValue, () => {
    * 组件状态样式
    */
   &.is-focused .input-number-wrapper {
-    border-color: var(--el-color-primary);
-    box-shadow: 0 0 0 2px var(--el-color-primary-light-9);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px var(--primary-bg-light);
   }
 
   &.is-disabled .input-number-wrapper {
-    background: var(--el-fill-color-light);
-    border-color: var(--el-border-color-lighter);
+    background: var(--bg-disabled);
+    border-color: var(--border-light);
     cursor: not-allowed;
   }
 
   &.is-readonly .input-number-wrapper {
-    background: var(--el-fill-color-light);
+    background: var(--bg-disabled);
   }
 
   /**
    * 验证状态样式
    */
   &.is-error .input-number-wrapper {
-    border-color: var(--el-color-danger);
+    border-color: var(--danger-color);
 
     &:focus-within {
-      border-color: var(--el-color-danger);
-      box-shadow: 0 0 0 2px var(--el-color-danger-light-9);
+      border-color: var(--danger-color);
+      box-shadow: 0 0 0 2px var(--danger-bg-light);
     }
   }
 
   &.is-success .input-number-wrapper {
-    border-color: var(--el-color-success);
+    border-color: var(--success-color);
   }
 
   &.is-warning .input-number-wrapper {
-    border-color: var(--el-color-warning);
+    border-color: var(--warning-color);
   }
 }
 </style>

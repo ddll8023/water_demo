@@ -321,6 +321,8 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 /**
  * ===============================
  * 组件基础样式
@@ -329,7 +331,7 @@ defineExpose({
 .custom-input {
   position: relative;
   width: 100%;
-  font-size: 14px;
+  font-size: var(--font-size-base);
 
   /**
    * ===============================
@@ -340,36 +342,36 @@ defineExpose({
     position: relative;
     display: flex;
     align-items: center;
-    background: #FFFFFF;
-    border: 1px solid var(--el-border-color);
-    border-radius: 4px;
-    transition: all 0.3s ease;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-base);
+    transition: var(--transition-base);
 
     &:hover {
-      border-color: var(--el-color-primary-light-7);
+      border-color: var(--primary-hover);
     }
 
     // 输入框
     .input-inner {
       flex: 1;
-      padding: 8px 12px;
+      padding: var(--spacing-small) var(--spacing-medium);
       border: none;
       outline: none;
       background: transparent;
-      color: var(--el-text-color-primary);
+      color: var(--text-primary);
       font-size: inherit;
-      line-height: 1.5;
+      line-height: var(--line-height-base);
       min-width: 0; // 防止文本溢出
 
       &::placeholder {
-        color: var(--el-text-color-placeholder);
+        color: var(--text-placeholder);
         text-overflow: ellipsis; // 占位符文本过长时显示省略号
         white-space: nowrap;
         overflow: hidden;
       }
 
       &:disabled {
-        color: var(--el-text-color-disabled);
+        color: var(--text-disabled);
         cursor: not-allowed;
       }
     }
@@ -377,57 +379,54 @@ defineExpose({
     // 前缀和后缀
     .input-prefix,
     .input-suffix {
-      display: flex;
-      align-items: center;
-      color: var(--el-text-color-regular);
+      @include flex-center;
+      color: var(--text-secondary);
 
       .fa {
-        font-size: 14px;
+        font-size: var(--font-size-base);
       }
     }
 
     .input-prefix {
-      padding-left: 12px;
-      padding-right: 8px;
+      padding-left: var(--spacing-medium);
+      padding-right: var(--spacing-small);
     }
 
     .input-suffix {
-      padding-left: 8px;
-      padding-right: 12px;
+      padding-left: var(--spacing-small);
+      padding-right: var(--spacing-medium);
     }
 
     // 密码切换和清除按钮
     .password-toggle,
     .clear-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 20px;
-      height: 20px;
-      margin-right: 8px;
-      color: var(--el-text-color-regular);
+      @include flex-center;
+      width: var(--icon-size-lg);
+      height: var(--icon-size-lg);
+      margin-right: var(--spacing-small);
+      color: var(--text-secondary);
       cursor: pointer;
-      border-radius: 2px;
-      transition: all 0.3s ease;
+      border-radius: var(--border-radius-small);
+      transition: var(--transition-base);
       flex-shrink: 0; // 防止按钮被压缩
 
       &:hover {
-        color: var(--el-color-primary);
-        background: var(--el-color-primary-light-9);
+        color: var(--primary-color);
+        background: var(--primary-bg-light);
       }
 
       .fa {
-        font-size: 12px;
+        font-size: var(--font-size-extra-small);
       }
     }
   }
 
   // 字数限制显示
   .word-limit {
-    margin-top: 4px;
+    margin-top: var(--spacing-mini);
     text-align: right;
-    font-size: 12px;
-    color: var(--el-text-color-placeholder);
+    font-size: var(--font-size-extra-small);
+    color: var(--text-placeholder);
   }
 
   /**
@@ -436,18 +435,18 @@ defineExpose({
    * ===============================
    */
   &.custom-input--large {
-    font-size: 16px;
+    font-size: var(--font-size-medium);
 
     .input-wrapper .input-inner {
-      padding: 12px 16px;
+      padding: var(--spacing-medium) var(--spacing-base);
     }
   }
 
   &.custom-input--small {
-    font-size: 12px;
+    font-size: var(--font-size-extra-small);
 
     .input-wrapper .input-inner {
-      padding: 6px 8px;
+      padding: var(--spacing-xs) var(--spacing-small);
     }
   }
 
@@ -458,38 +457,39 @@ defineExpose({
    */
   // 聚焦状态
   &.is-focused .input-wrapper {
-    border-color: var(--el-color-primary);
-    box-shadow: 0 0 0 2px var(--el-color-primary-light-9);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px var(--primary-bg-light);
   }
 
   // 禁用状态
   &.is-disabled .input-wrapper {
-    background: var(--el-fill-color-light);
-    border-color: var(--el-border-color-lighter);
+    background: var(--bg-disabled);
+    border-color: var(--border-light);
     cursor: not-allowed;
   }
 
   // 只读状态
   &.is-readonly .input-wrapper {
-    background: var(--el-fill-color-light);
+    background: var(--bg-primary);
+    cursor: default; // 使用默认光标，因为在日期选择器等场景中，父元素会覆盖为pointer
   }
 
   // 验证状态
   &.is-error .input-wrapper {
-    border-color: var(--el-color-danger);
+    border-color: var(--danger-color);
 
     &:focus-within {
-      border-color: var(--el-color-danger);
-      box-shadow: 0 0 0 2px var(--el-color-danger-light-9);
+      border-color: var(--danger-color);
+      box-shadow: 0 0 0 2px var(--danger-bg-light);
     }
   }
 
   &.is-success .input-wrapper {
-    border-color: var(--el-color-success);
+    border-color: var(--success-color);
   }
 
   &.is-warning .input-wrapper {
-    border-color: var(--el-color-warning);
+    border-color: var(--warning-color);
   }
 
   /**
@@ -510,7 +510,7 @@ defineExpose({
   // 确保有清除按钮或密码切换按钮时，输入框有足够的右边距
   &.has-suffix .input-wrapper {
     .input-inner {
-      padding-right: 4px; // 给按钮留出空间
+      padding-right: var(--spacing-mini); // 给按钮留出空间
     }
   }
 }

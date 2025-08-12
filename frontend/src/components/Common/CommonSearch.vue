@@ -43,18 +43,11 @@
 
             <!-- 日期时间范围选择器 -->
             <CustomDatePicker v-else-if="item.type === 'datetimerange'" v-model="searchData[item.prop]"
-              type="datetimerange" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间"
-              :clearable="item.clearable !== false" :disabled="item.disabled"
-              :format="item.format || 'YYYY-MM-DD HH:mm:ss'" :value-format="item.valueFormat || 'YYYY-MM-DDTHH:mm:ss'"
-              :shortcuts="item.shortcuts || []" style="width: 100%" />
-
-            <!-- 增强版日期时间范围选择器 -->
-            <EnhancedDateTimePicker v-else-if="item.type === 'enhanced-datetime-range'" v-model="searchData[item.prop]"
-              :start-placeholder="item.startPlaceholder || '请选择开始时间'"
-              :end-placeholder="item.endPlaceholder || '请选择结束时间'" :clearable="item.clearable !== false"
-              :disabled="item.disabled" :show-shortcuts="item.showShortcuts !== false"
-              :show-duration="item.showDuration !== false" :format="item.format || 'YYYY-MM-DD HH:mm:ss'"
-              style="width: 100%" />
+              type="datetimerange" range-separator="至" :start-placeholder="item.startPlaceholder || '开始时间'"
+              :end-placeholder="item.endPlaceholder || '结束时间'" :clearable="item.clearable !== false"
+              :disabled="item.disabled" :format="item.format || 'YYYY-MM-DD HH:mm:ss'"
+              :value-format="item.valueFormat || 'YYYY-MM-DDTHH:mm:ss'" :shortcuts="item.shortcuts || []"
+              :show-duration="item.showDuration" style="width: 100%" />
 
             <!-- 数字输入框 -->
             <CustomInputNumber v-else-if="item.type === 'number'" v-model="searchData[item.prop]"
@@ -120,7 +113,6 @@ import { ref, reactive, computed, watch } from 'vue'
 import CustomInput from './CustomInput.vue'
 import CustomSelect from './CustomSelect.vue'
 import CustomDatePicker from './CustomDatePicker.vue'
-import EnhancedDateTimePicker from './EnhancedDateTimePicker.vue'
 import CustomInputNumber from './CustomInputNumber.vue'
 import CustomSwitch from './CustomSwitch.vue'
 import CustomRadioGroup from './CustomRadioGroup.vue'
@@ -400,7 +392,7 @@ defineExpose({
         margin-top: 0;
         display: flex;
         align-items: center;
-        height: 32px; // 确保与搜索字段高度一致
+        height: var(--form-item-height); // 确保与搜索字段高度一致
       }
     }
 
@@ -414,7 +406,7 @@ defineExpose({
 
       &.single-row-layout {
         justify-content: space-between; // 两端对齐：左边搜索按钮，右边自定义按钮
-        height: 32px;
+        height: var(--form-item-height);
         flex-wrap: nowrap; // 防止按钮换行
         width: 100%; // 确保占满整个列宽
       }
@@ -458,7 +450,7 @@ defineExpose({
 
         :deep(.el-form-item__label),
         :deep(.el-form-item__content) {
-          line-height: 32px;
+          line-height: var(--form-item-height) !important;
           margin-bottom: 0;
         }
       }
@@ -471,7 +463,7 @@ defineExpose({
           display: flex;
           align-items: center;
           justify-content: flex-end; // 确保按钮右对齐
-          height: 32px;
+          height: var(--form-item-height);
         }
       }
     }

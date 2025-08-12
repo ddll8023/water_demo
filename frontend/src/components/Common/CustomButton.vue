@@ -253,7 +253,7 @@ const handleClick = (event) => {
 .custom-button--default {
   padding: 8px 16px;
   font-size: 14px;
-  min-height: 36px;
+  min-height: var(--form-item-height);
 
   &.custom-button--text {
     padding: 4px 8px;

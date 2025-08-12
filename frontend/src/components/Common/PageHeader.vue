@@ -37,49 +37,47 @@ defineProps({
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 // 页面头部样式
 .page-header {
     background: var(--bg-primary);
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 8px;
+    padding: var(--spacing-large);
+    margin-bottom: var(--spacing-large);
+    border-radius: var(--border-radius-large);
     box-shadow: var(--shadow-card);
 
     .header-main {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
+        @include flex-between;
+        gap: var(--spacing-medium);
         flex-wrap: wrap;
     }
 
     .header-content {
         .page-title {
             color: var(--text-primary);
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
+            font-size: var(--font-size-extra-large);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-small);
+            @include flex-start;
 
             .fa {
                 color: var(--primary-color);
-                margin-right: 12px;
-                font-size: 28px;
+                margin-right: var(--spacing-medium);
+                font-size: var(--icon-size-xxxl);
             }
         }
 
         .page-description {
             color: var(--text-secondary);
-            font-size: 14px;
+            font-size: var(--font-size-base);
             margin: 0;
         }
     }
 
     .header-actions {
-        display: flex;
-        align-items: center;
-        gap: 8px;
+        @include flex-start;
+        gap: var(--spacing-small);
         margin-left: auto;
         flex-wrap: wrap;
     }

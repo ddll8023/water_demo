@@ -380,6 +380,8 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 /* ===== 基础样式 ===== */
 .custom-select {
   position: relative;
@@ -387,86 +389,79 @@ defineExpose({
 
   /* ===== 输入框样式 ===== */
   .select-input-wrapper {
-    display: flex;
-    align-items: center;
-    min-height: 32px;
-    background: #FFFFFF;
-    border: 1px solid var(--el-border-color);
-    border-radius: 4px;
+    @include flex-start;
+    min-height: var(--form-item-height);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-base);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: var(--transition-base);
 
     &:hover {
-      border-color: var(--el-color-primary-light-7);
+      border-color: var(--primary-light);
     }
 
     &:focus-within {
-      border-color: var(--el-color-primary);
-      box-shadow: 0 0 0 2px var(--el-color-primary-light-9);
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px var(--primary-transparent-light);
     }
 
     .select-input {
       flex: 1;
-      padding: 6px 0 6px 12px;
-      min-height: 20px;
-      display: flex;
-      align-items: center;
+      padding: var(--spacing-xs) 0 var(--spacing-xs) var(--spacing-medium);
+      min-height: calc(var(--form-item-height) - 2px);
+      @include flex-start;
       flex-wrap: wrap;
-      gap: 4px;
+      gap: var(--spacing-mini);
       overflow: hidden;
 
       .single-value,
       .placeholder {
-        color: var(--el-text-color-primary);
-        font-size: 14px;
-        line-height: 20px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        color: var(--text-primary);
+        font-size: var(--font-size-base);
+        line-height: var(--line-height-base);
+        @include text-ellipsis;
         flex: 1;
         min-width: 0;
-        max-width: calc(100% - 20px);
+        max-width: calc(100% - var(--spacing-large));
       }
 
       .placeholder {
-        color: var(--el-text-color-placeholder);
+        color: var(--text-placeholder);
       }
 
       .multiple-values {
-        display: flex;
+        @include flex-start;
         flex-wrap: wrap;
-        gap: 4px;
+        gap: var(--spacing-mini);
         width: 100%;
         overflow: hidden;
 
         .selected-tag {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-          padding: 2px 6px;
-          background: var(--el-color-primary-light-9);
-          border: 1px solid var(--el-color-primary-light-8);
-          border-radius: 3px;
-          font-size: 12px;
-          color: var(--el-color-primary);
-          max-width: calc(100% - 8px);
+          @include flex-start;
+          gap: var(--spacing-mini);
+          padding: var(--spacing-micro) var(--spacing-xs);
+          background: var(--primary-bg-light);
+          border: 1px solid var(--primary-lighter);
+          border-radius: var(--border-radius-small);
+          font-size: var(--font-size-extra-small);
+          color: var(--primary-color);
+          max-width: calc(100% - var(--spacing-small));
           flex-shrink: 1;
 
           .tag-text {
-            max-width: calc(100% - 14px);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            display: inline-block;
+            max-width: calc(100% - var(--spacing-base));
+            @include text-ellipsis;
           }
 
           .tag-close {
             cursor: pointer;
-            font-size: 10px;
+            font-size: var(--icon-size-xs);
             flex-shrink: 0;
+            transition: var(--transition-fast);
 
             &:hover {
-              color: var(--el-color-primary-dark-2);
+              color: var(--primary-dark);
             }
           }
         }
@@ -476,38 +471,37 @@ defineExpose({
         border: none;
         outline: none;
         background: transparent;
-        font-size: 14px;
-        color: var(--el-text-color-primary);
+        font-size: var(--font-size-base);
+        color: var(--text-primary);
         flex: 1;
         min-width: 100px;
 
         &::placeholder {
-          color: var(--el-text-color-placeholder);
+          color: var(--text-placeholder);
         }
       }
     }
 
     .select-suffix {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      padding: 0 12px 0 4px;
+      @include flex-start;
+      gap: var(--spacing-mini);
+      padding: 0 var(--spacing-medium) 0 var(--spacing-mini);
       flex-shrink: 0;
 
       .clear-icon,
       .dropdown-icon {
-        color: var(--el-text-color-placeholder);
-        font-size: 12px;
+        color: var(--text-placeholder);
+        font-size: var(--font-size-extra-small);
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: var(--transition-base);
 
         &:hover {
-          color: var(--el-text-color-regular);
+          color: var(--text-secondary);
         }
       }
 
       .dropdown-icon {
-        transition: transform 0.3s ease;
+        transition: var(--transition-transform);
 
         &.is-reverse {
           transform: rotate(180deg);
@@ -522,51 +516,50 @@ defineExpose({
     top: 100%;
     left: 0;
     right: 0;
-    background: #FFFFFF;
-    border: 1px solid var(--el-border-color-light);
-    border-radius: 4px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--border-radius-base);
+    box-shadow: var(--shadow-popup);
+    z-index: var(--z-index-dropdown);
     max-height: 200px;
     overflow: hidden;
 
     .dropdown-header,
     .dropdown-footer {
-      padding: 8px 12px;
-      border-bottom: 1px solid var(--el-border-color-lighter);
-      background: var(--el-fill-color-light);
+      padding: var(--spacing-small) var(--spacing-medium);
+      border-bottom: 1px solid var(--border-light);
+      background: var(--bg-secondary);
     }
 
     .dropdown-footer {
       border-bottom: none;
-      border-top: 1px solid var(--el-border-color-lighter);
+      border-top: 1px solid var(--border-light);
     }
 
     .options-list {
       max-height: 200px;
       overflow-y: auto;
+      @include custom-scrollbar;
 
       .select-option {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 8px 12px;
+        @include flex-between;
+        padding: var(--spacing-small) var(--spacing-medium);
         cursor: pointer;
-        font-size: 14px;
-        color: var(--el-text-color-regular);
-        transition: background-color 0.3s ease;
+        font-size: var(--font-size-base);
+        color: var(--text-secondary);
+        transition: var(--transition-fast);
 
         &:hover {
-          background: var(--el-fill-color-light);
+          background: var(--bg-secondary);
         }
 
         &.is-selected {
-          color: var(--el-color-primary);
-          background: var(--el-color-primary-light-9);
+          color: var(--primary-color);
+          background: var(--primary-bg-light);
         }
 
         &.is-disabled {
-          color: var(--el-text-color-disabled);
+          color: var(--text-disabled);
           cursor: not-allowed;
 
           &:hover {
@@ -575,23 +568,21 @@ defineExpose({
         }
 
         .option-check {
-          color: var(--el-color-primary);
-          font-size: 12px;
+          color: var(--primary-color);
+          font-size: var(--font-size-extra-small);
         }
       }
 
       .loading-option,
       .empty-option {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        padding: 16px 12px;
-        color: var(--el-text-color-placeholder);
-        font-size: 14px;
+        @include flex-center;
+        gap: var(--spacing-small);
+        padding: var(--spacing-base) var(--spacing-medium);
+        color: var(--text-placeholder);
+        font-size: var(--font-size-base);
 
         i {
-          font-size: 16px;
+          font-size: var(--icon-size-md);
         }
       }
     }
@@ -601,19 +592,19 @@ defineExpose({
   // 禁用状态
   &.is-disabled {
     .select-input-wrapper {
-      background: var(--el-fill-color-light);
-      border-color: var(--el-border-color-lighter);
+      background: var(--bg-disabled);
+      border-color: var(--border-light);
       cursor: not-allowed;
 
       .select-input {
-        color: var(--el-text-color-disabled);
+        color: var(--text-disabled);
       }
 
       .select-suffix {
 
         .clear-icon,
         .dropdown-icon {
-          color: var(--el-text-color-disabled);
+          color: var(--text-disabled);
           cursor: not-allowed;
         }
       }
@@ -623,26 +614,26 @@ defineExpose({
   /* ===== 尺寸变体 ===== */
   // 大尺寸
   &.custom-select--large {
-    font-size: 16px;
+    font-size: var(--font-size-medium);
 
     .select-input-wrapper {
-      min-height: 40px;
+      min-height: calc(var(--form-item-height) + var(--spacing-small));
 
       .select-input {
-        padding: 10px 16px;
+        padding: var(--spacing-sm) var(--spacing-base);
       }
     }
   }
 
   // 小尺寸
   &.custom-select--small {
-    font-size: 12px;
+    font-size: var(--font-size-extra-small);
 
     .select-input-wrapper {
-      min-height: 24px;
+      min-height: calc(var(--form-item-height) - var(--spacing-base));
 
       .select-input {
-        padding: 4px 8px;
+        padding: var(--spacing-mini) var(--spacing-small);
       }
     }
   }
@@ -652,12 +643,12 @@ defineExpose({
 // 下拉动画
 .dropdown-enter-active,
 .dropdown-leave-active {
-  transition: all 0.3s ease;
+  transition: var(--transition-base);
 }
 
 .dropdown-enter-from,
 .dropdown-leave-to {
   opacity: 0;
-  transform: translateY(-10px);
+  transform: translateY(-var(--spacing-sm));
 }
 </style>

@@ -68,21 +68,7 @@ const props = defineProps({
     type: String,
     default: ''
   },
-  // 激活时的颜色
-  activeColor: {
-    type: String,
-    default: '#409eff'
-  },
-  // 非激活时的颜色
-  inactiveColor: {
-    type: String,
-    default: '#dcdfe6'
-  },
-  // 开关的宽度
-  width: {
-    type: [String, Number],
-    default: ''
-  },
+
   // 是否显示内联文字提示
   inlinePrompt: {
     type: Boolean,
@@ -177,27 +163,7 @@ const switchClasses = computed(() => {
   ]
 })
 
-/**
- * 开关样式计算属性
- * 动态设置CSS变量
- */
-const switchStyle = computed(() => {
-  const style = {}
 
-  if (props.width) {
-    style['--switch-width'] = typeof props.width === 'number' ? `${props.width}px` : props.width
-  }
-
-  if (props.activeColor) {
-    style['--switch-active-color'] = props.activeColor
-  }
-
-  if (props.inactiveColor) {
-    style['--switch-inactive-color'] = props.inactiveColor
-  }
-
-  return style
-})
 
 // ===========================
 // 事件处理方法
@@ -288,24 +254,17 @@ watch(() => props.modelValue, (newValue) => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 /* ===========================
  * 开关组件基础样式
  * =========================== */
 .custom-switch {
   position: relative;
-  display: inline-flex;
-  align-items: center;
-  font-size: 14px;
-  line-height: 20px;
+  @include flex-start;
+  font-size: var(--font-size-base);
+  line-height: var(--spacing-large);
   vertical-align: middle;
-
-  // CSS变量定义
-  --switch-width: 40px;
-  --switch-height: 20px;
-  --switch-active-color: #409eff;
-  --switch-inactive-color: #dcdfe6;
-  --switch-thumb-size: 16px;
-  --switch-padding: 2px;
 
   .switch-input {
     position: absolute;
@@ -320,30 +279,29 @@ watch(() => props.modelValue, (newValue) => {
    * =========================== */
   .switch-label {
     position: relative;
-    display: inline-flex;
-    align-items: center;
+    @include flex-start;
     cursor: pointer;
-    user-select: none;
+    @include user-select(none);
 
     .switch-track {
       position: relative;
       display: inline-block;
-      width: var(--switch-width);
-      height: var(--switch-height);
-      background-color: var(--switch-inactive-color);
-      border-radius: calc(var(--switch-height) / 2);
-      transition: all 0.3s;
+      width: var(--form-item-height);
+      height: var(--spacing-large);
+      background-color: var(--border-color);
+      border-radius: var(--border-radius-round);
+      transition: var(--transition-base);
 
       .switch-thumb {
         position: absolute;
-        top: var(--switch-padding);
-        left: var(--switch-padding);
-        width: var(--switch-thumb-size);
-        height: var(--switch-thumb-size);
-        background-color: #ffffff;
-        border-radius: 50%;
-        transition: all 0.3s;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+        top: var(--spacing-micro);
+        left: var(--spacing-micro);
+        width: var(--icon-size-md);
+        height: var(--icon-size-md);
+        background-color: var(--bg-primary);
+        border-radius: var(--border-radius-round);
+        transition: var(--transition-base);
+        box-shadow: var(--box-shadow-light);
       }
     }
 
@@ -351,10 +309,10 @@ watch(() => props.modelValue, (newValue) => {
      * 文本标签样式
      * =========================== */
     .switch-text {
-      margin: 0 8px;
-      font-size: 14px;
-      color: var(--el-text-color-regular);
-      transition: color 0.3s;
+      margin: 0 var(--spacing-small);
+      font-size: var(--font-size-base);
+      color: var(--text-secondary);
+      transition: var(--transition-opacity);
 
       &--active {
         order: -1;
@@ -372,24 +330,24 @@ watch(() => props.modelValue, (newValue) => {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 12px;
-      color: #ffffff;
+      font-size: var(--font-size-extra-small);
+      color: var(--bg-primary);
       pointer-events: none;
 
       .switch-inline-prompt--active,
       .switch-inline-prompt--inactive {
         position: absolute;
         white-space: nowrap;
-        transition: opacity 0.3s;
+        transition: var(--transition-opacity);
       }
 
       .switch-inline-prompt--active {
-        left: 6px;
+        left: var(--spacing-xs);
         opacity: 0;
       }
 
       .switch-inline-prompt--inactive {
-        right: 6px;
+        right: var(--spacing-xs);
         opacity: 1;
       }
     }
@@ -402,15 +360,15 @@ watch(() => props.modelValue, (newValue) => {
   // 选中状态
   &.is-checked {
     .switch-track {
-      background-color: var(--switch-active-color);
+      background-color: var(--primary-color);
 
       .switch-thumb {
-        transform: translateX(calc(var(--switch-width) - var(--switch-thumb-size) - var(--switch-padding) * 2));
+        transform: translateX(calc(var(--form-item-height) - var(--icon-size-md) - var(--spacing-micro) * 2));
       }
     }
 
     .switch-text--active {
-      color: var(--switch-active-color);
+      color: var(--primary-color);
     }
 
     .switch-inline-prompt {
@@ -437,7 +395,7 @@ watch(() => props.modelValue, (newValue) => {
   // 聚焦状态
   &.is-focused {
     .switch-track {
-      box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+      box-shadow: 0 0 0 var(--spacing-micro) var(--primary-transparent-light);
     }
   }
 
@@ -445,17 +403,39 @@ watch(() => props.modelValue, (newValue) => {
    * 尺寸变体样式
    * =========================== */
   &--large {
-    --switch-width: 50px;
-    --switch-height: 24px;
-    --switch-thumb-size: 20px;
-    font-size: 16px;
+    font-size: var(--font-size-medium);
+
+    .switch-track {
+      width: calc(var(--form-item-height) + var(--spacing-sm));
+      height: var(--icon-size-xl);
+
+      .switch-thumb {
+        width: var(--icon-size-lg);
+        height: var(--icon-size-lg);
+      }
+    }
+
+    &.is-checked .switch-track .switch-thumb {
+      transform: translateX(calc(var(--form-item-height) + var(--spacing-sm) - var(--icon-size-lg) - var(--spacing-micro) * 2));
+    }
   }
 
   &--small {
-    --switch-width: 30px;
-    --switch-height: 16px;
-    --switch-thumb-size: 12px;
-    font-size: 12px;
+    font-size: var(--font-size-extra-small);
+
+    .switch-track {
+      width: calc(var(--form-item-height) - var(--spacing-sm));
+      height: var(--icon-size-md);
+
+      .switch-thumb {
+        width: var(--icon-size-xs);
+        height: var(--icon-size-xs);
+      }
+    }
+
+    &.is-checked .switch-track .switch-thumb {
+      transform: translateX(calc(var(--form-item-height) - var(--spacing-sm) - var(--icon-size-xs) - var(--spacing-micro) * 2));
+    }
   }
 
   /* ===========================
@@ -463,19 +443,19 @@ watch(() => props.modelValue, (newValue) => {
    * =========================== */
   &.is-error {
     .switch-track {
-      border: 1px solid var(--el-color-danger);
+      border: var(--spacing-1) solid var(--danger-color);
     }
   }
 
   &.is-warning {
     .switch-track {
-      border: 1px solid var(--el-color-warning);
+      border: var(--spacing-1) solid var(--warning-color);
     }
   }
 
   &.is-success {
     .switch-track {
-      border: 1px solid var(--el-color-success);
+      border: var(--spacing-1) solid var(--success-color);
     }
   }
 }
@@ -483,11 +463,11 @@ watch(() => props.modelValue, (newValue) => {
 /* ===========================
  * 响应式设计
  * =========================== */
-@media (max-width: 768px) {
-  .custom-switch {
+.custom-switch {
+  @include respond-to(sm) {
     .switch-text {
-      font-size: 12px;
-      margin: 0 6px;
+      font-size: var(--font-size-extra-small);
+      margin: 0 var(--spacing-xs);
     }
   }
 }

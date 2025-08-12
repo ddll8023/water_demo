@@ -348,44 +348,46 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 // ========================================
 // 组件样式
 // ========================================
 .custom-textarea {
   position: relative;
   width: 100%;
-  font-size: 14px;
+  font-size: var(--font-size-base);
 
   .textarea-wrapper {
     position: relative;
     display: flex;
-    background: #FFFFFF;
-    border: 1px solid var(--el-border-color);
-    border-radius: 4px;
-    transition: all 0.3s ease;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-base);
+    transition: var(--transition-base);
 
     &:hover {
-      border-color: var(--el-color-primary-light-7);
+      border-color: var(--primary-hover);
     }
 
     .textarea-inner {
       flex: 1;
-      padding: 8px 12px;
+      padding: var(--spacing-small) var(--spacing-medium);
       border: none;
       outline: none;
       background: transparent;
-      color: var(--el-text-color-primary);
+      color: var(--text-primary);
       font-size: inherit;
-      line-height: 1.5;
+      line-height: var(--line-height-base);
       font-family: inherit;
       resize: vertical;
 
       &::placeholder {
-        color: var(--el-text-color-placeholder);
+        color: var(--text-placeholder);
       }
 
       &:disabled {
-        color: var(--el-text-color-disabled);
+        color: var(--text-disabled);
         cursor: not-allowed;
         resize: none;
       }
@@ -397,51 +399,49 @@ onMounted(() => {
 
     .clear-button {
       position: absolute;
-      top: 8px;
-      right: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 20px;
-      height: 20px;
-      color: var(--el-text-color-regular);
+      top: var(--spacing-small);
+      right: var(--spacing-small);
+      @include flex-center;
+      width: var(--spacing-large);
+      height: var(--spacing-large);
+      color: var(--text-secondary);
       cursor: pointer;
-      border-radius: 2px;
-      transition: all 0.3s ease;
-      background: rgba(255, 255, 255, 0.8);
+      border-radius: var(--border-radius-small);
+      transition: var(--transition-base);
+      background: var(--white-transparent-strong);
 
       &:hover {
-        color: var(--el-color-primary);
-        background: var(--el-color-primary-light-9);
+        color: var(--primary-color);
+        background: var(--primary-bg-light);
       }
 
       .fa {
-        font-size: 12px;
+        font-size: var(--font-size-extra-small);
       }
     }
   }
 
   .word-limit {
-    margin-top: 4px;
+    margin-top: var(--spacing-mini);
     text-align: right;
-    font-size: 12px;
-    color: var(--el-text-color-placeholder);
+    font-size: var(--font-size-extra-small);
+    color: var(--text-placeholder);
   }
 
   // 尺寸变体
   &.custom-textarea--large {
-    font-size: 16px;
+    font-size: var(--font-size-medium);
 
     .textarea-wrapper .textarea-inner {
-      padding: 12px 16px;
+      padding: var(--spacing-medium) var(--spacing-base);
     }
   }
 
   &.custom-textarea--small {
-    font-size: 12px;
+    font-size: var(--font-size-extra-small);
 
     .textarea-wrapper .textarea-inner {
-      padding: 6px 8px;
+      padding: var(--spacing-xs) var(--spacing-small);
     }
   }
 
@@ -452,36 +452,36 @@ onMounted(() => {
 
   // 状态样式
   &.is-focused .textarea-wrapper {
-    border-color: var(--el-color-primary);
-    box-shadow: 0 0 0 2px var(--el-color-primary-light-9);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px var(--primary-bg-light);
   }
 
   &.is-disabled .textarea-wrapper {
-    background: var(--el-fill-color-light);
-    border-color: var(--el-border-color-lighter);
+    background: var(--bg-disabled);
+    border-color: var(--border-light);
     cursor: not-allowed;
   }
 
   &.is-readonly .textarea-wrapper {
-    background: var(--el-fill-color-light);
+    background: var(--bg-disabled);
   }
 
   // 验证状态
   &.is-error .textarea-wrapper {
-    border-color: var(--el-color-danger);
+    border-color: var(--danger-color);
 
     &:focus-within {
-      border-color: var(--el-color-danger);
-      box-shadow: 0 0 0 2px var(--el-color-danger-light-9);
+      border-color: var(--danger-color);
+      box-shadow: 0 0 0 2px var(--danger-bg-light);
     }
   }
 
   &.is-success .textarea-wrapper {
-    border-color: var(--el-color-success);
+    border-color: var(--success-color);
   }
 
   &.is-warning .textarea-wrapper {
-    border-color: var(--el-color-warning);
+    border-color: var(--warning-color);
   }
 }
 </style>

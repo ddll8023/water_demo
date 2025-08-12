@@ -121,12 +121,11 @@ const searchFields = ref([
     {
         prop: 'timeRange',
         label: '监测时间',
-        type: 'enhanced-datetime-range',
+        type: 'datetimerange',
         startPlaceholder: '请选择开始时间',
         endPlaceholder: '请选择结束时间',
-        showShortcuts: false,
         showDuration: true,
-        span: 5,
+        span: 8,
         labelWidth: '60px'
     }
 ])

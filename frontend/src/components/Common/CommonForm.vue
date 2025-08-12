@@ -455,27 +455,27 @@ defineExpose({
 
   /* 表单分组样式 */
   .form-group {
-    margin-bottom: 24px;
+    margin-bottom: var(--spacing-extra-large);
 
     .group-title {
-      font-size: 16px;
-      font-weight: 500;
+      font-size: var(--font-size-medium);
+      font-weight: var(--font-weight-medium);
       color: var(--text-primary);
-      margin-bottom: 16px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--border-color-light);
+      margin-bottom: var(--spacing-base);
+      padding-bottom: var(--spacing-small);
+      border-bottom: 1px solid var(--border-light);
     }
 
     .group-content {
-      padding-left: 16px;
+      padding-left: var(--spacing-base);
     }
   }
 
   /* 表单操作区样式 */
   .form-actions {
-    margin-top: 24px;
-    padding-top: 16px;
-    border-top: 1px solid var(--border-color-light);
+    margin-top: var(--spacing-extra-large);
+    padding-top: var(--spacing-base);
+    border-top: 1px solid var(--border-light);
 
     :deep(.el-form-item) {
       margin-bottom: 0;
