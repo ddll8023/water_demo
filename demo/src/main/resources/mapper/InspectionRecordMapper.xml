@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.InspectionRecordMapper">
+
+    <resultMap id="InspectionRecordResponseDTOMap" type="com.example.demo.dto.inspection.InspectionRecordResponseDTO">
+        <id property="id" column="id"/>
+        <result property="taskId" column="task_id"/>
+        <result property="inspectorId" column="inspector_id"/>
+        <result property="inspectorName" column="inspector_name"/>
+        <result property="facilityType" column="facility_type"/>
+        <result property="facilityId" column="facility_id"/>
+        <result property="recordTime" column="record_time"/>
+        <result property="deviceStatus" column="device_status"/>
+        <result property="issueFlag" column="issue_flag"/>
+        <result property="issueDescription" column="issue_description"/>
+        <result property="resolution" column="resolution"/>
+        <result property="resolvedAt" column="resolved_at"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="coverImage" column="cover_image"/>
+    </resultMap>
+
+    <sql id="RecordBaseSelect">
+        SELECT r.*, p.full_name AS inspector_name,
+               (
+                   SELECT ia.file_path
+                   FROM inspection_attachments ia
+                   WHERE ia.record_id = r.id
+                   ORDER BY ia.created_at ASC
+                   LIMIT 1
+               ) AS cover_image
+        FROM inspection_records r
+        LEFT JOIN personnel p ON r.inspector_id = p.id AND p.deleted_at IS NULL
+        WHERE r.deleted_at IS NULL
+    </sql>
+
+    <select id="selectRecordPage" resultMap="InspectionRecordResponseDTOMap">
+        <include refid="RecordBaseSelect"/>
+        <if test="facilityType != null and facilityType != ''">
+            AND r.facility_type = #{facilityType}
+        </if>
+        <if test="facilityId != null">
+            AND r.facility_id = #{facilityId}
+        </if>
+        <if test="startTime != null">
+            AND r.record_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND r.record_time &lt;= #{endTime}
+        </if>
+        <if test="issueFlag != null">
+            AND r.issue_flag = #{issueFlag}
+        </if>
+        <if test="processed != null">
+            <choose>
+                <when test="processed == 1">
+                    AND r.resolved_at IS NOT NULL
+                </when>
+                <otherwise>
+                    AND r.resolved_at IS NULL
+                </otherwise>
+            </choose>
+        </if>
+        <if test="inspectorId != null">
+            AND r.inspector_id = #{inspectorId}
+        </if>
+        ORDER BY
+        <choose>
+            <when test="sort != null and sort.contains('record_time')">
+                r.record_time
+                <choose>
+                    <when test="sort.contains('asc')">ASC</when>
+                    <otherwise>DESC</otherwise>
+                </choose>
+            </when>
+            <otherwise>
+                r.created_at DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="selectRecordById" resultMap="InspectionRecordResponseDTOMap">
+        <include refid="RecordBaseSelect"/>
+        AND r.id = #{id}
+    </select>
+
+    <insert id="insertRecord" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO inspection_records (
+            task_id, inspector_id, facility_type, facility_id, record_time, device_status, issue_flag, issue_description, resolution, resolved_at, created_at, updated_at
+        ) VALUES (
+            #{taskId}, #{inspectorId}, #{facilityType}, #{facilityId}, #{recordTime}, #{deviceStatus}, #{issueFlag}, #{issueDescription}, #{resolution}, #{resolvedAt}, NOW(), NOW()
+        )
+    </insert>
+
+    <update id="updateResolution">
+        UPDATE inspection_records
+        SET resolution = #{resolution}, resolved_at = NOW(), updated_at = NOW()
+        WHERE id = #{id} AND deleted_at IS NULL
+    </update>
+
+</mapper> 

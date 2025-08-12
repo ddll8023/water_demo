@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.FlowMonitoringDataMapper">
+
+    <!-- 结果映射：流量监测数据响应DTO -->
+    <resultMap id="FlowMonitoringDataResponseDTOMap" type="com.example.demo.dto.monitoring.FlowMonitoringDataResponseDTO">
+        <id property="id" column="id"/>
+        <result property="stationId" column="station_id"/>
+        <result property="stationName" column="station_name"/>
+        <result property="stationCode" column="station_code"/>
+        <result property="monitoringTime" column="monitoring_time"/>
+        <result property="flowRate" column="flow_rate"/>
+        <result property="cumulativeFlow" column="cumulative_flow"/>
+        <result property="dataQuality" column="data_quality"/>
+        <result property="dataQualityText" column="data_quality_text"/>
+        <result property="collectionMethod" column="collection_method"/>
+        <result property="dataSource" column="data_source"/>
+        <result property="remarks" column="remarks"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- 分页查询流量监测数据（包含关联信息） -->
+    <select id="selectFlowMonitoringDataPage" resultMap="FlowMonitoringDataResponseDTOMap">
+        SELECT 
+        f.id, f.station_id, f.monitoring_time, 
+        f.instant_flow as flow_rate, f.cumulative_flow, 
+        f.data_quality, f.collection_method, f.data_source, 
+        f.remark as remarks, f.created_at, f.updated_at, 
+        ms.name as station_name, ms.station_code,
+        CASE f.data_quality 
+          WHEN 1 THEN '正常' 
+          WHEN 2 THEN '异常' 
+          WHEN 3 THEN '缺失' 
+          ELSE '未知' 
+        END as data_quality_text 
+        FROM flow_monitoring_data f 
+        /* 
+         * 优化连接查询:
+         * 1. 使用表别名缩短SQL语句并提高可读性
+         * 2. 将LEFT JOIN改为INNER JOIN，因为一般站点数据必然存在
+         * 3. 确保在station_id上有索引
+         */
+        INNER JOIN monitoring_stations ms ON f.station_id = ms.id AND ms.deleted_at IS NULL 
+        WHERE f.deleted_at IS NULL 
+        <if test='stationId != null'> AND f.station_id = #{stationId} </if>
+        <if test='startTime != null'> AND f.monitoring_time &gt;= #{startTime} </if>
+        <if test='endTime != null'> AND f.monitoring_time &lt;= #{endTime} </if>
+        <if test='dataQuality != null'> AND f.data_quality = #{dataQuality} </if>
+        <if test='collectionMethod != null and collectionMethod != ""'> AND f.collection_method = #{collectionMethod} </if>
+        <if test='dataSource != null and dataSource != ""'> 
+            /* 修改为前缀匹配以利用索引 */
+            AND f.data_source LIKE CONCAT(#{dataSource}, '%') 
+        </if>
+        /*
+         * 利用索引的排序:
+         * 确保在monitoring_time和instant_flow字段上有索引
+         */
+        ORDER BY 
+        <choose>
+          <when test='sort != null and sort.contains("monitoring_time,asc")'> f.monitoring_time ASC </when>
+          <when test='sort != null and sort.contains("flow_rate,desc")'> f.instant_flow DESC </when>
+          <when test='sort != null and sort.contains("flow_rate,asc")'> f.instant_flow ASC </when>
+          <otherwise> f.monitoring_time DESC </otherwise>
+        </choose>
+    </select>
+
+    <!-- 查询流量图表数据 -->
+    <select id="selectFlowChartData" resultType="java.util.Map">
+        SELECT
+        DATE_FORMAT(flow_monitoring_data.monitoring_time,
+        <choose>
+          <when test='interval == "hour"'> '%Y-%m-%d %H:%i:%s' </when>
+          <when test='interval == "day"'> '%Y-%m-%d' </when>
+          <when test='interval == "month"'> '%Y-%m' </when>
+          <otherwise> '%Y-%m-%d %H:%i:%s' </otherwise>
+        </choose>
+        ) as time_label,
+        <choose>
+          <when test='dataType == "cumulativeFlow"'>
+            AVG(flow_monitoring_data.cumulative_flow) as avg_cumulative_flow
+          </when>
+          <otherwise>
+            AVG(flow_monitoring_data.instant_flow) as avg_flow_rate
+          </otherwise>
+        </choose>
+        FROM flow_monitoring_data
+        WHERE flow_monitoring_data.deleted_at IS NULL
+        AND flow_monitoring_data.station_id = #{stationId}
+        <if test='startTime != null'> AND flow_monitoring_data.monitoring_time &gt;= #{startTime} </if>
+        <if test='endTime != null'> AND flow_monitoring_data.monitoring_time &lt;= #{endTime} </if>
+        GROUP BY time_label
+        ORDER BY time_label ASC
+    </select>
+    
+    <!-- 批量检查指定站点下多个时间点是否已存在记录 -->
+    <select id="batchCountByStationIdAndTimes" resultType="java.util.Map">
+        SELECT monitoring_time
+        FROM flow_monitoring_data
+        WHERE deleted_at IS NULL
+        AND station_id = #{stationId}
+        <if test="times != null and times.size() > 0">
+            AND monitoring_time IN 
+            <foreach collection="times" item="time" open="(" separator="," close=")">
+                #{time}
+            </foreach>
+        </if>
+    </select>
+
+</mapper>

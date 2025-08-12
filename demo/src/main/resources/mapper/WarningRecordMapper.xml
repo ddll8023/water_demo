@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.WarningRecordMapper">
+
+    <!-- 结果映射：预警记录响应DTO -->
+    <resultMap id="WarningRecordResponseDTOMap" type="com.example.demo.dto.warning.WarningRecordResponseDTO">
+        <id property="id" column="id"/>
+        <result property="warningLocation" column="warning_location"/>
+        <result property="warningType" column="warning_type"/>
+        <result property="warningLevel" column="warning_level"/>
+        <result property="warningContent" column="warning_content"/>
+        <result property="warningStatus" column="warning_status"/>
+        <result property="projectName" column="project_name"/>
+        <result property="occurredAt" column="occurred_at"/>
+        <result property="resolvedAt" column="resolved_at"/>
+        <result property="thresholdId" column="threshold_id"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+    
+    <!-- 实体映射 -->
+    <resultMap id="WarningRecordMap" type="com.example.demo.entity.warning.WarningRecord">
+        <id property="id" column="id"/>
+        <result property="warningLocation" column="warning_location"/>
+        <result property="warningType" column="warning_type"/>
+        <result property="warningLevel" column="warning_level"/>
+        <result property="warningContent" column="warning_content"/>
+        <result property="warningStatus" column="warning_status"/>
+        <result property="projectName" column="project_name"/>
+        <result property="occurredAt" column="occurred_at"/>
+        <result property="resolvedAt" column="resolved_at"/>
+        <result property="thresholdId" column="threshold_id"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="deletedAt" column="deleted_at"/>
+    </resultMap>
+
+    <!-- 简化后的分页查询预警记录列表 -->
+    <select id="selectWarningRecordPageWithDetails" resultMap="WarningRecordResponseDTOMap">
+        SELECT 
+            id, warning_location, warning_type, warning_level, warning_content,
+            warning_status, project_name, occurred_at, resolved_at, threshold_id,
+            created_at, updated_at
+        FROM warning_records
+        WHERE deleted_at IS NULL
+        <if test="warningLocation != null and warningLocation != ''">
+            AND warning_location = #{warningLocation}
+        </if>
+        <if test="warningType != null and warningType != ''">
+            AND warning_type = #{warningType}
+        </if>
+        <if test="warningLevel != null and warningLevel != ''">
+            AND warning_level = #{warningLevel}
+        </if>
+        <if test="warningStatus != null and warningStatus != ''">
+            AND warning_status = #{warningStatus}
+        </if>
+        <if test="projectName != null and projectName != ''">
+            AND project_name LIKE CONCAT('%', #{projectName}, '%')
+        </if>
+        <if test="startTime != null">
+            AND occurred_at >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND occurred_at &lt;= #{endTime}
+        </if>
+        <if test="sortField != null and sortField != ''">
+            ORDER BY ${sortField} ${sortOrder}
+        </if>
+        <if test="sortField == null or sortField == ''">
+            ORDER BY occurred_at DESC
+        </if>
+    </select>
+
+    <!-- 简化后的根据ID查询预警记录详情 -->
+    <select id="selectWarningRecordDetailById" resultMap="WarningRecordResponseDTOMap">
+        SELECT 
+            id, warning_location, warning_type, warning_level, warning_content,
+            warning_status, project_name, occurred_at, resolved_at, threshold_id,
+            created_at, updated_at
+        FROM warning_records
+        WHERE id = #{id} AND deleted_at IS NULL
+    </select>
+
+    <!-- 解除预警 -->
+    <update id="resolveWarning">
+        UPDATE warning_records
+        SET warning_status = '已解除',
+            resolved_at = NOW(),
+            updated_at = NOW()
+        WHERE id = #{id}
+        AND warning_status = '进行中'
+        AND deleted_at IS NULL
+    </update>
+
+    <!-- 统计各等级预警数量 -->
+    <select id="countByLevel" resultType="java.util.Map">
+        SELECT warning_records.warning_level,
+               dict_data.data_label as warning_level_name,
+               COUNT(*) as count
+        FROM warning_records
+        LEFT JOIN dict_data ON warning_records.warning_level = dict_data.data_value
+        AND dict_data.type_id = (SELECT id FROM dict_types WHERE type_code = 'warning_level' AND deleted_at IS NULL)
+        AND dict_data.deleted_at IS NULL
+        WHERE warning_records.warning_status = '进行中' AND warning_records.deleted_at IS NULL
+        GROUP BY warning_records.warning_level, dict_data.data_label
+    </select>
+
+    <!-- 获取预警趋势数据 -->
+    <select id="getWarningTrend" resultType="java.util.Map">
+        SELECT
+          DATE(occurred_at) as date,
+          COUNT(*) as count
+        FROM warning_records
+        WHERE deleted_at IS NULL
+          AND occurred_at >= DATE_SUB(NOW(), INTERVAL #{days} DAY)
+        GROUP BY DATE(occurred_at)
+        ORDER BY date
+    </select>
+
+    <!-- 获取不重复的预警地点列表（用于下拉选择） -->
+    <select id="selectDistinctWarningLocations" resultType="java.lang.String">
+        SELECT DISTINCT warning_location
+        FROM warning_records
+        WHERE warning_location != ''
+        AND deleted_at IS NULL
+        ORDER BY warning_location
+    </select>
+    
+    <!-- 插入预警记录 -->
+    <insert id="insertWarningRecord" parameterType="com.example.demo.entity.warning.WarningRecord" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO warning_records (
+            warning_location, warning_type, warning_level, warning_content, 
+            warning_status, project_name, occurred_at, resolved_at, 
+            threshold_id, created_at, updated_at
+        ) VALUES (
+            #{warningLocation}, #{warningType}, #{warningLevel}, #{warningContent},
+            #{warningStatus}, #{projectName}, #{occurredAt}, #{resolvedAt},
+            #{thresholdId}, #{createdAt}, #{updatedAt}
+        )
+    </insert>
+    
+    <!-- 根据ID查询预警记录 -->
+    <select id="selectWarningById" resultMap="WarningRecordMap">
+        SELECT 
+            id, warning_location, warning_type, warning_level, warning_content,
+            warning_status, project_name, occurred_at, resolved_at, 
+            threshold_id, created_at, updated_at, deleted_at
+        FROM warning_records
+        WHERE id = #{id} AND deleted_at IS NULL
+    </select>
+    
+    <!-- 更新预警记录 -->
+    <update id="updateWarningRecord" parameterType="com.example.demo.entity.warning.WarningRecord">
+        UPDATE warning_records
+        <set>
+            <if test="warningLocation != null">warning_location = #{warningLocation},</if>
+            <if test="warningType != null">warning_type = #{warningType},</if>
+            <if test="warningLevel != null">warning_level = #{warningLevel},</if>
+            <if test="warningContent != null">warning_content = #{warningContent},</if>
+            <if test="warningStatus != null">warning_status = #{warningStatus},</if>
+            <if test="projectName != null">project_name = #{projectName},</if>
+            <if test="occurredAt != null">occurred_at = #{occurredAt},</if>
+            <if test="resolvedAt != null">resolved_at = #{resolvedAt},</if>
+            <if test="thresholdId != null">threshold_id = #{thresholdId},</if>
+            <if test="updatedAt != null">updated_at = #{updatedAt},</if>
+            <if test="deletedAt != null">deleted_at = #{deletedAt},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 获取当前活跃的预警信息（状态为"进行中"） -->
+    <select id="selectActiveWarnings" resultMap="WarningRecordResponseDTOMap">
+        SELECT 
+            id, warning_location, warning_type, warning_level, warning_content,
+            warning_status, project_name, occurred_at, resolved_at, threshold_id,
+            created_at, updated_at
+        FROM warning_records
+        WHERE deleted_at IS NULL 
+        AND warning_status = '进行中'
+        ORDER BY occurred_at DESC
+        LIMIT 50
+    </select>
+
+</mapper>

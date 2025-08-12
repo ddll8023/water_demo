@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.WaterLevelMonitoringDataMapper">
+
+    <!-- 结果映射：水位监测数据响应DTO -->
+    <resultMap id="WaterLevelMonitoringDataResponseDTOMap" type="com.example.demo.dto.monitoring.WaterLevelMonitoringDataResponseDTO">
+        <id property="id" column="id"/>
+        <result property="stationId" column="station_id"/>
+        <result property="stationName" column="station_name"/>
+        <result property="stationCode" column="station_code"/>
+        <result property="monitoringTime" column="monitoring_time"/>
+        <result property="waterLevel" column="water_level"/>
+        <result property="dataQuality" column="data_quality"/>
+        <result property="dataQualityText" column="data_quality_text"/>
+        <result property="collectionMethod" column="collection_method"/>
+        <result property="dataSource" column="data_source"/>
+        <result property="remark" column="remark"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- 分页查询水位监测数据（包含关联信息） -->
+    <select id="selectWaterLevelMonitoringDataPage" resultMap="WaterLevelMonitoringDataResponseDTOMap">
+        SELECT 
+        water_level_monitoring_data.id, water_level_monitoring_data.station_id, water_level_monitoring_data.monitoring_time, 
+        water_level_monitoring_data.water_level, water_level_monitoring_data.data_quality, water_level_monitoring_data.collection_method, 
+        water_level_monitoring_data.data_source, water_level_monitoring_data.remark, water_level_monitoring_data.created_at, water_level_monitoring_data.updated_at, 
+        monitoring_stations.name as station_name, monitoring_stations.station_code,
+        CASE water_level_monitoring_data.data_quality 
+          WHEN 1 THEN '正常' 
+          WHEN 2 THEN '异常' 
+          WHEN 3 THEN '缺失' 
+          ELSE '未知' 
+        END as data_quality_text 
+        FROM water_level_monitoring_data 
+        LEFT JOIN monitoring_stations ON water_level_monitoring_data.station_id = monitoring_stations.id AND monitoring_stations.deleted_at IS NULL 
+        WHERE water_level_monitoring_data.deleted_at IS NULL 
+        <if test='stationId != null'> AND water_level_monitoring_data.station_id = #{stationId} </if>
+        <if test='startTime != null'> AND water_level_monitoring_data.monitoring_time &gt;= #{startTime} </if>
+        <if test='endTime != null'> AND water_level_monitoring_data.monitoring_time &lt;= #{endTime} </if>
+        <if test='dataQuality != null'> AND water_level_monitoring_data.data_quality = #{dataQuality} </if>
+        <if test='collectionMethod != null and collectionMethod != ""'> AND water_level_monitoring_data.collection_method = #{collectionMethod} </if>
+        <if test='dataSource != null and dataSource != ""'> AND water_level_monitoring_data.data_source LIKE CONCAT('%', #{dataSource}, '%') </if>
+        ORDER BY 
+        <choose>
+          <when test='sort != null and sort.contains("monitoring_time,asc")'> water_level_monitoring_data.monitoring_time ASC </when>
+          <when test='sort != null and sort.contains("water_level,desc")'> water_level_monitoring_data.water_level DESC </when>
+          <when test='sort != null and sort.contains("water_level,asc")'> water_level_monitoring_data.water_level ASC </when>
+          <otherwise> water_level_monitoring_data.monitoring_time DESC </otherwise>
+        </choose>
+    </select>
+
+    <!-- 查询水位统计数据 -->
+    <select id="selectWaterLevelStatistics" resultType="java.util.Map">
+        SELECT 
+        COUNT(DISTINCT water_level_monitoring_data.station_id) as total_stations, 
+        AVG(water_level_monitoring_data.water_level) as avg_water_level, 
+        MAX(water_level_monitoring_data.water_level) as max_water_level, 
+        MIN(water_level_monitoring_data.water_level) as min_water_level, 
+        COUNT(*) as total_data_count, 
+        SUM(CASE WHEN water_level_monitoring_data.data_quality = 1 THEN 1 ELSE 0 END) as normal_data_count, 
+        SUM(CASE WHEN water_level_monitoring_data.data_quality = 2 THEN 1 ELSE 0 END) as abnormal_data_count, 
+        SUM(CASE WHEN water_level_monitoring_data.data_quality = 3 THEN 1 ELSE 0 END) as missing_data_count, 
+        ROUND(SUM(CASE WHEN water_level_monitoring_data.data_quality = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) as data_quality_rate 
+        FROM water_level_monitoring_data 
+        WHERE water_level_monitoring_data.deleted_at IS NULL 
+        <if test='stationId != null'> AND water_level_monitoring_data.station_id = #{stationId} </if>
+        <if test='timeRange != null and timeRange == "today"'> AND DATE(water_level_monitoring_data.monitoring_time) = CURDATE() </if>
+        <if test='timeRange != null and timeRange == "week"'> AND water_level_monitoring_data.monitoring_time &gt;= DATE_SUB(NOW(), INTERVAL 7 DAY) </if>
+        <if test='timeRange != null and timeRange == "month"'> AND water_level_monitoring_data.monitoring_time &gt;= DATE_SUB(NOW(), INTERVAL 30 DAY) </if>
+    </select>
+
+    <!-- 查询水位图表数据 -->
+    <select id="selectWaterLevelChartData" resultType="java.util.Map">
+        SELECT
+        DATE_FORMAT(water_level_monitoring_data.monitoring_time,
+        <choose>
+          <when test='interval == "hour"'> '%Y-%m-%d %H:%i:%s' </when>
+          <when test='interval == "day"'> '%Y-%m-%d' </when>
+          <when test='interval == "month"'> '%Y-%m' </when>
+          <otherwise> '%Y-%m-%d %H:%i:%s' </otherwise>
+        </choose>
+        ) as time_label,
+        AVG(water_level_monitoring_data.water_level) as avg_water_level,
+        MAX(water_level_monitoring_data.water_level) as max_water_level,
+        MIN(water_level_monitoring_data.water_level) as min_water_level,
+        COUNT(*) as data_count
+        FROM water_level_monitoring_data
+        WHERE water_level_monitoring_data.deleted_at IS NULL
+        AND water_level_monitoring_data.station_id = #{stationId}
+        <if test='startTime != null'> AND water_level_monitoring_data.monitoring_time &gt;= #{startTime} </if>
+        <if test='endTime != null'> AND water_level_monitoring_data.monitoring_time &lt;= #{endTime} </if>
+        GROUP BY time_label
+        ORDER BY time_label ASC
+    </select>
+
+    <!-- 查询所有站点的水位图表数据（汇总） -->
+    <select id="selectAllStationsWaterLevelChartData" resultType="java.util.Map">
+        SELECT
+        DATE_FORMAT(water_level_monitoring_data.monitoring_time,
+        <choose>
+          <when test='interval == "hour"'> '%Y-%m-%d %H:%i:%s' </when>
+          <when test='interval == "day"'> '%Y-%m-%d' </when>
+          <when test='interval == "month"'> '%Y-%m' </when>
+          <otherwise> '%Y-%m-%d %H:%i:%s' </otherwise>
+        </choose>
+        ) as time_label,
+        AVG(water_level_monitoring_data.water_level) as avg_water_level,
+        MAX(water_level_monitoring_data.water_level) as max_water_level,
+        MIN(water_level_monitoring_data.water_level) as min_water_level,
+        COUNT(*) as data_count,
+        COUNT(DISTINCT water_level_monitoring_data.station_id) as station_count
+        FROM water_level_monitoring_data
+        LEFT JOIN monitoring_stations ON water_level_monitoring_data.station_id = monitoring_stations.id AND monitoring_stations.deleted_at IS NULL
+        WHERE water_level_monitoring_data.deleted_at IS NULL
+        AND monitoring_stations.monitoring_item_code = 'H'
+        <if test='startTime != null'> AND water_level_monitoring_data.monitoring_time &gt;= #{startTime} </if>
+        <if test='endTime != null'> AND water_level_monitoring_data.monitoring_time &lt;= #{endTime} </if>
+        GROUP BY time_label
+        ORDER BY time_label ASC
+    </select>
+
+    <!-- 查询监测概览统计数据 -->
+    <select id="selectMonitoringOverview" resultType="java.util.Map">
+        SELECT
+        COUNT(DISTINCT monitoring_stations.id) as total_stations,
+        COUNT(DISTINCT CASE WHEN water_level_monitoring_data.monitoring_time &gt;= DATE_SUB(NOW(), INTERVAL 1 HOUR) THEN monitoring_stations.id END) as online_stations,
+        AVG(water_level_monitoring_data.water_level) as avg_water_level,
+        MAX(water_level_monitoring_data.water_level) as max_water_level,
+        MIN(water_level_monitoring_data.water_level) as min_water_level,
+        COUNT(CASE WHEN DATE(water_level_monitoring_data.monitoring_time) = CURDATE() THEN 1 END) as today_data_count,
+        ROUND(SUM(CASE WHEN water_level_monitoring_data.data_quality = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) as data_quality_rate
+        FROM monitoring_stations
+        LEFT JOIN water_level_monitoring_data ON monitoring_stations.id = water_level_monitoring_data.station_id AND water_level_monitoring_data.deleted_at IS NULL
+        WHERE monitoring_stations.deleted_at IS NULL
+        AND monitoring_stations.monitoring_item_code = 'H'
+    </select>
+
+    <!-- 查询数据质量统计（按站点分组） -->
+    <select id="selectDataQualityStatsByStation" resultType="java.util.Map">
+        SELECT
+        monitoring_stations.name as station_name,
+        monitoring_stations.station_code,
+        COUNT(*) as total_count,
+        SUM(CASE WHEN water_level_monitoring_data.data_quality = 1 THEN 1 ELSE 0 END) as normal_count,
+        SUM(CASE WHEN water_level_monitoring_data.data_quality = 2 THEN 1 ELSE 0 END) as abnormal_count,
+        SUM(CASE WHEN water_level_monitoring_data.data_quality = 3 THEN 1 ELSE 0 END) as missing_count,
+        ROUND(SUM(CASE WHEN water_level_monitoring_data.data_quality = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) as quality_rate
+        FROM water_level_monitoring_data
+        LEFT JOIN monitoring_stations ON water_level_monitoring_data.station_id = monitoring_stations.id AND monitoring_stations.deleted_at IS NULL
+        WHERE water_level_monitoring_data.deleted_at IS NULL
+        AND monitoring_stations.monitoring_item_code = 'H'
+        <if test='timeRange != null and timeRange == "today"'> AND DATE(water_level_monitoring_data.monitoring_time) = CURDATE() </if>
+        <if test='timeRange != null and timeRange == "week"'> AND water_level_monitoring_data.monitoring_time &gt;= DATE_SUB(NOW(), INTERVAL 7 DAY) </if>
+        <if test='timeRange != null and timeRange == "month"'> AND water_level_monitoring_data.monitoring_time &gt;= DATE_SUB(NOW(), INTERVAL 30 DAY) </if>
+        GROUP BY monitoring_stations.id, monitoring_stations.name, monitoring_stations.station_code
+        ORDER BY quality_rate DESC
+    </select>
+
+    <!-- 查询数据质量趋势数据 -->
+    <select id="selectDataQualityTrend" resultType="java.util.Map">
+        SELECT
+        DATE_FORMAT(water_level_monitoring_data.monitoring_time, '%Y-%m-%d') as date_label,
+        COUNT(*) as total_count,
+        SUM(CASE WHEN water_level_monitoring_data.data_quality = 1 THEN 1 ELSE 0 END) as normal_count,
+        SUM(CASE WHEN water_level_monitoring_data.data_quality = 2 THEN 1 ELSE 0 END) as abnormal_count,
+        SUM(CASE WHEN water_level_monitoring_data.data_quality = 3 THEN 1 ELSE 0 END) as missing_count,
+        ROUND(SUM(CASE WHEN water_level_monitoring_data.data_quality = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) as quality_rate
+        FROM water_level_monitoring_data
+        WHERE water_level_monitoring_data.deleted_at IS NULL
+        <if test='timeRange != null and timeRange == "today"'> AND DATE(water_level_monitoring_data.monitoring_time) = CURDATE() </if>
+        <if test='timeRange != null and timeRange == "week"'> AND water_level_monitoring_data.monitoring_time &gt;= DATE_SUB(NOW(), INTERVAL 7 DAY) </if>
+        <if test='timeRange != null and timeRange == "month"'> AND water_level_monitoring_data.monitoring_time &gt;= DATE_SUB(NOW(), INTERVAL 30 DAY) </if>
+        GROUP BY date_label
+        ORDER BY date_label ASC
+    </select>
+
+    <!-- 统计指定站点和时间的数据条数（用于重复性检查） -->
+    <select id="countByStationIdAndTime" resultType="int">
+        SELECT COUNT(*)
+        FROM water_level_monitoring_data
+        WHERE deleted_at IS NULL
+        AND station_id = #{stationId}
+        AND monitoring_time = #{monitoringTime}
+    </select>
+
+    <!-- 根据站点ID和时间范围查询水位数据（用于关联查询） -->
+    <select id="selectWaterLevelByStationAndTimeRange" resultType="java.util.Map">
+        SELECT
+        water_level_monitoring_data.water_level,
+        water_level_monitoring_data.monitoring_time,
+        ABS(TIMESTAMPDIFF(SECOND, water_level_monitoring_data.monitoring_time, #{startTime})) as time_diff
+        FROM water_level_monitoring_data
+        WHERE water_level_monitoring_data.deleted_at IS NULL
+        AND water_level_monitoring_data.station_id = #{stationId}
+        AND water_level_monitoring_data.monitoring_time BETWEEN #{startTime} AND #{endTime}
+        ORDER BY time_diff ASC
+        LIMIT 1
+    </select>
+
+</mapper>

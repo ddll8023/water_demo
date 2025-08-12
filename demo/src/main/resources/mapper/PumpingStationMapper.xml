@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.PumpingStationMapper">
+
+    <!-- 结果映射：泵站响应DTO -->
+    <resultMap id="PumpingStationResponseDTOMap" type="com.example.demo.dto.facility.PumpingStationResponseDTO">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="stationCode" column="station_code"/>
+        <result property="stationType" column="station_type"/>
+        <result property="stationTypeName" column="station_type_name"/>
+        <result property="waterProject" column="water_project"/>
+        <result property="waterCompany" column="water_company"/>
+        <result property="longitude" column="longitude"/>
+        <result property="latitude" column="latitude"/>
+        <result property="address" column="address"/>
+        <result property="operationMode" column="operation_mode"/>
+        <result property="operationModeName" column="operation_mode_name"/>
+        <result property="unitCount" column="unit_count"/>
+        <result property="designScale" column="design_scale"/>
+        <result property="installedCapacity" column="installed_capacity"/>
+        <result property="liftHead" column="lift_head"/>
+        <result property="establishmentDate" column="establishment_date"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+    
+    <!-- 结果映射：泵站实体 -->
+    <resultMap id="PumpingStationMap" type="com.example.demo.entity.facility.PumpingStation">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="stationCode" column="station_code"/>
+        <result property="stationType" column="station_type"/>
+        <result property="waterProject" column="water_project"/>
+        <result property="waterCompany" column="water_company"/>
+        <result property="longitude" column="longitude"/>
+        <result property="latitude" column="latitude"/>
+        <result property="address" column="address"/>
+        <result property="operationMode" column="operation_mode"/>
+        <result property="unitCount" column="unit_count"/>
+        <result property="designScale" column="design_scale"/>
+        <result property="installedCapacity" column="installed_capacity"/>
+        <result property="liftHead" column="lift_head"/>
+        <result property="establishmentDate" column="establishment_date"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="deletedAt" column="deleted_at"/>
+    </resultMap>
+
+    <!-- 分页查询泵站列表（包含关联信息） -->
+    <select id="selectPumpingStationPage" resultMap="PumpingStationResponseDTOMap">
+        SELECT pumping_stations.*,
+               station_type_dict.data_label as station_type_name,
+               operation_mode_dict.data_label as operation_mode_name
+        FROM pumping_stations
+        LEFT JOIN dict_data station_type_dict ON pumping_stations.station_type = station_type_dict.data_value
+        AND station_type_dict.type_id = (SELECT id FROM dict_types WHERE type_code = 'facility_type' AND deleted_at IS NULL)
+        AND station_type_dict.deleted_at IS NULL
+        LEFT JOIN dict_data operation_mode_dict ON pumping_stations.operation_mode = operation_mode_dict.data_value
+        AND operation_mode_dict.type_id = (SELECT id FROM dict_types WHERE type_code = 'operation_mode' AND deleted_at IS NULL)
+        AND operation_mode_dict.deleted_at IS NULL
+        WHERE pumping_stations.deleted_at IS NULL
+        <if test="keyword != null and keyword != ''">
+            AND (pumping_stations.name LIKE CONCAT('%', #{keyword}, '%')
+            OR pumping_stations.station_code LIKE CONCAT('%', #{keyword}, '%')
+            OR pumping_stations.address LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="name != null and name != ''">
+            AND pumping_stations.name LIKE CONCAT('%', #{name}, '%')
+        </if>
+        <if test="stationType != null and stationType != ''">
+            AND pumping_stations.station_type = #{stationType}
+        </if>
+        <if test="waterProject != null and waterProject != ''">
+            AND pumping_stations.water_project LIKE CONCAT('%', #{waterProject}, '%')
+        </if>
+        <if test="operationMode != null and operationMode != ''">
+            AND pumping_stations.operation_mode = #{operationMode}
+        </if>
+        ORDER BY pumping_stations.created_at DESC
+    </select>
+
+    <!-- 根据ID查询泵站详情（包含关联信息） -->
+    <select id="selectPumpingStationById" resultMap="PumpingStationResponseDTOMap">
+        SELECT pumping_stations.*,
+               station_type_dict.data_label as station_type_name,
+               operation_mode_dict.data_label as operation_mode_name
+        FROM pumping_stations
+        LEFT JOIN dict_data station_type_dict ON pumping_stations.station_type = station_type_dict.data_value
+        AND station_type_dict.type_id = (SELECT id FROM dict_types WHERE type_code = 'facility_type' AND deleted_at IS NULL)
+        AND station_type_dict.deleted_at IS NULL
+        LEFT JOIN dict_data operation_mode_dict ON pumping_stations.operation_mode = operation_mode_dict.data_value
+        AND operation_mode_dict.type_id = (SELECT id FROM dict_types WHERE type_code = 'operation_mode' AND deleted_at IS NULL)
+        AND operation_mode_dict.deleted_at IS NULL
+        WHERE pumping_stations.id = #{id} AND pumping_stations.deleted_at IS NULL
+    </select>
+
+    <!-- 检查泵站编码是否存在 -->
+    <select id="existsByStationCode" resultType="boolean">
+        SELECT COUNT(1) FROM pumping_stations
+        WHERE station_code = #{stationCode} AND deleted_at IS NULL
+        <if test="excludeId != null">
+            AND id != #{excludeId}
+        </if>
+    </select>
+
+    <!-- 检查泵站名称是否存在 -->
+    <select id="existsByName" resultType="boolean">
+        SELECT COUNT(1) FROM pumping_stations
+        WHERE name = #{name} AND deleted_at IS NULL
+        <if test="excludeId != null">
+            AND id != #{excludeId}
+        </if>
+    </select>
+    
+    <!-- 根据ID查询泵站实体 -->
+    <select id="selectById" resultMap="PumpingStationMap">
+        SELECT * FROM pumping_stations WHERE id = #{id} AND deleted_at IS NULL
+    </select>
+    
+    <!-- 插入泵站记录 -->
+    <insert id="insertPumpingStation" parameterType="com.example.demo.entity.facility.PumpingStation" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO pumping_stations (
+            name, station_code, station_type, water_project, water_company, 
+            longitude, latitude, address, operation_mode, unit_count, 
+            design_scale, installed_capacity, lift_head, establishment_date, 
+            created_at, updated_at
+        ) VALUES (
+            #{name}, #{stationCode}, #{stationType}, #{waterProject}, #{waterCompany}, 
+            #{longitude}, #{latitude}, #{address}, #{operationMode}, #{unitCount}, 
+            #{designScale}, #{installedCapacity}, #{liftHead}, #{establishmentDate}, 
+            #{createdAt}, #{updatedAt}
+        )
+    </insert>
+    
+    <!-- 根据ID更新泵站信息 -->
+    <update id="updatePumpingStationById" parameterType="com.example.demo.entity.facility.PumpingStation">
+        UPDATE pumping_stations
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="stationCode != null">station_code = #{stationCode},</if>
+            <if test="stationType != null">station_type = #{stationType},</if>
+            <if test="waterProject != null">water_project = #{waterProject},</if>
+            <if test="waterCompany != null">water_company = #{waterCompany},</if>
+            <if test="longitude != null">longitude = #{longitude},</if>
+            <if test="latitude != null">latitude = #{latitude},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="operationMode != null">operation_mode = #{operationMode},</if>
+            <if test="unitCount != null">unit_count = #{unitCount},</if>
+            <if test="designScale != null">design_scale = #{designScale},</if>
+            <if test="installedCapacity != null">installed_capacity = #{installedCapacity},</if>
+            <if test="liftHead != null">lift_head = #{liftHead},</if>
+            <if test="establishmentDate != null">establishment_date = #{establishmentDate},</if>
+            <if test="updatedAt != null">updated_at = #{updatedAt},</if>
+            <if test="deletedAt != null">deleted_at = #{deletedAt}</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>

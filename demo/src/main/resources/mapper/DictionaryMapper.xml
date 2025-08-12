@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.DictionaryMapper">
+
+    <!-- =================== 字典类型相关映射 =================== -->
+    
+    <!-- 结果映射：字典类型基础映射 -->
+    <resultMap id="DictTypeMap" type="com.example.demo.entity.system.DictType">
+        <id property="id" column="id"/>
+        <result property="typeCode" column="type_code"/>
+        <result property="typeName" column="type_name"/>
+        <result property="description" column="description"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="isActive" column="is_active"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="deletedAt" column="deleted_at"/>
+        <!-- 关联查询字段 -->
+        <result property="dataCount" column="data_count"/>
+    </resultMap>
+
+    <!-- 根据类型编码查询字典类型 -->
+    <select id="selectDictTypeByCode" resultMap="DictTypeMap">
+        SELECT * FROM dict_types WHERE type_code = #{typeCode} AND deleted_at IS NULL
+    </select>
+
+    <!-- 检查类型编码是否存在（排除指定ID） -->
+    <select id="countDictTypeByCodeExcluding" resultType="int">
+        SELECT COUNT(1) FROM dict_types WHERE type_code = #{typeCode} AND deleted_at IS NULL
+        <if test="excludeId != null">
+            AND id != #{excludeId}
+        </if>
+    </select>
+    
+    <!-- 查询字典类型列表（包含字典数据统计） -->
+    <select id="selectDictTypeList" resultMap="DictTypeMap">
+        SELECT dict_types.*,
+               COALESCE(dd_count.data_count, 0) as data_count
+        FROM dict_types
+        LEFT JOIN (
+            SELECT type_id, COUNT(1) as data_count
+            FROM dict_data
+            WHERE deleted_at IS NULL
+            GROUP BY type_id
+        ) dd_count ON dict_types.id = dd_count.type_id
+        WHERE dict_types.deleted_at IS NULL
+        <if test="typeName != null and typeName != ''">
+            AND dict_types.type_name LIKE CONCAT('%', #{typeName}, '%')
+        </if>
+        ORDER BY dict_types.sort_order ASC, dict_types.created_at DESC
+    </select>
+
+    <!-- 根据ID查询字典类型详情（包含字典数据统计） -->
+    <select id="selectDictTypeById" resultMap="DictTypeMap">
+        SELECT dict_types.*,
+               COALESCE(dd_count.data_count, 0) as data_count
+        FROM dict_types
+        LEFT JOIN (
+            SELECT type_id, COUNT(1) as data_count
+            FROM dict_data
+            WHERE deleted_at IS NULL
+            GROUP BY type_id
+        ) dd_count ON dict_types.id = dd_count.type_id
+        WHERE dict_types.id = #{id} AND dict_types.deleted_at IS NULL
+    </select>
+    
+    <!-- 更新字典类型 -->
+    <update id="updateDictType">
+        UPDATE dict_types
+        <set>
+            <if test="typeCode != null">type_code = #{typeCode},</if>
+            <if test="typeName != null">type_name = #{typeName},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="sortOrder != null">sort_order = #{sortOrder},</if>
+            <if test="isActive != null">is_active = #{isActive},</if>
+            <if test="updatedAt != null">updated_at = #{updatedAt},</if>
+            <if test="deletedAt != null">deleted_at = #{deletedAt}</if>
+        </set>
+        WHERE id = #{id} AND deleted_at IS NULL
+    </update>
+    
+    <!-- 插入字典类型 -->
+    <insert id="insertDictType" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO dict_types (
+            type_code, type_name, description, sort_order, is_active, created_at, updated_at
+        ) VALUES (
+            #{typeCode}, #{typeName}, #{description}, #{sortOrder}, #{isActive}, #{createdAt}, #{updatedAt}
+        )
+    </insert>
+    
+    <!-- =================== 字典数据相关映射 =================== -->
+
+    <!-- 结果映射：字典数据基础映射 -->
+    <resultMap id="DictDataMap" type="com.example.demo.entity.system.DictData">
+        <id property="id" column="id"/>
+        <result property="typeId" column="type_id"/>
+        <result property="dataLabel" column="data_label"/>
+        <result property="dataValue" column="data_value"/>
+        <result property="description" column="description"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="isActive" column="is_active"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="deletedAt" column="deleted_at"/>
+        <!-- 关联查询字段 -->
+        <result property="typeCode" column="type_code"/>
+        <result property="typeName" column="type_name"/>
+    </resultMap>
+
+    <!-- 根据类型编码查询字典数据 -->
+    <select id="selectDictDataByTypeCode" resultMap="DictDataMap">
+        SELECT dict_data.*
+        FROM dict_data
+        LEFT JOIN dict_types ON dict_data.type_id = dict_types.id
+        WHERE dict_types.type_code = #{typeCode}
+        AND dict_data.deleted_at IS NULL
+        AND dict_data.is_active = 1
+        AND dict_types.deleted_at IS NULL
+        ORDER BY dict_data.sort_order ASC, dict_data.created_at ASC
+    </select>
+
+    <!-- 根据类型ID查询字典数据 -->
+    <select id="selectDictDataByTypeId" resultMap="DictDataMap">
+        SELECT *
+        FROM dict_data
+        WHERE type_id = #{typeId}
+        AND deleted_at IS NULL
+        ORDER BY sort_order ASC, created_at ASC
+    </select>
+
+    <!-- 检查同一类型下键值是否存在（排除指定ID） -->
+    <select id="countDictDataByTypeIdAndValueExcluding" resultType="int">
+        SELECT COUNT(1)
+        FROM dict_data
+        WHERE type_id = #{typeId}
+        AND data_value = #{dataValue}
+        <if test="excludeId != null">
+            AND id != #{excludeId}
+        </if>
+        <if test="!includeDeleted">
+            AND deleted_at IS NULL
+        </if>
+    </select>
+
+    <!-- 根据ID查询字典数据详情（包含类型信息） -->
+    <select id="selectDictDataById" resultMap="DictDataMap">
+        SELECT dict_data.*,
+               dict_types.type_code,
+               dict_types.type_name
+        FROM dict_data
+        LEFT JOIN dict_types ON dict_data.type_id = dict_types.id
+        WHERE dict_data.id = #{id} AND dict_data.deleted_at IS NULL
+    </select>
+    
+    <!-- 根据类型ID和数据值查询字典数据 -->
+    <select id="selectDictDataByTypeIdAndValue" resultMap="DictDataMap">
+        SELECT dict_data.*,
+               dict_types.type_code,
+               dict_types.type_name
+        FROM dict_data
+        LEFT JOIN dict_types ON dict_data.type_id = dict_types.id
+        WHERE dict_data.type_id = #{typeId} 
+        AND dict_data.data_value = #{dataValue}
+        AND dict_data.deleted_at IS NULL
+    </select>
+    
+    <!-- 插入字典数据 -->
+    <insert id="insertDictData" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO dict_data (
+            type_id, data_label, data_value, description, sort_order, is_active, created_at, updated_at, deleted_at
+        ) VALUES (
+            #{typeId}, #{dataLabel}, #{dataValue}, #{description}, #{sortOrder}, #{isActive}, #{createdAt}, #{updatedAt}, NULL
+        ) ON DUPLICATE KEY UPDATE
+            data_label = #{dataLabel},
+            description = #{description},
+            sort_order = #{sortOrder},
+            is_active = #{isActive},
+            updated_at = #{updatedAt},
+            deleted_at = NULL
+    </insert>
+    
+    <!-- 更新字典数据 -->
+    <update id="updateDictData">
+        UPDATE dict_data
+        <set>
+            <if test="typeId != null">type_id = #{typeId},</if>
+            <if test="dataLabel != null">data_label = #{dataLabel},</if>
+            <if test="dataValue != null">data_value = #{dataValue},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="sortOrder != null">sort_order = #{sortOrder},</if>
+            <if test="isActive != null">is_active = #{isActive},</if>
+            <if test="updatedAt != null">updated_at = #{updatedAt}</if>
+        </set>
+        WHERE id = #{id} AND deleted_at IS NULL
+    </update>
+    
+    <!-- 删除字典数据 -->
+    <update id="deleteDictDataById">
+        UPDATE dict_data SET deleted_at = NOW() WHERE id = #{id} AND deleted_at IS NULL
+    </update>
+
+</mapper>

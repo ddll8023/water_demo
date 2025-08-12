@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.MonitoringStationMapper">
+
+    <!-- 结果映射：监测站点响应DTO -->
+    <resultMap id="MonitoringStationResponseDTOMap" type="com.example.demo.dto.facility.MonitoringStationResponseDTO">
+        <id property="id" column="id"/>
+        <result property="stationCode" column="station_code"/>
+        <result property="name" column="name"/>
+        <result property="waterSystemName" column="water_system_name"/>
+        <result property="riverName" column="river_name"/>
+        <result property="monitoringItemCode" column="monitoring_item_code"/>
+        <result property="monitoringItemName" column="monitoring_item_name"/>
+        <result property="adminRegionCode" column="admin_region_code"/>
+        <result property="establishmentDate" column="establishment_date"/>
+        <result property="longitude" column="longitude"/>
+        <result property="latitude" column="latitude"/>
+        <result property="remark" column="remark"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- 结果映射：监测站点实体 -->
+    <resultMap id="MonitoringStationMap" type="com.example.demo.entity.facility.MonitoringStation">
+        <id property="id" column="id"/>
+        <result property="stationCode" column="station_code"/>
+        <result property="name" column="name"/>
+        <result property="waterSystemName" column="water_system_name"/>
+        <result property="riverName" column="river_name"/>
+        <result property="monitoringItemCode" column="monitoring_item_code"/>
+        <result property="adminRegionCode" column="admin_region_code"/>
+        <result property="establishmentDate" column="establishment_date"/>
+        <result property="longitude" column="longitude"/>
+        <result property="latitude" column="latitude"/>
+        <result property="remark" column="remark"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="deletedAt" column="deleted_at"/>
+    </resultMap>
+
+    <!-- 分页查询监测站点列表（包含关联信息） -->
+    <select id="selectMonitoringStationPage" resultMap="MonitoringStationResponseDTOMap">
+        SELECT monitoring_stations.*,
+               dict_data.data_label as monitoring_item_name
+        FROM monitoring_stations
+        LEFT JOIN dict_data ON monitoring_stations.monitoring_item_code = dict_data.data_value
+        LEFT JOIN dict_types ON dict_data.type_id = dict_types.id AND dict_types.type_code = 'monitoring_item'
+        WHERE monitoring_stations.deleted_at IS NULL
+        <if test="keyword != null and keyword != ''">
+            AND (monitoring_stations.name LIKE CONCAT('%', #{keyword}, '%')
+            OR monitoring_stations.station_code LIKE CONCAT('%', #{keyword}, '%')
+            OR monitoring_stations.water_system_name LIKE CONCAT('%', #{keyword}, '%')
+            OR monitoring_stations.river_name LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="monitoringType != null and monitoringType != ''">
+            AND monitoring_stations.monitoring_item_code = #{monitoringType}
+        </if>
+        ORDER BY monitoring_stations.created_at DESC
+    </select>
+
+    <!-- 根据ID查询监测站点详情（包含关联信息） -->
+    <select id="selectMonitoringStationById" resultMap="MonitoringStationResponseDTOMap">
+        SELECT monitoring_stations.*,
+               dict_data.data_label as monitoring_item_name
+        FROM monitoring_stations
+        LEFT JOIN dict_data ON monitoring_stations.monitoring_item_code = dict_data.data_value
+        LEFT JOIN dict_types ON dict_data.type_id = dict_types.id AND dict_types.type_code = 'monitoring_item'
+        WHERE monitoring_stations.id = #{id} AND monitoring_stations.deleted_at IS NULL
+    </select>
+
+    <!-- 检查监测站点编码是否存在 -->
+    <select id="existsByStationCode" resultType="boolean">
+        SELECT COUNT(*) > 0 FROM monitoring_stations
+        WHERE station_code = #{stationCode}
+        <if test="excludeId != null">
+            AND id != #{excludeId}
+        </if>
+        AND deleted_at IS NULL
+    </select>
+
+    <!-- 获取所有可用的监测站点（用于下拉选择） -->
+    <select id="selectAvailableMonitoringStations" resultMap="MonitoringStationMap">
+        SELECT id, station_code, name FROM monitoring_stations
+        WHERE deleted_at IS NULL
+        ORDER BY name
+    </select>
+
+    <!-- 根据监测类型获取可用的监测站点（用于下拉选择） -->
+    <select id="selectAvailableMonitoringStationsByType" resultMap="MonitoringStationMap">
+        SELECT id, station_code, name FROM monitoring_stations
+        WHERE deleted_at IS NULL
+        <if test="monitoringItemCode != null and monitoringItemCode != ''">
+            AND monitoring_item_code = #{monitoringItemCode}
+        </if>
+        ORDER BY name
+    </select>
+
+    <!-- 统计监测站点总数 -->
+    <select id="countTotal" resultType="long">
+        SELECT COUNT(*) FROM monitoring_stations WHERE deleted_at IS NULL
+    </select>
+
+    <!-- 根据站码列表查询监测站点信息 -->
+    <select id="selectByStationCodes" resultType="map">
+        SELECT id, station_code FROM monitoring_stations
+        WHERE deleted_at IS NULL
+        AND station_code IN
+        <foreach collection="stationCodes" item="stationCode" open="(" separator="," close=")">
+            #{stationCode}
+        </foreach>
+    </select>
+
+    <!-- 根据站码查询站点ID（未删除） -->
+    <select id="selectIdByStationCode" resultType="long">
+        SELECT id FROM monitoring_stations
+        WHERE deleted_at IS NULL AND station_code = #{stationCode}
+        LIMIT 1
+    </select>
+
+    <!-- 根据站名与监测项目查询站点ID（未删除） -->
+    <select id="selectIdByNameAndItem" resultType="long">
+        SELECT id FROM monitoring_stations
+        WHERE deleted_at IS NULL AND name = #{name}
+        <if test="monitoringItemCode != null and monitoringItemCode != ''">
+            AND monitoring_item_code = #{monitoringItemCode}
+        </if>
+        LIMIT 1
+    </select>
+
+</mapper>

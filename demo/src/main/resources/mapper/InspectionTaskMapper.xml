@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.InspectionTaskMapper">
+
+    <resultMap id="InspectionTaskResponseDTOMap" type="com.example.demo.dto.inspection.InspectionTaskResponseDTO">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="facilityType" column="facility_type"/>
+        <result property="facilityId" column="facility_id"/>
+        <result property="frequency" column="frequency"/>
+        <result property="content" column="content"/>
+        <result property="assigneeId" column="assignee_id"/>
+        <result property="assigneeName" column="assignee_name"/>
+        <result property="status" column="status"/>
+        <result property="scheduledDate" column="scheduled_date"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <!-- 新增映射 -->
+        <result property="facilityName" column="facility_name"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="taskCount" column="task_count"/>
+        <result property="completedCount" column="completed_count"/>
+    </resultMap>
+
+    <select id="selectTaskPage" resultMap="InspectionTaskResponseDTOMap">
+        SELECT 
+            t.*, 
+            p.full_name AS assignee_name,
+            /* 统一工程名称 */
+            CASE 
+                WHEN t.facility_type = 'pumping_station' THEN (SELECT name FROM pumping_stations ps WHERE ps.id = t.facility_id AND ps.deleted_at IS NULL)
+                WHEN t.facility_type = 'water_plant' THEN (SELECT name FROM water_plants wp WHERE wp.id = t.facility_id AND wp.deleted_at IS NULL)
+                WHEN t.facility_type = 'reservoir' THEN (SELECT name FROM reservoirs r WHERE r.id = t.facility_id AND r.deleted_at IS NULL)
+                WHEN t.facility_type = 'monitoring_station' THEN (SELECT name FROM monitoring_stations ms WHERE ms.id = t.facility_id AND ms.deleted_at IS NULL)
+                ELSE NULL
+            END AS facility_name,
+            /* 任务关联记录的起止时间与计数 */
+            (SELECT MIN(r.record_time) FROM inspection_records r WHERE r.task_id = t.id AND r.deleted_at IS NULL) AS start_time,
+            (SELECT MAX(r.record_time) FROM inspection_records r WHERE r.task_id = t.id AND r.deleted_at IS NULL) AS end_time,
+            (SELECT COUNT(1) FROM inspection_records r WHERE r.task_id = t.id AND r.deleted_at IS NULL) AS task_count,
+            (SELECT COUNT(1) FROM inspection_records r WHERE r.task_id = t.id AND r.deleted_at IS NULL AND (r.issue_flag = 0 OR r.resolved_at IS NOT NULL)) AS completed_count
+        FROM inspection_tasks t
+        LEFT JOIN personnel p ON t.assignee_id = p.id AND p.deleted_at IS NULL
+        WHERE t.deleted_at IS NULL
+        <if test="status != null and status != '' and (statuses == null or statuses.size == 0)">
+            AND t.status = #{status}
+        </if>
+        <if test="statuses != null and statuses.size > 0">
+            AND t.status IN
+            <foreach collection="statuses" item="st" open="(" separator="," close=")">
+                #{st}
+            </foreach>
+        </if>
+        <if test="assigneeId != null">
+            AND t.assignee_id = #{assigneeId}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (
+                p.full_name LIKE CONCAT('%', #{keyword}, '%')
+                OR (
+                    CASE 
+                        WHEN t.facility_type = 'pumping_station' THEN (SELECT name FROM pumping_stations ps WHERE ps.id = t.facility_id AND ps.deleted_at IS NULL)
+                        WHEN t.facility_type = 'water_plant' THEN (SELECT name FROM water_plants wp WHERE wp.id = t.facility_id AND wp.deleted_at IS NULL)
+                        WHEN t.facility_type = 'reservoir' THEN (SELECT name FROM reservoirs r WHERE r.id = t.facility_id AND r.deleted_at IS NULL)
+                        WHEN t.facility_type = 'monitoring_station' THEN (SELECT name FROM monitoring_stations ms WHERE ms.id = t.facility_id AND ms.deleted_at IS NULL)
+                        ELSE NULL
+                    END
+                ) LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+        <if test="facilityType != null and facilityType != ''">
+            AND t.facility_type = #{facilityType}
+        </if>
+        <if test="facilityId != null">
+            AND t.facility_id = #{facilityId}
+        </if>
+        <!-- facilityName filter removed; merged into keyword -->
+        <if test="frequency != null and frequency != ''">
+            AND t.frequency = #{frequency}
+        </if>
+        <if test="scheduledDate != null and scheduledDate != ''">
+            AND t.scheduled_date = #{scheduledDate}
+        </if>
+        ORDER BY
+        <choose>
+            <when test="sort != null and sort.contains('scheduled_date')">
+                t.scheduled_date
+                <choose>
+                    <when test="sort.contains('asc')">ASC</when>
+                    <otherwise>DESC</otherwise>
+                </choose>
+            </when>
+            <otherwise>
+                t.created_at DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="selectTaskById" resultMap="InspectionTaskResponseDTOMap">
+        SELECT t.*, p.full_name AS assignee_name
+        FROM inspection_tasks t
+        LEFT JOIN personnel p ON t.assignee_id = p.id AND p.deleted_at IS NULL
+        WHERE t.id = #{id} AND t.deleted_at IS NULL
+    </select>
+
+    <insert id="insertTask" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO inspection_tasks (
+            title, facility_type, facility_id, frequency, content, assignee_id, status, scheduled_date, created_at, updated_at
+        ) VALUES (
+            #{title}, #{facilityType}, #{facilityId}, #{frequency}, #{content}, #{assigneeId}, #{status}, #{scheduledDate}, NOW(), NOW()
+        )
+    </insert>
+
+    <update id="updateTask">
+        UPDATE inspection_tasks
+        <set>
+            <if test="title != null">title = #{title},</if>
+            <if test="facilityType != null">facility_type = #{facilityType},</if>
+            <if test="facilityId != null">facility_id = #{facilityId},</if>
+            <if test="frequency != null">frequency = #{frequency},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="assigneeId != null">assignee_id = #{assigneeId},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="scheduledDate != null">scheduled_date = #{scheduledDate},</if>
+            updated_at = NOW()
+        </set>
+        WHERE id = #{id} AND deleted_at IS NULL
+    </update>
+
+    <update id="softDeleteTask">
+        UPDATE inspection_tasks
+        SET deleted_at = NOW()
+        WHERE id = #{id} AND deleted_at IS NULL
+    </update>
+
+</mapper> 

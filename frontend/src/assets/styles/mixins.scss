@@ -1,0 +1,385 @@
+// 鄂北地区水资源管理系统 - SCSS混入库
+// 提供响应式、布局、动画等通用混入
+
+@use './variables.scss' as *;
+
+// ==================== 响应式混入 ====================
+@mixin respond-to($breakpoint) {
+  @if $breakpoint ==xs {
+    @media (max-width: #{$breakpoint-xs - 1px}) {
+      @content;
+    }
+  }
+
+  @if $breakpoint ==sm {
+    @media (max-width: #{$breakpoint-sm - 1px}) {
+      @content;
+    }
+  }
+
+  @if $breakpoint ==md {
+    @media (max-width: #{$breakpoint-md - 1px}) {
+      @content;
+    }
+  }
+
+  @if $breakpoint ==lg {
+    @media (max-width: #{$breakpoint-lg - 1px}) {
+      @content;
+    }
+  }
+
+  @if $breakpoint ==xl {
+    @media (max-width: #{$breakpoint-xl - 1px}) {
+      @content;
+    }
+  }
+}
+
+// 响应式网格
+@mixin responsive-grid($columns: 4, $gap: 20px) {
+  display: grid;
+  gap: $gap;
+  grid-template-columns: repeat($columns, 1fr);
+
+  @include respond-to(lg) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @include respond-to(md) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include respond-to(sm) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ==================== 布局混入 ====================
+// Flex布局快捷方式
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-start {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+@mixin flex-end {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+// 绝对定位居中
+@mixin absolute-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+// 清除浮动
+@mixin clearfix {
+  &::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
+// ==================== 文字混入 ====================
+// 文字省略
+@mixin text-ellipsis($lines: 1) {
+  @if $lines ==1 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  @else {
+    display: -webkit-box;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+// 文字渐变
+@mixin text-gradient($start-color, $end-color) {
+  background: linear-gradient(45deg, $start-color, $end-color);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+// ==================== 按钮混入 ====================
+@mixin button-variant($color, $background, $border) {
+  color: $color;
+  background-color: $background;
+  border-color: $border;
+
+  &:hover {
+    color: $color;
+    background-color: lighten($background, 10%);
+    border-color: lighten($border, 10%);
+  }
+
+  &:active {
+    color: $color;
+    background-color: darken($background, 5%);
+    border-color: darken($border, 5%);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// ==================== 卡片混入 ====================
+@mixin card-style($padding: var(--card-padding), $radius: var(--border-radius-base)) {
+  background: var(--background-color-white);
+  border-radius: $radius;
+  box-shadow: var(--box-shadow-light);
+  padding: $padding;
+  margin-bottom: var(--component-margin-bottom);
+}
+
+// ==================== 动画混入 ====================
+// 淡入动画
+@mixin fade-in($duration: 0.3s) {
+  animation: fadeIn $duration ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// 滑入动画
+@mixin slide-in($direction: 'up', $duration: 0.3s) {
+  animation: slideIn#{capitalize($direction)} $duration ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translateY(-100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+// 缩放动画
+@mixin scale-in($duration: 0.3s) {
+  animation: scaleIn $duration ease-out;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// ==================== 工具混入 ====================
+// 隐藏滚动条
+@mixin hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// 自定义滚动条
+@mixin custom-scrollbar($width: 6px, $track-color: #f1f1f1, $thumb-color: #c1c1c1) {
+  &::-webkit-scrollbar {
+    width: $width;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $track-color;
+    border-radius: $width / 2;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $thumb-color;
+    border-radius: $width / 2;
+
+    &:hover {
+      background: darken($thumb-color, 10%);
+    }
+  }
+}
+
+// 硬件加速
+@mixin hardware-acceleration {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+// 用户选择控制
+@mixin user-select($value: none) {
+  -webkit-user-select: $value;
+  -moz-user-select: $value;
+  -ms-user-select: $value;
+  user-select: $value;
+}
+
+// ==================== 状态混入 ====================
+// 加载状态
+@mixin loading-state {
+  position: relative;
+  pointer-events: none;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    @include flex-center;
+  }
+}
+
+// 禁用状态
+@mixin disabled-state {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+// ==================== 图标通用混入 ====================
+// 图标样式混合宏
+@mixin icon-style($size: var(--icon-size-md), $color: var(--text-primary)) {
+  font-size: $size;
+  color: $color;
+  display: inline-block;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// 图标与文本组合
+@mixin icon-text($gap: var(--spacing-small)) {
+  display: inline-flex;
+  align-items: center;
+  gap: $gap;
+
+  .fa {
+    flex-shrink: 0;
+  }
+}
+
+// ==================== 图表监测组件专用混入 ====================
+// 信息面板样式
+@mixin chart-info-panel {
+  display: flex;
+  gap: 8px;
+  font-size: 10px;
+  color: var(--text-secondary);
+  transition: opacity 0.3s ease;
+}
+
+// 信息项样式
+@mixin chart-info-item {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: var(--border-radius-base);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  .fa {
+    color: var(--primary-color);
+  }
+
+  span {
+    white-space: nowrap;
+    font-weight: 500;
+  }
+}
+
+// 空状态消息样式
+@mixin chart-empty-state-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: var(--border-radius-xl);
+
+  .fa {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.6;
+  }
+
+  p {
+    font-size: 16px;
+    margin: 0;
+    font-weight: 500;
+  }
+}

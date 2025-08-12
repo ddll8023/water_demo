@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.RoleMapper">
+
+    <!-- 结果映射：角色实体 -->
+    <resultMap id="RoleMap" type="com.example.demo.entity.system.Role">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="isActive" column="is_active"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="deletedAt" column="deleted_at"/>
+    </resultMap>
+
+    <!-- 结果映射：权限实体 -->
+    <resultMap id="PermissionMap" type="com.example.demo.entity.system.Permission">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="code" column="code"/>
+        <result property="type" column="type"/>
+        <result property="description" column="description"/>
+        <result property="url" column="url"/>
+        <result property="method" column="method"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="icon" column="icon"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="deletedAt" column="deleted_at"/>
+    </resultMap>
+
+    <!-- 根据角色ID查询权限列表 -->
+    <select id="selectPermissionsByRoleId" resultMap="PermissionMap">
+        SELECT permissions.*
+        FROM permissions
+        INNER JOIN role_permissions ON permissions.id = role_permissions.permission_id
+        WHERE role_permissions.role_id = #{roleId}
+        AND permissions.deleted_at IS NULL
+        AND role_permissions.deleted_at IS NULL
+        ORDER BY permissions.sort_order ASC, permissions.id ASC
+    </select>
+
+    <!-- 检查角色名称是否已存在 -->
+    <select id="countByName" resultType="int">
+        SELECT COUNT(1) FROM roles 
+        WHERE name = #{name} AND deleted_at IS NULL
+        <if test="excludeId != null">
+            AND id != #{excludeId}
+        </if>
+    </select>
+
+    <!-- 查询所有可用角色（用于下拉选择） -->
+    <select id="selectAllAvailable" resultMap="RoleMap">
+        SELECT id, name, description, sort_order, is_active FROM roles
+        WHERE deleted_at IS NULL
+        ORDER BY sort_order ASC, id ASC
+    </select>
+
+    <!-- 检查角色是否存在且处于活跃状态 -->
+    <select id="isRoleActive" resultType="boolean">
+        SELECT COUNT(1) > 0
+        FROM roles
+        WHERE id = #{roleId}
+        AND deleted_at IS NULL
+        AND is_active = 1
+    </select>
+    
+    <!-- 根据条件查询角色列表，支持PageHelper分页 -->
+    <select id="selectRoleList" resultMap="RoleMap">
+        SELECT * FROM roles
+        WHERE deleted_at IS NULL
+        <if test="name != null and name != ''">
+            AND (
+                name LIKE CONCAT('%', #{name}, '%')
+                OR description LIKE CONCAT('%', #{name}, '%')
+            )
+        </if>
+        ORDER BY sort_order ASC, id ASC
+    </select>
+
+    <!-- 根据ID查询角色 -->
+    <select id="selectRoleById" resultMap="RoleMap">
+        SELECT * FROM roles
+        WHERE id = #{id} AND deleted_at IS NULL
+    </select>
+    
+    <!-- 插入新角色 -->
+    <insert id="insertRole" parameterType="com.example.demo.entity.system.Role" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO roles (
+            name, description, sort_order, is_active, created_at, updated_at
+        ) VALUES (
+            #{name}, #{description}, #{sortOrder}, #{isActive}, #{createdAt}, #{updatedAt}
+        )
+    </insert>
+    
+    <!-- 更新角色 -->
+    <update id="updateRole" parameterType="com.example.demo.entity.system.Role">
+        UPDATE roles
+        SET 
+            name = #{name},
+            description = #{description},
+            sort_order = #{sortOrder},
+            is_active = #{isActive},
+            updated_at = #{updatedAt}
+            <if test="deletedAt != null">
+                , deleted_at = #{deletedAt}
+            </if>
+        WHERE id = #{id}
+        <if test="deletedAt == null">
+            AND deleted_at IS NULL
+        </if>
+    </update>
+
+    <!-- 以下是从RolePermissionMapper.xml合并的内容 -->
+    <!-- 批量插入角色权限关联 -->
+    <insert id="rolePermissionInsertBatch">
+        INSERT INTO role_permissions (role_id, permission_id, created_at, updated_at) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.roleId}, #{item.permissionId}, NOW(), NOW())
+        </foreach>
+    </insert>
+
+    <!-- 根据角色ID删除权限关联（物理删除） -->
+    <delete id="rolePermissionDeleteByRoleId">
+        DELETE FROM role_permissions
+        WHERE role_id = #{roleId}
+    </delete>
+
+    <!-- 根据权限ID删除角色关联（物理删除） -->
+    <delete id="rolePermissionDeleteByPermissionId">
+        DELETE FROM role_permissions
+        WHERE permission_id = #{permissionId}
+    </delete>
+    
+    <!-- 统计使用指定角色的用户数量 -->
+    <select id="countUsersByRoleId" resultType="int">
+        SELECT COUNT(1)
+        FROM user_roles
+        WHERE role_id = #{roleId}
+
+    </select>
+
+</mapper>

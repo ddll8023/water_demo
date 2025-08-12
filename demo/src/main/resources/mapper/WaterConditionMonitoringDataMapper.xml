@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.WaterConditionMonitoringDataMapper">
+
+    <!-- 分页查询水情监测数据 -->
+    <select id="pageWaterConditionMonitoringData" resultType="com.example.demo.dto.monitoring.WaterConditionMonitoringDataResponseDTO">
+        SELECT
+            reservoir_monitoring_data.id,
+            reservoir_monitoring_data.station_id,
+            monitoring_stations.name AS station_name,
+            reservoir_monitoring_data.monitoring_time,
+            reservoir_monitoring_data.water_level,
+            reservoir_monitoring_data.storage_capacity,
+            reservoir_monitoring_data.flood_limit_diff,
+            reservoir_monitoring_data.inflow,
+            reservoir_monitoring_data.outflow,
+            reservoir_monitoring_data.data_quality,
+            CASE reservoir_monitoring_data.data_quality
+                WHEN 1 THEN '正常'
+                WHEN 2 THEN '异常'
+                WHEN 3 THEN '缺失'
+                ELSE '未知'
+            END AS data_quality_desc,
+            reservoir_monitoring_data.collection_method,
+            CASE reservoir_monitoring_data.collection_method
+                WHEN 'AUTO' THEN '自动采集'
+                WHEN 'MANUAL' THEN '手动录入'
+                ELSE '未知'
+            END AS collection_method_desc,
+            reservoir_monitoring_data.data_source,
+            reservoir_monitoring_data.remark
+        FROM
+            reservoir_monitoring_data
+        LEFT JOIN
+            monitoring_stations ON reservoir_monitoring_data.station_id = monitoring_stations.id
+        WHERE
+            reservoir_monitoring_data.deleted_at IS NULL
+            <if test="stationId != null">
+                AND reservoir_monitoring_data.station_id = #{stationId}
+            </if>
+            <if test="stationName != null and stationName != ''">
+                AND monitoring_stations.name LIKE CONCAT('%', #{stationName}, '%')
+            </if>
+            <if test="startTime != null and startTime != ''">
+                AND reservoir_monitoring_data.monitoring_time >= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                AND reservoir_monitoring_data.monitoring_time &lt;= #{endTime}
+            </if>
+            <if test="dataQuality != null">
+                AND reservoir_monitoring_data.data_quality = #{dataQuality}
+            </if>
+        ORDER BY
+            reservoir_monitoring_data.monitoring_time DESC
+    </select>
+
+</mapper>

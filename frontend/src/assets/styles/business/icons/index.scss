@@ -1,0 +1,11 @@
+// 水资源管理系统 - 业务图标系统统一入口
+// 集中管理所有业务相关的图标符号定义
+
+// 地图模块图标符号（设施、监测站、预警、管线统一管理）
+@use './map.scss';
+
+// 未来可扩展的业务图标模块：
+// @use './warning-icons.scss';      // 预警管理图标
+// @use './data-quality-icons.scss'; // 数据质量图标
+// @use './system-icons.scss';       // 系统管理图标
+// @use './user-role-icons.scss';    // 用户角色图标 

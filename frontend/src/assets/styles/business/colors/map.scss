@@ -1,0 +1,138 @@
+// 水资源管理系统 - 地图模块颜色系统
+// 统一管理地图中所有元素的颜色定义
+
+:root {
+    // ==================== 地图设施类型颜色系统 ====================
+    // 泵站颜色
+    --facility-pumping-station-color: #fa8c16;
+    --facility-pumping-station-bg: #fff2e8;
+
+    // 水厂颜色
+    --facility-water-plant-color: #1890ff;
+    --facility-water-plant-bg: #e6f7ff;
+
+    // 水库颜色
+    --facility-reservoir-color: #2f54eb;
+    --facility-reservoir-bg: #f0f5ff;
+
+    // 监测站设施颜色
+    --facility-monitoring-station-color: #52c41a;
+    --facility-monitoring-station-bg: #f6ffed;
+
+    // 管道颜色
+    --facility-pipeline-color: #722ed1;
+    --facility-pipeline-bg: #f9f0ff;
+
+    // 村庄颜色
+    --facility-village-color: #13c2c2;
+    --facility-village-bg: #e6fffb;
+
+    // 漂浮船只颜色
+    --facility-floating-boat-color: #eb2f96;
+    --facility-floating-boat-bg: #fff0f6;
+
+    // 消毒材料颜色
+    --facility-disinfection-material-color: #faad14;
+    --facility-disinfection-material-bg: #fffbe6;
+
+    // 默认设施颜色
+    --facility-default-color: #8c8c8c;
+    --facility-default-bg: #f5f5f5;
+
+    // 新增设施类型颜色
+    --facility-pressure-station-color: #fa541c;
+    --facility-pressure-station-bg: #fff2e8;
+
+    --facility-main-pipeline-color: #1890ff;
+    --facility-main-pipeline-bg: #e6f7ff;
+
+    --facility-branch-pipeline-color: #40a9ff;
+    --facility-branch-pipeline-bg: #f0f8ff;
+
+    // ==================== 监测站类型颜色系统 ====================
+    // 水位监测（H/WL）
+    --station-water-level-color: #1890ff;
+    --station-water-level-bg: #e6f7ff;
+
+    // 流量监测（Q/FL）
+    --station-flow-color: #722ed1;
+    --station-flow-bg: #f9f0ff;
+
+    // 降雨监测（R/RF）
+    --station-rainfall-color: #eb2f96;
+    --station-rainfall-bg: #fff0f6;
+
+    // 综合监测（V）
+    --station-comprehensive-color: #52c41a;
+    --station-comprehensive-bg: #f6ffed;
+
+    // 水质监测（WQ）
+    --station-water-quality-color: #13c2c2;
+    --station-water-quality-bg: #e6fffb;
+
+    // 水库监测（RV）
+    --station-reservoir-color: #2f54eb;
+    --station-reservoir-bg: #f0f5ff;
+
+    // 默认监测站颜色
+    --station-default-color: #52c41a;
+    --station-default-bg: #f6ffed;
+
+    // ==================== 地图区域颜色系统 ====================
+    // 管理区域边界颜色
+    --area-boundary-color: #3366FF;
+    --area-boundary-fill: #3366FF;
+    --area-boundary-opacity: 0.8;
+    --area-boundary-fill-opacity: 0.1;
+
+    // 水域边界颜色（可扩展）
+    --water-area-boundary-color: #1890ff;
+    --water-area-boundary-fill: #1890ff;
+    --water-area-boundary-opacity: 0.7;
+    --water-area-boundary-fill-opacity: 0.15;
+
+    // 行政区域边界颜色（可扩展）
+    --admin-area-boundary-color: #52c41a;
+    --admin-area-boundary-fill: #52c41a;
+    --admin-area-boundary-opacity: 0.6;
+    --admin-area-boundary-fill-opacity: 0.08;
+
+    // ==================== 预警级别颜色系统 ====================
+    // 一般预警
+    --warning-level-general-color: #faad14;
+    --warning-level-general-bg: #fffbe6;
+
+    // 严重预警
+    --warning-level-serious-color: #f5222d;
+    --warning-level-serious-bg: #fff1f0;
+
+    // 特别严重预警
+    --warning-level-critical-color: #a8071a;
+    --warning-level-critical-bg: #ffebe6;
+
+    // ==================== 泵站状态颜色系统 ====================
+    // 泵站运行状态
+    --pump-status-open-color: #52c41a;
+    --pump-status-open-bg: #f6ffed;
+
+    // 泵站停止状态
+    --pump-status-closed-color: #f5222d;
+    --pump-status-closed-bg: #fff1f0;
+
+    // 泵站维护状态
+    --pump-status-maintenance-color: #faad14;
+    --pump-status-maintenance-bg: #fffbe6;
+
+    // ==================== 管线类型颜色系统 ====================
+    // 供水干管
+    --pipeline-main-color: #1890ff;
+    --pipeline-main-bg: #e6f7ff;
+
+    // 供水支管
+    --pipeline-branch-color: #40a9ff;
+    --pipeline-branch-bg: #f0f8ff;
+
+    // 分配管
+    --pipeline-distribution-color: #69c0ff;
+    --pipeline-distribution-bg: #f0f8ff;
+}

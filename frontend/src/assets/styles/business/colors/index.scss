@@ -1,0 +1,17 @@
+// 水资源管理系统 - 业务样式统一入口
+// 集中管理所有业务相关的颜色和图标定义
+
+// 地图模块颜色（设施、监测站、区域统一管理）
+@use './map.scss';
+
+// 图表监测模块颜色（图表组件专用样式）
+@use './chart.scss';
+
+// 业务图标系统（符号统一管理）
+@use '../icons/index.scss' as business-icons;
+
+// 未来可扩展的业务颜色模块：
+// @use './warning-levels.scss';    // 预警等级颜色
+// @use './data-quality.scss';      // 数据质量颜色
+// @use './user-roles.scss';        // 用户角色颜色
+// @use './system-management.scss'; // 系统管理颜色 

@@ -1,0 +1,843 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.WaterQualityMonitoringDataMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="WaterQualityMonitoringDataResponseDTOMap" type="com.example.demo.dto.monitoring.WaterQualityMonitoringDataResponseDTO">
+        <id column="id" property="id"/>
+        <result column="station_id" property="stationId"/>
+        <result column="station_name" property="stationName"/>
+        <result column="station_code" property="stationCode"/>
+        <result column="monitoring_time" property="monitoringTime"/>
+        <result column="water_temperature" property="waterTemperature"/>
+        <result column="turbidity" property="turbidity"/>
+        <result column="ph_value" property="phValue"/>
+        <result column="conductivity" property="conductivity"/>
+        <result column="dissolved_oxygen" property="dissolvedOxygen"/>
+        <result column="ammonia_nitrogen" property="ammoniaNitrogen"/>
+        <result column="cod_value" property="codValue"/>
+        <result column="residual_chlorine" property="residualChlorine"/>
+        <result column="data_quality" property="dataQuality"/>
+        <result column="data_quality_text" property="dataQualityText"/>
+        <result column="collection_method" property="collectionMethod"/>
+        <result column="data_source" property="dataSource"/>
+        <result column="remark" property="remark"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <!-- 分页查询水质监测数据（包含关联信息） -->
+    <select id="selectWaterQualityMonitoringDataPage" resultMap="WaterQualityMonitoringDataResponseDTOMap">
+        SELECT
+        wqmd.id, wqmd.station_id, wqmd.monitoring_time,
+        wqmd.water_temperature, wqmd.turbidity, wqmd.ph_value, wqmd.conductivity,
+        wqmd.dissolved_oxygen, wqmd.ammonia_nitrogen, wqmd.cod_value, wqmd.residual_chlorine,
+        wqmd.data_quality, wqmd.collection_method, wqmd.data_source,
+        wqmd.remark, wqmd.created_at, wqmd.updated_at,
+        ms.name as station_name, ms.station_code,
+        CASE wqmd.data_quality
+          WHEN 1 THEN '正常'
+          WHEN 2 THEN '异常'
+          WHEN 3 THEN '缺失'
+          ELSE '未知'
+        END as data_quality_text
+        FROM water_quality_monitoring_data wqmd
+        LEFT JOIN monitoring_stations ms ON wqmd.station_id = ms.id AND ms.deleted_at IS NULL
+        WHERE wqmd.deleted_at IS NULL
+        <if test='stationId != null'> AND wqmd.station_id = #{stationId} </if>
+        <if test='startTime != null'> AND wqmd.monitoring_time &gt;= #{startTime} </if>
+        <if test='endTime != null'> AND wqmd.monitoring_time &lt;= #{endTime} </if>
+        <if test='dataQuality != null'> AND wqmd.data_quality = #{dataQuality} </if>
+        <if test='collectionMethod != null and collectionMethod != ""'> AND wqmd.collection_method = #{collectionMethod} </if>
+        <if test='dataSource != null and dataSource != ""'> AND wqmd.data_source = #{dataSource} </if>
+        <choose>
+            <when test='sort != null and sort != ""'>
+                <bind name="sortFields" value="sort.split(',')"/>
+                <bind name="sortColumn" value="sortFields[0]"/>
+                <bind name="sortOrder" value="sortFields.length > 1 ? sortFields[1] : 'asc'"/>
+                ORDER BY 
+                <choose>
+                    <when test="sortColumn == 'monitoringTime'">wqmd.monitoring_time</when>
+                    <when test="sortColumn == 'dataQuality'">wqmd.data_quality</when>
+                    <when test="sortColumn == 'stationName'">ms.name</when>
+                    <otherwise>wqmd.monitoring_time</otherwise>
+                </choose>
+                <choose>
+                    <when test="sortOrder == 'desc'">DESC</when>
+                    <otherwise>ASC</otherwise>
+                </choose>
+            </when>
+            <otherwise>
+                ORDER BY wqmd.monitoring_time DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 查询水质统计数据 -->
+    <select id="selectWaterQualityStatistics" resultType="java.util.Map">
+        SELECT
+            COUNT(DISTINCT station_id) as station_count,
+            COUNT(*) as total_records,
+            SUM(CASE WHEN data_quality = 1 THEN 1 ELSE 0 END) as normal_records,
+            SUM(CASE WHEN data_quality = 2 THEN 1 ELSE 0 END) as abnormal_records,
+            SUM(CASE WHEN data_quality = 3 THEN 1 ELSE 0 END) as missing_records,
+            ROUND(SUM(CASE WHEN data_quality = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) as data_quality_rate,
+            8 as item_count
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL
+        <if test='stationId != null'> AND station_id = #{stationId} </if>
+        <if test='timeRange != null'>
+            <choose>
+                <when test="timeRange == 'today'">
+                    AND DATE(monitoring_time) = CURDATE()
+                </when>
+                <when test="timeRange == 'week'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                </when>
+                <when test="timeRange == 'month'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                </when>
+            </choose>
+        </if>
+    </select>
+
+    <!-- 查询水质图表数据（按监测项目分组） -->
+    <select id="selectWaterQualityChartData" resultType="java.util.Map">
+        SELECT
+            DATE_FORMAT(monitoring_time,
+            <choose>
+                <when test='interval == "hour"'> '%Y-%m-%d %H:%i:%s' </when>
+                <when test='interval == "day"'> '%Y-%m-%d' </when>
+                <when test='interval == "month"'> '%Y-%m' </when>
+                <otherwise> '%Y-%m-%d %H:%i:%s' </otherwise>
+            </choose>
+            ) as time_label,
+            <choose>
+                <when test='monitoringItemCode == "WT"'>
+                    AVG(water_temperature) as avg_value,
+                    MAX(water_temperature) as max_value,
+                    MIN(water_temperature) as min_value
+                </when>
+                <when test='monitoringItemCode == "TU"'>
+                    AVG(turbidity) as avg_value,
+                    MAX(turbidity) as max_value,
+                    MIN(turbidity) as min_value
+                </when>
+                <when test='monitoringItemCode == "PH"'>
+                    AVG(ph_value) as avg_value,
+                    MAX(ph_value) as max_value,
+                    MIN(ph_value) as min_value
+                </when>
+                <when test='monitoringItemCode == "EC"'>
+                    AVG(conductivity) as avg_value,
+                    MAX(conductivity) as max_value,
+                    MIN(conductivity) as min_value
+                </when>
+                <when test='monitoringItemCode == "DO"'>
+                    AVG(dissolved_oxygen) as avg_value,
+                    MAX(dissolved_oxygen) as max_value,
+                    MIN(dissolved_oxygen) as min_value
+                </when>
+                <when test='monitoringItemCode == "AN"'>
+                    AVG(ammonia_nitrogen) as avg_value,
+                    MAX(ammonia_nitrogen) as max_value,
+                    MIN(ammonia_nitrogen) as min_value
+                </when>
+                <when test='monitoringItemCode == "COD"'>
+                    AVG(cod_value) as avg_value,
+                    MAX(cod_value) as max_value,
+                    MIN(cod_value) as min_value
+                </when>
+                <when test='monitoringItemCode == "RC"'>
+                    AVG(residual_chlorine) as avg_value,
+                    MAX(residual_chlorine) as max_value,
+                    MIN(residual_chlorine) as min_value
+                </when>
+                <otherwise>
+                    AVG(water_temperature) as avg_value,
+                    MAX(water_temperature) as max_value,
+                    MIN(water_temperature) as min_value
+                </otherwise>
+            </choose>
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL
+        AND data_quality = 1 <!-- 只使用正常数据 -->
+        <if test='stationId != null'> AND station_id = #{stationId} </if>
+        <if test='startTime != null'> AND monitoring_time &gt;= #{startTime} </if>
+        <if test='endTime != null'> AND monitoring_time &lt;= #{endTime} </if>
+        GROUP BY time_label
+        ORDER BY time_label
+    </select>
+
+    <!-- 查询所有站点的水质图表数据（汇总） -->
+    <select id="selectAllStationsWaterQualityChartData" resultType="java.util.Map">
+        SELECT
+            DATE_FORMAT(monitoring_time,
+            <choose>
+                <when test='interval == "hour"'> '%Y-%m-%d %H:%i:%s' </when>
+                <when test='interval == "day"'> '%Y-%m-%d' </when>
+                <when test='interval == "month"'> '%Y-%m' </when>
+                <otherwise> '%Y-%m-%d %H:%i:%s' </otherwise>
+            </choose>
+            ) as time_label,
+            <choose>
+                <when test='monitoringItemCode == "WT"'>
+                    AVG(water_temperature) as avg_value,
+                    MAX(water_temperature) as max_value,
+                    MIN(water_temperature) as min_value
+                </when>
+                <when test='monitoringItemCode == "TU"'>
+                    AVG(turbidity) as avg_value,
+                    MAX(turbidity) as max_value,
+                    MIN(turbidity) as min_value
+                </when>
+                <when test='monitoringItemCode == "PH"'>
+                    AVG(ph_value) as avg_value,
+                    MAX(ph_value) as max_value,
+                    MIN(ph_value) as min_value
+                </when>
+                <when test='monitoringItemCode == "EC"'>
+                    AVG(conductivity) as avg_value,
+                    MAX(conductivity) as max_value,
+                    MIN(conductivity) as min_value
+                </when>
+                <when test='monitoringItemCode == "DO"'>
+                    AVG(dissolved_oxygen) as avg_value,
+                    MAX(dissolved_oxygen) as max_value,
+                    MIN(dissolved_oxygen) as min_value
+                </when>
+                <when test='monitoringItemCode == "AN"'>
+                    AVG(ammonia_nitrogen) as avg_value,
+                    MAX(ammonia_nitrogen) as max_value,
+                    MIN(ammonia_nitrogen) as min_value
+                </when>
+                <when test='monitoringItemCode == "COD"'>
+                    AVG(cod_value) as avg_value,
+                    MAX(cod_value) as max_value,
+                    MIN(cod_value) as min_value
+                </when>
+                <when test='monitoringItemCode == "RC"'>
+                    AVG(residual_chlorine) as avg_value,
+                    MAX(residual_chlorine) as max_value,
+                    MIN(residual_chlorine) as min_value
+                </when>
+                <otherwise>
+                    AVG(water_temperature) as avg_value,
+                    MAX(water_temperature) as max_value,
+                    MIN(water_temperature) as min_value
+                </otherwise>
+            </choose>,
+            COUNT(DISTINCT station_id) as station_count
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL
+        AND data_quality = 1 <!-- 只使用正常数据 -->
+        <if test='startTime != null'> AND monitoring_time &gt;= #{startTime} </if>
+        <if test='endTime != null'> AND monitoring_time &lt;= #{endTime} </if>
+        GROUP BY time_label
+        ORDER BY time_label
+    </select>
+
+    <!-- 查询水质监测概览统计数据 -->
+    <select id="selectWaterQualityMonitoringOverview" resultType="java.util.Map">
+        SELECT
+            (SELECT COUNT(*) FROM monitoring_stations WHERE monitoring_item_code = 'WQ' AND deleted_at IS NULL) as total_stations,
+            (SELECT COUNT(DISTINCT station_id) FROM water_quality_monitoring_data 
+             WHERE deleted_at IS NULL AND monitoring_time >= DATE_SUB(NOW(), INTERVAL 24 HOUR)) as online_stations,
+            (SELECT COUNT(*) FROM water_quality_monitoring_data 
+             WHERE deleted_at IS NULL AND DATE(monitoring_time) = CURDATE()) as today_data_count,
+            (SELECT ROUND(SUM(CASE WHEN data_quality = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) 
+             FROM water_quality_monitoring_data 
+             WHERE deleted_at IS NULL AND monitoring_time >= DATE_SUB(NOW(), INTERVAL 7 DAY)) as data_quality_rate,
+            8 as monitoring_item_count
+    </select>
+
+    <!-- 查询数据质量统计 -->
+    <select id="selectWaterQualityDataQualityStatsByStation" resultType="java.util.Map">
+        SELECT
+            ms.name as station_name,
+            ms.station_code,
+            COUNT(*) as total_records,
+            SUM(CASE WHEN wqmd.data_quality = 1 THEN 1 ELSE 0 END) as normal_records,
+            SUM(CASE WHEN wqmd.data_quality = 2 THEN 1 ELSE 0 END) as abnormal_records,
+            SUM(CASE WHEN wqmd.data_quality = 3 THEN 1 ELSE 0 END) as missing_records,
+            ROUND(SUM(CASE WHEN wqmd.data_quality = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) as quality_rate
+        FROM water_quality_monitoring_data wqmd
+        JOIN monitoring_stations ms ON wqmd.station_id = ms.id AND ms.deleted_at IS NULL
+        WHERE wqmd.deleted_at IS NULL
+        <if test='timeRange != null'>
+            <choose>
+                <when test="timeRange == 'today'">
+                    AND DATE(wqmd.monitoring_time) = CURDATE()
+                </when>
+                <when test="timeRange == 'week'">
+                    AND wqmd.monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                </when>
+                <when test="timeRange == 'month'">
+                    AND wqmd.monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                </when>
+            </choose>
+        </if>
+        GROUP BY ms.id, ms.name, ms.station_code
+        ORDER BY quality_rate DESC
+    </select>
+
+    <!-- 查询数据质量趋势数据 -->
+    <select id="selectWaterQualityDataQualityTrend" resultType="java.util.Map">
+        SELECT
+            DATE_FORMAT(monitoring_time, '%Y-%m-%d') as date,
+            COUNT(*) as total_records,
+            SUM(CASE WHEN data_quality = 1 THEN 1 ELSE 0 END) as normal_records,
+            SUM(CASE WHEN data_quality = 2 THEN 1 ELSE 0 END) as abnormal_records,
+            SUM(CASE WHEN data_quality = 3 THEN 1 ELSE 0 END) as missing_records,
+            ROUND(SUM(CASE WHEN data_quality = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) as quality_rate
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL
+        <if test='timeRange != null'>
+            <choose>
+                <when test="timeRange == 'week'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                </when>
+                <when test="timeRange == 'month'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                </when>
+                <otherwise>
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                </otherwise>
+            </choose>
+        </if>
+        GROUP BY DATE_FORMAT(monitoring_time, '%Y-%m-%d')
+        ORDER BY date
+    </select>
+
+    <!-- 查询监测项目统计数据 -->
+    <select id="selectMonitoringItemStats" resultType="java.util.Map">
+        SELECT 'WT' as monitoring_item_code, '水温' as item_name,
+               COUNT(water_temperature) as record_count,
+               AVG(water_temperature) as avg_value,
+               MAX(water_temperature) as max_value,
+               MIN(water_temperature) as min_value,
+               '℃' as unit
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL AND data_quality = 1 AND water_temperature IS NOT NULL
+        <if test='stationId != null'> AND station_id = #{stationId} </if>
+        <if test='timeRange != null'>
+            <choose>
+                <when test="timeRange == 'today'">
+                    AND DATE(monitoring_time) = CURDATE()
+                </when>
+                <when test="timeRange == 'week'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                </when>
+                <when test="timeRange == 'month'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                </when>
+            </choose>
+        </if>
+        UNION ALL
+        SELECT 'TU' as monitoring_item_code, '浊度' as item_name,
+               COUNT(turbidity) as record_count,
+               AVG(turbidity) as avg_value,
+               MAX(turbidity) as max_value,
+               MIN(turbidity) as min_value,
+               'NTU' as unit
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL AND data_quality = 1 AND turbidity IS NOT NULL
+        <if test='stationId != null'> AND station_id = #{stationId} </if>
+        <if test='timeRange != null'>
+            <choose>
+                <when test="timeRange == 'today'">
+                    AND DATE(monitoring_time) = CURDATE()
+                </when>
+                <when test="timeRange == 'week'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                </when>
+                <when test="timeRange == 'month'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                </when>
+            </choose>
+        </if>
+        UNION ALL
+        SELECT 'PH' as monitoring_item_code, 'PH值' as item_name,
+               COUNT(ph_value) as record_count,
+               AVG(ph_value) as avg_value,
+               MAX(ph_value) as max_value,
+               MIN(ph_value) as min_value,
+               '' as unit
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL AND data_quality = 1 AND ph_value IS NOT NULL
+        <if test='stationId != null'> AND station_id = #{stationId} </if>
+        <if test='timeRange != null'>
+            <choose>
+                <when test="timeRange == 'today'">
+                    AND DATE(monitoring_time) = CURDATE()
+                </when>
+                <when test="timeRange == 'week'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                </when>
+                <when test="timeRange == 'month'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                </when>
+            </choose>
+        </if>
+        UNION ALL
+        SELECT 'EC' as monitoring_item_code, '电导率' as item_name,
+               COUNT(conductivity) as record_count,
+               AVG(conductivity) as avg_value,
+               MAX(conductivity) as max_value,
+               MIN(conductivity) as min_value,
+               'uS/cm' as unit
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL AND data_quality = 1 AND conductivity IS NOT NULL
+        <if test='stationId != null'> AND station_id = #{stationId} </if>
+        <if test='timeRange != null'>
+            <choose>
+                <when test="timeRange == 'today'">
+                    AND DATE(monitoring_time) = CURDATE()
+                </when>
+                <when test="timeRange == 'week'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                </when>
+                <when test="timeRange == 'month'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                </when>
+            </choose>
+        </if>
+        UNION ALL
+        SELECT 'DO' as monitoring_item_code, '溶解氧' as item_name,
+               COUNT(dissolved_oxygen) as record_count,
+               AVG(dissolved_oxygen) as avg_value,
+               MAX(dissolved_oxygen) as max_value,
+               MIN(dissolved_oxygen) as min_value,
+               'mg/L' as unit
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL AND data_quality = 1 AND dissolved_oxygen IS NOT NULL
+        <if test='stationId != null'> AND station_id = #{stationId} </if>
+        <if test='timeRange != null'>
+            <choose>
+                <when test="timeRange == 'today'">
+                    AND DATE(monitoring_time) = CURDATE()
+                </when>
+                <when test="timeRange == 'week'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                </when>
+                <when test="timeRange == 'month'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                </when>
+            </choose>
+        </if>
+        UNION ALL
+        SELECT 'AN' as monitoring_item_code, '氨氮' as item_name,
+               COUNT(ammonia_nitrogen) as record_count,
+               AVG(ammonia_nitrogen) as avg_value,
+               MAX(ammonia_nitrogen) as max_value,
+               MIN(ammonia_nitrogen) as min_value,
+               'mg/L' as unit
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL AND data_quality = 1 AND ammonia_nitrogen IS NOT NULL
+        <if test='stationId != null'> AND station_id = #{stationId} </if>
+        <if test='timeRange != null'>
+            <choose>
+                <when test="timeRange == 'today'">
+                    AND DATE(monitoring_time) = CURDATE()
+                </when>
+                <when test="timeRange == 'week'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                </when>
+                <when test="timeRange == 'month'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                </when>
+            </choose>
+        </if>
+        UNION ALL
+        SELECT 'COD' as monitoring_item_code, '化学需氧量' as item_name,
+               COUNT(cod_value) as record_count,
+               AVG(cod_value) as avg_value,
+               MAX(cod_value) as max_value,
+               MIN(cod_value) as min_value,
+               'mg/L' as unit
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL AND data_quality = 1 AND cod_value IS NOT NULL
+        <if test='stationId != null'> AND station_id = #{stationId} </if>
+        <if test='timeRange != null'>
+            <choose>
+                <when test="timeRange == 'today'">
+                    AND DATE(monitoring_time) = CURDATE()
+                </when>
+                <when test="timeRange == 'week'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                </when>
+                <when test="timeRange == 'month'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                </when>
+            </choose>
+        </if>
+        UNION ALL
+        SELECT 'RC' as monitoring_item_code, '余氯' as item_name,
+               COUNT(residual_chlorine) as record_count,
+               AVG(residual_chlorine) as avg_value,
+               MAX(residual_chlorine) as max_value,
+               MIN(residual_chlorine) as min_value,
+               'mg/L' as unit
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL AND data_quality = 1 AND residual_chlorine IS NOT NULL
+        <if test='stationId != null'> AND station_id = #{stationId} </if>
+        <if test='timeRange != null'>
+            <choose>
+                <when test="timeRange == 'today'">
+                    AND DATE(monitoring_time) = CURDATE()
+                </when>
+                <when test="timeRange == 'week'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                </when>
+                <when test="timeRange == 'month'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                </when>
+            </choose>
+        </if>
+        ORDER BY monitoring_item_code
+    </select>
+
+    <!-- 查询最新监测数据（按监测项目） -->
+    <select id="selectLatestWaterQualityData" resultType="java.util.Map">
+        SELECT 'WT' as monitoring_item_code, '水温' as item_name,
+               water_temperature as monitoring_value, '℃' as unit,
+               monitoring_time, data_quality
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL AND water_temperature IS NOT NULL
+        <if test='stationId != null'> AND station_id = #{stationId} </if>
+        ORDER BY monitoring_time DESC LIMIT 1
+
+        UNION ALL
+
+        SELECT 'TU' as monitoring_item_code, '浊度' as item_name,
+               turbidity as monitoring_value, 'NTU' as unit,
+               monitoring_time, data_quality
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL AND turbidity IS NOT NULL
+        <if test='stationId != null'> AND station_id = #{stationId} </if>
+        ORDER BY monitoring_time DESC LIMIT 1
+
+        UNION ALL
+
+        SELECT 'PH' as monitoring_item_code, 'PH值' as item_name,
+               ph_value as monitoring_value, '' as unit,
+               monitoring_time, data_quality
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL AND ph_value IS NOT NULL
+        <if test='stationId != null'> AND station_id = #{stationId} </if>
+        ORDER BY monitoring_time DESC LIMIT 1
+
+        UNION ALL
+
+        SELECT 'EC' as monitoring_item_code, '电导率' as item_name,
+               conductivity as monitoring_value, 'uS/cm' as unit,
+               monitoring_time, data_quality
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL AND conductivity IS NOT NULL
+        <if test='stationId != null'> AND station_id = #{stationId} </if>
+        ORDER BY monitoring_time DESC LIMIT 1
+
+        UNION ALL
+
+        SELECT 'DO' as monitoring_item_code, '溶解氧' as item_name,
+               dissolved_oxygen as monitoring_value, 'mg/L' as unit,
+               monitoring_time, data_quality
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL AND dissolved_oxygen IS NOT NULL
+        <if test='stationId != null'> AND station_id = #{stationId} </if>
+        ORDER BY monitoring_time DESC LIMIT 1
+
+        UNION ALL
+
+        SELECT 'AN' as monitoring_item_code, '氨氮' as item_name,
+               ammonia_nitrogen as monitoring_value, 'mg/L' as unit,
+               monitoring_time, data_quality
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL AND ammonia_nitrogen IS NOT NULL
+        <if test='stationId != null'> AND station_id = #{stationId} </if>
+        ORDER BY monitoring_time DESC LIMIT 1
+
+        UNION ALL
+
+        SELECT 'COD' as monitoring_item_code, '化学需氧量' as item_name,
+               cod_value as monitoring_value, 'mg/L' as unit,
+               monitoring_time, data_quality
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL AND cod_value IS NOT NULL
+        <if test='stationId != null'> AND station_id = #{stationId} </if>
+        ORDER BY monitoring_time DESC LIMIT 1
+
+        UNION ALL
+
+        SELECT 'RC' as monitoring_item_code, '余氯' as item_name,
+               residual_chlorine as monitoring_value, 'mg/L' as unit,
+               monitoring_time, data_quality
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL AND residual_chlorine IS NOT NULL
+        <if test='stationId != null'> AND station_id = #{stationId} </if>
+        ORDER BY monitoring_time DESC LIMIT 1
+    </select>
+
+    <!-- 根据站点ID和时间查询数据是否存在（用于导入去重） -->
+    <select id="countByStationIdAndTime" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL
+        AND station_id = #{stationId}
+        AND monitoring_time = #{monitoringTime}
+    </select>
+
+    <!-- 批量插入水质监测数据 -->
+    <insert id="insertBatch">
+        INSERT INTO water_quality_monitoring_data (
+            station_id, monitoring_time, water_temperature, turbidity, ph_value, conductivity,
+            dissolved_oxygen, ammonia_nitrogen, cod_value, residual_chlorine,
+            data_quality, collection_method, data_source, remark,
+            created_at, updated_at
+        ) VALUES
+        <foreach collection="dataList" item="item" separator=",">
+            (
+                #{item.stationId}, #{item.monitoringTime}, #{item.waterTemperature}, #{item.turbidity},
+                #{item.phValue}, #{item.conductivity}, #{item.dissolvedOxygen}, #{item.ammoniaNitrogen},
+                #{item.codValue}, #{item.residualChlorine}, #{item.dataQuality}, #{item.collectionMethod},
+                #{item.dataSource}, #{item.remark}, NOW(), NOW()
+            )
+        </foreach>
+    </insert>
+
+    <!-- 查询异常数据统计 -->
+    <select id="selectAbnormalDataStats" resultType="java.util.Map">
+        SELECT 'WT' as monitoring_item_code, '水温' as item_name,
+               COUNT(*) as total_records,
+               SUM(CASE WHEN data_quality = 2 THEN 1 ELSE 0 END) as abnormal_records,
+               ROUND(SUM(CASE WHEN data_quality = 2 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) as abnormal_rate
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL AND water_temperature IS NOT NULL
+        <if test='timeRange != null'>
+            <choose>
+                <when test="timeRange == 'today'">
+                    AND DATE(monitoring_time) = CURDATE()
+                </when>
+                <when test="timeRange == 'week'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                </when>
+                <when test="timeRange == 'month'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                </when>
+            </choose>
+        </if>
+        UNION ALL
+        SELECT 'TU' as monitoring_item_code, '浊度' as item_name,
+               COUNT(*) as total_records,
+               SUM(CASE WHEN data_quality = 2 THEN 1 ELSE 0 END) as abnormal_records,
+               ROUND(SUM(CASE WHEN data_quality = 2 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) as abnormal_rate
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL AND turbidity IS NOT NULL
+        <if test='timeRange != null'>
+            <choose>
+                <when test="timeRange == 'today'">
+                    AND DATE(monitoring_time) = CURDATE()
+                </when>
+                <when test="timeRange == 'week'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                </when>
+                <when test="timeRange == 'month'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                </when>
+            </choose>
+        </if>
+        UNION ALL
+        SELECT 'PH' as monitoring_item_code, 'PH值' as item_name,
+               COUNT(*) as total_records,
+               SUM(CASE WHEN data_quality = 2 THEN 1 ELSE 0 END) as abnormal_records,
+               ROUND(SUM(CASE WHEN data_quality = 2 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) as abnormal_rate
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL AND ph_value IS NOT NULL
+        <if test='timeRange != null'>
+            <choose>
+                <when test="timeRange == 'today'">
+                    AND DATE(monitoring_time) = CURDATE()
+                </when>
+                <when test="timeRange == 'week'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                </when>
+                <when test="timeRange == 'month'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                </when>
+            </choose>
+        </if>
+        UNION ALL
+        SELECT 'EC' as monitoring_item_code, '电导率' as item_name,
+               COUNT(*) as total_records,
+               SUM(CASE WHEN data_quality = 2 THEN 1 ELSE 0 END) as abnormal_records,
+               ROUND(SUM(CASE WHEN data_quality = 2 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) as abnormal_rate
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL AND conductivity IS NOT NULL
+        <if test='timeRange != null'>
+            <choose>
+                <when test="timeRange == 'today'">
+                    AND DATE(monitoring_time) = CURDATE()
+                </when>
+                <when test="timeRange == 'week'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                </when>
+                <when test="timeRange == 'month'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                </when>
+            </choose>
+        </if>
+        UNION ALL
+        SELECT 'DO' as monitoring_item_code, '溶解氧' as item_name,
+               COUNT(*) as total_records,
+               SUM(CASE WHEN data_quality = 2 THEN 1 ELSE 0 END) as abnormal_records,
+               ROUND(SUM(CASE WHEN data_quality = 2 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) as abnormal_rate
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL AND dissolved_oxygen IS NOT NULL
+        <if test='timeRange != null'>
+            <choose>
+                <when test="timeRange == 'today'">
+                    AND DATE(monitoring_time) = CURDATE()
+                </when>
+                <when test="timeRange == 'week'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                </when>
+                <when test="timeRange == 'month'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                </when>
+            </choose>
+        </if>
+        UNION ALL
+        SELECT 'AN' as monitoring_item_code, '氨氮' as item_name,
+               COUNT(*) as total_records,
+               SUM(CASE WHEN data_quality = 2 THEN 1 ELSE 0 END) as abnormal_records,
+               ROUND(SUM(CASE WHEN data_quality = 2 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) as abnormal_rate
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL AND ammonia_nitrogen IS NOT NULL
+        <if test='timeRange != null'>
+            <choose>
+                <when test="timeRange == 'today'">
+                    AND DATE(monitoring_time) = CURDATE()
+                </when>
+                <when test="timeRange == 'week'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                </when>
+                <when test="timeRange == 'month'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                </when>
+            </choose>
+        </if>
+        UNION ALL
+        SELECT 'COD' as monitoring_item_code, '化学需氧量' as item_name,
+               COUNT(*) as total_records,
+               SUM(CASE WHEN data_quality = 2 THEN 1 ELSE 0 END) as abnormal_records,
+               ROUND(SUM(CASE WHEN data_quality = 2 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) as abnormal_rate
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL AND cod_value IS NOT NULL
+        <if test='timeRange != null'>
+            <choose>
+                <when test="timeRange == 'today'">
+                    AND DATE(monitoring_time) = CURDATE()
+                </when>
+                <when test="timeRange == 'week'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                </when>
+                <when test="timeRange == 'month'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                </when>
+            </choose>
+        </if>
+        UNION ALL
+        SELECT 'RC' as monitoring_item_code, '余氯' as item_name,
+               COUNT(*) as total_records,
+               SUM(CASE WHEN data_quality = 2 THEN 1 ELSE 0 END) as abnormal_records,
+               ROUND(SUM(CASE WHEN data_quality = 2 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) as abnormal_rate
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL AND residual_chlorine IS NOT NULL
+        <if test='timeRange != null'>
+            <choose>
+                <when test="timeRange == 'today'">
+                    AND DATE(monitoring_time) = CURDATE()
+                </when>
+                <when test="timeRange == 'week'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                </when>
+                <when test="timeRange == 'month'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                </when>
+            </choose>
+        </if>
+        ORDER BY abnormal_rate DESC
+    </select>
+
+    <!-- 查询监测项目趋势数据 -->
+    <select id="selectMonitoringItemTrend" resultType="java.util.Map">
+        SELECT
+            DATE_FORMAT(monitoring_time, '%Y-%m-%d') as date,
+            <choose>
+                <when test='monitoringItemCode == "WT"'>
+                    AVG(water_temperature) as avg_value,
+                    MAX(water_temperature) as max_value,
+                    MIN(water_temperature) as min_value
+                </when>
+                <when test='monitoringItemCode == "TU"'>
+                    AVG(turbidity) as avg_value,
+                    MAX(turbidity) as max_value,
+                    MIN(turbidity) as min_value
+                </when>
+                <when test='monitoringItemCode == "PH"'>
+                    AVG(ph_value) as avg_value,
+                    MAX(ph_value) as max_value,
+                    MIN(ph_value) as min_value
+                </when>
+                <when test='monitoringItemCode == "EC"'>
+                    AVG(conductivity) as avg_value,
+                    MAX(conductivity) as max_value,
+                    MIN(conductivity) as min_value
+                </when>
+                <when test='monitoringItemCode == "DO"'>
+                    AVG(dissolved_oxygen) as avg_value,
+                    MAX(dissolved_oxygen) as max_value,
+                    MIN(dissolved_oxygen) as min_value
+                </when>
+                <when test='monitoringItemCode == "AN"'>
+                    AVG(ammonia_nitrogen) as avg_value,
+                    MAX(ammonia_nitrogen) as max_value,
+                    MIN(ammonia_nitrogen) as min_value
+                </when>
+                <when test='monitoringItemCode == "COD"'>
+                    AVG(cod_value) as avg_value,
+                    MAX(cod_value) as max_value,
+                    MIN(cod_value) as min_value
+                </when>
+                <when test='monitoringItemCode == "RC"'>
+                    AVG(residual_chlorine) as avg_value,
+                    MAX(residual_chlorine) as max_value,
+                    MIN(residual_chlorine) as min_value
+                </when>
+                <otherwise>
+                    AVG(water_temperature) as avg_value,
+                    MAX(water_temperature) as max_value,
+                    MIN(water_temperature) as min_value
+                </otherwise>
+            </choose>
+        FROM water_quality_monitoring_data
+        WHERE deleted_at IS NULL
+        AND data_quality = 1 <!-- 只使用正常数据 -->
+        <if test='stationId != null'> AND station_id = #{stationId} </if>
+        <if test='timeRange != null'>
+            <choose>
+                <when test="timeRange == 'week'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                </when>
+                <when test="timeRange == 'month'">
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                </when>
+                <otherwise>
+                    AND monitoring_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                </otherwise>
+            </choose>
+        </if>
+        GROUP BY DATE_FORMAT(monitoring_time, '%Y-%m-%d')
+        ORDER BY date
+    </select>
+</mapper>

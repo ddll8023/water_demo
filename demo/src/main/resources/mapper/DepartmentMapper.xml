@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.DepartmentMapper">
+
+    <!-- 基础部门结果映射 -->
+    <resultMap id="DepartmentMap" type="com.example.demo.entity.system.Department">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="duty" column="duty"/>
+        <result property="contact" column="contact"/>
+        <result property="regionId" column="region_id"/>
+        <result property="isActive" column="is_active"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="deletedAt" column="deleted_at"/>
+        <!-- 关联信息字段 -->
+        <result property="personnelCount" column="personnel_count"/>
+        <result property="parentName" column="parent_name"/>
+        <result property="regionName" column="region_name"/>
+    </resultMap>
+
+    <!-- 部门详情结果映射（包含关联信息） -->
+    <resultMap id="DepartmentWithDetailsMap" type="com.example.demo.entity.system.Department" extends="DepartmentMap">
+        <!-- 继承基础映射，可以添加额外字段 -->
+    </resultMap>
+
+    <!-- 人员信息结果映射 -->
+    <resultMap id="PersonnelInfoMap" type="com.example.demo.entity.system.Personnel">
+        <result property="id" column="id"/>
+        <result property="fullName" column="full_name"/>
+        <result property="phone" column="phone"/>
+        <result property="email" column="email"/>
+        <result property="employeeNo" column="employee_no"/>
+        <result property="status" column="status"/>
+        <result property="hireDate" column="hire_date"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="departmentId" column="department_id"/>
+        <result property="departmentName" column="department_name"/>
+        <result property="positionId" column="position_id"/>
+        <result property="positionName" column="position_name"/>
+        <result property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+    </resultMap>
+    
+    <!-- 查询部门列表（带人员数量统计）- 用于PageHelper分页 -->
+    <select id="selectDepartmentListWithPersonnelCount" resultMap="DepartmentMap">
+        SELECT departments.*,
+        COALESCE(pc.personnel_count, 0) as personnel_count,
+        regions.name as region_name,
+        pd.name as parent_name
+        FROM departments
+        LEFT JOIN (
+        SELECT department_id, COUNT(*) as personnel_count
+        FROM personnel
+        WHERE deleted_at IS NULL
+        GROUP BY department_id
+        ) pc ON departments.id = pc.department_id
+        LEFT JOIN regions ON departments.region_id = regions.id
+        LEFT JOIN departments pd ON departments.parent_id = pd.id
+        WHERE departments.deleted_at IS NULL
+        <if test="keyword != null and keyword != ''">
+            AND (departments.name LIKE CONCAT('%', #{keyword}, '%')
+            OR departments.duty LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="isActive != null">
+            AND departments.is_active = #{isActive}
+        </if>
+        ORDER BY departments.created_at DESC
+    </select>
+
+    <!-- 检查部门名称是否已存在（同级部门下） -->
+    <select id="countByNameAndParent" resultType="int">
+        SELECT COUNT(1) FROM departments 
+        WHERE name = #{name} AND deleted_at IS NULL
+        AND parent_id &lt;=&gt; #{parentId}
+        <if test="excludeId != null">
+          AND id != #{excludeId}
+        </if>
+    </select>
+
+    <!-- 获取部门下的人员列表 -->
+    <select id="countUsersByDepartmentId" resultType="int">
+        SELECT COUNT(1)
+        FROM personnel
+        LEFT JOIN positions ON personnel.position_id = positions.id
+        LEFT JOIN departments ON personnel.department_id = departments.id
+        LEFT JOIN users ON personnel.user_id = users.id
+        WHERE personnel.department_id = #{departmentId} AND personnel.deleted_at IS NULL
+        ORDER BY personnel.created_at DESC
+    </select>
+
+    <!-- 检查是否有子部门 -->
+    <select id="countChildDepartments" resultType="int">
+        SELECT COUNT(1) FROM departments
+        WHERE parent_id = #{departmentId} AND deleted_at IS NULL
+    </select>
+    
+    <!-- 根据ID查询部门详情 -->
+    <select id="selectDepartmentById" resultMap="DepartmentMap">
+        SELECT departments.*,
+               pd.name as parent_name,
+               regions.name as region_name
+        FROM departments
+        LEFT JOIN departments pd ON departments.parent_id = pd.id AND pd.deleted_at IS NULL
+        LEFT JOIN regions ON departments.region_id = regions.id
+        WHERE departments.id = #{id} AND departments.deleted_at IS NULL
+    </select>
+    
+    <!-- 更新部门信息 -->
+    <update id="updateDepartment" parameterType="com.example.demo.entity.system.Department">
+        UPDATE departments
+        SET name = #{name},
+            parent_id = #{parentId},
+            duty = #{duty},
+            contact = #{contact},
+            region_id = #{regionId},
+            is_active = #{isActive},
+            updated_at = #{updatedAt},
+            deleted_at = #{deletedAt}
+        WHERE id = #{id}
+    </update>
+    
+    <!-- 插入部门信息 -->
+    <insert id="insertDepartment" parameterType="com.example.demo.entity.system.Department" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO departments (
+            name,
+            parent_id,
+            duty,
+            contact,
+            region_id,
+            is_active,
+            created_at,
+            updated_at
+        ) VALUES (
+            #{name},
+            #{parentId},
+            #{duty},
+            #{contact},
+            #{regionId},
+            #{isActive},
+            #{createdAt},
+            #{updatedAt}
+        )
+    </insert>
+
+</mapper>

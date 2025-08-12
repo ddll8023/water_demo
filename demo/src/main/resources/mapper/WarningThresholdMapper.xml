@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.WarningThresholdMapper">
+
+    <!-- 结果映射：预警指标响应DTO -->
+    <resultMap id="WarningThresholdResponseDTOMap" type="com.example.demo.dto.warning.WarningThresholdResponseDTO">
+        <id property="id" column="id"/>
+        <result property="stationName" column="station_name"/>
+        <result property="monitoringItem" column="monitoring_item"/>
+        <result property="monitoringItemName" column="monitoring_item_name"/>
+        <result property="upperUpperLimit" column="upper_upper_limit"/>
+        <result property="upperLimit" column="upper_limit"/>
+        <result property="lowerLimit" column="lower_limit"/>
+        <result property="lowerLowerLimit" column="lower_lower_limit"/>
+        <result property="unit" column="unit"/>
+        <result property="isActive" column="is_active"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- 根据测点名称和监测项查询是否存在（排除指定ID） -->
+    <select id="countByStationAndItemExcluding" resultType="int">
+        SELECT COUNT(1) FROM warning_thresholds 
+        WHERE station_name = #{stationName} AND monitoring_item = #{monitoringItem} 
+        AND deleted_at IS NULL 
+        <if test="excludeId != null">AND id != #{excludeId}</if>
+    </select>
+
+    <!-- 分页查询预警指标列表（包含字典翻译） -->
+    <select id="selectWarningThresholdPageWithDetails" resultMap="WarningThresholdResponseDTOMap">
+        SELECT 
+            wt.*, 
+            dd.data_label as monitoring_item_name 
+        FROM 
+            warning_thresholds wt
+        LEFT JOIN 
+            dict_data dd ON wt.monitoring_item = dd.data_value 
+            AND dd.deleted_at IS NULL 
+        LEFT JOIN 
+            dict_types dt ON dd.type_id = dt.id AND dt.type_code = 'monitoring_item' AND dt.deleted_at IS NULL
+        WHERE 
+            wt.deleted_at IS NULL 
+        <if test="keyword != null and keyword != ''">
+            AND wt.station_name LIKE CONCAT('%', #{keyword}, '%') 
+        </if>
+        <if test="stationName != null and stationName != ''">
+            AND wt.station_name = #{stationName}
+        </if>
+        <if test="monitoringItem != null and monitoringItem != ''">
+            AND wt.monitoring_item = #{monitoringItem} 
+        </if>
+        <if test="isActive != null">
+            AND wt.is_active = #{isActive} 
+        </if>
+        ORDER BY
+        <if test="sort != null and sort != ''">
+            <bind name="sortField" value="sort.split(' ')[0]"/>
+            <bind name="sortOrder" value="sort.contains('desc') ? 'DESC' : 'ASC'"/>
+            <choose>
+                <when test="sortField == 'created_at'">wt.created_at ${sortOrder}</when>
+                <when test="sortField == 'updated_at'">wt.updated_at ${sortOrder}</when>
+                <when test="sortField == 'station_name'">wt.station_name ${sortOrder}</when>
+                <otherwise>wt.created_at DESC</otherwise>
+            </choose>
+        </if>
+        <if test="sort == null or sort == ''">
+            wt.created_at DESC
+        </if>
+    </select>
+
+    <!-- 根据ID查询预警指标详情（包含字典翻译） -->
+    <select id="selectWarningThresholdDetailById" resultMap="WarningThresholdResponseDTOMap">
+        SELECT 
+            wt.*, 
+            dd.data_label as monitoring_item_name 
+        FROM 
+            warning_thresholds wt 
+        LEFT JOIN 
+            dict_data dd ON wt.monitoring_item = dd.data_value AND dd.deleted_at IS NULL 
+        LEFT JOIN 
+            dict_types dt ON dd.type_id = dt.id AND dt.type_code = 'monitoring_item' AND dt.deleted_at IS NULL 
+        WHERE 
+            wt.id = #{id} AND wt.deleted_at IS NULL
+    </select>
+
+    <!-- 查询所有预警指标（不考虑是否启用） -->
+    <select id="selectAll" resultType="com.example.demo.entity.warning.WarningThreshold">
+        SELECT * FROM warning_thresholds 
+        WHERE deleted_at IS NULL 
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 插入预警阈值 -->
+    <insert id="insertWarningThreshold" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO warning_thresholds(
+            station_name, 
+            monitoring_item,
+            upper_upper_limit,
+            upper_limit,
+            lower_limit,
+            lower_lower_limit,
+            unit,
+            is_active,
+            created_at,
+            updated_at
+        ) 
+        VALUES(
+            #{stationName},
+            #{monitoringItem},
+            #{upperUpperLimit},
+            #{upperLimit},
+            #{lowerLimit},
+            #{lowerLowerLimit},
+            #{unit},
+            #{isActive},
+            #{createdAt},
+            #{updatedAt}
+        )
+    </insert>
+
+    <!-- 根据ID查询预警阈值 -->
+    <select id="selectWarningThresholdById" resultType="com.example.demo.entity.warning.WarningThreshold">
+        SELECT * FROM warning_thresholds 
+        WHERE id = #{id} AND deleted_at IS NULL
+    </select>
+
+    <!-- 更新预警阈值 -->
+    <update id="updateWarningThreshold">
+        UPDATE warning_thresholds
+        <set>
+            <if test="stationName != null">station_name = #{stationName},</if>
+            <if test="monitoringItem != null">monitoring_item = #{monitoringItem},</if>
+            <if test="upperUpperLimit != null">upper_upper_limit = #{upperUpperLimit},</if>
+            <if test="upperLimit != null">upper_limit = #{upperLimit},</if>
+            <if test="lowerLimit != null">lower_limit = #{lowerLimit},</if>
+            <if test="lowerLowerLimit != null">lower_lower_limit = #{lowerLowerLimit},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="isActive != null">is_active = #{isActive},</if>
+            <if test="updatedAt != null">updated_at = #{updatedAt},</if>
+            <if test="deletedAt != null">deleted_at = #{deletedAt},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>

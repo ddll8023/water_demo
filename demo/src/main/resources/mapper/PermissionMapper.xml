@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.PermissionMapper">
+
+    <!-- 结果映射：权限实体 -->
+    <resultMap id="PermissionMap" type="com.example.demo.entity.system.Permission">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="code" column="code"/>
+        <result property="type" column="type"/>
+        <result property="description" column="description"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="deletedAt" column="deleted_at"/>
+    </resultMap>
+
+    <!-- 根据权限代码查询权限 -->
+    <select id="selectByCode" resultMap="PermissionMap">
+        SELECT * FROM permissions 
+        WHERE code = #{code} AND deleted_at IS NULL
+    </select>
+
+    <!-- 检查权限代码是否已存在 -->
+    <select id="countByCode" resultType="int">
+        SELECT COUNT(1) FROM permissions 
+        WHERE code = #{code} AND deleted_at IS NULL
+    </select>
+
+    <!-- 查询所有菜单权限（用于构建菜单树） -->
+    <select id="selectAllMenus" resultMap="PermissionMap">
+        SELECT * FROM permissions 
+        WHERE type = 'MENU' AND deleted_at IS NULL 
+        ORDER BY sort_order, id
+    </select>
+
+    <!-- 根据父权限ID查询子权限 -->
+    <select id="selectByParentId" resultMap="PermissionMap">
+        SELECT * FROM permissions 
+        WHERE parent_id = #{parentId} AND deleted_at IS NULL 
+        ORDER BY sort_order, id
+    </select>
+
+    <!-- 查询所有可用权限（用于角色分配） -->
+    <select id="selectAllAvailable" resultMap="PermissionMap">
+        SELECT * FROM permissions 
+        WHERE deleted_at IS NULL 
+        ORDER BY sort_order, id
+    </select>
+
+    <!-- 根据权限类型查询权限 -->
+    <select id="selectByType" resultMap="PermissionMap">
+        SELECT * FROM permissions 
+        WHERE type = #{type} AND deleted_at IS NULL 
+        ORDER BY sort_order, id
+    </select>
+
+    <!-- 查询根权限（顶级菜单） -->
+    <select id="selectRootPermissions" resultMap="PermissionMap">
+        SELECT * FROM permissions 
+        WHERE parent_id IS NULL AND deleted_at IS NULL 
+        ORDER BY sort_order, id
+    </select>
+
+    <!-- 检查权限编码是否已存在（排除指定ID） -->
+    <select id="countByCodeExcluding" resultType="int">
+        SELECT COUNT(1) FROM permissions 
+        WHERE code = #{code} AND deleted_at IS NULL
+        <if test="excludeId != null">
+            AND id != #{excludeId}
+        </if>
+    </select>
+
+    <!-- 带过滤条件查询权限列表（用于PageHelper分页） -->
+    <select id="selectPermissionListWithFilter" resultMap="PermissionMap">
+        SELECT * FROM permissions
+        WHERE deleted_at IS NULL
+        <if test="keyword != null and keyword != ''">
+            AND (
+                name LIKE CONCAT('%', #{keyword}, '%') OR
+                code LIKE CONCAT('%', #{keyword}, '%') OR
+                description LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+        <if test="type != null and type != ''">
+            AND type = #{type}
+        </if>
+        ORDER BY sort_order ASC, id ASC
+    </select>
+
+</mapper>

@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.MapOverviewMapper">
+
+    <!-- 结果映射：设施地理位置DTO -->
+    <resultMap id="FacilityLocationDTOMap" type="com.example.demo.dto.map.FacilityLocationDTO">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="type" column="type"/>
+        <result property="typeName" column="type_name"/>
+        <result property="longitude" column="longitude"/>
+        <result property="latitude" column="latitude"/>
+        <result property="status" column="status"/>
+        <result property="statusName" column="status_name"/>
+        <result property="code" column="code"/>
+        <result property="departmentId" column="department_id"/>
+        <result property="departmentName" column="department_name"/>
+        <result property="remarks" column="remarks"/>
+    </resultMap>
+
+    <!-- 结果映射：管理体系DTO -->
+    <resultMap id="ManagementSystemDTOMap" type="com.example.demo.dto.map.ManagementSystemDTO">
+        <result property="departmentId" column="department_id"/>
+        <result property="departmentName" column="department_name"/>
+        <result property="departmentCode" column="department_code"/>
+        <result property="departmentType" column="department_type"/>
+        <result property="personnelId" column="personnel_id"/>
+        <result property="personnelName" column="personnel_name"/>
+        <result property="personnelPositionId" column="personnel_position_id"/>
+        <result property="personnelPosition" column="personnel_position"/>
+        <result property="contactPhone" column="contact_phone"/>
+        <result property="email" column="email"/>
+        <result property="regionBoundary" column="region_boundary"/>
+        <result property="regionName" column="region_name"/>
+        <result property="departmentLevel" column="department_level"/>
+        <result property="parentDepartmentId" column="parent_department_id"/>
+        <result property="parentDepartmentName" column="parent_department_name"/>
+    </resultMap>
+
+    <!-- 结果映射：监测站点DTO -->
+    <resultMap id="MonitoringStationDTOMap" type="com.example.demo.dto.map.MonitoringStationDTO">
+        <result property="stationId" column="station_id"/>
+        <result property="stationName" column="station_name"/>
+        <result property="stationCode" column="station_code"/>
+        <result property="longitude" column="longitude"/>
+        <result property="latitude" column="latitude"/>
+        <result property="monitoringItem" column="monitoring_item"/>
+        <result property="monitoringItemName" column="monitoring_item_name"/>
+        <result property="stationStatus" column="station_status"/>
+        <result property="stationStatusName" column="station_status_name"/>
+        <result property="latestData" column="latest_data"/>
+        <result property="lastMonitoringTime" column="last_monitoring_time"/>
+        <result property="dataQuality" column="data_quality"/>
+        <result property="dataQualityText" column="data_quality_text"/>
+        <result property="departmentId" column="department_id"/>
+        <result property="departmentName" column="department_name"/>
+        <result property="installationDate" column="installation_date"/>
+        <result property="remarks" column="remarks"/>
+    </resultMap>
+
+    <!-- 结果映射：预警统计DTO -->
+    <resultMap id="WarningStatsDTOMap" type="com.example.demo.dto.map.WarningStatsDTO">
+        <result property="facilityCount" column="facility_count"/>
+        <result property="pumpingStationCount" column="pumping_station_count"/>
+        <result property="waterPlantCount" column="water_plant_count"/>
+        <result property="reservoirCount" column="reservoir_count"/>
+        <result property="stationCount" column="station_count"/>
+        <result property="onlineStationCount" column="online_station_count"/>
+        <result property="offlineStationCount" column="offline_station_count"/>
+        <result property="totalWarnings" column="total_warnings"/>
+        <result property="ongoingWarnings" column="ongoing_warnings"/>
+        <result property="resolvedWarnings" column="resolved_warnings"/>
+        <result property="level1Warnings" column="level1_warnings"/>
+        <result property="level2Warnings" column="level2_warnings"/>
+        <result property="level3Warnings" column="level3_warnings"/>
+        <result property="level4Warnings" column="level4_warnings"/>
+        <result property="todayNewWarnings" column="today_new_warnings"/>
+        <result property="departmentCount" column="department_count"/>
+        <result property="personnelCount" column="personnel_count"/>
+    </resultMap>
+
+    <!-- 获取所有水利设施地理位置信息 -->
+    <select id="selectAllFacilityLocations" resultMap="FacilityLocationDTOMap">
+        SELECT 
+            id, name, 'pumping_station' as type, '泵站' as type_name,
+            longitude, latitude, 'NORMAL' as status, '正常' as status_name,
+            station_code as code, NULL as department_id, NULL as department_name,
+            NULL as remarks
+        FROM pumping_stations 
+        WHERE deleted_at IS NULL
+        
+        UNION ALL
+        
+        SELECT 
+            id, name, 'water_plant' as type, '水厂' as type_name,
+            longitude, latitude, 'NORMAL' as status, '正常' as status_name,
+            plant_code as code, department_id, NULL as department_name,
+            NULL as remarks
+        FROM water_plants 
+        WHERE deleted_at IS NULL
+        
+        UNION ALL
+        
+        SELECT 
+            id, name, 'reservoir' as type, '水库' as type_name,
+            longitude, latitude, 'NORMAL' as status, '正常' as status_name,
+            reservoir_code as code, department_id, NULL as department_name,
+            NULL as remarks
+        FROM reservoirs 
+        WHERE deleted_at IS NULL
+        
+        UNION ALL
+        
+        SELECT 
+            id, name, 'monitoring_station' as type, '监测站' as type_name,
+            longitude, latitude, 'ONLINE' as status, '在线' as status_name,
+            station_code as code, NULL as department_id, NULL as department_name,
+            remark as remarks
+        FROM monitoring_stations 
+        WHERE deleted_at IS NULL
+        
+        ORDER BY type, name
+    </select>
+
+    <!-- 获取管理体系信息（部门、人员及其负责区域） -->
+    <select id="selectManagementSystem" resultMap="ManagementSystemDTOMap">
+        SELECT 
+            d.id as department_id,
+            d.name as department_name,
+            CONCAT('DEPT', LPAD(d.id, 4, '0')) as department_code,
+            '管理部门' as department_type,
+            p.id as personnel_id,
+            p.full_name as personnel_name,
+            p.position_id as personnel_position_id,
+            pos.name as personnel_position,
+            p.phone as contact_phone,
+            p.email as email,
+            r.boundary as region_boundary,
+            r.name as region_name,
+            1 as department_level,
+            d.parent_id as parent_department_id,
+            pd.name as parent_department_name
+        FROM departments d
+        LEFT JOIN personnel p ON d.id = p.department_id AND p.deleted_at IS NULL AND p.is_active = 1
+        LEFT JOIN positions pos ON p.position_id = pos.id AND pos.deleted_at IS NULL
+        LEFT JOIN regions r ON d.region_id = r.id AND r.deleted_at IS NULL
+        LEFT JOIN departments pd ON d.parent_id = pd.id AND pd.deleted_at IS NULL
+        WHERE d.deleted_at IS NULL AND d.is_active = 1
+        ORDER BY d.id, p.id
+    </select>
+
+    <!-- 获取所有监测站点及其最新数据 -->
+    <select id="selectMonitoringStationsWithLatestData" resultMap="MonitoringStationDTOMap">
+        SELECT 
+            ms.id as station_id,
+            ms.name as station_name,
+            ms.station_code,
+            ms.longitude,
+            ms.latitude,
+            ms.monitoring_item_code as monitoring_item,
+            CASE ms.monitoring_item_code
+                WHEN 'WQ' THEN '水质监测'
+                WHEN 'H' THEN '水位监测'
+                WHEN 'Q' THEN '流量监测'
+                WHEN 'R' THEN '降雨监测'
+                WHEN 'V' THEN '视频监测'
+                ELSE '未知监测项'
+            END as monitoring_item_name,
+            'ONLINE' as station_status,
+            '在线' as station_status_name,
+            CASE 
+                WHEN ms.monitoring_item_code = 'WQ' THEN JSON_OBJECT(
+                    'waterTemperature', wq.water_temperature,
+                    'turbidity', wq.turbidity,
+                    'phValue', wq.ph_value,
+                    'conductivity', wq.conductivity,
+                    'dissolvedOxygen', wq.dissolved_oxygen,
+                    'ammoniaNitrogen', wq.ammonia_nitrogen,
+                    'codValue', wq.cod_value,
+                    'residualChlorine', wq.residual_chlorine
+                )
+                ELSE NULL
+            END as latest_data,
+            CASE 
+                WHEN ms.monitoring_item_code = 'WQ' THEN wq.monitoring_time
+                ELSE NULL
+            END as last_monitoring_time,
+            1 as data_quality,
+            '正常' as data_quality_text,
+            NULL as department_id,
+            NULL as department_name,
+            ms.establishment_date as installation_date,
+            ms.remark as remarks
+        FROM monitoring_stations ms
+        LEFT JOIN (
+            SELECT t1.*
+            FROM water_quality_monitoring_data t1
+            INNER JOIN (
+                SELECT station_id, MAX(monitoring_time) AS max_time
+                FROM water_quality_monitoring_data
+                GROUP BY station_id
+            ) t2 ON t1.station_id = t2.station_id AND t1.monitoring_time = t2.max_time
+        ) wq ON wq.station_id = ms.id AND ms.monitoring_item_code = 'WQ'
+        WHERE ms.deleted_at IS NULL
+        ORDER BY ms.monitoring_item_code, ms.name
+    </select>
+
+    <!-- 获取基础数据统计信息 -->
+    <select id="selectWarningStats" resultMap="WarningStatsDTOMap">
+        SELECT 
+            -- 设施统计
+            (SELECT COUNT(*) FROM pumping_stations WHERE deleted_at IS NULL) +
+            (SELECT COUNT(*) FROM water_plants WHERE deleted_at IS NULL) +
+            (SELECT COUNT(*) FROM reservoirs WHERE deleted_at IS NULL) +
+            (SELECT COUNT(*) FROM monitoring_stations WHERE deleted_at IS NULL) as facility_count,
+            
+            (SELECT COUNT(*) FROM pumping_stations WHERE deleted_at IS NULL) as pumping_station_count,
+            (SELECT COUNT(*) FROM water_plants WHERE deleted_at IS NULL) as water_plant_count,
+            (SELECT COUNT(*) FROM reservoirs WHERE deleted_at IS NULL) as reservoir_count,
+            
+            -- 监测站点统计
+            (SELECT COUNT(*) FROM monitoring_stations WHERE deleted_at IS NULL) as station_count,
+            (SELECT COUNT(*) FROM monitoring_stations WHERE deleted_at IS NULL) as online_station_count,
+            0 as offline_station_count,
+            
+            -- 预警统计
+            (SELECT COUNT(*) FROM warning_records WHERE deleted_at IS NULL) as total_warnings,
+            (SELECT COUNT(*) FROM warning_records WHERE deleted_at IS NULL AND warning_status = '进行中') as ongoing_warnings,
+            (SELECT COUNT(*) FROM warning_records WHERE deleted_at IS NULL AND warning_status = '已解除') as resolved_warnings,
+            
+            -- 各级别预警统计
+            (SELECT COUNT(*) FROM warning_records WHERE deleted_at IS NULL AND warning_level = '1') as level1_warnings,
+            (SELECT COUNT(*) FROM warning_records WHERE deleted_at IS NULL AND warning_level = '2') as level2_warnings,
+            (SELECT COUNT(*) FROM warning_records WHERE deleted_at IS NULL AND warning_level = '3') as level3_warnings,
+            (SELECT COUNT(*) FROM warning_records WHERE deleted_at IS NULL AND warning_level = '4') as level4_warnings,
+            
+            -- 今日新增预警
+            (SELECT COUNT(*) FROM warning_records 
+             WHERE deleted_at IS NULL 
+             AND DATE(occurred_at) = CURDATE()) as today_new_warnings,
+             
+            -- 管理体系统计
+            (SELECT COUNT(*) FROM departments WHERE deleted_at IS NULL AND is_active = 1) as department_count,
+            (SELECT COUNT(*) FROM personnel WHERE deleted_at IS NULL AND is_active = 1) as personnel_count
+    </select>
+
+</mapper>

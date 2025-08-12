@@ -1,0 +1,342 @@
+// 鄂北地区水资源管理系统 - SCSS变量系统
+// 基于index.html设计的标准化颜色系统
+
+// ==================== 标准颜色系统 ====================
+:root {
+  // 主色调系统（来自index.html标准设计）
+  --primary-color: #165DFF;
+  --primary-light: #4080FF;
+  --primary-lighter: #7AA3FF;
+  --primary-dark: #0E4FCC;
+
+  // 功能色系（来自index.html标准设计）
+  --secondary-color: #6B7280;
+  --success-color: #00B42A;
+  --warning-color: #FF7D00;
+  --warning-light-color: #ffc766;
+  --warning-bg-color: #fff7e6;
+  --warning-dark-color: #d98200;
+  --danger-color: #F53F3F;
+  --info-color: #6B7280;
+
+  // 中性色系（来自index.html标准设计）
+  --neutral-color: #F2F3F5;
+  --neutral-dark: #E5E6EB;
+
+  // 文本色系（来自index.html标准设计）
+  --text-primary: #1D2129;
+  --text-secondary: #4E5969;
+  --text-tertiary: #86909C;
+
+  // 边框色系（来自index.html标准设计）
+  --border-color: #C9CDD4;
+
+  // 深色边框系列
+  --border-dark: #434a50;
+
+  // 背景色系（来自index.html标准设计）
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F2F3F5;
+  --bg-tertiary: #FAFAFA;
+
+  // 深色背景系列
+  --bg-dark-primary: #2b2f3a;
+  --bg-dark-secondary: #304156;
+
+  // ==================== Element Plus 兼容性变量 ====================
+  // 保持与Element Plus组件的兼容性
+  --el-color-primary: var(--primary-color);
+  --el-color-success: var(--success-color);
+  --el-color-warning: var(--warning-color);
+  --el-color-danger: var(--danger-color);
+  --el-color-info: var(--secondary-color);
+
+  --el-text-color-primary: var(--text-primary);
+  --el-text-color-regular: var(--text-secondary);
+  --el-text-color-secondary: var(--text-tertiary);
+  --el-text-color-placeholder: #C0C4CC;
+
+  --el-bg-color: var(--bg-primary);
+  --el-bg-color-page: var(--bg-secondary);
+  --el-bg-color-overlay: var(--bg-tertiary);
+
+  --el-border-color: var(--border-color);
+  --el-border-color-light: #E4E7ED;
+  --el-border-color-lighter: #EBEEF5;
+  --el-border-color-extra-light: #F2F6FC;
+
+  // ==================== 向后兼容性变量 ====================
+  // 保持旧版本变量的兼容性，避免破坏现有代码
+  // 文本颜色兼容
+  --text-color-primary: var(--text-primary);
+  --text-color-regular: var(--text-secondary);
+  --text-color-secondary: var(--text-tertiary);
+  --text-color-placeholder: var(--el-text-color-placeholder);
+  --text-regular: var(--text-secondary);
+  --text-placeholder: var(--el-text-color-placeholder);
+
+  // 背景颜色兼容
+  --background-color-white: var(--bg-primary);
+  --background-color-base: var(--bg-secondary);
+  --background-color-light: var(--bg-tertiary);
+
+  // 边框颜色兼容（使用Element Plus标准）
+  --border-color-base: var(--el-border-color);
+  --border-color-light: var(--el-border-color-light);
+  --border-color-lighter: var(--el-border-color-lighter);
+  --border-color-extra-light: var(--el-border-color-extra-light);
+  --border-primary: var(--el-border-color);
+  --border-secondary: var(--el-border-color-light);
+  --border-tertiary: var(--el-border-color-lighter);
+}
+
+// ==================== SCSS变量（用于计算和混入）====================
+// 标准颜色系统的SCSS变量版本
+$primary-color: #165DFF;
+$secondary-color: #6B7280;
+$success-color: #00B42A;
+$warning-color: #FF7D00;
+$danger-color: #F53F3F;
+$info-color: #6B7280;
+
+// 中性色系
+$neutral-color: #F2F3F5;
+$neutral-dark: #E5E6EB;
+
+// 文本色系
+$text-primary: #1D2129;
+$text-secondary: #4E5969;
+$text-tertiary: #86909C;
+
+// 边框色系
+$border-color: #C9CDD4;
+
+// 背景色系
+$bg-primary: #FFFFFF;
+$bg-secondary: #F2F3F5;
+$bg-tertiary: #FAFAFA;
+
+// ==================== 字体系统 ====================
+:root {
+  // 字体族
+  --font-family-base: 'PingFang SC', 'Helvetica Neue', Helvetica, 'Microsoft YaHei', Arial, sans-serif;
+  --font-family-number: 'Roboto Mono', 'SF Mono', Monaco, 'Cascadia Code', monospace;
+
+  // 字号规范
+  --font-size-extra-large: 20px;
+  --font-size-large: 18px;
+  --font-size-medium: 16px;
+  --font-size-base: 14px;
+  --font-size-small: 13px;
+  --font-size-extra-small: 12px;
+
+  // 字重规范
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 600;
+  --font-weight-primary: 500;
+
+  // 行高规范
+  --line-height-base: 1.5;
+  --line-height-small: 1.4;
+  --line-height-large: 1.6;
+}
+
+// ==================== 间距系统 ====================
+:root {
+  // 间距变量
+  --spacing-1: 1px;
+  --spacing-micro: 2px;
+  --spacing-3: 3px;
+  --spacing-mini: 4px;
+  --spacing-5: 5px;
+  --spacing-xs: 6px;
+  --spacing-small: 8px;
+  --spacing-sm: 10px;
+  --spacing-medium: 12px;
+  --spacing-base: 16px;
+  --spacing-large: 20px;
+  --spacing-extra-large: 24px;
+
+  // 组件间距
+  --component-margin-bottom: 16px;
+  --form-item-margin-bottom: 18px;
+  --card-padding: 20px;
+}
+
+// SCSS间距变量（从CSS变量映射，避免重复定义）
+$spacing-mini: var(--spacing-mini);
+$spacing-small: var(--spacing-small);
+$spacing-medium: var(--spacing-medium);
+$spacing-base: var(--spacing-base);
+$spacing-large: var(--spacing-large);
+$spacing-extra-large: var(--spacing-extra-large);
+
+// ==================== 布局系统 ====================
+:root {
+  // 布局尺寸
+  --header-height: 60px;
+  --sidebar-width: 200px;
+  --sidebar-collapsed-width: 64px;
+  --main-content-padding: 20px;
+
+  // 圆角规范
+  --border-radius-small: 2px;
+  --border-radius-base: 4px;
+  --border-radius-md: 6px;
+  --border-radius-large: 8px;
+  --border-radius-xl: 12px;
+  --border-radius-pill: 25px;
+  --border-radius-round: 50%;
+
+  // 阴影规范
+  --box-shadow-light: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
+  --box-shadow-base: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.12);
+  --box-shadow-dark: 0 4px 8px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.12);
+
+  // 表格布局专用变量
+  --table-header-height: 60px; // 表格头部高度
+  --table-max-content-height: 560px; // 表格内容区域最大高度（表头60px + 10行数据500px）
+  --pagination-container-height: 60px; // 分页容器高度
+  --card-header-height: 60px; // 卡片头部高度
+  --card-content-padding: 20px; // 卡片内容padding
+}
+
+// SCSS布局变量（从CSS变量映射，避免重复定义）
+$header-height: var(--header-height);
+$sidebar-width: var(--sidebar-width);
+$sidebar-collapsed-width: var(--sidebar-collapsed-width);
+
+// ==================== 响应式断点 ====================
+$breakpoint-xs: 480px;
+$breakpoint-sm: 768px;
+$breakpoint-md: 992px;
+$breakpoint-lg: 1200px;
+$breakpoint-xl: 1920px;
+
+// ==================== Z-index层级 ====================
+:root {
+  // 基础层级
+  --z-index-base: 1;
+  --z-index-map-marker: 100;
+  --z-index-map-marker-selected: 200;
+  --z-index-map-marker-hover: 150;
+
+  // UI组件层级
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1020;
+  --z-index-fixed: 1030;
+  --z-index-modal-backdrop: 1040;
+  --z-index-modal: 1050;
+  --z-index-popover: 1060;
+  --z-index-tooltip: 1070;
+
+  // 顶层元素
+  --z-index-notification: 2000;
+  --z-index-loading: 9999;
+}
+
+// ==================== 过渡动画 ====================
+:root {
+  // 基础过渡时间
+  --transition-duration-base: 0.3s;
+  --transition-duration-fast: 0.2s;
+  --transition-duration-slow: 0.5s;
+  --transition-duration-micro: 0.08s;
+  --transition-duration-instant: 0.1s;
+
+  // 过渡函数
+  --transition-timing-function: ease;
+  --transition-timing-function-ease-in: ease-in;
+  --transition-timing-function-ease-out: ease-out;
+
+  // 完整过渡组合（保持向后兼容）
+  --transition-base: all 0.3s ease;
+  --transition-fast: all 0.2s ease;
+  --transition-slow: all 0.5s ease;
+
+  // 专用过渡组合
+  --transition-transform: transform var(--transition-duration-base) var(--transition-timing-function);
+  --transition-opacity: opacity var(--transition-duration-fast) var(--transition-timing-function);
+  --transition-all-fast: all var(--transition-duration-fast) var(--transition-timing-function);
+}
+
+// ==================== 通用布局补充变量 ====================
+:root {
+  // 布局背景色补充（与layout.scss兼容）
+  --bg-color: var(--bg-primary);
+  --bg-color-page: var(--bg-secondary);
+
+  // 通用图标规范变量
+  --icon-size-xs: 12px; // 超小图标
+  --icon-size-sm: 14px; // 小图标
+  --icon-size-md: 16px; // 中等图标
+  --icon-size-lg: 20px; // 大图标
+  --icon-size-xl: 24px; // 超大图标
+  --icon-size-xxl: 48px; // 巨大图标
+
+  // 通用卡片阴影层级
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-card-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-popup: 0 6px 20px rgba(0, 0, 0, 0.15);
+
+  // 通用尺寸
+  --table-row-height: 48px; // 表格行高
+  --form-item-height: 40px; // 表单项高度
+
+  // 页面最小高度偏移（用于替代硬编码的 200px）
+  --page-min-height-offset: 200px;
+
+  // ==================== 透明度相关颜色 ====================
+  // 黑色透明度系列
+  --black-transparent-light: rgba(0, 0, 0, 0.04);
+  --black-transparent-xxlight: rgba(0, 0, 0, 0.05);
+  --black-transparent-thin: rgba(0, 0, 0, 0.06);
+  --black-transparent-light-10: rgba(0, 0, 0, 0.1);
+  --black-transparent-base: rgba(0, 0, 0, 0.12);
+  --black-transparent-medium: rgba(0, 0, 0, 0.15);
+  --black-transparent-light-20: rgba(0, 0, 0, 0.2);
+  --black-transparent-strong: rgba(0, 0, 0, 0.25);
+  --black-transparent-heavy: rgba(0, 0, 0, 0.8);
+
+  // 白色透明度系列
+  --white-transparent-light: rgba(255, 255, 255, 0.1);
+  --white-transparent-base: rgba(255, 255, 255, 0.2);
+  --white-transparent-strong: rgba(255, 255, 255, 0.8);
+  --white-transparent-full: rgba(255, 255, 255, 0.95);
+
+  // 玻璃面板通用变量
+  --glass-panel-bg: var(--white-transparent-full);
+  --glass-panel-border: var(--white-transparent-base);
+
+  // 深色背景上的文本颜色
+  --text-on-dark: #ffffff;
+  --text-on-dark-secondary: rgba(255, 255, 255, 0.8);
+
+  // 深色背景上的图标颜色
+  --icon-color-on-dark: #bfcbd9;
+
+
+
+
+}
+
+// ==================== 布局特定变量（从 layout.scss 合并）====================
+:root {
+  --transition-duration: 0.28s;
+}
+
+// 暗色主题变量（从 layout.scss 合并）
+[data-theme="dark"] {
+  --border-primary: #4c4d4f;
+  --border-secondary: #4c4d4f;
+  --border-tertiary: #4c4d4f;
+  --bg-primary: #1d1e1f;
+  --bg-secondary: #0a0a0a;
+  --bg-tertiary: #0a0a0a;
+  --text-primary: #e5eaf3;
+  --text-regular: #cfd3dc;
+  --text-secondary: #a3a6ad;
+  --text-placeholder: #6c6e72;
+}

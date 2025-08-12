@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.RainfallMonitoringDataMapper">
+
+    <!-- 结果映射：雨情监测数据响应DTO -->
+    <resultMap id="RainfallMonitoringDataResponseDTOMap" type="com.example.demo.dto.monitoring.RainfallMonitoringDataResponseDTO">
+        <id property="id" column="id"/>
+        <result property="stationId" column="station_id"/>
+        <result property="stationName" column="station_name"/>
+        <result property="stationCode" column="station_code"/>
+        <result property="monitoringTime" column="monitoring_time"/>
+        <result property="rainfall" column="rainfall"/>
+        <result property="rainfallIntensity" column="rainfall_intensity"/>
+        <result property="cumulativeRainfall" column="cumulative_rainfall"/>
+        <result property="dataQuality" column="data_quality"/>
+        <result property="dataQualityText" column="data_quality_text"/>
+        <result property="collectionMethod" column="collection_method"/>
+        <result property="collectionMethodText" column="collection_method_text"/>
+        <result property="dataSource" column="data_source"/>
+        <result property="remark" column="remark"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- 分页查询雨情监测数据（包含关联信息） -->
+    <select id="selectRainfallMonitoringDataPage" resultMap="RainfallMonitoringDataResponseDTOMap">
+        SELECT 
+        rainfall_monitoring_data.id, rainfall_monitoring_data.station_id, rainfall_monitoring_data.monitoring_time, 
+        rainfall_monitoring_data.rainfall, rainfall_monitoring_data.rainfall_intensity, rainfall_monitoring_data.cumulative_rainfall,
+        rainfall_monitoring_data.data_quality, rainfall_monitoring_data.collection_method, 
+        rainfall_monitoring_data.data_source, rainfall_monitoring_data.remark, rainfall_monitoring_data.created_at, rainfall_monitoring_data.updated_at, 
+        monitoring_stations.name as station_name, monitoring_stations.station_code,
+        CASE rainfall_monitoring_data.data_quality 
+          WHEN 1 THEN '正常' 
+          WHEN 2 THEN '异常' 
+          WHEN 3 THEN '缺失' 
+          ELSE '未知' 
+        END as data_quality_text,
+        CASE rainfall_monitoring_data.collection_method 
+          WHEN 'AUTO' THEN '自动' 
+          WHEN 'MANUAL' THEN '手动' 
+          ELSE '未知' 
+        END as collection_method_text
+        FROM rainfall_monitoring_data 
+        LEFT JOIN monitoring_stations ON rainfall_monitoring_data.station_id = monitoring_stations.id AND monitoring_stations.deleted_at IS NULL 
+        WHERE rainfall_monitoring_data.deleted_at IS NULL 
+        <if test='stationId != null'> AND rainfall_monitoring_data.station_id = #{stationId} </if>
+        <if test='startTime != null'> AND rainfall_monitoring_data.monitoring_time &gt;= #{startTime} </if>
+        <if test='endTime != null'> AND rainfall_monitoring_data.monitoring_time &lt;= #{endTime} </if>
+        <if test='dataQuality != null'> AND rainfall_monitoring_data.data_quality = #{dataQuality} </if>
+        <if test='collectionMethod != null and collectionMethod != ""'> AND rainfall_monitoring_data.collection_method = #{collectionMethod} </if>
+        <if test='dataSource != null and dataSource != ""'> AND rainfall_monitoring_data.data_source LIKE CONCAT('%', #{dataSource}, '%') </if>
+        ORDER BY 
+        <choose>
+          <when test='sort != null and sort.contains("monitoring_time,asc")'> rainfall_monitoring_data.monitoring_time ASC </when>
+          <when test='sort != null and sort.contains("rainfall,desc")'> rainfall_monitoring_data.rainfall DESC </when>
+          <when test='sort != null and sort.contains("rainfall,asc")'> rainfall_monitoring_data.rainfall ASC </when>
+          <when test='sort != null and sort.contains("rainfall_intensity,desc")'> rainfall_monitoring_data.rainfall_intensity DESC </when>
+          <when test='sort != null and sort.contains("rainfall_intensity,asc")'> rainfall_monitoring_data.rainfall_intensity ASC </when>
+          <when test='sort != null and sort.contains("cumulative_rainfall,desc")'> rainfall_monitoring_data.cumulative_rainfall DESC </when>
+          <when test='sort != null and sort.contains("cumulative_rainfall,asc")'> rainfall_monitoring_data.cumulative_rainfall ASC </when>
+          <otherwise> rainfall_monitoring_data.monitoring_time DESC </otherwise>
+        </choose>
+    </select>
+
+    <!-- 查询雨情统计数据 -->
+    <select id="selectRainfallStatistics" resultType="java.util.Map">
+        SELECT 
+        COUNT(DISTINCT rainfall_monitoring_data.station_id) as total_stations, 
+        AVG(rainfall_monitoring_data.rainfall) as avg_rainfall, 
+        MAX(rainfall_monitoring_data.rainfall) as max_rainfall, 
+        MIN(rainfall_monitoring_data.rainfall) as min_rainfall,
+        SUM(rainfall_monitoring_data.rainfall) as total_rainfall,
+        MAX(rainfall_monitoring_data.rainfall_intensity) as max_rainfall_intensity,
+        AVG(rainfall_monitoring_data.rainfall_intensity) as avg_rainfall_intensity, 
+        MAX(rainfall_monitoring_data.cumulative_rainfall) as max_cumulative_rainfall,
+        COUNT(*) as total_data_count, 
+        SUM(CASE WHEN rainfall_monitoring_data.data_quality = 1 THEN 1 ELSE 0 END) as normal_data_count, 
+        SUM(CASE WHEN rainfall_monitoring_data.data_quality = 2 THEN 1 ELSE 0 END) as abnormal_data_count, 
+        SUM(CASE WHEN rainfall_monitoring_data.data_quality = 3 THEN 1 ELSE 0 END) as missing_data_count, 
+        ROUND(SUM(CASE WHEN rainfall_monitoring_data.data_quality = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) as data_quality_rate 
+        FROM rainfall_monitoring_data 
+        WHERE rainfall_monitoring_data.deleted_at IS NULL 
+        <if test='stationId != null'> AND rainfall_monitoring_data.station_id = #{stationId} </if>
+        <if test='timeRange != null and timeRange == "today"'> AND DATE(rainfall_monitoring_data.monitoring_time) = CURDATE() </if>
+        <if test='timeRange != null and timeRange == "week"'> AND rainfall_monitoring_data.monitoring_time &gt;= DATE_SUB(NOW(), INTERVAL 7 DAY) </if>
+        <if test='timeRange != null and timeRange == "month"'> AND rainfall_monitoring_data.monitoring_time &gt;= DATE_SUB(NOW(), INTERVAL 30 DAY) </if>
+    </select>
+
+    <!-- 查询雨情图表数据 -->
+    <select id="selectRainfallChartData" resultType="java.util.Map">
+        SELECT
+        DATE_FORMAT(rainfall_monitoring_data.monitoring_time,
+        <choose>
+          <when test='interval == "hour"'> '%Y-%m-%d %H:%i:%s' </when>
+          <when test='interval == "day"'> '%Y-%m-%d' </when>
+          <when test='interval == "month"'> '%Y-%m' </when>
+          <otherwise> '%Y-%m-%d %H:%i:%s' </otherwise>
+        </choose>
+        ) as time_label,
+        AVG(rainfall_monitoring_data.rainfall) as avg_rainfall,
+        MAX(rainfall_monitoring_data.rainfall) as max_rainfall,
+        MIN(rainfall_monitoring_data.rainfall) as min_rainfall,
+        SUM(rainfall_monitoring_data.rainfall) as sum_rainfall,
+        MAX(rainfall_monitoring_data.rainfall_intensity) as max_rainfall_intensity,
+        AVG(rainfall_monitoring_data.rainfall_intensity) as avg_rainfall_intensity,
+        MAX(rainfall_monitoring_data.cumulative_rainfall) as max_cumulative_rainfall,
+        MIN(rainfall_monitoring_data.cumulative_rainfall) as min_cumulative_rainfall,
+        COUNT(*) as data_count
+        FROM rainfall_monitoring_data
+        WHERE rainfall_monitoring_data.deleted_at IS NULL
+        AND rainfall_monitoring_data.station_id = #{stationId}
+        <if test='startTime != null'> AND rainfall_monitoring_data.monitoring_time &gt;= #{startTime} </if>
+        <if test='endTime != null'> AND rainfall_monitoring_data.monitoring_time &lt;= #{endTime} </if>
+        GROUP BY time_label
+        ORDER BY time_label ASC
+    </select>
+
+    <!-- 查询所有站点的雨情图表数据（汇总） -->
+    <select id="selectAllStationsRainfallChartData" resultType="java.util.Map">
+        SELECT
+        DATE_FORMAT(rainfall_monitoring_data.monitoring_time,
+        <choose>
+          <when test='interval == "hour"'> '%Y-%m-%d %H:%i:%s' </when>
+          <when test='interval == "day"'> '%Y-%m-%d' </when>
+          <when test='interval == "month"'> '%Y-%m' </when>
+          <otherwise> '%Y-%m-%d %H:%i:%s' </otherwise>
+        </choose>
+        ) as time_label,
+        AVG(rainfall_monitoring_data.rainfall) as avg_rainfall,
+        MAX(rainfall_monitoring_data.rainfall) as max_rainfall,
+        MIN(rainfall_monitoring_data.rainfall) as min_rainfall,
+        SUM(rainfall_monitoring_data.rainfall) as sum_rainfall,
+        MAX(rainfall_monitoring_data.rainfall_intensity) as max_rainfall_intensity,
+        AVG(rainfall_monitoring_data.rainfall_intensity) as avg_rainfall_intensity,
+        MAX(rainfall_monitoring_data.cumulative_rainfall) as max_cumulative_rainfall,
+        COUNT(*) as data_count,
+        COUNT(DISTINCT rainfall_monitoring_data.station_id) as station_count
+        FROM rainfall_monitoring_data
+        LEFT JOIN monitoring_stations ON rainfall_monitoring_data.station_id = monitoring_stations.id AND monitoring_stations.deleted_at IS NULL
+        WHERE rainfall_monitoring_data.deleted_at IS NULL
+        AND monitoring_stations.monitoring_item_code = 'R'
+        <if test='startTime != null'> AND rainfall_monitoring_data.monitoring_time &gt;= #{startTime} </if>
+        <if test='endTime != null'> AND rainfall_monitoring_data.monitoring_time &lt;= #{endTime} </if>
+        GROUP BY time_label
+        ORDER BY time_label ASC
+    </select>
+
+    <!-- 查询监测概览统计数据 -->
+    <select id="selectMonitoringOverview" resultType="java.util.Map">
+        SELECT
+        COUNT(DISTINCT monitoring_stations.id) as total_stations,
+        COUNT(DISTINCT CASE WHEN rainfall_monitoring_data.monitoring_time &gt;= DATE_SUB(NOW(), INTERVAL 1 HOUR) THEN monitoring_stations.id END) as online_stations,
+        AVG(rainfall_monitoring_data.rainfall) as avg_rainfall,
+        MAX(rainfall_monitoring_data.rainfall) as max_rainfall,
+        SUM(rainfall_monitoring_data.rainfall) as total_rainfall,
+        MAX(rainfall_monitoring_data.rainfall_intensity) as max_rainfall_intensity,
+        AVG(rainfall_monitoring_data.rainfall_intensity) as avg_rainfall_intensity,
+        MAX(rainfall_monitoring_data.cumulative_rainfall) as max_cumulative_rainfall,
+        COUNT(CASE WHEN DATE(rainfall_monitoring_data.monitoring_time) = CURDATE() THEN 1 END) as today_data_count,
+        ROUND(SUM(CASE WHEN rainfall_monitoring_data.data_quality = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) as data_quality_rate
+        FROM monitoring_stations
+        LEFT JOIN rainfall_monitoring_data ON monitoring_stations.id = rainfall_monitoring_data.station_id AND rainfall_monitoring_data.deleted_at IS NULL
+        WHERE monitoring_stations.deleted_at IS NULL
+        AND monitoring_stations.monitoring_item_code = 'R'
+    </select>
+
+    <!-- 查询数据质量统计（按站点分组） -->
+    <select id="selectDataQualityStatsByStation" resultType="java.util.Map">
+        SELECT
+        monitoring_stations.name as station_name,
+        monitoring_stations.station_code,
+        COUNT(*) as total_count,
+        SUM(CASE WHEN rainfall_monitoring_data.data_quality = 1 THEN 1 ELSE 0 END) as normal_count,
+        SUM(CASE WHEN rainfall_monitoring_data.data_quality = 2 THEN 1 ELSE 0 END) as abnormal_count,
+        SUM(CASE WHEN rainfall_monitoring_data.data_quality = 3 THEN 1 ELSE 0 END) as missing_count,
+        ROUND(SUM(CASE WHEN rainfall_monitoring_data.data_quality = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) as quality_rate
+        FROM rainfall_monitoring_data
+        LEFT JOIN monitoring_stations ON rainfall_monitoring_data.station_id = monitoring_stations.id AND monitoring_stations.deleted_at IS NULL
+        WHERE rainfall_monitoring_data.deleted_at IS NULL
+        AND monitoring_stations.monitoring_item_code = 'R'
+        <if test='timeRange != null and timeRange == "today"'> AND DATE(rainfall_monitoring_data.monitoring_time) = CURDATE() </if>
+        <if test='timeRange != null and timeRange == "week"'> AND rainfall_monitoring_data.monitoring_time &gt;= DATE_SUB(NOW(), INTERVAL 7 DAY) </if>
+        <if test='timeRange != null and timeRange == "month"'> AND rainfall_monitoring_data.monitoring_time &gt;= DATE_SUB(NOW(), INTERVAL 30 DAY) </if>
+        GROUP BY monitoring_stations.id, monitoring_stations.name, monitoring_stations.station_code
+        ORDER BY quality_rate DESC
+    </select>
+
+    <!-- 查询数据质量趋势数据 -->
+    <select id="selectDataQualityTrend" resultType="java.util.Map">
+        SELECT
+        DATE_FORMAT(rainfall_monitoring_data.monitoring_time, '%Y-%m-%d') as date_label,
+        COUNT(*) as total_count,
+        SUM(CASE WHEN rainfall_monitoring_data.data_quality = 1 THEN 1 ELSE 0 END) as normal_count,
+        SUM(CASE WHEN rainfall_monitoring_data.data_quality = 2 THEN 1 ELSE 0 END) as abnormal_count,
+        SUM(CASE WHEN rainfall_monitoring_data.data_quality = 3 THEN 1 ELSE 0 END) as missing_count,
+        ROUND(SUM(CASE WHEN rainfall_monitoring_data.data_quality = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) as quality_rate
+        FROM rainfall_monitoring_data
+        WHERE rainfall_monitoring_data.deleted_at IS NULL
+        <if test='timeRange != null and timeRange == "today"'> AND DATE(rainfall_monitoring_data.monitoring_time) = CURDATE() </if>
+        <if test='timeRange != null and timeRange == "week"'> AND rainfall_monitoring_data.monitoring_time &gt;= DATE_SUB(NOW(), INTERVAL 7 DAY) </if>
+        <if test='timeRange != null and timeRange == "month"'> AND rainfall_monitoring_data.monitoring_time &gt;= DATE_SUB(NOW(), INTERVAL 30 DAY) </if>
+        GROUP BY date_label
+        ORDER BY date_label ASC
+    </select>
+
+    <!-- 统计指定站点和时间的数据条数（用于重复性检查） -->
+    <select id="countByStationIdAndTime" resultType="int">
+        SELECT COUNT(*)
+        FROM rainfall_monitoring_data
+        WHERE deleted_at IS NULL
+        AND station_id = #{stationId}
+        AND monitoring_time = #{monitoringTime}
+    </select>
+
+</mapper> 

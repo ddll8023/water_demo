@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.VillageMapper">
+
+    <!-- 结果映射：村庄信息响应DTO -->
+    <resultMap id="VillageResponseDTOMap" type="com.example.demo.dto.facility.VillageResponseDTO">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="longitude" column="longitude"/>
+        <result property="latitude" column="latitude"/>
+        <result property="administrativeCode" column="administrative_code"/>
+        <result property="currentPopulation" column="current_population"/>
+        <result property="remark" column="remark"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- 分页查询村庄信息列表 - MyBatis-Plus 方式 -->
+    <select id="selectVillagePage" resultMap="VillageResponseDTOMap">
+        SELECT villages.*
+        FROM villages
+        WHERE villages.deleted_at IS NULL
+        <if test="keyword != null and keyword != ''">
+            AND villages.name LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        ORDER BY villages.created_at DESC
+    </select>
+    
+    <!-- 查询村庄信息列表 - PageHelper 方式 -->
+    <select id="selectVillageList" resultMap="VillageResponseDTOMap">
+        SELECT villages.*
+        FROM villages
+        WHERE villages.deleted_at IS NULL
+        <if test="keyword != null and keyword != ''">
+            AND villages.name LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        ORDER BY villages.created_at DESC
+    </select>
+
+    <!-- 根据ID查询村庄信息详情 -->
+    <select id="selectVillageById" resultMap="VillageResponseDTOMap">
+        SELECT villages.*
+        FROM villages
+        WHERE villages.id = #{id} AND villages.deleted_at IS NULL
+    </select>
+
+    <!-- 检查村庄名称在同一行政区划下是否存在 -->
+    <select id="existsByNameAndAdministrativeCode" resultType="boolean">
+        SELECT COUNT(*) > 0 FROM villages
+        WHERE name = #{name} AND administrative_code = #{administrativeCode}
+        <if test="excludeId != null">
+            AND id != #{excludeId}
+        </if>
+        AND deleted_at IS NULL
+    </select>
+
+    <!-- 获取所有可用的村庄信息（用于下拉选择） -->
+    <select id="selectAvailableVillages" resultType="com.example.demo.entity.facility.Village">
+        SELECT id, name FROM villages
+        WHERE deleted_at IS NULL
+        ORDER BY name
+    </select>
+
+    <!-- 统计村庄信息总数 -->
+    <select id="countTotal" resultType="long">
+        SELECT COUNT(*) FROM villages WHERE deleted_at IS NULL
+    </select>
+
+</mapper>

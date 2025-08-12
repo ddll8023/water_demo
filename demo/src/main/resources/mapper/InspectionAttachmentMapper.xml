@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.InspectionAttachmentMapper">
+
+    <resultMap id="InspectionAttachmentMap" type="com.example.demo.entity.inspection.InspectionAttachment">
+        <id property="id" column="id"/>
+        <result property="recordId" column="record_id"/>
+        <result property="fileName" column="file_name"/>
+        <result property="filePath" column="file_path"/>
+        <result property="contentType" column="content_type"/>
+        <result property="fileSize" column="file_size"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <select id="selectByRecordId" resultMap="InspectionAttachmentMap">
+        SELECT * FROM inspection_attachments
+        WHERE record_id = #{recordId}
+        ORDER BY created_at DESC
+    </select>
+
+    <insert id="insertBatch">
+        INSERT INTO inspection_attachments (record_id, file_name, file_path, content_type, file_size, created_at)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.recordId}, #{item.fileName}, #{item.filePath}, #{item.contentType}, #{item.fileSize}, #{item.createdAt})
+        </foreach>
+    </insert>
+
+</mapper> 

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.ReservoirMapper">
+
+    <!-- 结果映射：水库响应DTO -->
+    <resultMap id="ReservoirResponseDTOMap" type="com.example.demo.dto.facility.ReservoirResponseDTO">
+        <id property="id" column="id"/>
+        <result property="reservoirCode" column="reservoir_code"/>
+        <result property="name" column="name"/>
+        <result property="waterProject" column="water_project"/>
+        <result property="longitude" column="longitude"/>
+        <result property="latitude" column="latitude"/>
+        <result property="location" column="location"/>
+        <result property="registrationNo" column="registration_no"/>
+        <result property="adminRegionCode" column="admin_region_code"/>
+        <result property="engineeringGrade" column="engineering_grade"/>
+        <result property="engineeringGradeName" column="engineering_grade_name"/>
+        <result property="engineeringScale" column="engineering_scale"/>
+        <result property="engineeringScaleName" column="engineering_scale_name"/>
+        <result property="totalCapacity" column="total_capacity"/>
+        <result property="regulatingCapacity" column="regulating_capacity"/>
+        <result property="deadCapacity" column="dead_capacity"/>
+        <result property="establishmentDate" column="establishment_date"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- 结果映射：水库实体 -->
+    <resultMap id="ReservoirMap" type="com.example.demo.entity.facility.Reservoir">
+        <id property="id" column="id"/>
+        <result property="reservoirCode" column="reservoir_code"/>
+        <result property="name" column="name"/>
+        <result property="waterProject" column="water_project"/>
+        <result property="longitude" column="longitude"/>
+        <result property="latitude" column="latitude"/>
+        <result property="location" column="location"/>
+        <result property="registrationNo" column="registration_no"/>
+        <result property="adminRegionCode" column="admin_region_code"/>
+        <result property="engineeringGrade" column="engineering_grade"/>
+        <result property="engineeringScale" column="engineering_scale"/>
+        <result property="totalCapacity" column="total_capacity"/>
+        <result property="regulatingCapacity" column="regulating_capacity"/>
+        <result property="deadCapacity" column="dead_capacity"/>
+        <result property="establishmentDate" column="establishment_date"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- 分页查询水库列表（包含关联信息）- MyBatis-Plus 方式 -->
+    <select id="selectReservoirPage" resultMap="ReservoirResponseDTOMap">
+        SELECT reservoirs.*,
+               engineering_grade_dict.data_label as engineering_grade_name,
+               engineering_scale_dict.data_label as engineering_scale_name
+        FROM reservoirs
+        LEFT JOIN dict_data engineering_grade_dict ON reservoirs.engineering_grade = engineering_grade_dict.data_value
+        AND engineering_grade_dict.type_id = (SELECT id FROM dict_types WHERE type_code = 'engineering_grade' AND deleted_at IS NULL)
+        AND engineering_grade_dict.deleted_at IS NULL
+        LEFT JOIN dict_data engineering_scale_dict ON reservoirs.engineering_scale = engineering_scale_dict.data_value
+        AND engineering_scale_dict.type_id = (SELECT id FROM dict_types WHERE type_code = 'engineering_scale' AND deleted_at IS NULL)
+        AND engineering_scale_dict.deleted_at IS NULL
+        WHERE reservoirs.deleted_at IS NULL
+        <if test="keyword != null and keyword != ''">
+            AND reservoirs.name LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="reservoirLevel != null and reservoirLevel != ''">
+            AND reservoirs.engineering_grade = #{reservoirLevel}
+        </if>
+        ORDER BY reservoirs.created_at DESC
+    </select>
+    
+    <!-- 查询水库列表（包含关联信息）- PageHelper 方式 -->
+    <select id="selectReservoirList" resultMap="ReservoirResponseDTOMap">
+        SELECT reservoirs.*,
+               engineering_grade_dict.data_label as engineering_grade_name,
+               engineering_scale_dict.data_label as engineering_scale_name
+        FROM reservoirs
+        LEFT JOIN dict_data engineering_grade_dict ON reservoirs.engineering_grade = engineering_grade_dict.data_value
+        AND engineering_grade_dict.type_id = (SELECT id FROM dict_types WHERE type_code = 'engineering_grade' AND deleted_at IS NULL)
+        AND engineering_grade_dict.deleted_at IS NULL
+        LEFT JOIN dict_data engineering_scale_dict ON reservoirs.engineering_scale = engineering_scale_dict.data_value
+        AND engineering_scale_dict.type_id = (SELECT id FROM dict_types WHERE type_code = 'engineering_scale' AND deleted_at IS NULL)
+        AND engineering_scale_dict.deleted_at IS NULL
+        WHERE reservoirs.deleted_at IS NULL
+        <if test="keyword != null and keyword != ''">
+            AND reservoirs.name LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="reservoirLevel != null and reservoirLevel != ''">
+            AND reservoirs.engineering_grade = #{reservoirLevel}
+        </if>
+        ORDER BY reservoirs.created_at DESC
+    </select>
+
+    <!-- 根据ID查询水库详情（包含关联信息） -->
+    <select id="selectReservoirById" resultMap="ReservoirResponseDTOMap">
+        SELECT reservoirs.*,
+               engineering_grade_dict.data_label as engineering_grade_name,
+               engineering_scale_dict.data_label as engineering_scale_name
+        FROM reservoirs
+        LEFT JOIN dict_data engineering_grade_dict ON reservoirs.engineering_grade = engineering_grade_dict.data_value
+        AND engineering_grade_dict.type_id = (SELECT id FROM dict_types WHERE type_code = 'engineering_grade' AND deleted_at IS NULL)
+        AND engineering_grade_dict.deleted_at IS NULL
+        LEFT JOIN dict_data engineering_scale_dict ON reservoirs.engineering_scale = engineering_scale_dict.data_value
+        AND engineering_scale_dict.type_id = (SELECT id FROM dict_types WHERE type_code = 'engineering_scale' AND deleted_at IS NULL)
+        AND engineering_scale_dict.deleted_at IS NULL
+        WHERE reservoirs.id = #{id} AND reservoirs.deleted_at IS NULL
+    </select>
+
+    <!-- 检查水库编码是否存在 -->
+    <select id="existsByReservoirCode" resultType="boolean">
+        SELECT COUNT(1) FROM reservoirs WHERE reservoir_code = #{reservoirCode} AND deleted_at IS NULL
+        <if test="excludeId != null">AND id != #{excludeId}</if>
+    </select>
+
+    <!-- 检查水库名称是否存在 -->
+    <select id="existsByName" resultType="boolean">
+        SELECT COUNT(1) FROM reservoirs WHERE name = #{name} AND deleted_at IS NULL
+        <if test="excludeId != null">AND id != #{excludeId}</if>
+    </select>
+
+    <!-- 检查注册登记号是否存在 -->
+    <select id="existsByRegistrationNo" resultType="boolean">
+        SELECT COUNT(1) FROM reservoirs WHERE registration_no = #{registrationNo} AND deleted_at IS NULL
+        <if test="excludeId != null">AND id != #{excludeId}</if>
+    </select>
+
+    <!-- 获取所有可用水库（用于下拉选择） -->
+    <select id="selectAvailableReservoirs" resultMap="ReservoirMap">
+        SELECT id, name, reservoir_code FROM reservoirs
+        WHERE deleted_at IS NULL
+        ORDER BY name ASC
+    </select>
+
+    <!-- 统计水库总数 -->
+    <select id="countTotal" resultType="long">
+        SELECT COUNT(1) FROM reservoirs WHERE deleted_at IS NULL
+    </select>
+
+    <!-- 根据工程等级统计数量 -->
+    <select id="countByEngineeringGrade" resultType="long">
+        SELECT COUNT(1) FROM reservoirs WHERE engineering_grade = #{engineeringGrade} AND deleted_at IS NULL
+    </select>
+
+</mapper>

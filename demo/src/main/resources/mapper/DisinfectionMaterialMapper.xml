@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.DisinfectionMaterialMapper">
+
+    <!-- 结果映射：消毒药材响应DTO -->
+    <resultMap id="DisinfectionMaterialResponseDTOMap" type="com.example.demo.dto.facility.DisinfectionMaterialResponseDTO">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="waterPlantId" column="water_plant_id"/>
+        <result property="waterPlantName" column="water_plant_name"/>
+        <result property="storageCondition" column="storage_condition"/>
+        <result property="productionDate" column="production_date"/>
+        <result property="validityPeriod" column="validity_period"/>
+        <result property="quantity" column="quantity"/>
+        <result property="unit" column="unit"/>
+        <result property="remark" column="remark"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- 分页查询消毒药材列表（包含关联信息） -->
+    <select id="selectDisinfectionMaterialPage" resultMap="DisinfectionMaterialResponseDTOMap">
+        SELECT disinfection_materials.*, water_plants.name as water_plant_name
+        FROM disinfection_materials
+        LEFT JOIN water_plants ON disinfection_materials.water_plant_id = water_plants.id AND water_plants.deleted_at IS NULL
+        WHERE disinfection_materials.deleted_at IS NULL
+        <if test="keyword != null and keyword != ''">
+            AND disinfection_materials.name LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="waterPlantId != null">
+            AND disinfection_materials.water_plant_id = #{waterPlantId}
+        </if>
+        ORDER BY disinfection_materials.created_at DESC
+    </select>
+
+    <!-- 根据ID查询消毒药材详情（包含关联信息） -->
+    <select id="selectDisinfectionMaterialById" resultMap="DisinfectionMaterialResponseDTOMap">
+        SELECT disinfection_materials.*, water_plants.name as water_plant_name
+        FROM disinfection_materials
+        LEFT JOIN water_plants ON disinfection_materials.water_plant_id = water_plants.id AND water_plants.deleted_at IS NULL
+        WHERE disinfection_materials.id = #{id} AND disinfection_materials.deleted_at IS NULL
+    </select>
+
+    <!-- 检查药材名称是否存在 -->
+    <select id="existsByName" resultType="boolean">
+        SELECT COUNT(*) > 0 FROM disinfection_materials
+        WHERE name = #{name}
+        <if test="excludeId != null">
+            AND id != #{excludeId}
+        </if>
+        AND deleted_at IS NULL
+    </select>
+
+    <!-- 获取所有可用的消毒药材（用于下拉选择） -->
+    <select id="selectAvailableDisinfectionMaterials" resultType="com.example.demo.entity.facility.DisinfectionMaterial">
+        SELECT id, name, unit FROM disinfection_materials
+        WHERE deleted_at IS NULL
+        ORDER BY name
+    </select>
+
+    <!-- 统计消毒药材总数 -->
+    <select id="countTotal" resultType="long">
+        SELECT COUNT(*) FROM disinfection_materials WHERE deleted_at IS NULL
+    </select>
+
+    <!-- 统计库存不足的药材数量 -->
+    <select id="countLowStock" resultType="long">
+        SELECT COUNT(*) FROM disinfection_materials WHERE deleted_at IS NULL
+    </select>
+
+    <!-- 统计即将过期的药材数量 -->
+    <select id="countNearExpiry" resultType="long">
+        SELECT COUNT(*) FROM disinfection_materials WHERE deleted_at IS NULL
+    </select>
+
+</mapper>
