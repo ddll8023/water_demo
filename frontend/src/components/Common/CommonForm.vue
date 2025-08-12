@@ -445,6 +445,8 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 /**
  * =========================================================
  * 表单组件样式
@@ -459,10 +461,10 @@ defineExpose({
     .group-title {
       font-size: 16px;
       font-weight: 500;
-      color: var(--el-text-color-primary);
+      color: var(--text-primary);
       margin-bottom: 16px;
       padding-bottom: 8px;
-      border-bottom: 1px solid var(--el-border-color-light);
+      border-bottom: 1px solid var(--border-color-light);
     }
 
     .group-content {
@@ -474,7 +476,7 @@ defineExpose({
   .form-actions {
     margin-top: 24px;
     padding-top: 16px;
-    border-top: 1px solid var(--el-border-color-light);
+    border-top: 1px solid var(--border-color-light);
 
     :deep(.el-form-item) {
       margin-bottom: 0;

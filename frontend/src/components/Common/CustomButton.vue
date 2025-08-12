@@ -105,6 +105,8 @@ const handleClick = (event) => {
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/styles/index.scss" as *;
+
 /**
  * ----------------------------------------
  * 按钮基础样式
@@ -154,7 +156,7 @@ const handleClick = (event) => {
 // 主要按钮样式
 .custom-button--primary {
   background-color: var(--primary-color);
-  color: white;
+  color: var(--text-on-dark);
   border: 1px solid var(--primary-color);
 
   &:hover:not(.custom-button--disabled):not(.custom-button--loading) {
@@ -171,17 +173,17 @@ const handleClick = (event) => {
 
 // 次要按钮样式
 .custom-button--secondary {
-  background-color: white;
-  color: var(--text-primary-new, #1D2129);
-  border: 1px solid var(--neutral-dark, #E5E6EB);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
 
   &:hover:not(.custom-button--disabled):not(.custom-button--loading) {
-    background-color: #F9FAFB;
-    border-color: var(--border-color-new, #C9CDD4);
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-color);
   }
 
   &:active:not(.custom-button--disabled):not(.custom-button--loading) {
-    background-color: #F2F3F5;
+    background-color: var(--bg-secondary);
     transform: translateY(1px);
   }
 }
@@ -189,17 +191,17 @@ const handleClick = (event) => {
 // 危险按钮样式
 .custom-button--danger {
   background-color: var(--danger-color);
-  color: white;
+  color: var(--text-on-dark);
   border: 1px solid var(--danger-color);
 
   &:hover:not(.custom-button--disabled):not(.custom-button--loading) {
-    background-color: #E53E3E;
-    border-color: #E53E3E;
+    background-color: var(--danger-dark);
+    border-color: var(--danger-dark);
   }
 
   &:active:not(.custom-button--disabled):not(.custom-button--loading) {
-    background-color: #C53030;
-    border-color: #C53030;
+    background-color: var(--danger-dark);
+    border-color: var(--danger-dark);
     transform: translateY(1px);
   }
 }
@@ -222,7 +224,7 @@ const handleClick = (event) => {
     color: var(--danger-color);
 
     &:hover:not(.custom-button--disabled):not(.custom-button--loading) {
-      color: #E53E3E;
+      color: var(--danger-dark);
     }
   }
 
@@ -321,7 +323,7 @@ const handleClick = (event) => {
  * 响应式设计
  * ----------------------------------------
  */
-@media (max-width: 768px) {
+@include respond-to(sm) {
   .custom-button--large {
     padding: 10px 16px;
     font-size: 15px;
