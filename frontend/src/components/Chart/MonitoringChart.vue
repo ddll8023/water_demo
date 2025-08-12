@@ -2,7 +2,7 @@
     <div class="monitoring-chart">
         <!-- 图表轮播区域 -->
         <div class="chart-carousel-section">
-            <el-card class="carousel-card">
+            <CustomCard class="carousel-card" :bordered="true" shadow="hover" padding="small">
                 <template #header>
                     <div class="carousel-header">
                         <span class="carousel-title">
@@ -65,24 +65,6 @@
                                             <button class="zoom-btn zoom-out" @click="zoomOut(index)" title="缩小">
                                                 <i class="fa fa-minus"></i>
                                             </button>
-                                            <button class="zoom-btn zoom-reset" @click="resetZoom(index)" title="重置缩放">
-                                                <i class="fa fa-home"></i>
-                                            </button>
-                                            <button class="zoom-btn zoom-fit" @click="fitToWindow(index)" title="适应窗口">
-                                                <i class="fa fa-expand"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <!-- 数据密度提示 -->
-                                    <div v-if="hasStation && hasSearched" class="chart-data-info">
-                                        <div class="data-info-item">
-                                            <i class="fa fa-database"></i>
-                                            <span>数据点数: {{ getChartDataCount(index) }}</span>
-                                        </div>
-                                        <div class="data-info-item">
-                                            <i class="fa fa-search-plus"></i>
-                                            <span>缩放: {{ getChartZoomLevel(index) }}</span>
                                         </div>
                                     </div>
 
@@ -108,23 +90,20 @@
                                 </div>
                             </div>
 
-                            <!-- 水平滚动条 -->
-                            <div v-if="showMinimap && hasStation && hasSearched" class="chart-minimap-container">
-                                <!-- 缩略图画布 -->
-                                <canvas :ref="el => setThumbnailChartRef(el, index)" class="thumbnail-chart"
-                                    @click="handleMinimapClick($event, index)"></canvas>
-
-                                <!-- 可视区域滑块 - VSCode风格 -->
+                            <!-- 水平滚动条 - 已简化 -->
+                            <div v-if="showMinimap && hasStation && hasSearched" class="chart-minimap-container"
+                                @click="handleMinimapClick($event, index)">
+                                <!-- 可视区域滑块 - 已恢复调整功能 -->
                                 <div class="viewport-slider" :ref="el => setViewportSliderRef(el, index)" :style="{
                                     left: `${getViewportPosition(index).left}%`,
                                     width: `${getViewportPosition(index).width}%`
-                                }" @mousedown="startDragging($event, index)"
-                                    @touchstart="startDragging($event, index)">
-                                    <!-- 左侧调整手柄 - 视觉上不可见但可交互 -->
+                                }" @mousedown.stop="startDragging($event, index)"
+                                    @touchstart.stop="startDragging($event, index)" @click.stop>
+                                    <!-- 左侧调整手柄 -->
                                     <div class="resize-handle left"
                                         @mousedown.stop="startResizing('left', $event, index)"
                                         @touchstart.stop="startResizing('left', $event, index)"></div>
-                                    <!-- 右侧调整手柄 - 视觉上不可见但可交互 -->
+                                    <!-- 右侧调整手柄 -->
                                     <div class="resize-handle right"
                                         @mousedown.stop="startResizing('right', $event, index)"
                                         @touchstart.stop="startResizing('right', $event, index)"></div>
@@ -133,7 +112,7 @@
                         </div>
                     </div>
                 </div>
-            </el-card>
+            </CustomCard>
         </div>
     </div>
 </template>
@@ -144,6 +123,7 @@ import { ElMessage } from 'element-plus'
 import Chart from 'chart.js/auto'
 import zoomPlugin from 'chartjs-plugin-zoom'
 import { formatDateTime } from '@/utils/shared/common'
+import CustomCard from '@/components/Common/CustomCard.vue'
 
 // 注册Chart.js缩放插件
 Chart.register(zoomPlugin)
@@ -216,7 +196,6 @@ const emit = defineEmits([
     'update:activeIndex', // 当前活动图表索引变更
     'chart-zoom',         // 图表缩放事件
     'chart-pan',          // 图表平移事件
-    'chart-reset',        // 图表重置事件
     'chart-initialized'   // 图表初始化完成事件
 ])
 
@@ -232,9 +211,7 @@ const isAnimating = ref(false)
 const chartInstances = shallowRef([])  // 使用shallowRef避免深度响应式
 const chartRefs = shallowRef([])  // 使用shallowRef避免深度响应式
 
-// 缩略图相关状态
-const thumbnailChartInstances = shallowRef([]) // 缩略图实例数组
-const thumbnailChartRefs = shallowRef([]) // 缩略图引用数组
+// 缩略图相关状态已移除
 const viewportSliderRefs = shallowRef([]) // 视口滑块引用数组
 
 // 视口滑块拖拽状态
@@ -242,10 +219,12 @@ const isDragging = ref(false) // 是否正在拖拽
 const dragStartX = ref(0) // 拖拽开始X坐标
 const dragStartLeft = ref(0) // 拖拽开始左侧位置
 const draggingChartIndex = ref(-1) // 当前拖拽的图表索引
+const cachedContainer = ref(null) // 缓存的容器引用
+const preventClick = ref(false) // 防止拖拽后立即触发点击
 
 // 滑块调整大小状态
 const isResizing = ref(false) // 是否正在调整大小
-const resizeHandle = ref(null) // 当前调整的手柄
+const resizeHandle = ref(null) // 当前调整的手柄('left' | 'right')
 const resizeStartX = ref(0) // 调整开始X坐标
 const resizeStartWidth = ref(0) // 调整开始宽度
 const resizeStartLeft = ref(0) // 调整开始左侧位置
@@ -254,7 +233,6 @@ const resizingChartIndex = ref(-1) // 当前调整的图表索引
 // 图表缩放和视口状态
 const chartZoomLevels = ref([]) // 存储每个图表的缩放级别
 const viewportPositions = ref([]) // 存储每个图表的视口位置
-const zoomUpdateTrigger = ref(0) // 响应式触发器，用于强制更新缩放比例显示
 
 /**
  * ----------------------------------------
@@ -300,29 +278,9 @@ onUnmounted(() => {
         }
     })
 
-    // 销毁缩略图实例
-    thumbnailChartInstances.value.forEach((chart, index) => {
-        if (chart) {
-            try {
-                chart.destroy()
-                thumbnailChartInstances.value[index] = null
-            } catch (error) {
-                console.error(`销毁缩略图 ${index} 实例时出错:`, error)
-            }
-        }
-    })
+    // 销毁缩略图实例已移除
 
-    // 移除全局事件监听器
-    document.removeEventListener('mousemove', handleDrag)
-    document.removeEventListener('mouseup', stopDragging)
-    document.removeEventListener('touchmove', handleDrag)
-    document.removeEventListener('touchend', stopDragging)
-
-    // 移除调整大小相关的事件监听器
-    document.removeEventListener('mousemove', handleResize)
-    document.removeEventListener('mouseup', stopResizing)
-    document.removeEventListener('touchmove', handleResize)
-    document.removeEventListener('touchend', stopResizing)
+    // 事件监听器已在对应的stop函数中移除，无需重复清理
 })
 
 /**
@@ -468,9 +426,6 @@ const initSingleChart = async (index) => {
                                         // 更新缩放级别状态
                                         chartZoomLevels.value[index] = totalRange / visibleRange;
 
-                                        // 更新触发器强制更新UI显示
-                                        zoomUpdateTrigger.value += 1;
-
                                         // 同步滑块位置
                                         syncViewportSliderWithChart(index);
 
@@ -505,9 +460,6 @@ const initSingleChart = async (index) => {
                             mode: 'x',
                             onPanComplete: ({ chart }) => {
                                 if (chart === chartInstances.value[index]) {
-                                    // 更新触发器强制更新UI显示
-                                    zoomUpdateTrigger.value += 1;
-
                                     // 平移完成后同步滑块位置
                                     syncViewportSliderWithChart(index);
 
@@ -575,8 +527,7 @@ const initSingleChart = async (index) => {
         // 使用markRaw避免Vue响应式处理
         chartInstances.value[index] = markRaw(chart);
 
-        // 初始化缩略图
-        await initThumbnailChart(index);
+        // 初始化缩略图已移除
 
         // 如果已选择站点且已执行搜索，加载数据
         if (props.hasStation && props.hasSearched) {
@@ -594,6 +545,10 @@ const initSingleChart = async (index) => {
 // 初始化所有图表
 const initAllCharts = async () => {
     await nextTick();
+
+    // 预先初始化数组长度，避免运行时检查
+    chartZoomLevels.value = new Array(props.chartItems.length).fill(1.0);
+    viewportPositions.value = new Array(props.chartItems.length).fill().map(() => ({ left: 0, width: 100 }));
 
     // 逐个初始化图表实例，避免资源竞争
     for (let i = 0; i < props.chartItems.length; i++) {
@@ -659,14 +614,10 @@ const loadChartData = async (chartIndex) => {
         // 使用辅助函数更新X轴配置
         updateChartXAxisConfig(chart, containerWidth);
 
-        // 更新图表 - 不触发动画
-        chart.update('none');
-
-        // 设置合适的缩放级别，显示最左侧的15个数据点
+        // 设置合适的缩放级别，显示最左侧的15个数据点（内部会调用chart.update）
         setChartOptimalZoom(chart, labels.length, chartIndex);
 
-        // 更新缩略图数据
-        updateThumbnailChart(chartIndex);
+        // 更新缩略图数据已移除
 
         // 初始化滑块位置
         syncViewportSliderWithChart(chartIndex);
@@ -686,9 +637,6 @@ const loadChartDataSafely = async (chartIndex) => {
     } catch (error) {
         console.error(`加载图表 ${chartIndex} 数据失败:`, error);
         ElMessage.error('加载图表数据失败');
-
-        // 触发UI更新以显示错误状态
-        zoomUpdateTrigger.value += 1;
     }
 }
 
@@ -744,10 +692,6 @@ const setChartOptimalZoom = (chart, dataCount, chartIndex) => {
 
         // 更新缩放级别状态
         chartZoomLevels.value[chartIndex] = 1.0;
-
-        // 更新图表但不触发动画
-        chart.update('none');
-        return 1.0;
     } else {
         // 如果数据点多于15个，只显示前15个
         chart.options.scales.x.min = 0;
@@ -757,42 +701,13 @@ const setChartOptimalZoom = (chart, dataCount, chartIndex) => {
         // 缩放级别 = 总数据点 / 可见数据点
         chartZoomLevels.value[chartIndex] = dataCount / 15;
 
-        // 更新图表但不触发动画
-        chart.update('none');
-
         // 手动同步滑块位置，确保与可见范围一致
         setTimeout(() => syncViewportSliderWithChart(chartIndex), 50);
-
-        return chartZoomLevels.value[chartIndex];
-    }
-}
-
-/**
- * ----------------------------------------
- * 图表状态获取功能
- * ----------------------------------------
- */
-// 获取图表缩放比例
-const getChartZoomLevel = (chartIndex) => {
-    // 确保缩放级别数组有足够的长度
-    while (chartZoomLevels.value.length <= chartIndex) {
-        chartZoomLevels.value.push(1.0)
     }
 
-    const zoomLevel = chartZoomLevels.value[chartIndex] || 1.0
-    return `${Math.round(zoomLevel * 100)}%`
-}
-
-// 获取图表数据点数量（显示原始数据量）
-const getChartDataCount = (chartIndex) => {
-    // 检查chartIndex有效性
-    if (chartIndex < 0 || chartIndex >= chartInstances.value.length) {
-        return 0;
-    }
-
-    const chart = chartInstances.value[chartIndex];
-    // 使用可选链操作符更安全地访问属性
-    return chart?.data?.labels?.length || 0;
+    // 统一更新图表但不触发动画
+    chart.update('none');
+    return chartZoomLevels.value[chartIndex];
 }
 
 /**
@@ -849,117 +764,11 @@ const setChartRef = (el, index) => {
 
 /**
  * ----------------------------------------
- * 缩略图功能
+ * 缩略图功能已移除
  * ----------------------------------------
  */
-// 初始化缩略图
-const initThumbnailChart = async (index) => {
-    // 确保DOM已更新
-    await nextTick()
 
-    try {
-        const thumbnailRef = thumbnailChartRefs.value[index]
-        if (!thumbnailRef) {
-            // 静默返回，这是预期行为，因为在初始化时缩略图可能不可见
-            return null
-        }
-
-        const ctx = thumbnailRef.getContext('2d')
-        if (!ctx) {
-            console.warn(`无法获取缩略图绘图上下文，索引: ${index}`)
-            return null
-        }
-
-        // 销毁已存在的缩略图实例
-        if (thumbnailChartInstances.value[index]) {
-            try {
-                thumbnailChartInstances.value[index].destroy()
-            } catch (error) {
-                console.error(`销毁缩略图 ${index} 实例失败:`, error)
-            }
-        }
-
-        const item = props.chartItems[index]
-
-        // 创建VSCode风格的数据集配置
-        const thumbnailDataset = {
-            label: item.name,
-            data: [],
-            borderColor: item.color,
-            backgroundColor: `${item.color}10`, // 更淡的背景色
-            fill: true,
-            borderWidth: 1,
-            pointRadius: 0, // 不显示点
-            tension: 0, // 不平滑，显示原始数据形状
-            borderDash: [], // 实线
-            borderJoinStyle: 'round'
-        }
-
-        // 创建缩略图实例
-        const thumbnailChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [thumbnailDataset]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: false,
-                elements: {
-                    line: {
-                        tension: 0 // 直线连接，不平滑
-                    }
-                },
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { enabled: false },
-                    decimation: {
-                        enabled: true,
-                        algorithm: 'min-max' // 使用最小-最大值抽样算法
-                    }
-                },
-                scales: {
-                    x: {
-                        display: false,
-                        grid: { display: false },
-                        ticks: { display: false }
-                    },
-                    y: {
-                        display: false,
-                        grid: { display: false },
-                        ticks: { display: false },
-                        beginAtZero: false
-                    }
-                },
-                events: [] // 禁用所有事件
-            }
-        })
-
-        // 使用markRaw避免Vue响应式处理
-        thumbnailChartInstances.value[index] = markRaw(thumbnailChart)
-
-        return thumbnailChart
-    } catch (error) {
-        console.error(`初始化缩略图 ${index} 失败:`, error)
-        return null
-    }
-}
-
-// 更新缩略图数据
-const updateThumbnailChart = (chartIndex) => {
-    const mainChart = chartInstances.value[chartIndex]
-    const thumbnailChart = thumbnailChartInstances.value[chartIndex]
-
-    if (!mainChart || !thumbnailChart || !mainChart.data || !mainChart.data.labels) return
-
-    // 复制主图表数据到缩略图 - 使用展开运算符创建新数组，避免直接引用
-    thumbnailChart.data.labels = [...mainChart.data.labels]
-    thumbnailChart.data.datasets[0].data = [...mainChart.data.datasets[0].data]
-
-    // 更新缩略图但不触发动画
-    thumbnailChart.update('none')
-}
+// 更新缩略图数据已移除
 
 // 同步主图表缩放状态到缩略图滑块
 const syncViewportSliderWithChart = (chartIndex) => {
@@ -971,11 +780,6 @@ const syncViewportSliderWithChart = (chartIndex) => {
     const totalPoints = chart.data.labels.length
 
     if (totalPoints <= 0) return
-
-    // 确保视口位置数组有足够的长度
-    while (viewportPositions.value.length <= chartIndex) {
-        viewportPositions.value.push({ left: 0, width: 100 })
-    }
 
     // 计算滑块位置和宽度
     viewportPositions.value[chartIndex].left = (min / totalPoints) * 100
@@ -992,28 +796,47 @@ const syncViewportSliderWithChart = (chartIndex) => {
  * 缩略图交互功能
  * ----------------------------------------
  */
-// 点击缩略图直接跳转到对应位置
+// 点击滑块区域跳转 - 已简化并修复
 const handleMinimapClick = (event, chartIndex) => {
-    if (isDragging.value || isResizing.value) return
-    if (!thumbnailChartRefs.value[chartIndex]) return
+    // 防止拖拽或调整大小后立即触发点击
+    if (isDragging.value || isResizing.value || preventClick.value) return
 
-    const container = thumbnailChartRefs.value[chartIndex].parentElement
+    // 直接基于事件target计算
+    const container = event.currentTarget
     const containerWidth = container.clientWidth
     const clickX = event.offsetX
     const clickPercent = (clickX / containerWidth) * 100
 
-    // 计算点击位置为中心的可视区域
+    // 以点击位置为中心计算新位置
     const halfWidth = viewportPositions.value[chartIndex].width / 2
-    let newLeft = clickPercent - halfWidth
+    const newLeft = Math.max(0, Math.min(100 - viewportPositions.value[chartIndex].width, clickPercent - halfWidth))
 
-    // 确保不超出边界
-    newLeft = Math.max(0, Math.min(100 - viewportPositions.value[chartIndex].width, newLeft))
-
-    // 更新滑块位置
+    // 更新滑块位置并同步主图表
     viewportPositions.value[chartIndex].left = newLeft
-
-    // 同步更新主图表
     updateMainChartViewport(chartIndex)
+}
+
+/**
+ * ----------------------------------------
+ * 滑块样式控制工具 - 已简化
+ * ----------------------------------------
+ */
+// 滑块样式控制函数
+const setSliderInteractionStyle = (chartIndex, isActive) => {
+    const slider = viewportSliderRefs.value[chartIndex]
+    if (!slider) return
+
+    if (isActive) {
+        slider.style.transition = 'none'
+        if (isDragging.value) {
+            slider.classList.add('dragging')
+        } else if (isResizing.value) {
+            slider.classList.add('resizing')
+        }
+    } else {
+        slider.style.transition = ''
+        slider.classList.remove('dragging', 'resizing')
+    }
 }
 
 /**
@@ -1021,32 +844,27 @@ const handleMinimapClick = (event, chartIndex) => {
  * 滑块拖拽功能
  * ----------------------------------------
  */
-// 开始拖拽滑块
+// 开始拖拽滑块 - 已简化并修复
 const startDragging = (event, chartIndex) => {
     if (isDragging.value || isResizing.value) return
 
-    // 阻止事件冒泡和默认行为
     event.stopPropagation()
     event.preventDefault()
 
     isDragging.value = true
     draggingChartIndex.value = chartIndex
+    preventClick.value = false
 
-    // 记录初始位置
-    if (event.type === 'touchstart') {
-        dragStartX.value = event.touches[0].clientX
-    } else {
-        dragStartX.value = event.clientX
-    }
-
+    // 统一处理鼠标和触摸事件
+    const clientX = event.type === 'touchstart' ? event.touches[0].clientX : event.clientX
+    dragStartX.value = clientX
     dragStartLeft.value = viewportPositions.value[chartIndex]?.left || 0
 
-    // 添加 VSCode 风格的拖拽时视觉反馈
-    const slider = viewportSliderRefs.value[chartIndex]
-    if (slider) {
-        slider.style.transition = 'none' // 拖拽时禁用过渡效果
-        slider.classList.add('dragging')
-    }
+    // 获取容器引用 - 确保使用chart-minimap-container
+    cachedContainer.value = viewportSliderRefs.value[chartIndex]?.parentElement
+
+    // 简化的视觉反馈
+    setSliderInteractionStyle(chartIndex, true)
 
     // 添加事件监听器
     document.addEventListener('mousemove', handleDrag)
@@ -1055,16 +873,16 @@ const startDragging = (event, chartIndex) => {
     document.addEventListener('touchend', stopDragging)
 }
 
-// 停止拖拽滑块
+// 停止拖拽滑块 - 已简化并修复
 const stopDragging = () => {
     if (!isDragging.value) return
 
-    // 保存当前索引供后续使用
     const chartIndex = draggingChartIndex.value
 
     // 清理状态
     isDragging.value = false
     draggingChartIndex.value = -1
+    cachedContainer.value = null
 
     // 移除事件监听器
     document.removeEventListener('mousemove', handleDrag)
@@ -1073,47 +891,46 @@ const stopDragging = () => {
     document.removeEventListener('touchend', stopDragging)
 
     // 恢复滑块样式
-    const slider = viewportSliderRefs.value[chartIndex]
-    if (slider) {
-        slider.style.transition = '' // 恢复过渡效果
-        slider.classList.remove('dragging')
-    }
+    setSliderInteractionStyle(chartIndex, false)
 
-    // 最后更新一次图表视口，确保拖拽结束后图表状态与滑块位置一致
-    updateMainChartViewport(chartIndex);
+    // 最后更新图表视口
+    updateMainChartViewport(chartIndex)
+
+    // 如果发生了实际拖拽，延迟后重置防点击标志
+    if (preventClick.value) {
+        setTimeout(() => {
+            preventClick.value = false
+        }, 150)
+    }
 }
 
-// 处理拖拽移动
+// 处理拖拽移动 - 已简化并修复
 const handleDrag = (event) => {
     if (!isDragging.value) return
     event.preventDefault()
 
     const chartIndex = draggingChartIndex.value
-    if (chartIndex < 0 || chartIndex >= viewportPositions.value.length) return
+    if (chartIndex < 0) return
 
-    // 获取当前位置
+    // 统一处理鼠标和触摸事件
     const clientX = event.type.includes('touch') ? event.touches[0].clientX : event.clientX
+    const containerWidth = cachedContainer.value?.clientWidth || 800
 
-    // 获取滑块容器宽度
-    const container = thumbnailChartRefs.value[chartIndex].parentElement
-    const containerWidth = container.clientWidth
-
-    // 计算拖拽距离对应的百分比
+    // 计算新位置
     const deltaX = clientX - dragStartX.value
     const deltaPercent = (deltaX / containerWidth) * 100
-
-    // 计算新的位置，确保不超出边界
-    let newLeft = dragStartLeft.value + deltaPercent
     const width = viewportPositions.value[chartIndex].width
-    newLeft = Math.max(0, Math.min(100 - width, newLeft))
+    const newLeft = Math.max(0, Math.min(100 - width, dragStartLeft.value + deltaPercent))
 
-    // 更新滑块位置
-    viewportPositions.value[chartIndex] = {
-        ...viewportPositions.value[chartIndex],
-        left: newLeft
+    // 检测是否有实际移动，如果有则设置防点击标志
+    if (Math.abs(deltaX) > 3) { // 移动超过3像素才认为是真正的拖拽
+        preventClick.value = true
     }
 
-    // 同步更新主图表的可见范围 - VSCode风格的即时更新
+    // 更新滑块位置
+    viewportPositions.value[chartIndex].left = newLeft
+
+    // 同步更新主图表
     requestAnimationFrame(() => updateMainChartViewport(chartIndex))
 }
 
@@ -1126,31 +943,25 @@ const handleDrag = (event) => {
 const startResizing = (handle, event, chartIndex) => {
     if (isDragging.value || isResizing.value) return
 
-    // 阻止事件冒泡和默认行为
     event.stopPropagation()
     event.preventDefault()
 
     isResizing.value = true
     resizeHandle.value = handle
     resizingChartIndex.value = chartIndex
+    preventClick.value = false
 
-    // 记录初始位置和尺寸
-    if (event.type === 'touchstart') {
-        resizeStartX.value = event.touches[0].clientX
-    } else {
-        resizeStartX.value = event.clientX
-    }
-
+    // 统一处理鼠标和触摸事件
+    const clientX = event.type === 'touchstart' ? event.touches[0].clientX : event.clientX
+    resizeStartX.value = clientX
     resizeStartLeft.value = viewportPositions.value[chartIndex]?.left || 0
     resizeStartWidth.value = viewportPositions.value[chartIndex]?.width || 100
 
-    // 添加 VSCode 风格的调整大小时视觉反馈
-    const slider = viewportSliderRefs.value[chartIndex]
-    if (slider) {
-        slider.style.transition = 'none' // 调整大小时禁用过渡效果
-        slider.classList.add('resizing')
-        slider.classList.add(`resizing-${handle}`)
-    }
+    // 获取容器引用
+    cachedContainer.value = viewportSliderRefs.value[chartIndex]?.parentElement
+
+    // 简化的视觉反馈
+    setSliderInteractionStyle(chartIndex, true)
 
     // 添加事件监听器
     document.addEventListener('mousemove', handleResize)
@@ -1163,27 +974,32 @@ const startResizing = (handle, event, chartIndex) => {
 const stopResizing = () => {
     if (!isResizing.value) return
 
-    // 保存当前索引和手柄供后续使用
     const chartIndex = resizingChartIndex.value
-    const currentHandle = resizeHandle.value
 
+    // 清理状态
     isResizing.value = false
     resizingChartIndex.value = -1
     resizeHandle.value = null
-
-    // 恢复滑块样式
-    const slider = viewportSliderRefs.value[chartIndex]
-    if (slider) {
-        slider.style.transition = '' // 恢复过渡效果
-        slider.classList.remove('resizing')
-        slider.classList.remove(`resizing-${currentHandle}`)
-    }
+    cachedContainer.value = null
 
     // 移除事件监听器
     document.removeEventListener('mousemove', handleResize)
     document.removeEventListener('mouseup', stopResizing)
     document.removeEventListener('touchmove', handleResize)
     document.removeEventListener('touchend', stopResizing)
+
+    // 恢复滑块样式
+    setSliderInteractionStyle(chartIndex, false)
+
+    // 最后更新图表视口
+    updateMainChartViewport(chartIndex)
+
+    // 如果发生了实际调整，延迟后重置防点击标志
+    if (preventClick.value) {
+        setTimeout(() => {
+            preventClick.value = false
+        }, 150)
+    }
 }
 
 // 处理调整大小移动
@@ -1192,15 +1008,20 @@ const handleResize = (event) => {
     event.preventDefault()
 
     const chartIndex = resizingChartIndex.value
-    if (chartIndex < 0 || chartIndex >= viewportPositions.value.length) return
+    if (chartIndex < 0) return
 
-    const container = thumbnailChartRefs.value[chartIndex].parentElement
-    const containerWidth = container.clientWidth
+    // 统一处理鼠标和触摸事件
     const clientX = event.type.includes('touch') ? event.touches[0].clientX : event.clientX
+    const containerWidth = cachedContainer.value?.clientWidth || 800
     const deltaX = clientX - resizeStartX.value
     const deltaPercent = (deltaX / containerWidth) * 100
 
-    // VSCode风格的平滑调整大小
+    // 检测是否有实际移动
+    if (Math.abs(deltaX) > 3) {
+        preventClick.value = true
+    }
+
+    // 根据调整手柄处理不同逻辑
     if (resizeHandle.value === 'left') {
         // 调整左侧手柄 - 更改left和width
         const newLeft = Math.max(0, resizeStartLeft.value + deltaPercent)
@@ -1211,26 +1032,17 @@ const handleResize = (event) => {
             viewportPositions.value[chartIndex].left = newLeft
             viewportPositions.value[chartIndex].width = newWidth
         }
-    } else {
+    } else if (resizeHandle.value === 'right') {
         // 调整右侧手柄 - 只更改width
         const newWidth = Math.max(5, Math.min(100 - resizeStartLeft.value, resizeStartWidth.value + deltaPercent))
         viewportPositions.value[chartIndex].width = newWidth
     }
 
-    // VSCode风格的即时更新
+    // 同步更新主图表
     requestAnimationFrame(() => updateMainChartViewport(chartIndex))
 }
 
-// 设置缩略图引用
-const setThumbnailChartRef = (el, index) => {
-    if (el) {
-        // 确保数组长度足够
-        while (thumbnailChartRefs.value.length <= index) {
-            thumbnailChartRefs.value.push(null)
-        }
-        thumbnailChartRefs.value[index] = el
-    }
-}
+// 设置缩略图引用已移除
 
 // 设置视口滑块引用
 const setViewportSliderRef = (el, index) => {
@@ -1250,11 +1062,6 @@ const setViewportSliderRef = (el, index) => {
  */
 // 获取视口位置
 const getViewportPosition = (chartIndex) => {
-    // 确保视口位置数组有足够的长度
-    while (viewportPositions.value.length <= chartIndex) {
-        viewportPositions.value.push({ left: 0, width: 100 })
-    }
-
     return viewportPositions.value[chartIndex] || { left: 0, width: 100 }
 }
 
@@ -1264,11 +1071,6 @@ const updateMainChartViewport = (chartIndex) => {
     if (!chart || !chart.data || !chart.data.labels) return
 
     const totalDataPoints = chart.data.labels.length
-
-    // 确保视口位置数组有足够的长度
-    while (viewportPositions.value.length <= chartIndex) {
-        viewportPositions.value.push({ left: 0, width: 100 })
-    }
 
     // 根据滑块位置计算主图表的可见范围
     const viewportPosition = viewportPositions.value[chartIndex]
@@ -1303,10 +1105,6 @@ const updateChartZoom = (zoomFactor, mode = 'set', chartIndex) => {
 
     // 根据模式计算新的缩放级别
     if (mode === 'multiply') {
-        // 确保数组有足够长度
-        while (chartZoomLevels.value.length <= chartIndex) {
-            chartZoomLevels.value.push(1.0)
-        }
         const currentLevel = chartZoomLevels.value[chartIndex] || 1.0
         newZoomLevel = currentLevel * zoomFactor
     }
@@ -1319,9 +1117,6 @@ const updateChartZoom = (zoomFactor, mode = 'set', chartIndex) => {
     newZoomLevel = Math.max(0.2, Math.min(maxZoomLevel, newZoomLevel))
 
     // 更新状态
-    while (chartZoomLevels.value.length <= chartIndex) {
-        chartZoomLevels.value.push(1.0)
-    }
     chartZoomLevels.value[chartIndex] = newZoomLevel
 
     // 应用缩放到图表
@@ -1354,29 +1149,6 @@ const updateChartZoom = (zoomFactor, mode = 'set', chartIndex) => {
 // 缩放控制函数
 const zoomIn = (chartIndex) => updateChartZoom(1.5, 'multiply', chartIndex)
 const zoomOut = (chartIndex) => updateChartZoom(0.7, 'multiply', chartIndex)
-const resetZoom = (chartIndex) => {
-    const chart = chartInstances.value[chartIndex]
-    if (chart && chart.resetZoom) {
-        chart.resetZoom('active')
-        updateChartZoom(1.0, 'set', chartIndex)
-
-        // 触发重置事件
-        emit('chart-reset', { chartIndex })
-    }
-}
-const fitToWindow = (chartIndex) => {
-    const chart = chartInstances.value[chartIndex]
-    if (!chart || !chart.data || !chart.data.labels) return
-
-    // 使用固定缩放级别1.0，不再基于数据量动态设置
-    const fixedFitLevel = 1.0;
-    // 确保不超过基于数据点的最大缩放级别
-    const dataCount = chart.data.labels.length;
-    const maxZoomLevel = calculateMaxZoomLevel(dataCount);
-    const fitLevel = Math.min(fixedFitLevel, maxZoomLevel);
-
-    updateChartZoom(fitLevel, 'set', chartIndex);
-}
 </script>
 
 <style scoped lang="scss">
@@ -1412,7 +1184,7 @@ const fitToWindow = (chartIndex) => {
     .carousel-card {
 
         /**
-         * 轮播头部样式
+         * 轮播头部样式 - 保留业务专用样式
          */
         .carousel-header {
             display: flex;
@@ -1449,45 +1221,21 @@ const fitToWindow = (chartIndex) => {
                     height: 36px;
                     border-radius: 50%;
                     border: 2px solid rgba(64, 158, 255, 0.2);
-                    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+                    background: rgba(255, 255, 255, 0.95);
                     cursor: pointer;
-                    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                    transition: all 0.3s ease;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    backdrop-filter: blur(15px);
-                    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-                    position: relative;
-                    overflow: hidden;
-
-                    &::before {
-                        content: '';
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        right: 0;
-                        bottom: 0;
-                        background: linear-gradient(135deg, transparent 0%, rgba(64, 158, 255, 0.1) 100%);
-                        opacity: 0;
-                        transition: opacity 0.3s ease;
-                    }
 
                     .fa {
                         color: var(--text-secondary);
                         font-size: 14px;
-                        z-index: 1;
-                        position: relative;
-                        transition: all 0.4s ease;
+                        transition: color 0.3s ease;
                     }
 
                     &:hover {
-                        background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(248, 250, 252, 1) 100%);
                         border-color: var(--primary-color);
-                        box-shadow: 0 6px 20px rgba(64, 158, 255, 0.25);
-
-                        &::before {
-                            opacity: 1;
-                        }
 
                         .fa {
                             color: var(--primary-color);
@@ -1495,14 +1243,8 @@ const fitToWindow = (chartIndex) => {
                     }
 
                     &.active {
-                        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color) 100%);
+                        background: var(--primary-color);
                         border-color: var(--primary-color);
-                        box-shadow: 0 4px 16px rgba(64, 158, 255, 0.4);
-
-                        &::before {
-                            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
-                            opacity: 1;
-                        }
 
                         .fa {
                             color: white;
@@ -1514,7 +1256,7 @@ const fitToWindow = (chartIndex) => {
             @include respond-to(sm) {
                 flex-direction: column;
                 align-items: center;
-                gap: 12px;
+                gap: clamp(8px, 2vw, 12px);
                 position: static;
 
                 .carousel-title {
@@ -1523,31 +1265,14 @@ const fitToWindow = (chartIndex) => {
                 }
 
                 .carousel-indicators {
-                    gap: 6px;
+                    gap: clamp(4px, 1vw, 6px);
 
                     .indicator-dot {
-                        width: 28px;
-                        height: 28px;
+                        width: clamp(24px, 4vw, 32px);
+                        height: clamp(24px, 4vw, 32px);
 
                         .fa {
-                            font-size: 10px;
-                        }
-                    }
-                }
-            }
-
-            @include respond-to(xs) {
-                gap: 8px;
-
-                .carousel-indicators {
-                    gap: 4px;
-
-                    .indicator-dot {
-                        width: 24px;
-                        height: 24px;
-
-                        .fa {
-                            font-size: 8px;
+                            font-size: clamp(8px, 1.5vw, 12px);
                         }
                     }
                 }
@@ -1555,22 +1280,14 @@ const fitToWindow = (chartIndex) => {
         }
     }
 
-    // 轮播图样式
+    // 轮播图样式 - 添加负边距抵消 CustomCard 内容区域的padding
     .carousel-wrapper {
         position: relative;
         overflow: hidden;
-        border-radius: var(--border-radius-xl);
-        background: var(--chart-card-container-bg);
-        border: var(--chart-card-container-border);
-        box-shadow: var(--chart-card-container-shadow);
-        backdrop-filter: blur(10px);
+        margin: calc(-1 * var(--spacing-small));
 
         @include respond-to(sm) {
-            height: 400px;
-        }
-
-        @include respond-to(xs) {
-            height: 350px;
+            height: clamp(350px, 50vh, 450px);
         }
 
         // 轮播容器
@@ -1591,153 +1308,80 @@ const fitToWindow = (chartIndex) => {
             transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             display: flex;
             flex-direction: column;
-            padding: var(--spacing-small);
+            padding: clamp(var(--spacing-mini), 1vw, var(--spacing-small));
 
-            @include respond-to(sm) {
-                padding: var(--spacing-xs);
-            }
-
-            @include respond-to(xs) {
-                padding: var(--spacing-mini);
-            }
-
-            // 图表卡片包装器
+            // 图表卡片包装器 - 简化样式，背景和圆角由 CustomCard 处理
             .chart-card-wrapper {
                 width: 100%;
                 flex: 1;
-                background: var(--chart-white-gradient-bg);
-                border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0;
-                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
                 overflow: hidden;
-                backdrop-filter: blur(20px);
 
-                // 图表卡片头部
+                // 图表卡片头部 - 简化样式，基础样式由 CustomCard 处理
                 .chart-card-header {
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
-                    padding: var(--spacing-base) var(--spacing-large) var(--spacing-medium);
-                    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-                    background: var(--chart-header-bg-gradient);
-                    backdrop-filter: blur(10px);
-
-                    @include respond-to(sm) {
-                        padding: var(--spacing-sm) var(--spacing-medium) var(--spacing-xs);
-                    }
-
-                    @include respond-to(xs) {
-                        padding: var(--spacing-small) var(--spacing-sm) var(--spacing-mini);
-                    }
+                    padding: clamp(var(--spacing-small), 2vw, var(--spacing-large));
 
                     .chart-info {
                         display: flex;
                         align-items: center;
-                        gap: 16px;
-
-                        @include respond-to(sm) {
-                            gap: 6px;
-                        }
-
-                        @include respond-to(xs) {
-                            gap: 4px;
-                        }
+                        gap: clamp(8px, 2vw, 16px);
 
                         .fa {
-                            font-size: 28px;
-                            padding: var(--spacing-medium);
-                            border-radius: var(--border-radius-xl);
-                            background: var(--chart-white-gradient-bg);
-                            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-
-                            @include respond-to(sm) {
-                                font-size: 18px;
-                                padding: var(--spacing-mini);
-                            }
-
-                            @include respond-to(xs) {
-                                font-size: 16px;
-                                padding: var(--spacing-micro);
-                            }
+                            font-size: clamp(16px, 3vw, 24px);
+                            padding: var(--spacing-small);
+                            border-radius: var(--border-radius-large);
+                            background: rgba(255, 255, 255, 0.8);
+                            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
                         }
 
                         .chart-title {
-                            font-size: 22px;
-                            font-weight: 700;
+                            font-size: clamp(14px, 2.5vw, 20px);
+                            font-weight: 600;
                             color: var(--text-primary);
                             margin: 0;
-                            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-
-                            @include respond-to(sm) {
-                                font-size: 16px;
-                            }
-
-                            @include respond-to(xs) {
-                                font-size: 14px;
-                            }
                         }
 
                         .chart-unit {
-                            font-size: 14px;
+                            font-size: clamp(10px, 1.5vw, 12px);
                             color: var(--text-secondary);
-                            background: linear-gradient(135deg, rgba(64, 158, 255, 0.1) 0%, rgba(74, 144, 226, 0.1) 100%);
-                            padding: var(--spacing-xs) var(--spacing-medium);
-                            border-radius: var(--border-radius-large);
-                            border: var(--chart-primary-border);
+                            background: rgba(64, 158, 255, 0.08);
+                            padding: var(--spacing-xs) var(--spacing-small);
+                            border-radius: var(--border-radius-base);
+                            border: 1px solid rgba(64, 158, 255, 0.2);
                             font-weight: 500;
-
-                            @include respond-to(xs) {
-                                font-size: 10px;
-                                padding: var(--spacing-1) var(--spacing-mini);
-                            }
                         }
                     }
 
                     .chart-meta {
                         .chart-index {
-                            font-size: 14px;
-                            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color) 100%);
+                            font-size: clamp(10px, 1.5vw, 12px);
+                            background: var(--primary-color);
                             color: white;
-                            padding: var(--spacing-small) var(--spacing-base);
-                            border-radius: var(--border-radius-pill);
-                            font-weight: 600;
-                            box-shadow: 0 3px 12px rgba(64, 158, 255, 0.3);
-                            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-
-                            @include respond-to(xs) {
-                                font-size: 10px;
-                                padding: var(--spacing-micro) var(--spacing-xs);
-                            }
+                            padding: var(--spacing-xs) var(--spacing-small);
+                            border-radius: var(--border-radius-large);
+                            font-weight: 500;
                         }
                     }
                 }
 
                 // 图表内容区域
                 .chart-content {
-                    padding: var(--spacing-large);
+                    padding: clamp(var(--spacing-xs), 2vw, var(--spacing-large));
                     height: calc(100% - 60px);
-                    background: var(--chart-bg-gradient);
+                    background: rgba(255, 255, 255, 0.3);
                     position: relative;
                     border-bottom: 0;
-
-                    @include respond-to(sm) {
-                        padding: var(--spacing-small);
-                    }
-
-                    @include respond-to(xs) {
-                        padding: var(--spacing-xs);
-                    }
 
                     .chart-canvas {
                         width: 100% !important;
                         height: 100% !important;
                         flex: 1;
                         display: block;
-                        border-radius: var(--border-radius-xl);
-                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-                        background: rgba(255, 255, 255, 0.8);
-                        backdrop-filter: blur(5px);
+                        border-radius: var(--border-radius-large);
+                        background: rgba(255, 255, 255, 0.9);
                         cursor: grab;
-                        margin-bottom: 0;
 
                         &:active {
                             cursor: grabbing;
@@ -1749,71 +1393,33 @@ const fitToWindow = (chartIndex) => {
                         top: 10px;
                         right: 10px;
                         z-index: 100;
+                        display: flex;
+                        gap: 4px;
+                        background: rgba(255, 255, 255, 0.95);
+                        border-radius: var(--border-radius-large);
+                        padding: var(--spacing-mini);
+                        border: var(--chart-standard-border);
 
-                        .zoom-button-group {
+                        .zoom-btn {
+                            width: 28px;
+                            height: 28px;
+                            border: none;
+                            border-radius: var(--border-radius-base);
+                            background: transparent;
+                            color: var(--text-secondary);
+                            cursor: pointer;
                             display: flex;
-                            gap: 4px;
-                            background: rgba(255, 255, 255, 0.95);
-                            border-radius: var(--border-radius-large);
-                            padding: var(--spacing-mini);
-                            box-shadow: var(--chart-button-shadow);
-                            border: var(--chart-standard-border);
+                            align-items: center;
+                            justify-content: center;
+                            transition: var(--chart-quick-transition);
 
-                            .zoom-btn {
-                                width: 32px;
-                                height: 32px;
-                                border: none;
-                                border-radius: var(--border-radius-md);
-                                background: transparent;
-                                color: var(--text-secondary);
-                                cursor: pointer;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                transition: var(--chart-quick-transition);
-                                font-size: 14px;
-
-                                &:hover {
-                                    background: var(--primary-color);
-                                    color: white;
-                                    transform: translateY(-1px);
-                                    box-shadow: 0 2px 6px rgba(64, 158, 255, 0.3);
-                                }
-
-                                &:active {
-                                    transform: translateY(0);
-                                }
-
-                                .fa {
-                                    font-size: 12px;
-                                }
+                            &:hover {
+                                background: var(--primary-color);
+                                color: white;
                             }
-                        }
-                    }
-
-                    .chart-data-info {
-                        position: absolute;
-                        top: 5px;
-                        left: 10px;
-                        @include chart-info-panel;
-                        opacity: 0.8;
-                        z-index: 50;
-
-                        &:hover {
-                            opacity: 1;
-                        }
-
-                        .data-info-item {
-                            @include chart-info-item;
-                            padding: var(--spacing-3) var(--spacing-xs);
-                            border: var(--chart-primary-border);
 
                             .fa {
-                                font-size: 9px;
-                            }
-
-                            span {
-                                font-size: 9px;
+                                font-size: 11px;
                             }
                         }
                     }
@@ -1822,74 +1428,115 @@ const fitToWindow = (chartIndex) => {
                         position: absolute;
                         bottom: 5px;
                         right: 10px;
-                        @include chart-info-panel;
-                        opacity: 0.7;
-
-                        &:hover {
-                            opacity: 1;
-                        }
+                        display: flex;
+                        gap: 6px;
+                        font-size: 9px;
+                        color: var(--text-secondary);
+                        opacity: 0.8;
 
                         .hint-item {
-                            @include chart-info-item;
-                            padding: var(--spacing-micro) var(--spacing-5);
+                            display: flex;
+                            align-items: center;
+                            gap: 2px;
+                            background: rgba(255, 255, 255, 0.9);
+                            border-radius: var(--border-radius-base);
+                            padding: 2px 4px;
                             border: var(--chart-standard-border);
 
                             .fa {
-                                font-size: 9px;
+                                color: var(--primary-color);
+                                font-size: 8px;
                             }
 
                             span {
-                                font-size: 9px;
+                                white-space: nowrap;
+                                font-weight: 500;
                             }
                         }
                     }
 
                     .no-station-selected {
-                        @include chart-empty-state-message;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        height: 100%;
+                        color: var(--text-secondary);
+                        background: rgba(255, 255, 255, 0.8);
+                        border-radius: var(--border-radius-xl);
 
                         .fa {
+                            font-size: 48px;
+                            margin-bottom: 16px;
+                            opacity: 0.6;
                             color: var(--primary-color);
+                        }
+
+                        p {
+                            font-size: 16px;
+                            margin: 0;
+                            font-weight: 500;
                         }
                     }
 
                     .no-search-performed {
-                        @include chart-empty-state-message;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        height: 100%;
+                        color: var(--text-secondary);
+                        background: rgba(255, 255, 255, 0.8);
+                        border-radius: var(--border-radius-xl);
 
                         .fa {
+                            font-size: 48px;
+                            margin-bottom: 16px;
+                            opacity: 0.6;
                             color: var(--el-color-warning);
+                        }
+
+                        p {
+                            font-size: 16px;
+                            margin: 0;
+                            font-weight: 500;
                         }
                     }
                 }
             }
 
-            // 水平滚动条样式 - VSCode风格
+            // 水平滚动条样式 - 已简化
             .chart-minimap-container {
                 position: relative;
                 width: 100%;
                 height: 60px;
                 min-height: 60px;
                 flex-shrink: 0;
-                background: rgba(248, 250, 252, 0.7);
+                background: linear-gradient(90deg, rgba(248, 250, 252, 0.8) 0%, rgba(240, 244, 248, 0.9) 50%, rgba(248, 250, 252, 0.8) 100%);
                 border-radius: 0 0 var(--border-radius-xl) var(--border-radius-xl);
                 overflow: hidden;
                 margin-top: 0;
                 box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
+                cursor: pointer;
 
-                // 缩略图样式
-                .thumbnail-chart {
-                    width: 100%;
-                    height: 100%;
+                // 添加纹理效果
+                &::after {
+                    content: '';
                     position: absolute;
                     top: 0;
                     left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: repeating-linear-gradient(90deg,
+                            transparent 0px,
+                            rgba(64, 158, 255, 0.05) 1px,
+                            transparent 2px,
+                            transparent 20px);
+                    pointer-events: none;
                     z-index: 1;
-                    cursor: pointer;
-                    opacity: 0.9;
-                    background: rgba(255, 255, 255, 0.3);
-                    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
                 }
 
-                // VSCode风格的可视区域滑块
+                // 简化的可视区域滑块
                 .viewport-slider {
                     position: absolute;
                     height: 100%;
@@ -1897,7 +1544,7 @@ const fitToWindow = (chartIndex) => {
                     border: 1px solid rgba(64, 158, 255, 0.5);
                     box-shadow: 0 0 3px rgba(64, 158, 255, 0.2);
                     top: 0;
-                    z-index: 2;
+                    z-index: 3;
                     cursor: grab;
                     transition: background-color 0.15s ease;
 
@@ -1913,20 +1560,16 @@ const fitToWindow = (chartIndex) => {
 
                     // 调整大小时的样式
                     &.resizing {
-                        background: rgba(64, 158, 255, 0.35);
+                        background: rgba(64, 158, 255, 0.25);
+                        border-color: rgba(64, 158, 255, 0.8);
 
-                        &.resizing-left {
-                            border-left-width: 2px;
-                            border-left-color: rgba(64, 158, 255, 0.9);
-                        }
-
-                        &.resizing-right {
-                            border-right-width: 2px;
-                            border-right-color: rgba(64, 158, 255, 0.9);
+                        .resize-handle {
+                            opacity: 0.6;
+                            background: rgba(64, 158, 255, 0.8);
                         }
                     }
 
-                    // VSCode风格的滑块边缘指示器
+                    // 简化的边缘指示器
                     &::before,
                     &::after {
                         content: '';
@@ -1945,15 +1588,21 @@ const fitToWindow = (chartIndex) => {
                         right: 0;
                     }
 
-                    // VSCode风格的调整手柄 - 视觉上不可见但可交互
+                    // 调整手柄样式
                     .resize-handle {
                         position: absolute;
                         width: 8px;
                         height: 100%;
                         top: 0;
-                        z-index: 3;
+                        z-index: 4;
                         cursor: col-resize;
                         opacity: 0;
+                        transition: opacity 0.2s ease;
+
+                        &:hover {
+                            opacity: 0.3;
+                            background: rgba(64, 158, 255, 0.5);
+                        }
 
                         &.left {
                             left: -4px;
@@ -1965,21 +1614,12 @@ const fitToWindow = (chartIndex) => {
                     }
                 }
 
-                // 添加拖拽区域指示
-                &:hover::after {
-                    content: '';
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    height: 3px;
-                    background: rgba(64, 158, 255, 0.5);
-                    z-index: 3;
-                    opacity: 0.5;
-                    cursor: row-resize;
+                // 简化的容器效果
+                &:hover {
+                    background: linear-gradient(90deg, rgba(240, 244, 248, 0.9) 0%, rgba(232, 238, 244, 1) 50%, rgba(240, 244, 248, 0.9) 100%);
                 }
 
-                // VSCode风格的缩略图阴影效果
+                // 简化的阴影效果  
                 &::before {
                     content: '';
                     position: absolute;
@@ -1989,9 +1629,8 @@ const fitToWindow = (chartIndex) => {
                     bottom: 0;
                     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.02);
                     pointer-events: none;
-                    z-index: 4;
+                    z-index: 2;
                     border-radius: 0 0 var(--border-radius-xl) var(--border-radius-xl);
-                    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), transparent 20%);
                 }
             }
         }

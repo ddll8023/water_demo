@@ -163,78 +163,14 @@
   animation: fadeIn $duration ease-in-out;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 // 滑入动画
 @mixin slide-in($direction: 'up', $duration: 0.3s) {
   animation: slideIn#{capitalize($direction)} $duration ease-out;
 }
 
-@keyframes slideInUp {
-  from {
-    transform: translateY(100%);
-  }
-
-  to {
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideInDown {
-  from {
-    transform: translateY(-100%);
-  }
-
-  to {
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideInLeft {
-  from {
-    transform: translateX(-100%);
-  }
-
-  to {
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    transform: translateX(100%);
-  }
-
-  to {
-    transform: translateX(0);
-  }
-}
-
 // 缩放动画
 @mixin scale-in($duration: 0.3s) {
   animation: scaleIn $duration ease-out;
-}
-
-@keyframes scaleIn {
-  from {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
 }
 
 // ==================== 工具混入 ====================
@@ -328,58 +264,5 @@
 
   .fa {
     flex-shrink: 0;
-  }
-}
-
-// ==================== 图表监测组件专用混入 ====================
-// 信息面板样式
-@mixin chart-info-panel {
-  display: flex;
-  gap: 8px;
-  font-size: 10px;
-  color: var(--text-secondary);
-  transition: opacity 0.3s ease;
-}
-
-// 信息项样式
-@mixin chart-info-item {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: var(--border-radius-base);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-
-  .fa {
-    color: var(--primary-color);
-  }
-
-  span {
-    white-space: nowrap;
-    font-weight: 500;
-  }
-}
-
-// 空状态消息样式
-@mixin chart-empty-state-message {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: var(--border-radius-xl);
-
-  .fa {
-    font-size: 48px;
-    margin-bottom: 16px;
-    opacity: 0.6;
-  }
-
-  p {
-    font-size: 16px;
-    margin: 0;
-    font-weight: 500;
   }
 }
