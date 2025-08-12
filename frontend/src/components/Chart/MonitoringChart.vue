@@ -23,7 +23,7 @@
                 <!-- 轮播图主体 -->
                 <div class="carousel-wrapper" v-loading="loading" :style="{ height: chartHeight }">
                     <!-- 轮播容器 -->
-                    <div class="carousel-container" ref="carouselContainer">
+                    <div class="carousel-container">
                         <!-- 轮播项目 -->
                         <div class="carousel-item" v-for="(item, index) in chartItems" :key="item.code" :class="{
                             'active': index === activeIndex
@@ -118,7 +118,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, nextTick, shallowRef, markRaw, watch } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, shallowRef, markRaw, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import Chart from 'chart.js/auto'
 import zoomPlugin from 'chartjs-plugin-zoom'
@@ -211,7 +211,6 @@ const isAnimating = ref(false)
 const chartInstances = shallowRef([])  // 使用shallowRef避免深度响应式
 const chartRefs = shallowRef([])  // 使用shallowRef避免深度响应式
 
-// 缩略图相关状态已移除
 const viewportSliderRefs = shallowRef([]) // 视口滑块引用数组
 
 // 视口滑块拖拽状态
@@ -277,8 +276,6 @@ onUnmounted(() => {
             }
         }
     })
-
-    // 销毁缩略图实例已移除
 
     // 事件监听器已在对应的stop函数中移除，无需重复清理
 })
@@ -527,8 +524,6 @@ const initSingleChart = async (index) => {
         // 使用markRaw避免Vue响应式处理
         chartInstances.value[index] = markRaw(chart);
 
-        // 初始化缩略图已移除
-
         // 如果已选择站点且已执行搜索，加载数据
         if (props.hasStation && props.hasSearched) {
             loadChartData(index);
@@ -616,8 +611,6 @@ const loadChartData = async (chartIndex) => {
 
         // 设置合适的缩放级别，显示最左侧的15个数据点（内部会调用chart.update）
         setChartOptimalZoom(chart, labels.length, chartIndex);
-
-        // 更新缩略图数据已移除
 
         // 初始化滑块位置
         syncViewportSliderWithChart(chartIndex);
@@ -764,11 +757,9 @@ const setChartRef = (el, index) => {
 
 /**
  * ----------------------------------------
- * 缩略图功能已移除
+ * 缩略图功能
  * ----------------------------------------
  */
-
-// 更新缩略图数据已移除
 
 // 同步主图表缩放状态到缩略图滑块
 const syncViewportSliderWithChart = (chartIndex) => {
@@ -1041,8 +1032,6 @@ const handleResize = (event) => {
     // 同步更新主图表
     requestAnimationFrame(() => updateMainChartViewport(chartIndex))
 }
-
-// 设置缩略图引用已移除
 
 // 设置视口滑块引用
 const setViewportSliderRef = (el, index) => {
@@ -1372,12 +1361,10 @@ const zoomOut = (chartIndex) => updateChartZoom(0.7, 'multiply', chartIndex)
                     height: calc(100% - 60px);
                     background: rgba(255, 255, 255, 0.3);
                     position: relative;
-                    border-bottom: 0;
 
                     .chart-canvas {
                         width: 100% !important;
                         height: 100% !important;
-                        flex: 1;
                         display: block;
                         border-radius: var(--border-radius-large);
                         background: rgba(255, 255, 255, 0.9);
@@ -1455,7 +1442,8 @@ const zoomOut = (chartIndex) => updateChartZoom(0.7, 'multiply', chartIndex)
                         }
                     }
 
-                    .no-station-selected {
+                    // 公共占位符样式基类
+                    .chart-placeholder-base {
                         display: flex;
                         flex-direction: column;
                         align-items: center;
@@ -1469,7 +1457,6 @@ const zoomOut = (chartIndex) => updateChartZoom(0.7, 'multiply', chartIndex)
                             font-size: 48px;
                             margin-bottom: 16px;
                             opacity: 0.6;
-                            color: var(--primary-color);
                         }
 
                         p {
@@ -1479,27 +1466,19 @@ const zoomOut = (chartIndex) => updateChartZoom(0.7, 'multiply', chartIndex)
                         }
                     }
 
-                    .no-search-performed {
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        justify-content: center;
-                        height: 100%;
-                        color: var(--text-secondary);
-                        background: rgba(255, 255, 255, 0.8);
-                        border-radius: var(--border-radius-xl);
+                    .no-station-selected {
+                        @extend .chart-placeholder-base;
 
                         .fa {
-                            font-size: 48px;
-                            margin-bottom: 16px;
-                            opacity: 0.6;
-                            color: var(--el-color-warning);
+                            color: var(--primary-color);
                         }
+                    }
 
-                        p {
-                            font-size: 16px;
-                            margin: 0;
-                            font-weight: 500;
+                    .no-search-performed {
+                        @extend .chart-placeholder-base;
+
+                        .fa {
+                            color: var(--el-color-warning);
                         }
                     }
                 }
