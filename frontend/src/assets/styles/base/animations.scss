@@ -115,3 +115,32 @@
         opacity: 1;
     }
 }
+
+// ==================== 毛玻璃弹窗动画 ====================
+@keyframes glassPanelFadeIn {
+    0% {
+        opacity: 0;
+        transform: scale(var(--panel-scale-start)) translateY(var(--panel-translate-y-start));
+        backdrop-filter: blur(var(--glass-blur-start));
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        backdrop-filter: blur(var(--glass-blur-panel));
+    }
+}
+
+@keyframes glassPopupFadeIn {
+    0% {
+        opacity: 0;
+        transform: scale(var(--popup-scale-start)) translateY(var(--popup-translate-y-start));
+        backdrop-filter: blur(var(--glass-blur-start));
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        backdrop-filter: blur(var(--glass-blur-popup));
+    }
+}

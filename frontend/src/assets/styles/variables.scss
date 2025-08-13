@@ -235,6 +235,18 @@ $breakpoint-xl: 1920px;
   --transition-transform: transform var(--transition-duration-base) var(--transition-timing-function);
   --transition-opacity: opacity var(--transition-duration-fast) var(--transition-timing-function);
   --transition-all-fast: all var(--transition-duration-fast) var(--transition-timing-function);
+
+  // ==================== 毛玻璃弹窗动画变量 ====================
+  // 毛玻璃模糊效果参数
+  --glass-blur-start: 0px;
+  --glass-blur-popup: 18px;
+  --glass-blur-panel: 12px;
+
+  // 弹窗变换参数
+  --popup-scale-start: 0.95;
+  --popup-translate-y-start: -4px;
+  --panel-scale-start: 0.9;
+  --panel-translate-y-start: 20px;
 }
 
 // ==================== 通用布局补充变量 ====================

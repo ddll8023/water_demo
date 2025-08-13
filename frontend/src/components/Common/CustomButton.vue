@@ -54,6 +54,17 @@ const props = defineProps({
     type: String,
     default: 'primary',
     validator: (value) => ['primary', 'danger'].includes(value)
+  },
+  // 按钮形状
+  shape: {
+    type: String,
+    default: 'default',
+    validator: (value) => ['default', 'circle'].includes(value)
+  },
+  // 是否为纯图标按钮
+  iconOnly: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -79,6 +90,16 @@ const buttonClasses = computed(() => {
 
   // 按钮尺寸
   classes.push(`custom-button--${props.size}`)
+
+  // 按钮形状
+  if (props.shape === 'circle') {
+    classes.push('custom-button--circle')
+  }
+
+  // 纯图标按钮
+  if (props.iconOnly) {
+    classes.push('custom-button--icon-only')
+  }
 
   // 状态类
   if (props.disabled) {
@@ -273,6 +294,46 @@ const handleClick = (event) => {
 
 /**
  * ----------------------------------------
+ * 按钮形状样式
+ * ----------------------------------------
+ */
+// 圆形按钮
+.custom-button--circle {
+  border-radius: var(--border-radius-round);
+  width: var(--icon-size-xxxl);
+  height: var(--icon-size-xxxl);
+  min-width: var(--icon-size-xxxl);
+  padding: 0;
+  flex-shrink: 0;
+  border: none;
+
+  &:hover:not(.custom-button--disabled):not(.custom-button--loading) {
+    border: none;
+  }
+
+  &.custom-button--large {
+    width: calc(var(--icon-size-xxxl) + 8px);
+    height: calc(var(--icon-size-xxxl) + 8px);
+    min-width: calc(var(--icon-size-xxxl) + 8px);
+  }
+
+  &.custom-button--small {
+    width: calc(var(--icon-size-xxxl) - 8px);
+    height: calc(var(--icon-size-xxxl) - 8px);
+    min-width: calc(var(--icon-size-xxxl) - 8px);
+  }
+}
+
+// 纯图标按钮
+.custom-button--icon-only {
+  i {
+    margin-right: 0;
+    font-size: var(--font-size-extra-small);
+  }
+}
+
+/**
+ * ----------------------------------------
  * 按钮状态样式
  * ----------------------------------------
  */
@@ -304,18 +365,7 @@ const handleClick = (event) => {
 // 加载图标样式
 .custom-button__loading-icon {
   margin-right: 6px;
-  animation: spin 1s linear infinite;
-}
-
-// 旋转动画
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
+  animation: amap-spin 1s linear infinite;
 }
 
 /**

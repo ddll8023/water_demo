@@ -10,9 +10,9 @@
                     </i>
                     <span class="device-popup__name">{{ deviceName }}</span>
                 </div>
-                <button class="device-popup__close" @click="handleClose" title="关闭">
+                <CustomButton type="secondary" shape="circle" iconOnly @click="handleClose" title="关闭">
                     <i class="fa fa-times"></i>
-                </button>
+                </CustomButton>
             </div>
 
             <!-- 设备信息 -->
@@ -65,10 +65,10 @@
 
                 <!-- 操作按钮 -->
                 <div class="device-popup__actions" v-if="showActions">
-                    <button class="device-popup__action device-popup__action--primary" @click="handleViewDetail">
+                    <CustomButton type="primary" @click="handleViewDetail">
                         <i class="fa fa-eye"></i>
                         查看详情
-                    </button>
+                    </CustomButton>
                 </div>
             </div>
         </div>
@@ -78,6 +78,7 @@
 <script setup>
 import { computed } from 'vue';
 import { FACILITY_TYPE_CONFIG, MONITORING_ITEM_CONFIG, DEFAULT_DEVICE_ICON } from '@/utils/map/deviceIcon';
+import CustomButton from '@/components/Common/CustomButton.vue';
 
 // Props定义
 const props = defineProps({
@@ -124,10 +125,22 @@ const emit = defineEmits([
     'view-detail'
 ]);
 
+// 获取CSS变量值的工具函数
+const getCSSVariableValue = (variableName) => {
+    if (typeof window === 'undefined') return 0;
+    const value = getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
+    return parseFloat(value) || 0;
+};
+
 // 弹窗尺寸常量
-const POPUP_WIDTH = 280;
-const POPUP_HEIGHT = 200;
-const MARGIN = 16;
+const getPopupDimensions = () => ({
+    POPUP_WIDTH: 280,
+    POPUP_HEIGHT: 200,
+    MARGIN: getCSSVariableValue('--spacing-base'),
+    GAP: getCSSVariableValue('--spacing-small'),
+    BORDER_WIDTH: getCSSVariableValue('--spacing-1'),
+    OFFSET: getCSSVariableValue('--spacing-15')
+});
 
 // 计算设备名称
 const deviceName = computed(() => {
@@ -205,6 +218,8 @@ const deviceIcon = computed(() => {
 const popupStyle = computed(() => {
     const { x, y } = props.position;
     const { width: containerWidth, height: containerHeight } = props.containerSize;
+    const dimensions = getPopupDimensions();
+    const { POPUP_WIDTH, POPUP_HEIGHT, MARGIN, GAP, BORDER_WIDTH, OFFSET } = dimensions;
 
     // 如果容器尺寸无效，使用默认位置
     if (!containerWidth || !containerHeight || containerWidth <= 0 || containerHeight <= 0) {
@@ -221,12 +236,8 @@ const popupStyle = computed(() => {
     // 有效半径：包含图标描边宽度
     const effectiveRadius = markerRadius + (props.markerBorderWidth || 1);
 
-    // 常量：与弹窗视觉一致
-    const GAP = 8;           // 弹窗与图标的固定间距
-    const BORDER_WIDTH = 1;  // 弹窗边框宽度（与样式保持一致）
-
     // 默认：弹窗在图标右侧边缘外 GAP，并加上自身边框宽度
-    let left = x + effectiveRadius + GAP + BORDER_WIDTH + 15;
+    let left = x + effectiveRadius + GAP + BORDER_WIDTH + OFFSET;
     let top = y - POPUP_HEIGHT / 2;
 
     // 边界检测：右侧空间不足则放到左侧，同样考虑自身边框
@@ -255,12 +266,13 @@ const popupDirection = computed(() => {
         return 'right';
     }
 
+    const dimensions = getPopupDimensions();
+    const { POPUP_WIDTH, MARGIN, GAP, BORDER_WIDTH, OFFSET } = dimensions;
+
     const markerRadius = props.markerSize / 2;
     const effectiveRadius = markerRadius + (props.markerBorderWidth || 1);
-    const GAP = 8;
-    const BORDER_WIDTH = 1;
 
-    const defaultLeft = x + effectiveRadius + GAP + BORDER_WIDTH + 15;
+    const defaultLeft = x + effectiveRadius + GAP + BORDER_WIDTH + OFFSET;
     if (defaultLeft + POPUP_WIDTH + MARGIN > containerWidth) {
         return 'left';
     }
@@ -313,10 +325,6 @@ const handleViewDetail = () => {
     position: absolute;
     width: 280px;
     min-height: 160px;
-    // 组件内覆写玻璃变量，提升通透度
-    --glass-panel-bg: rgba(255, 255, 255, 0.18);
-    --glass-panel-border: rgba(255, 255, 255, 0.16);
-
     background: var(--glass-panel-bg);
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
@@ -324,7 +332,7 @@ const handleViewDetail = () => {
     border-radius: var(--border-radius-large);
     box-shadow: var(--shadow-popup);
     z-index: var(--z-index-popover);
-    animation: popupFadeIn 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    animation: glassPopupFadeIn var(--transition-duration-fast) cubic-bezier(0.25, 0.46, 0.45, 0.94);
     transform-origin: left center;
     pointer-events: auto;
 
@@ -357,31 +365,31 @@ const handleViewDetail = () => {
     }
 
     &__header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+        @include flex-between;
         padding: var(--spacing-base);
         border-bottom: 1px solid var(--black-transparent-thin);
         background: rgba(255, 255, 255, 0.06);
         border-radius: var(--border-radius-large) var(--border-radius-large) 0 0;
+
+        .custom-button--circle {
+            margin-left: var(--spacing-small);
+        }
     }
 
     &__title {
-        display: flex;
-        align-items: center;
+        @include flex-start;
         flex: 1;
         min-width: 0;
     }
 
     &__icon {
+        @include flex-center;
         display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 24px;
-        height: 24px;
+        width: var(--icon-size-xl);
+        height: var(--icon-size-xl);
         border-radius: 50%;
         background: var(--white-transparent-full);
-        font-size: 12px;
+        font-size: var(--font-size-extra-small);
         font-weight: var(--font-weight-bold);
         margin-right: var(--spacing-small);
         flex-shrink: 0;
@@ -398,31 +406,7 @@ const handleViewDetail = () => {
         white-space: nowrap;
     }
 
-    &__close {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 28px;
-        height: 28px;
-        border: none;
-        background: var(--black-transparent-xxlight);
-        border-radius: 50%;
-        color: var(--text-secondary);
-        cursor: pointer;
-        transition: all 0.2s ease;
-        flex-shrink: 0;
-        margin-left: var(--spacing-small);
 
-        &:hover {
-            background: var(--black-transparent-light-10);
-            color: var(--text-primary);
-            transform: scale(1.1);
-        }
-
-        i {
-            font-size: 12px;
-        }
-    }
 
     &__body {
         flex: 1;
@@ -470,7 +454,7 @@ const handleViewDetail = () => {
 
         &--time {
             color: var(--text-tertiary);
-            font-size: 11px;
+            font-size: var(--font-size-extra-small);
         }
 
         &--status-normal {
@@ -495,63 +479,6 @@ const handleViewDetail = () => {
         gap: var(--spacing-small);
         margin-top: auto;
     }
-
-    &__action {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: var(--spacing-mini);
-        padding: var(--spacing-small) var(--spacing-base);
-        border-radius: var(--border-radius-base);
-        font-size: var(--font-size-small);
-        font-weight: var(--font-weight-medium);
-        cursor: pointer;
-        transition: all 0.2s ease;
-        border: 1px solid transparent;
-
-        i {
-            font-size: 12px;
-        }
-
-        &--primary {
-            background: var(--primary-color);
-            color: white;
-
-            &:hover {
-                background: var(--primary-dark);
-                transform: translateY(-1px);
-                box-shadow: 0 4px 12px rgba(22, 93, 255, 0.3);
-            }
-        }
-
-        &--secondary {
-            background: var(--black-transparent-xxlight);
-            color: var(--text-primary);
-            border-color: var(--black-transparent-light-10);
-
-            &:hover {
-                background: var(--black-transparent-light-10);
-                border-color: var(--black-transparent-light-20);
-                transform: translateY(-1px);
-            }
-        }
-    }
-}
-
-// 动画定义
-@keyframes popupFadeIn {
-    0% {
-        opacity: 0;
-        transform: scale(0.95) translateY(-4px);
-        backdrop-filter: blur(0px);
-    }
-
-    100% {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-        backdrop-filter: blur(18px);
-    }
 }
 
 // 响应式适配
@@ -561,16 +488,16 @@ const handleViewDetail = () => {
         min-height: 140px;
 
         &__header {
-            padding: 12px;
+            padding: var(--spacing-medium);
         }
 
         &__body {
-            padding: 12px;
+            padding: var(--spacing-medium);
         }
 
         &__icon {
-            width: 20px;
-            height: 20px;
+            width: var(--icon-size-lg);
+            height: var(--icon-size-lg);
             font-size: 10px;
         }
     }
@@ -595,10 +522,6 @@ const handleViewDetail = () => {
 
         &__actions {
             flex-direction: column;
-        }
-
-        &__action {
-            justify-content: center;
         }
     }
 }

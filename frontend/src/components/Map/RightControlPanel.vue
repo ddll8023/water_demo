@@ -135,7 +135,7 @@ defineExpose({
     max-width: 400px;
     overflow: hidden;
     transition: all var(--panel-transition-duration) var(--panel-transition-ease);
-    animation: panelFadeIn var(--panel-transition-duration) var(--panel-transition-ease);
+    animation: glassPanelFadeIn var(--panel-transition-duration) var(--panel-transition-ease);
     will-change: transform, opacity, box-shadow;
 
     &:hover {
@@ -403,20 +403,6 @@ defineExpose({
                     box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
                 }
             }
-        }
-    }
-
-    @keyframes panelFadeIn {
-        0% {
-            opacity: 0;
-            transform: translateY(var(--panel-hidden-translate-y)) translateZ(0) scale(var(--panel-hidden-scale));
-            backdrop-filter: blur(0px);
-        }
-
-        100% {
-            opacity: 1;
-            transform: translateY(0) translateZ(0) scale(1);
-            backdrop-filter: blur(12px);
         }
     }
 
