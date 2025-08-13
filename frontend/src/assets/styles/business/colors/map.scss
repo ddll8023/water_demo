@@ -144,4 +144,9 @@
     // ==================== 地图动画变量 ====================
     --animation-warning-pulse-scale: 1.15;
     --animation-urgent-pulse-scale: 1.25;
+
+    // ==================== 地图标记尺寸系统 ====================
+    --marker-size-base: 16px;
+    --marker-font-size-ratio: 0.65;
+    --marker-border-width-base: 2px;
 }

@@ -555,9 +555,13 @@ const getItemIconConfig = (item) => {
  * 创建图标HTML内容 - 使用内联样式确保尺寸正确应用
  */
 const createIconHtml = (iconConfig, size, title, markerId = '') => {
-    // 更精确的CSS变量值计算
+    // 从CSS变量获取基础配置值，确保与样式系统统一
+    const rootStyles = getComputedStyle(document.documentElement);
+    const fontSizeRatio = parseFloat(rootStyles.getPropertyValue('--marker-font-size-ratio').trim()) || 0.65;
+
+    // 精确的尺寸计算
     const borderWidth = size <= 15 ? 1 : size <= 30 ? 2 : 3;
-    const fontSize = Math.max(Math.round(size * 0.65), 10);
+    const fontSize = Math.max(Math.round(size * fontSizeRatio), 10);
 
     // 构建CSS类名
     const markerType = iconConfig.type || 'facility';
@@ -1102,37 +1106,27 @@ defineExpose({
     font-weight: var(--font-weight-medium);
     line-height: 1;
     position: relative;
-
-    // 动态尺寸变量，由JavaScript控制
-    --marker-size: var(--marker-size-base);
-    --marker-font-size: calc(var(--marker-size) * var(--marker-font-size-ratio));
-    --marker-border-width: var(--marker-border-width-base);
-
-    width: var(--marker-size);
-    height: var(--marker-size);
-    font-size: var(--marker-font-size);
-    border-width: var(--marker-border-width);
     border-style: solid;
 }
 
 // 设施类型标记
 :deep(.amap-marker--facility .amap-marker__icon) {
-    border-color: var(--facility-border-color, var(--info-color));
-    background-color: var(--facility-bg-color, var(--bg-secondary));
-    color: var(--facility-text-color, var(--text-primary));
+    border-color: var(--facility-default-color, var(--info-color));
+    background-color: var(--facility-default-bg, var(--bg-secondary));
+    color: var(--text-primary);
 }
 
 // 监测站类型标记  
 :deep(.amap-marker--station .amap-marker__icon) {
-    border-color: var(--station-border-color, var(--success-color));
-    background-color: var(--station-bg-color, var(--bg-tertiary));
-    color: var(--station-text-color, var(--text-primary));
+    border-color: var(--station-default-color, var(--success-color));
+    background-color: var(--station-default-bg, var(--bg-tertiary));
+    color: var(--text-primary);
 }
 
 :deep(.amap-marker--warning .amap-marker__icon) {
-    border-color: var(--warning-border-color, var(--warning-color));
-    background-color: var(--warning-bg-color, var(--bg-primary));
-    color: var(--warning-text-color, var(--warning-color));
+    border-color: var(--warning-level-general-color, var(--warning-color));
+    background-color: var(--warning-level-general-bg, var(--bg-primary));
+    color: var(--warning-level-general-color, var(--warning-color));
 }
 
 // 悬停状态 - 重叠图标可视性优化
@@ -1149,7 +1143,7 @@ defineExpose({
 // 工具提示
 :deep(.amap-marker__tooltip) {
     position: absolute;
-    bottom: calc(var(--marker-size) + var(--spacing-mini));
+    bottom: calc(var(--marker-size-base) + var(--spacing-mini));
     left: 50%;
     transform: translateX(-50%);
     background: var(--black-transparent-heavy);
