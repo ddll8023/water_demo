@@ -824,7 +824,7 @@ const getIndicatorUnit = (key) => {
                 left: 16px;
                 background: var(--bg-primary);
                 border-radius: var(--border-radius-large);
-                box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+                box-shadow: 0 2px 12px var(--black-transparent-medium);
                 z-index: 1000;
                 min-width: 160px;
                 max-width: 220px;
@@ -864,7 +864,7 @@ const getIndicatorUnit = (key) => {
                 }
 
                 .panel-header {
-                    padding: 12px 16px;
+                    padding: var(--padding-panel-header);
                     background: var(--bg-secondary);
                     border-bottom: 1px solid var(--border-color-lighter);
                     display: flex;

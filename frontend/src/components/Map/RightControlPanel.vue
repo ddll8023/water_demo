@@ -20,33 +20,9 @@
             <div class="control-group">
                 <div class="group-title">工程站点</div>
                 <div class="legend-options">
-                    <div class="legend-item">
-                        <i class="legend-icon fa fa-tint" style="color: #1890ff;"></i>
-                        <span>两河口水库</span>
-                    </div>
-                    <div class="legend-item">
-                        <i class="legend-icon fa fa-tachometer" style="color: #52c41a;"></i>
-                        <span>流量站</span>
-                    </div>
-                    <div class="legend-item">
-                        <i class="legend-icon fa fa-building" style="color: #722ed1;"></i>
-                        <span>水厂</span>
-                    </div>
-                    <div class="legend-item">
-                        <i class="legend-icon fa fa-ship" style="color: #13c2c2;"></i>
-                        <span>浮舟</span>
-                    </div>
-                    <div class="legend-item">
-                        <i class="legend-icon fa fa-compress" style="color: #fa8c16;"></i>
-                        <span>加压站</span>
-                    </div>
-                    <div class="legend-item">
-                        <i class="legend-icon fa fa-play-circle" style="color: #52c41a;"></i>
-                        <span>泵打开</span>
-                    </div>
-                    <div class="legend-item">
-                        <i class="legend-icon fa fa-stop-circle" style="color: #f5222d;"></i>
-                        <span>泵关闭</span>
+                    <div class="legend-item" v-for="item in legendConfig.engineeringSites" :key="item.label">
+                        <i class="legend-icon" :class="[item.icon, item.iconClass]"></i>
+                        <span>{{ item.label }}</span>
                     </div>
                 </div>
             </div>
@@ -55,13 +31,9 @@
             <div class="control-group">
                 <div class="group-title">预警站点</div>
                 <div class="legend-options">
-                    <div class="legend-item">
-                        <i class="legend-icon fa fa-exclamation-triangle" style="color: #faad14;"></i>
-                        <span>一般预警</span>
-                    </div>
-                    <div class="legend-item">
-                        <i class="legend-icon fa fa-exclamation-circle" style="color: #f5222d;"></i>
-                        <span>严重预警</span>
+                    <div class="legend-item" v-for="item in legendConfig.warningSites" :key="item.label">
+                        <i class="legend-icon" :class="[item.icon, item.iconClass]"></i>
+                        <span>{{ item.label }}</span>
                     </div>
                 </div>
             </div>
@@ -70,13 +42,9 @@
             <div class="control-group">
                 <div class="group-title">供水管线</div>
                 <div class="legend-options">
-                    <div class="legend-item">
-                        <span class="pipeline-legend main-pipeline"></span>
-                        <span>供水干管</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="pipeline-legend branch-pipeline"></span>
-                        <span>供水支管</span>
+                    <div class="legend-item" v-for="item in legendConfig.waterPipelines" :key="item.label">
+                        <span :class="item.class"></span>
+                        <span>{{ item.label }}</span>
                     </div>
                 </div>
             </div>
@@ -104,6 +72,72 @@ const emit = defineEmits([
 // 面板显示状态
 const panelVisible = ref(props.initialVisible);
 
+// 图例配置数据
+const legendConfig = reactive({
+    // 工程站点图例
+    engineeringSites: [
+        {
+            icon: 'fa fa-tint',
+            iconClass: 'icon-reservoir',
+            label: '两河口水库'
+        },
+        {
+            icon: 'fa fa-tachometer',
+            iconClass: 'icon-monitoring-station',
+            label: '流量站'
+        },
+        {
+            icon: 'fa fa-building',
+            iconClass: 'icon-water-plant',
+            label: '水厂'
+        },
+        {
+            icon: 'fa fa-ship',
+            iconClass: 'icon-floating-boat',
+            label: '浮舟'
+        },
+        {
+            icon: 'fa fa-compress',
+            iconClass: 'icon-pumping-station',
+            label: '加压站'
+        },
+        {
+            icon: 'fa fa-play-circle',
+            iconClass: 'icon-pump-open',
+            label: '泵打开'
+        },
+        {
+            icon: 'fa fa-stop-circle',
+            iconClass: 'icon-pump-closed',
+            label: '泵关闭'
+        }
+    ],
+    // 预警站点图例
+    warningSites: [
+        {
+            icon: 'fa fa-exclamation-triangle',
+            iconClass: 'icon-warning-general',
+            label: '一般预警'
+        },
+        {
+            icon: 'fa fa-exclamation-circle',
+            iconClass: 'icon-warning-serious',
+            label: '严重预警'
+        }
+    ],
+    // 供水管线图例
+    waterPipelines: [
+        {
+            class: 'pipeline-legend main-pipeline',
+            label: '供水干管'
+        },
+        {
+            class: 'pipeline-legend branch-pipeline',
+            label: '供水支管'
+        }
+    ]
+});
+
 /**
  * 切换面板显示状态
  */
@@ -125,12 +159,12 @@ defineExpose({
     position: absolute;
     top: 80px;
     right: 16px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(12px);
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-    border: var(--border-width-thin) solid rgba(255, 255, 255, 0.2);
-    z-index: 1000;
+    background: var(--white-transparent-full);
+    backdrop-filter: blur(var(--blur-medium));
+    border-radius: var(--border-radius-xl);
+    box-shadow: 0 8px 32px var(--black-transparent-medium);
+    border: var(--border-width-thin) solid var(--white-transparent-base);
+    z-index: var(--z-index-dropdown);
     min-width: var(--panel-width-default);
     max-width: 400px;
     overflow: hidden;
@@ -144,7 +178,7 @@ defineExpose({
     }
 
     &.collapsed {
-        min-width: 200px;
+        min-width: var(--panel-min-width-collapsed);
         height: var(--map-panel-collapsed-height);
         box-shadow: var(--shadow-collapsed);
         backdrop-filter: blur(var(--blur-light));
@@ -154,12 +188,12 @@ defineExpose({
             backdrop-filter: blur(var(--blur-medium));
 
             .header-icon {
-                color: #409eff;
+                color: var(--el-color-primary);
                 transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
                 transform: scale(1.1);
 
                 &:hover {
-                    color: #66b1ff;
+                    color: var(--el-color-primary-light-3);
                     transform: scale(1.2);
                 }
             }
@@ -191,7 +225,7 @@ defineExpose({
     .panel-header {
         display: flex;
         align-items: center;
-        padding: 12px 16px;
+        padding: var(--padding-panel-header);
         background: var(--map-panel-stats-bg);
         backdrop-filter: blur(var(--blur-light));
         border-bottom: var(--border-width-thin) solid rgba(222, 226, 230, 0.6);
@@ -201,7 +235,7 @@ defineExpose({
 
         &:hover {
             background: rgba(240, 242, 245, 0.9);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(var(--blur-medium));
         }
 
         &:active {
@@ -209,9 +243,9 @@ defineExpose({
         }
 
         .header-icon {
-            color: #409eff;
-            font-size: 16px;
-            margin-right: 10px;
+            color: var(--el-color-primary);
+            font-size: var(--font-size-medium);
+            margin-right: var(--spacing-sm);
             transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
             transform-origin: center;
         }
@@ -219,8 +253,8 @@ defineExpose({
         .header-title {
             flex: 1;
             font-weight: 600;
-            color: #303133;
-            font-size: 14px;
+            color: var(--el-text-color-primary);
+            font-size: var(--font-size-base);
             transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
 
             &.collapsed-title {
@@ -231,26 +265,26 @@ defineExpose({
         }
 
         .toggle-icon {
-            color: #606266;
-            font-size: 14px;
+            color: var(--el-text-color-regular);
+            font-size: var(--font-size-base);
             margin-left: 8px;
             transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
             transform-origin: center;
 
             &.expanded {
                 transform: rotate(180deg);
-                color: #409eff;
+                color: var(--el-color-primary);
             }
 
             &:hover {
-                color: #409eff;
+                color: var(--el-color-primary);
                 transform: scale(1.1);
             }
         }
     }
 
     .panel-content {
-        padding: 16px;
+        padding: var(--spacing-base);
         transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
         max-height: var(--map-panel-max-height);
         opacity: 1;
@@ -266,7 +300,7 @@ defineExpose({
         }
 
         .control-group {
-            margin-bottom: 20px;
+            margin-bottom: var(--spacing-large);
             animation: groupFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 
             &:nth-child(1) {
@@ -286,10 +320,10 @@ defineExpose({
             }
 
             .group-title {
-                font-size: 13px;
-                color: #606266;
+                font-size: var(--font-size-small);
+                color: var(--el-text-color-regular);
                 font-weight: 600;
-                margin-bottom: 12px;
+                margin-bottom: var(--spacing-medium);
                 text-transform: uppercase;
                 letter-spacing: 0.8px;
                 position: relative;
@@ -303,26 +337,26 @@ defineExpose({
                     transform: translateY(-50%);
                     width: 3px;
                     height: 12px;
-                    background: linear-gradient(135deg, #409eff, #66b1ff);
-                    border-radius: 2px;
+                    background: linear-gradient(135deg, var(--el-color-primary), var(--el-color-primary-light-3));
+                    border-radius: var(--border-radius-small);
                 }
             }
 
             .legend-options {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
-                gap: 10px;
+                gap: var(--spacing-sm);
 
                 .legend-item {
                     display: flex;
                     align-items: center;
-                    padding: 10px 12px;
+                    padding: var(--padding-legend-item);
                     background: rgba(255, 255, 255, 0.9);
                     backdrop-filter: blur(var(--blur-light));
                     border: var(--border-width-thin) solid var(--white-transparent-medium);
-                    border-radius: 8px;
+                    border-radius: var(--border-radius-large);
                     box-shadow: var(--shadow-card);
-                    font-size: 12px;
+                    font-size: var(--font-size-extra-small);
                     transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
                     cursor: pointer;
                     position: relative;
@@ -351,8 +385,8 @@ defineExpose({
                     }
 
                     .legend-icon {
-                        font-size: 16px;
-                        margin-right: 10px;
+                        font-size: var(--font-size-medium);
+                        margin-right: var(--spacing-sm);
                         width: 18px;
                         text-align: center;
                         transition: transform var(--map-panel-transition-duration) var(--map-panel-transition-ease);
@@ -367,15 +401,15 @@ defineExpose({
                     }
 
                     span:last-child {
-                        color: #303133;
+                        color: var(--el-text-color-primary);
                         font-weight: 500;
-                        font-size: 12px;
+                        font-size: var(--font-size-extra-small);
                         line-height: 1.3;
                         transition: color var(--map-panel-transition-duration) var(--map-panel-transition-ease);
                     }
 
                     &:hover span:last-child {
-                        color: #409eff;
+                        color: var(--el-color-primary);
                     }
                 }
 
@@ -383,8 +417,8 @@ defineExpose({
                 .pipeline-legend {
                     width: 16px;
                     height: 3px;
-                    border-radius: 2px;
-                    margin-right: 8px;
+                    border-radius: var(--border-radius-small);
+                    margin-right: var(--spacing-small);
                     transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
 
                     &.main-pipeline {
@@ -431,19 +465,56 @@ defineExpose({
         }
 
         .panel-content {
-            padding: 12px;
+            padding: var(--spacing-medium);
 
             .control-group .legend-options {
                 grid-template-columns: 1fr;
-                gap: 8px;
+                gap: var(--spacing-small);
 
                 .legend-item {
-                    padding: 8px 10px;
-                    font-size: 11px;
+                    padding: var(--padding-legend-item-mobile);
+                    font-size: var(--font-size-mini);
                 }
             }
         }
     }
+}
+
+// 图例图标颜色定义（使用业务变量）
+.icon-reservoir {
+    color: var(--facility-reservoir-color) !important;
+}
+
+.icon-monitoring-station {
+    color: var(--facility-monitoring-station-color) !important;
+}
+
+.icon-pump-open {
+    color: var(--pump-status-open-color) !important;
+}
+
+.icon-water-plant {
+    color: var(--facility-water-plant-color) !important;
+}
+
+.icon-floating-boat {
+    color: var(--facility-village-color) !important;
+}
+
+.icon-pumping-station {
+    color: var(--facility-pumping-station-color) !important;
+}
+
+.icon-pump-closed {
+    color: var(--pump-status-closed-color) !important;
+}
+
+.icon-warning-general {
+    color: var(--warning-level-general-color) !important;
+}
+
+.icon-warning-serious {
+    color: var(--warning-level-serious-color) !important;
 }
 
 // 性能优化

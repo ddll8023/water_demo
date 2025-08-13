@@ -921,7 +921,7 @@ defineExpose({
 
         .col-description {
           width: calc(30% - 2px);
-          min-width: 200px;
+          min-width: var(--panel-min-width-collapsed);
         }
 
         .col-sortOrder {

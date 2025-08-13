@@ -10,9 +10,12 @@
                 <i class="fa fa-bars drag-handle"></i>
                 <span class="panel-title">设备管理</span>
                 <div class="header-actions">
-                    <button class="action-btn" @click="togglePanelCollapse" :title="panelCollapsed ? '展开' : '折叠'">
-                        <i class="fa" :class="panelCollapsed ? 'fa-chevron-down' : 'fa-chevron-up'"></i>
-                    </button>
+                    <div :title="panelCollapsed ? '展开' : '折叠'">
+                        <CustomButton type="secondary" size="small" shape="circle" :icon-only="true"
+                            @click="togglePanelCollapse">
+                            <i class="fa" :class="panelCollapsed ? 'fa-chevron-down' : 'fa-chevron-up'"></i>
+                        </CustomButton>
+                    </div>
                 </div>
             </div>
         </div>
@@ -155,6 +158,7 @@
 import { computed, ref, onMounted, onUnmounted } from "vue";
 import { ElMessage } from "element-plus";
 import CustomSelect from "@/components/Common/CustomSelect.vue";
+import CustomButton from "@/components/Common/CustomButton.vue";
 import TabSection from "@/components/Common/TabSection.vue";
 import {
     getDeviceIconConfig,
@@ -660,26 +664,28 @@ const getItemLocation = (item) => {
                 display: flex;
                 gap: var(--spacing-small);
 
-                .action-btn {
-                    background: var(--white-transparent-base);
-                    border: none;
-                    color: white;
-                    width: var(--button-size-small);
-                    height: var(--button-size-small);
-                    border-radius: var(--border-radius-md);
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
+                // CustomButton 样式覆盖以实现半透明白色背景效果
+                :deep(.custom-button--circle) {
+                    background: var(--white-transparent-base) !important;
+                    border: none !important;
+                    color: white !important;
+                    width: var(--button-size-small) !important;
+                    height: var(--button-size-small) !important;
+                    min-width: var(--button-size-small) !important;
                     transition: background-color var(--map-panel-transition-duration) var(--map-panel-transition-ease);
-                    font-size: var(--font-size-extra-small);
 
-                    &:hover {
-                        background: var(--white-transparent-medium);
+                    &:hover:not(.custom-button--disabled):not(.custom-button--loading) {
+                        background: var(--white-transparent-medium) !important;
+                        border: none !important;
                     }
 
-                    &:active {
-                        background: var(--white-transparent-active);
+                    &:active:not(.custom-button--disabled):not(.custom-button--loading) {
+                        background: var(--white-transparent-active) !important;
+                    }
+
+                    i {
+                        color: white !important;
+                        font-size: var(--font-size-extra-small);
                     }
                 }
             }

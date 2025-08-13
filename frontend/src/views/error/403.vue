@@ -446,7 +446,7 @@ onMounted(() => {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 12px 16px;
+            padding: var(--padding-panel-header);
             background: var(--el-color-success-light-9);
             border-radius: 8px;
             text-decoration: none;
