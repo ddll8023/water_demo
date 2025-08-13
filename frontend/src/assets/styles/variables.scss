@@ -313,6 +313,13 @@ $breakpoint-xl: 1920px;
   --search-form-min-height: 60px; // 搜索表单最小高度
   --panel-content-min-height: 300px; // 面板内容最小高度
 
+  // 表单标签宽度规范（跨组件复用）
+  --form-label-width-compact: 50px; // 紧凑表单
+  --form-label-width-search: 60px; // 搜索表单  
+  --form-label-width-standard: 70px; // 标准搜索表单
+  --form-label-width-form: 100px; // 中等表单
+  --form-label-width-detail: 120px; // 详细表单
+
   // 缩略图尺寸
   --thumbnail-width: 60px; // 缩略图宽度
   --thumbnail-height: 40px; // 缩略图高度

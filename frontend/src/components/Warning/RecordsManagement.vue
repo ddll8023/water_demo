@@ -75,21 +75,23 @@
             width="550px" :loading="resolveLoading" confirm-button-text="确认解除" @confirm="handleResolveSubmit"
             @cancel="handleCloseResolveDialog" custom-class="resolve-dialog">
             <!-- 预警信息概览 -->
-            <div class="resolve-dialog__overview card--secondary card__content"
-                v-if="currentRecord && Object.keys(currentRecord).length > 0">
+            <div class="resolve-dialog__overview" v-if="currentRecord && Object.keys(currentRecord).length > 0">
                 <div class="overview-grid">
                     <div class="overview-item">
-                        <span class="overview-label form-item-with-icon"><i class="fa fa-map-marker form-icon"></i>
+                        <span class="overview-label overview-label--with-icon"><i
+                                class="overview-label__icon fa fa-map-marker"></i>
                             预警地点</span>
                         <span class="overview-value">{{ currentRecord.warningLocation || '-' }}</span>
                     </div>
                     <div class="overview-item">
-                        <span class="overview-label form-item-with-icon"><i class="fa fa-tags form-icon"></i>
+                        <span class="overview-label overview-label--with-icon"><i
+                                class="overview-label__icon fa fa-tags"></i>
                             预警类型</span>
                         <span class="overview-value">{{ currentRecord.warningType || '-' }}</span>
                     </div>
                     <div class="overview-item">
-                        <span class="overview-label form-item-with-icon"><i class="fa fa-line-chart form-icon"></i>
+                        <span class="overview-label overview-label--with-icon"><i
+                                class="overview-label__icon fa fa-line-chart"></i>
                             预警等级</span>
                         <span class="overview-value">
                             <el-tag v-if="currentRecord.warningLevel"
@@ -100,7 +102,8 @@
                         </span>
                     </div>
                     <div class="overview-item">
-                        <span class="overview-label form-item-with-icon"><i class="fa fa-clock-o form-icon"></i>
+                        <span class="overview-label overview-label--with-icon"><i
+                                class="overview-label__icon fa fa-clock-o"></i>
                             发生时间</span>
                         <span class="overview-value">{{ formatDateTimeUtil(currentRecord.occurredAt) || '-' }}</span>
                     </div>
@@ -108,36 +111,36 @@
                         <span class="overview-label"><i class="fa fa-hourglass-half"></i> 持续时长</span>
                         <span class="overview-value">{{ formatDurationUtil(currentRecord.occurredAt,
                             currentRecord.resolvedAt)
-                        }}</span>
+                            }}</span>
                     </div>
                 </div>
             </div>
 
             <!-- 解除表单 -->
             <CommonForm ref="resolveFormRef" v-model="resolveFormData" :items="resolveFormItems"
-                :rules="resolveFormRules" label-width="100px" label-position="top" :show-actions="false"
-                class="record-management__resolve-form form-standard">
+                :rules="resolveFormRules" label-width="var(--form-label-width-form)" label-position="top"
+                :show-actions="false" class="record-management__resolve-form">
 
                 <template #resolveTime>
-                    <div class="form-time-display">
-                        <div class="time-display-content">
-                            <span class="time-label">解除时间</span>
-                            <div class="time-value">
+                    <div class="resolve-form__time-display">
+                        <div class="resolve-form__time-content">
+                            <span class="resolve-form__time-label">解除时间</span>
+                            <div class="resolve-form__time-value">
                                 <i class="fa fa-calendar-check-o"></i>
                                 <span>{{ resolveFormData.resolveTime }}</span>
                             </div>
                         </div>
-                        <small class="time-note">（系统自动更新，无需手动输入）</small>
+                        <small class="resolve-form__time-note">（系统自动更新，无需手动输入）</small>
                     </div>
                 </template>
 
                 <template #confirmation>
-                    <div class="form-confirmation checkbox-warning">
+                    <div class="resolve-form__confirmation">
                         <el-checkbox v-model="resolveFormData.confirmed" size="large">
                             我已确认预警情况，并执行解除操作。
                         </el-checkbox>
-                        <p class="form-note">
-                            <i class="fa fa-info-circle form-note__icon"></i>
+                        <p class="resolve-form__note">
+                            <i class="fa fa-info-circle resolve-form__note-icon"></i>
                             请注意：预警解除后，状态将变更为"已解除"且无法撤销。
                         </p>
                     </div>
@@ -151,7 +154,7 @@
             width="var(--panel-height-default)" :loading="submitLoading" confirmButtonText="创建" @confirm="handleSubmit"
             @cancel="handleCloseRecordDialog">
             <CommonForm ref="recordFormRef" v-model="formData" :items="recordFormItems" :rules="recordFormRules"
-                label-width="120px" :show-actions="false">
+                label-width="var(--form-label-width-detail)" :show-actions="false">
                 <!-- 预警类型选择器插槽 -->
                 <template #warningType="{ item, formData, disabled }">
                     <CustomSelect v-model="formData.warningType" :options="warningTypeOptions" value-key="value"
@@ -313,7 +316,7 @@ const enhancedSearchFields = computed(() => {
             label: '发生时间',
             startPlaceholder: '开始时间',
             endPlaceholder: '结束时间',
-            labelWidth: '70px',
+            labelWidth: 'var(--form-label-width-standard)',
             showDuration: true,
             format: 'YYYY-MM-DD HH:mm:ss',
             span: 8
@@ -323,7 +326,7 @@ const enhancedSearchFields = computed(() => {
             prop: 'warningLocation',
             label: '预警地点',
             placeholder: '请选择',
-            labelWidth: '70px',
+            labelWidth: 'var(--form-label-width-standard)',
             options: warningLocationOptions.value,
             clearable: true,
             filterable: false,
@@ -333,7 +336,7 @@ const enhancedSearchFields = computed(() => {
             prop: 'warningType',
             label: '预警类型',
             placeholder: '请选择',
-            labelWidth: '70px',
+            labelWidth: 'var(--form-label-width-standard)',
             options: warningTypeOptions.value,
             clearable: true,
             filterable: false,
@@ -343,7 +346,7 @@ const enhancedSearchFields = computed(() => {
             prop: 'warningLevel',
             label: '预警等级',
             placeholder: '请选择',
-            labelWidth: '70px',
+            labelWidth: 'var(--form-label-width-standard)',
             options: warningLevelOptions.value,
             clearable: true,
             filterable: false,
@@ -353,7 +356,7 @@ const enhancedSearchFields = computed(() => {
             prop: 'warningStatus',
             label: '预警状态',
             placeholder: '请选择',
-            labelWidth: '70px',
+            labelWidth: 'var(--form-label-width-standard)',
             options: warningStatusOptions.value,
             clearable: true,
             filterable: false,
@@ -848,12 +851,8 @@ const handleCloseRecordDialog = () => {
 
 /* 预警记录管理组件样式 */
 .record-management {
-    --dialog-padding: var(--spacing-large);
-    --card-border-radius: var(--border-radius-large);
-    --button-transition: var(--transition-fast);
-
     background: var(--bg-primary);
-    min-height: calc(100vh - 200px);
+    min-height: calc(100vh - var(--page-min-height-offset));
     padding: var(--spacing-large);
 
     &__search-section {
@@ -916,20 +915,24 @@ const handleCloseRecordDialog = () => {
 
 /* 解除对话框样式 */
 :deep(.resolve-dialog .el-dialog__body) {
-    padding: var(--dialog-padding) var(--spacing-extra-large) !important;
+    padding: var(--spacing-large) var(--spacing-extra-large) !important;
 }
 
 /* 预警概览区域 */
 .resolve-dialog__overview {
-    margin-bottom: var(--dialog-padding);
-
+    margin-bottom: var(--spacing-large);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    padding: var(--spacing-large);
 
     .overview-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: var(--spacing-base) var(--spacing-large);
     }
-
 
     .overview-item {
         display: flex;
@@ -941,25 +944,24 @@ const handleCloseRecordDialog = () => {
         }
     }
 
-
     .overview-label {
         @include flex-start;
         color: var(--text-secondary);
         font-size: var(--font-size-small);
+
+        &--with-icon {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-small);
+        }
     }
 
-
-    .overview-label .fa,
-    .resolve-confirmation-note .fa {
+    .overview-label__icon {
         margin-right: var(--spacing-small);
         color: var(--info-color);
-    }
-
-    .overview-label .fa {
         width: var(--font-size-base);
         @include flex-center;
     }
-
 
     .overview-value {
         color: var(--text-primary);
@@ -1014,31 +1016,8 @@ const handleCloseRecordDialog = () => {
     }
 }
 
-@include respond-to(xs) {
-    .record-management {
-        padding: var(--spacing-small);
-
-        &__table {
-            border-radius: 0;
-            margin: 0 -#{var(--spacing-small)};
-        }
-    }
-}
-
-/* 本组件内联补充：替代已移除的 cards.scss 与 forms.scss */
-.card--secondary {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-large);
-    box-shadow: var(--shadow-card);
-    overflow: hidden;
-}
-
-.card__content {
-    padding: var(--spacing-large);
-}
-
-.form-standard {
+/* 解除表单相关样式 */
+.record-management__resolve-form {
     :deep(.el-form-item) {
         margin-bottom: var(--spacing-base);
 
@@ -1055,65 +1034,48 @@ const handleCloseRecordDialog = () => {
     }
 }
 
-.form-item-with-icon {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-small);
-
-    .form-icon {
-        margin-right: var(--spacing-small);
-        color: var(--info-color);
-        width: var(--font-size-base);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-}
-
-.form-time-display {
+.resolve-form__time-display {
     background: var(--bg-secondary);
     border-radius: var(--border-radius-base);
     padding: var(--spacing-medium) var(--spacing-base);
     border: 1px solid var(--border-color);
-
-    .time-display-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-
-        .time-label {
-            color: var(--text-secondary);
-            font-size: var(--font-size-base);
-        }
-
-        .time-value {
-            display: inline-flex;
-            align-items: center;
-            gap: var(--spacing-small);
-            color: var(--primary-color);
-            font-size: var(--font-size-large);
-            font-weight: var(--font-weight-bold);
-            font-family: var(--font-family-number);
-        }
-    }
-
-    .time-note {
-        margin-top: var(--spacing-mini);
-        color: var(--text-tertiary);
-        font-size: var(--font-size-extra-small);
-        text-align: right;
-    }
 }
 
-.form-confirmation {
+.resolve-form__time-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.resolve-form__time-label {
+    color: var(--text-secondary);
+    font-size: var(--font-size-base);
+}
+
+.resolve-form__time-value {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-small);
+    color: var(--primary-color);
+    font-size: var(--font-size-large);
+    font-weight: var(--font-weight-bold);
+    font-family: var(--font-family-number);
+}
+
+.resolve-form__time-note {
+    margin-top: var(--spacing-mini);
+    color: var(--text-tertiary);
+    font-size: var(--font-size-extra-small);
+    text-align: right;
+}
+
+.resolve-form__confirmation {
     border: 1px solid var(--warning-light-color);
     background-color: var(--warning-bg-color);
     border-radius: var(--border-radius-base);
     padding: var(--spacing-medium) var(--spacing-base);
     margin-top: var(--spacing-small);
-}
 
-.checkbox-warning {
     :deep(.el-checkbox) {
         --el-checkbox-checked-text-color: var(--warning-dark-color);
         --el-checkbox-checked-input-border-color: var(--warning-dark-color);
@@ -1125,7 +1087,7 @@ const handleCloseRecordDialog = () => {
     }
 }
 
-.form-note {
+.resolve-form__note {
     display: flex;
     align-items: flex-start;
     color: var(--text-secondary);
@@ -1134,8 +1096,19 @@ const handleCloseRecordDialog = () => {
     padding-left: var(--spacing-small);
 }
 
-.form-note__icon {
+.resolve-form__note-icon {
     margin-right: var(--spacing-small);
     color: var(--info-color);
+}
+
+@include respond-to(xs) {
+    .record-management {
+        padding: var(--spacing-small);
+
+        &__table {
+            border-radius: 0;
+            margin: 0 -#{var(--spacing-small)};
+        }
+    }
 }
 </style>
