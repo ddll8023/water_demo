@@ -85,27 +85,16 @@ const pathResolve = (basePath, relativePath) => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 /**
  * ==================== 图标样式 ====================
  */
 // Font Awesome 图标样式
 .fa {
-  width: 20px;
+  @include icon-style(var(--font-size-medium), var(--text-primary));
+  width: var(--icon-size-lg);
   text-align: center;
-  margin-right: 8px;
-  font-size: 16px;
-}
-
-/**
- * ==================== 菜单样式 ====================
- */
-// 子菜单图标样式
-:deep(.el-sub-menu__title) .fa {
-  margin-right: 8px;
-}
-
-// 菜单项图标样式
-:deep(.el-menu-item) .fa {
-  margin-right: 8px;
+  margin-right: var(--spacing-small);
 }
 </style>

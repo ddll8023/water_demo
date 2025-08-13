@@ -36,6 +36,8 @@ const cachedViews = computed(() => appStore.cachedViews)
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 /**
  * 主内容区样式
  */
@@ -46,7 +48,7 @@ const cachedViews = computed(() => appStore.cachedViews)
 .app-main {
   flex: 1;
   background: var(--bg-secondary);
-  padding: 20px;
+  padding: var(--spacing-large);
   overflow-y: auto;
   min-height: 0; // 确保可以正确滚动
 }
@@ -57,50 +59,35 @@ const cachedViews = computed(() => appStore.cachedViews)
 .app-main {
 
   // 页面切换动画
-  .fade-transform-leave-active,
-  .fade-transform-enter-active {
-    transition: all 0.3s;
+  :deep(.fade-transform-leave-active),
+  :deep(.fade-transform-enter-active) {
+    transition: var(--transition-base);
   }
 
-  .fade-transform-enter-from {
+  :deep(.fade-transform-enter-from) {
     opacity: 0;
-    transform: translateX(30px);
+    transform: translateX(var(--spacing-extra-large));
   }
 
-  .fade-transform-leave-to {
+  :deep(.fade-transform-leave-to) {
     opacity: 0;
-    transform: translateX(-30px);
+    transform: translateX(calc(-1 * var(--spacing-extra-large)));
   }
 }
 
 // ===========================
 // 响应式适配
 // ===========================
-@media (max-width: 767px) {
+@include respond-to(sm) {
   .app-main {
-    padding: 12px;
+    padding: var(--spacing-medium);
   }
 }
 
 // ===========================
 // 滚动条样式
 // ===========================
-.app-main::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-.app-main::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
-}
-
-.app-main::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 3px;
-
-  &:hover {
-    background: #a8a8a8;
-  }
+.app-main {
+  @include custom-scrollbar();
 }
 </style>

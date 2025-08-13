@@ -132,6 +132,7 @@ $bg-tertiary: #FAFAFA;
   --spacing-small: 8px;
   --spacing-sm: 10px;
   --spacing-medium: 12px;
+  --spacing-15: 15px;
   --spacing-base: 16px;
   --spacing-large: 20px;
   --spacing-extra-large: 24px;
@@ -259,6 +260,11 @@ $breakpoint-xl: 1920px;
   // 通用尺寸
   --table-row-height: 48px; // 表格行高
   --form-item-height: 40px; // 表单项高度
+  --search-form-min-height: 60px; // 搜索表单最小高度
+
+  // 缩略图尺寸
+  --thumbnail-width: 60px; // 缩略图宽度
+  --thumbnail-height: 40px; // 缩略图高度
 
   // 页面最小高度偏移（用于替代硬编码的 200px）
   --page-min-height-offset: 200px;
@@ -289,6 +295,9 @@ $breakpoint-xl: 1920px;
   --glass-panel-bg: var(--white-transparent-full);
   --glass-panel-border: var(--white-transparent-base);
 
+  // 遮罩层透明度变量
+  --black-transparent-overlay: rgba(0, 0, 0, 0.3);
+
   // 深色背景上的文本颜色
   --text-on-dark: #ffffff;
   --text-on-dark-secondary: rgba(255, 255, 255, 0.8);
@@ -302,9 +311,6 @@ $breakpoint-xl: 1920px;
 }
 
 // ==================== 布局特定变量（从 layout.scss 合并）====================
-:root {
-  --transition-duration: 0.28s;
-}
 
 // 暗色主题变量（从 layout.scss 合并）
 [data-theme="dark"] {

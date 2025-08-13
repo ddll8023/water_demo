@@ -628,6 +628,8 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 /**
  * ----------------------------------------
  * 表格容器基础样式
@@ -651,16 +653,13 @@ defineExpose({
      * 加载状态样式
      */
     .table-loading {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      @include absolute-center;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: var(--spacing-small);
       color: var(--el-text-color-secondary);
-      z-index: 10;
+      z-index: var(--z-index-base);
     }
 
     /**
@@ -691,15 +690,15 @@ defineExpose({
           background-color: var(--el-fill-color-light);
 
           th {
-            padding: 12px 8px;
+            padding: var(--spacing-medium) var(--spacing-small);
             border: 1px solid var(--el-border-color-light);
-            font-weight: 500;
+            font-weight: var(--font-weight-medium);
             color: var(--el-text-color-primary);
             text-align: center;
             white-space: normal;
             word-wrap: break-word;
             word-break: break-all;
-            height: 60px; // 固定表头高度
+            height: var(--table-header-height); // 固定表头高度
           }
         }
 
@@ -708,7 +707,7 @@ defineExpose({
          */
         tbody {
           tr {
-            transition: background-color 0.2s;
+            transition: background-color var(--transition-duration-fast);
             cursor: pointer;
 
             &:hover {
@@ -720,14 +719,14 @@ defineExpose({
             }
 
             td {
-              padding: 12px 8px;
+              padding: var(--spacing-medium) var(--spacing-small);
               border: 1px solid var(--el-border-color-light);
               color: var(--el-text-color-primary);
               white-space: normal;
               word-wrap: break-word;
               word-break: break-all;
               vertical-align: middle;
-              min-height: 40px;
+              min-height: var(--form-item-height);
             }
           }
 
@@ -741,18 +740,18 @@ defineExpose({
 
             .empty-cell {
               text-align: center;
-              padding: 40px 20px;
+              padding: calc(var(--spacing-extra-large) * 1.7) var(--spacing-large);
               border: 1px solid var(--el-border-color-light);
 
               .empty-content {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                gap: 8px;
+                gap: var(--spacing-small);
                 color: var(--el-text-color-secondary);
 
                 .fa {
-                  font-size: 48px;
+                  font-size: var(--icon-size-xxl);
                 }
               }
             }
@@ -785,7 +784,7 @@ defineExpose({
 
           thead th,
           tbody td {
-            padding: 8px 6px;
+            padding: var(--spacing-small) var(--spacing-xs);
           }
         }
 
@@ -793,7 +792,7 @@ defineExpose({
 
           thead th,
           tbody td {
-            padding: 16px 12px;
+            padding: var(--spacing-base) var(--spacing-medium);
           }
         }
 
@@ -803,14 +802,14 @@ defineExpose({
          * ----------------------------------------
          */
         .selection-col {
-          width: 50px !important;
-          min-width: 50px !important;
+          width: calc(var(--form-item-height) + var(--spacing-sm)) !important;
+          min-width: calc(var(--form-item-height) + var(--spacing-sm)) !important;
           text-align: center;
         }
 
         .index-col {
-          width: 50px !important;
-          min-width: 50px !important;
+          width: calc(var(--form-item-height) + var(--spacing-sm)) !important;
+          min-width: calc(var(--form-item-height) + var(--spacing-sm)) !important;
           text-align: center;
         }
 
@@ -821,31 +820,29 @@ defineExpose({
           white-space: nowrap;
 
           .action-buttons {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 4px;
+            @include flex-center;
+            gap: var(--spacing-mini);
             flex-wrap: wrap;
-            min-height: 32px;
+            min-height: calc(var(--spacing-base) * 2);
 
             .custom-button {
               margin: 0;
 
               &.custom-button--small {
-                padding: 5px 8px;
-                font-size: 12px;
+                padding: var(--spacing-5) var(--spacing-small);
+                font-size: var(--font-size-extra-small);
               }
             }
           }
 
-          @media (max-width: 1200px) {
+          @include respond-to(lg) {
             .actions-col .action-buttons {
-              gap: 2px;
+              gap: var(--spacing-micro);
             }
 
             .actions-col .action-buttons .custom-button {
-              padding: 4px 6px;
-              font-size: 11px;
+              padding: var(--spacing-mini) var(--spacing-xs);
+              font-size: var(--font-size-extra-small);
             }
           }
         }
@@ -944,12 +941,12 @@ defineExpose({
          */
         // 排序图标样式
         .sort-icons {
-          margin-left: 4px;
+          margin-left: var(--spacing-mini);
           display: inline-flex;
           flex-direction: column;
 
           i {
-            font-size: 10px;
+            font-size: var(--icon-size-xs);
             color: var(--el-text-color-placeholder);
             line-height: 1;
 
@@ -958,16 +955,14 @@ defineExpose({
             }
 
             &:first-child {
-              margin-bottom: -2px;
+              margin-bottom: calc(var(--spacing-micro) * -1);
             }
           }
         }
 
         // 溢出省略样式
         .cell-content.ellipsis {
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
+          @include text-ellipsis(1);
           max-width: 100%;
           display: block;
         }
@@ -979,20 +974,19 @@ defineExpose({
        * ----------------------------------------
        */
       // 大屏幕自适应（Chrome兼容性优化）
-      @media (min-width: 1201px) {
-        .responsive-table {
-          width: 100%;
-          table-layout: fixed; // 保持固定布局以便控制列宽
-        }
+      // 大于lg断点的样式使用标准写法
+      .responsive-table {
+        width: 100%;
+        table-layout: fixed; // 保持固定布局以便控制列宽
       }
 
       // 响应式断点控制
-      @media (max-width: 1200px) {
+      @include respond-to(lg) {
         overflow-x: scroll;
         -webkit-overflow-scrolling: touch;
 
         .responsive-table {
-          min-width: 1200px; // 保持最小宽度，触发滚动
+          min-width: #{$breakpoint-lg}; // 保持最小宽度，触发滚动
           table-layout: fixed; // 小屏幕使用固定布局
         }
       }

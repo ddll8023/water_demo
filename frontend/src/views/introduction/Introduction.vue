@@ -42,8 +42,13 @@
               <h3>工程规模</h3>
               <el-row :gutter="16" class="stats-row">
                 <el-col :span="8" v-for="stat in projectStats" :key="stat.key">
-                  <StatCard :title="stat.label" :value="stat.value" :unit="stat.unit" type="primary" size="small"
-                    :show-header="false" />
+                  <CustomCard :padding="'small'" :hoverable="false" :bordered="true">
+                    <div class="stat-card">
+                      <div class="stat-card__value">{{ stat.value }}<span class="stat-card__unit">{{ stat.unit }}</span>
+                      </div>
+                      <div class="stat-card__label">{{ stat.label }}</div>
+                    </div>
+                  </CustomCard>
                 </el-col>
               </el-row>
             </div>
@@ -78,7 +83,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import StatCard from '@/components/Common/StatCard.vue'
+import CustomCard from '@/components/Common/CustomCard.vue'
 
 // 响应式数据
 const videoPlayer = ref(null)
@@ -198,48 +203,29 @@ onMounted(() => {
 }
 
 .video-section {
+  margin-bottom: 16px;
+
   .video-container {
-    position: relative;
-    width: 100%;
-    background: #f5f7fa;
+    background: #000;
     border-radius: 8px;
     overflow: hidden;
-    margin-bottom: 16px;
 
     .video-player {
       width: 100%;
-      height: auto;
-      min-height: 300px;
+      height: 320px;
+      display: block;
       object-fit: cover;
     }
   }
 
   .video-info {
+    margin-top: 12px;
+
     h3 {
       font-size: 18px;
       font-weight: 600;
       color: #303133;
       margin: 0 0 8px 0;
-    }
-
-    p {
-      font-size: 14px;
-      color: #606266;
-      line-height: 1.6;
-      margin: 0;
-    }
-  }
-}
-
-.text-section {
-  .section-block {
-    margin-bottom: 20px;
-
-    h3 {
-      font-size: 18px;
-      font-weight: 600;
-      color: #303133;
-      margin: 0 0 16px 0;
       border-left: 4px solid #409eff;
       padding-left: 12px;
     }
@@ -252,9 +238,7 @@ onMounted(() => {
     }
   }
 
-  .stats-row {
-    // StatCard组件已替换自定义样式
-  }
+  .stats-row {}
 
   .significance-list {
     list-style: none;
@@ -282,53 +266,45 @@ onMounted(() => {
     .feature-card {
       display: flex;
       align-items: center;
-      padding: 12px;
-      background: #f8f9fa;
+      padding: 10px 12px;
+      background: #f9fafb;
       border-radius: 8px;
-      border: 1px solid #e4e7ed;
-      margin-bottom: 8px;
 
       .feature-icon {
-        font-size: 20px;
-        margin-right: 8px;
+        font-size: 18px;
+        margin-right: 10px;
       }
 
       .feature-text {
         font-size: 14px;
-        color: #303133;
-        font-weight: 500;
+        color: #606266;
       }
     }
   }
 }
 
-.status-bar {
+.stat-card {
   display: flex;
-  justify-content: center;
-  gap: 40px;
-  padding: 12px;
-  background: #f5f7fa;
-  border-radius: 8px;
-  margin-top: 16px;
-  font-size: 14px;
-  color: #909399;
-}
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
 
-// 响应式设计
-@media (max-width: 768px) {
+  &__value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #303133;
 
-  .main-content {
-    padding: 16px;
+    .stat-card__unit {
+      margin-left: 4px;
+      font-size: 12px;
+      color: #909399;
+      font-weight: 500;
+    }
   }
 
-  .status-bar {
-    flex-direction: column;
-    gap: 8px;
-    text-align: center;
-  }
-
-  .stats-row {
-    // 响应式布局已由StatCard组件处理
+  &__label {
+    font-size: 12px;
+    color: #606266;
   }
 }
 </style>

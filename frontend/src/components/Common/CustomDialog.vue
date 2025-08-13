@@ -7,15 +7,14 @@
     <el-dialog v-model="dialogVisible" :title="title" :width="width" :top="top" :modal="modal"
         :append-to-body="appendToBody" :lock-scroll="lockScroll" :custom-class="customClass"
         :close-on-click-modal="closeOnClickModal" :close-on-press-escape="closeOnPressEscape" :show-close="showClose"
-        :before-close="handleBeforeClose" :draggable="draggable" @open="handleOpen" @opened="handleOpened"
-        @close="handleClose" @closed="handleClosed" destroy-on-close>
+        :before-close="handleBeforeClose" :draggable="draggable" @close="handleClose" destroy-on-close>
         <!-- 默认内容插槽 -->
         <slot></slot>
 
         <!-- 自定义页脚插槽 -->
         <template #footer>
             <slot name="footer">
-                <div class="dialog-footer">
+                <div class="custom-dialog__footer">
                     <CustomButton v-if="showCancelButton" @click="handleCancel">
                         {{ cancelButtonText }}
                     </CustomButton>
@@ -29,7 +28,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed } from 'vue';
 import CustomButton from './CustomButton.vue';
 
 /**
@@ -137,10 +136,7 @@ const props = defineProps({
  */
 const emit = defineEmits([
     'update:visible',
-    'open',
-    'opened',
     'close',
-    'closed',
     'cancel',
     'confirm'
 ]);
@@ -161,24 +157,9 @@ const dialogVisible = computed({
  * 事件处理方法
  * ----------------------------------------
  */
-// 对话框打开前触发
-const handleOpen = () => {
-    emit('open');
-};
-
-// 对话框打开动画结束后触发
-const handleOpened = () => {
-    emit('opened');
-};
-
 // 对话框关闭前触发
 const handleClose = () => {
     emit('close');
-};
-
-// 对话框关闭动画结束后触发
-const handleClosed = () => {
-    emit('closed');
 };
 
 // 处理beforeClose钩子
@@ -208,43 +189,44 @@ const handleConfirm = () => {
 </script>
 
 <style scoped lang="scss">
-.dialog-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    padding-top: 10px;
+@use "@/assets/styles/index.scss" as *;
+
+.custom-dialog__footer {
+    @include flex-end;
+    gap: var(--spacing-medium);
+    padding-top: var(--spacing-sm);
 }
 
 :deep(.el-dialog) {
-    border-radius: 8px;
+    border-radius: var(--border-radius-large);
     overflow: hidden;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-card-hover);
 
     .el-dialog__header {
-        padding: 20px;
-        border-bottom: 1px solid #f0f0f0;
+        padding: var(--spacing-large);
+        border-bottom: 1px solid var(--border-light);
         margin: 0;
     }
 
     .el-dialog__title {
-        font-size: 16px;
-        font-weight: 600;
-        color: #303133;
+        font-size: var(--font-size-medium);
+        font-weight: var(--font-weight-bold);
+        color: var(--text-primary);
     }
 
     .el-dialog__headerbtn {
-        top: 20px;
-        right: 20px;
+        top: var(--spacing-large);
+        right: var(--spacing-large);
     }
 
     .el-dialog__body {
-        padding: 24px;
-        color: #606266;
-        font-size: 14px;
+        padding: var(--spacing-extra-large);
+        color: var(--text-secondary);
+        font-size: var(--font-size-base);
     }
 
     .el-dialog__footer {
-        padding: 10px 20px 20px;
+        padding: var(--spacing-sm) var(--spacing-large) var(--spacing-large);
         border-top: none;
     }
 }

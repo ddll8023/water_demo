@@ -500,10 +500,10 @@ defineExpose({
 @use "@/assets/styles/index.scss" as *;
 
 .inspection-tasks {
-    padding: var(--spacing-md);
+    padding: var(--spacing-large);
 
     .table-section {
-        margin-top: var(--spacing-md);
+        margin-top: var(--spacing-large);
     }
 
     @include respond-to(sm) {

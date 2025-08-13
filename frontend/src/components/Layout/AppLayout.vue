@@ -40,6 +40,8 @@ const toggleSidebar = () => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 /**
  * 基础布局样式
  */
@@ -52,12 +54,12 @@ const toggleSidebar = () => {
     flex: 1;
     display: flex;
     flex-direction: column;
-    margin-left: 200px;
-    transition: margin-left 0.28s ease;
+    margin-left: var(--sidebar-width);
+    transition: margin-left var(--transition-base);
     min-width: 0; // 防止flex子元素溢出
 
     &.sidebar-collapsed {
-      margin-left: 64px;
+      margin-left: var(--sidebar-collapsed-width);
     }
   }
 
@@ -67,25 +69,27 @@ const toggleSidebar = () => {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.3);
-    z-index: 1000;
+    background: var(--black-transparent-overlay);
+    z-index: var(--z-index-modal-backdrop);
   }
 }
 
 /**
  * 响应式设计
  */
-@media (max-width: 1199px) {
+// 大屏幕以下（lg breakpoint: 1200px以下）- 侧边栏默认折叠
+@include respond-to(lg) {
   .app-layout .main-container {
-    margin-left: 64px;
+    margin-left: var(--sidebar-collapsed-width);
 
     &.sidebar-collapsed {
-      margin-left: 64px;
+      margin-left: var(--sidebar-collapsed-width);
     }
   }
 }
 
-@media (max-width: 767px) {
+// 小屏幕以下（sm breakpoint: 768px以下）- 移动端模式，主内容占满屏幕
+@include respond-to(sm) {
   .app-layout .main-container {
     margin-left: 0;
 

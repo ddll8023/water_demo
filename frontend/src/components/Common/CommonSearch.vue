@@ -321,17 +321,19 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 .common-search {
   flex-shrink: 0; // 防止搜索区域被压缩
   width: 100%; // 确保搜索组件占满全宽
-  margin-bottom: 20px; // 与表格区域保持间距
+  margin-bottom: var(--spacing-base); // 与表格区域保持间距
 
   .search-form {
-    background: #FFFFFF;
-    padding: 15px 20px;
-    border-radius: 4px;
-    border: 1px solid var(--el-border-color-light);
-    min-height: 60px;
+    background: var(--bg-primary);
+    padding: var(--spacing-15) var(--spacing-base);
+    border-radius: var(--border-radius-base);
+    border: 1px solid var(--border-light);
+    min-height: var(--search-form-min-height);
     box-sizing: border-box;
     width: 100%; // 确保搜索表单占满全宽
 
@@ -340,10 +342,10 @@ defineExpose({
       margin-bottom: 0;
 
       :deep(.el-form-item__label) {
-        font-size: 14px;
-        color: var(--el-text-color-regular);
-        font-weight: 500;
-        padding-right: 4px;
+        font-size: var(--font-size-base);
+        color: var(--text-secondary);
+        font-weight: var(--font-weight-medium);
+        padding-right: var(--spacing-mini);
       }
 
       :deep(.el-form-item__content) {
@@ -363,11 +365,11 @@ defineExpose({
       }
 
       :deep(.el-input__wrapper) {
-        padding: 1px 8px;
+        padding: var(--spacing-1) var(--spacing-small);
       }
 
       :deep(.el-select .el-input__wrapper) {
-        padding: 1px 12px 1px 8px;
+        padding: var(--spacing-1) var(--spacing-medium) var(--spacing-1) var(--spacing-small);
       }
 
       // 修复选择器文本溢出问题
@@ -381,12 +383,12 @@ defineExpose({
 
       // 调整Element Plus选择器图标位置
       :deep(.el-select .el-input__suffix) {
-        padding-right: 4px;
+        padding-right: var(--spacing-mini);
       }
     }
 
     .search-actions-col {
-      margin-top: 16px;
+      margin-top: var(--spacing-base);
 
       &.single-row-actions {
         margin-top: 0;
@@ -401,7 +403,7 @@ defineExpose({
       justify-content: space-between; // 两端对齐：左边搜索按钮，右边自定义按钮
       align-items: center;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: var(--spacing-small);
       width: 100%; // 确保占满整个列宽
 
       &.single-row-layout {
@@ -413,14 +415,14 @@ defineExpose({
 
       .search-buttons {
         display: flex;
-        gap: 8px;
+        gap: var(--spacing-small);
         flex-wrap: wrap;
         flex-shrink: 0; // 防止搜索按钮被压缩
       }
 
       .custom-actions {
         display: flex;
-        gap: 8px;
+        gap: var(--spacing-small);
         flex-wrap: wrap;
         justify-content: flex-end; // 确保自定义按钮右对齐
         margin-left: auto; // 推到右边
@@ -432,8 +434,8 @@ defineExpose({
   // 单行模式样式
   &.single-row {
     .search-form {
-      padding: 15px 20px;
-      min-height: 60px;
+      padding: var(--spacing-15) var(--spacing-base);
+      min-height: var(--search-form-min-height);
       display: flex;
       align-items: center;
       width: 100%; // 确保单行模式下表单占满全宽
@@ -470,12 +472,12 @@ defineExpose({
   }
 
   // 响应式设计
-  @media (max-width: 768px) {
+  @include respond-to(md) {
     .search-form {
       .search-actions {
         flex-direction: column;
         align-items: stretch;
-        gap: 12px;
+        gap: var(--spacing-medium);
 
         .search-buttons {
           justify-content: center;
@@ -491,17 +493,17 @@ defineExpose({
     }
   }
 
-  @media (max-width: 576px) {
+  @include respond-to(sm) {
     .search-form {
-      padding: 12px;
+      padding: var(--spacing-medium);
 
       .search-actions {
-        gap: 8px;
+        gap: var(--spacing-small);
 
         .search-buttons,
         .custom-actions {
           flex-direction: column;
-          gap: 8px;
+          gap: var(--spacing-small);
 
           .custom-button {
             width: 100%;

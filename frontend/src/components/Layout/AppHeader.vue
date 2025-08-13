@@ -130,6 +130,8 @@ const handleLogout = async () => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 /**
  * =============================================================================
  * 头部组件样式
@@ -141,16 +143,14 @@ const handleLogout = async () => {
  * -----------------------------------------------------------------------------
  */
 .app-header {
-  height: 60px;
-  background: var(--el-bg-color);
-  border-bottom: 1px solid var(--el-border-color-light);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  height: var(--header-height);
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-light);
+  @include flex-between;
+  padding: 0 var(--main-content-padding);
+  box-shadow: var(--box-shadow-light);
   position: relative;
-  z-index: 999;
+  z-index: var(--z-index-sticky);
 }
 
 /**
@@ -158,21 +158,20 @@ const handleLogout = async () => {
  * -----------------------------------------------------------------------------
  */
 .header-left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+  @include flex-start;
+  gap: var(--spacing-base);
 
   .sidebar-toggle {
-    padding: 8px;
-    border-radius: 4px;
+    padding: var(--spacing-small);
+    border-radius: var(--border-radius-base);
 
     &:hover {
-      background: var(--el-fill-color-light);
+      background: var(--bg-secondary);
     }
   }
 
   .breadcrumb {
-    font-size: 14px;
+    font-size: var(--font-size-base);
   }
 }
 
@@ -182,28 +181,27 @@ const handleLogout = async () => {
  */
 .header-right {
   .user-info {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    @include flex-start;
+    gap: var(--spacing-small);
     cursor: pointer;
-    padding: 8px 12px;
-    border-radius: 4px;
-    transition: background-color 0.3s;
+    padding: var(--spacing-small) var(--spacing-medium);
+    border-radius: var(--border-radius-base);
+    transition: var(--transition-base);
 
     &:hover {
-      background: var(--el-fill-color-light);
+      background: var(--bg-secondary);
     }
 
     .username {
-      color: var(--el-text-color-primary);
-      font-weight: 500;
-      font-size: 14px;
+      color: var(--text-primary);
+      font-weight: var(--font-weight-medium);
+      font-size: var(--font-size-base);
     }
 
     .dropdown-icon {
-      font-size: 12px;
-      color: var(--el-text-color-secondary);
-      transition: transform 0.3s;
+      font-size: var(--font-size-extra-small);
+      color: var(--text-secondary);
+      transition: var(--transition-transform);
     }
   }
 }
@@ -212,12 +210,12 @@ const handleLogout = async () => {
  * 响应式布局适配
  * -----------------------------------------------------------------------------
  */
-@media (max-width: 767px) {
+@include respond-to(sm) {
   .app-header {
-    padding: 0 12px;
+    padding: 0 var(--spacing-medium);
 
     .header-left {
-      gap: 12px;
+      gap: var(--spacing-medium);
 
       .breadcrumb {
         display: none; // 移动端隐藏面包屑

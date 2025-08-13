@@ -504,14 +504,18 @@ const loadDictMaps = async () => {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 .facility-management {
-  background: white;
-  border-radius: 8px;
+  background: var(--bg-primary);
+  border-radius: var(--border-radius-large);
+  box-shadow: var(--shadow-card);
   overflow: hidden;
+  transition: var(--transition-base);
 }
 
 .table-section {
-  margin-top: 16px;
+  margin-top: var(--spacing-base);
 }
 </style>

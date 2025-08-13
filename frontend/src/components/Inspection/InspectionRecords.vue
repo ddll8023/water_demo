@@ -40,8 +40,7 @@
                     </el-tag>
                 </template>
                 <template #coverImage="{ row }">
-                    <img v-if="row.coverImage" :src="row.coverImage" alt="图片"
-                        style="width: 60px; height: 40px; object-fit: cover;" />
+                    <img v-if="row.coverImage" :src="row.coverImage" alt="图片" class="cover-image" />
                     <span v-else>-</span>
                 </template>
                 <template #recordTime="{ row }">
@@ -761,10 +760,17 @@ defineExpose({
 @use "@/assets/styles/index.scss" as *;
 
 .inspection-records {
-    padding: var(--spacing-md);
+    padding: var(--spacing-medium);
 
     .table-section {
-        margin-top: var(--spacing-md);
+        margin-top: var(--spacing-medium);
+    }
+
+    // 封面图片样式
+    .cover-image {
+        width: var(--thumbnail-width);
+        height: var(--thumbnail-height);
+        object-fit: cover;
     }
 
     // 记录详情样式
@@ -772,8 +778,8 @@ defineExpose({
         .detail-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: var(--spacing-md);
-            margin-bottom: var(--spacing-lg);
+            gap: var(--spacing-medium);
+            margin-bottom: var(--spacing-large);
 
             .detail-item {
                 display: flex;
@@ -794,7 +800,7 @@ defineExpose({
                 }
 
                 span {
-                    color: var(--text-regular);
+                    color: var(--text-secondary);
                     word-break: break-word;
                 }
             }
@@ -802,7 +808,7 @@ defineExpose({
 
         .attachments-section {
             h4 {
-                margin: 0 0 var(--spacing-md) 0;
+                margin: 0 0 var(--spacing-medium) 0;
                 color: var(--text-primary);
                 font-size: 16px;
                 font-weight: 500;
@@ -811,18 +817,18 @@ defineExpose({
             .attachment-grid {
                 display: grid;
                 grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-                gap: var(--spacing-md);
+                gap: var(--spacing-medium);
 
                 .attachment-item {
-                    border: 1px solid var(--border-color-light);
-                    border-radius: var(--border-radius-sm);
+                    border: 1px solid var(--border-light);
+                    border-radius: var(--border-radius-small);
                     overflow: hidden;
                     cursor: pointer;
                     transition: var(--transition-fast);
 
                     &:hover {
                         border-color: var(--primary-color);
-                        box-shadow: var(--shadow-light);
+                        box-shadow: var(--box-shadow-light);
                     }
 
                     img {
@@ -835,9 +841,9 @@ defineExpose({
                     .attachment-name {
                         padding: var(--spacing-xs);
                         font-size: 12px;
-                        color: var(--text-regular);
+                        color: var(--text-secondary);
                         text-align: center;
-                        background: var(--bg-light);
+                        background: var(--bg-tertiary);
                         overflow: hidden;
                         text-overflow: ellipsis;
                         white-space: nowrap;

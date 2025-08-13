@@ -290,25 +290,27 @@ const handleMenuSelect = (index) => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 /**
  * 侧边栏基础样式
  */
 .app-sidebar {
-  width: 200px;
+  width: var(--sidebar-width);
   height: 100vh;
   background: var(--bg-dark-secondary);
   position: fixed;
   left: 0;
   top: 0;
-  z-index: 1001;
-  transition: width 0.28s ease;
+  z-index: var(--z-index-fixed);
+  transition: var(--transition-base);
   overflow: hidden;
 
   /**
    * 折叠状态样式
    */
   &.is-collapsed {
-    width: 64px;
+    width: var(--sidebar-collapsed-width);
 
     // 修复收缩状态下子菜单的显示问题
     :deep(.el-sub-menu) {
@@ -332,8 +334,8 @@ const handleMenuSelect = (index) => {
         }
 
         // 调整子菜单标题的内边距，使图标居中
-        padding-left: 20px !important;
-        padding-right: 20px !important;
+        padding-left: var(--spacing-large) !important;
+        padding-right: var(--spacing-large) !important;
       }
     }
   }
@@ -342,8 +344,8 @@ const handleMenuSelect = (index) => {
    * 移动端样式
    */
   &.is-mobile {
-    left: -200px;
-    transition: left 0.28s ease;
+    left: calc(-1 * var(--sidebar-width));
+    transition: var(--transition-base);
 
     &.is-mobile-open {
       left: 0;
@@ -354,23 +356,23 @@ const handleMenuSelect = (index) => {
    * Logo区域样式
    */
   .sidebar-logo {
-    height: 60px;
+    height: var(--header-height);
     display: flex;
     align-items: center;
-    padding: 0 16px;
+    padding: 0 var(--spacing-base);
     border-bottom: 1px solid var(--border-dark);
 
     .logo-img {
       width: 32px;
       height: 32px;
-      border-radius: 4px;
+      border-radius: var(--border-radius-base);
     }
 
     .logo-text {
-      margin-left: 12px;
-      font-size: 16px;
-      font-weight: 600;
-      color: #ffffff;
+      margin-left: var(--spacing-medium);
+      font-size: var(--font-size-medium);
+      font-weight: var(--font-weight-bold);
+      color: var(--text-on-dark);
       white-space: nowrap;
     }
   }
@@ -379,7 +381,7 @@ const handleMenuSelect = (index) => {
    * 菜单区域样式
    */
   .sidebar-menu-wrapper {
-    height: calc(100vh - 60px);
+    height: calc(100vh - var(--header-height));
 
     :deep(.el-scrollbar__view) {
       height: 100%;
@@ -400,10 +402,10 @@ const handleMenuSelect = (index) => {
 
       // Font Awesome 图标样式
       .fa {
-        width: 20px;
+        width: var(--icon-size-lg);
         text-align: center;
-        margin-right: 8px;
-        font-size: 16px;
+        margin-right: var(--spacing-small);
+        font-size: var(--font-size-medium);
         color: var(--icon-color-on-dark);
       }
 
@@ -411,7 +413,7 @@ const handleMenuSelect = (index) => {
         background-color: var(--white-transparent-light);
 
         .fa {
-          color: #fff;
+          color: var(--text-on-dark);
         }
       }
 
@@ -432,10 +434,10 @@ const handleMenuSelect = (index) => {
 
         // Font Awesome 图标样式
         .fa {
-          width: 20px;
+          width: var(--icon-size-lg);
           text-align: center;
-          margin-right: 8px;
-          font-size: 16px;
+          margin-right: var(--spacing-small);
+          font-size: var(--font-size-medium);
           color: var(--icon-color-on-dark);
         }
 
@@ -443,7 +445,7 @@ const handleMenuSelect = (index) => {
           background-color: var(--white-transparent-light);
 
           .fa {
-            color: #fff;
+            color: var(--text-on-dark);
           }
         }
       }
@@ -462,7 +464,7 @@ const handleMenuSelect = (index) => {
  */
 @media (max-width: 1199px) {
   .app-sidebar:not(.is-mobile) {
-    width: 64px;
+    width: var(--sidebar-collapsed-width);
   }
 }
 </style>
