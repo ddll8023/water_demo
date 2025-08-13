@@ -57,9 +57,10 @@
     </CustomDialog>
 
     <!-- 用户角色分配弹窗 -->
-    <CustomDialog v-model:visible="roleDialogVisible" :title="`为用户「${currentUserName}」分配角色`" width="600px"
-      :close-on-click-modal="false" :close-on-press-escape="false" :loading="assignRoleLoading"
-      @close="handleRoleDialogClose" @cancel="handleRoleDialogClose" @confirm="handleAssignRoleConfirm">
+    <CustomDialog v-model:visible="roleDialogVisible" :title="`为用户「${currentUserName}」分配角色`"
+      width="var(--panel-height-default)" :close-on-click-modal="false" :close-on-press-escape="false"
+      :loading="assignRoleLoading" @close="handleRoleDialogClose" @cancel="handleRoleDialogClose"
+      @confirm="handleAssignRoleConfirm">
       <div class="role-assignment">
         <div class="assignment-header">
           <div class="user-info">

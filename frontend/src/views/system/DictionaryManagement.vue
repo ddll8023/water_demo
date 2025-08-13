@@ -638,7 +638,7 @@ const handleCurrentChange = (page) => {
     .item-card {
       // 使用CSS变量计算高度，考虑页面头部和间距
       height: calc(100vh - var(--page-min-height-offset));
-      min-height: 600px;
+      min-height: var(--panel-height-default);
       display: flex;
       flex-direction: column;
 
@@ -663,7 +663,7 @@ const handleCurrentChange = (page) => {
     .type-list {
       // 计算可用高度：总高度 - 卡片头部 - 内边距
       max-height: calc(100vh - var(--page-min-height-offset) - 80px);
-      min-height: calc(600px - 80px);
+      min-height: calc(var(--panel-height-default) - 80px);
       overflow-y: auto;
       @include custom-scrollbar();
 
@@ -743,7 +743,7 @@ const handleCurrentChange = (page) => {
     .no-selection {
       @include flex-center;
       height: calc(100vh - var(--page-min-height-offset) - 60px);
-      min-height: calc(600px - 60px);
+      min-height: calc(var(--panel-height-default) - 60px);
     }
   }
 }

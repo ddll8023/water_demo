@@ -149,4 +149,18 @@
     --marker-size-base: 16px;
     --marker-font-size-ratio: 0.65;
     --marker-border-width-base: 2px;
+
+    // ==================== 地图面板系统 ====================
+    // 面板动画变量（地图模块专用）
+    --map-panel-transition-duration: var(--transition-duration-base);
+    --map-panel-transition-ease: var(--transition-timing-function);
+    --map-panel-hidden-translate-y: -8px;
+    --map-panel-hidden-scale: 0.95;
+    --map-panel-collapsed-height: 48px;
+
+    // 面板尺寸变量（地图模块专用）
+    --map-panel-max-height: 2000px;
+
+    // 面板背景变量（地图模块专用）
+    --map-panel-stats-bg: rgba(248, 249, 250, 0.8);
 }

@@ -45,9 +45,9 @@
         </div>
 
         <!-- 编辑对话框 -->
-        <CustomDialog v-model:visible="dialogVisible" :title="isEdit ? '编辑预警指标' : '新增预警指标'" width="600px"
-            :close-on-click-modal="false" :loading="submitLoading" @close="handleDialogClose"
-            @cancel="handleDialogClose" @confirm="handleDialogSubmit">
+        <CustomDialog v-model:visible="dialogVisible" :title="isEdit ? '编辑预警指标' : '新增预警指标'"
+            width="var(--panel-height-default)" :close-on-click-modal="false" :loading="submitLoading"
+            @close="handleDialogClose" @cancel="handleDialogClose" @confirm="handleDialogSubmit">
             <CommonForm ref="dialogFormRef" v-model="dialogFormData" :items="formItems" :rules="formRules"
                 label-width="120px" :show-actions="false">
                 <!-- 监测项选择器插槽 -->
@@ -746,7 +746,7 @@ onMounted(async () => {
     // 加载状态修饰符
     &--loading {
         pointer-events: none;
-        opacity: 0.8;
+        opacity: var(--opacity-high);
     }
 
     // 表格容器

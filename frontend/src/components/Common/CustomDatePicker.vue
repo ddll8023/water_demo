@@ -53,8 +53,8 @@
     </div>
 
     <!-- 弹窗选择器 -->
-    <el-dialog v-model="pickerVisible" :title="pickerTitle" width="600px" :before-close="closePicker" append-to-body
-      class="custom-date-picker-dialog">
+    <el-dialog v-model="pickerVisible" :title="pickerTitle" width="var(--panel-height-default)"
+      :before-close="closePicker" append-to-body class="custom-date-picker-dialog">
       <div class="picker-content">
         <!-- 年份选择 -->
         <div v-if="type === 'year'" class="year-section">

@@ -34,7 +34,7 @@
                     <el-tooltip v-if="row.warningContent && row.warningContent.length > 50"
                         :content="row.warningContent" placement="top" class="record-management__tooltip-wrapper">
                         <span class="record-management__content-text">{{ row.warningContent.substring(0, 50)
-                            }}...</span>
+                        }}...</span>
                     </el-tooltip>
                     <span v-else class="record-management__content-text">{{ row.warningContent || '-' }}</span>
                 </template>
@@ -108,7 +108,7 @@
                         <span class="overview-label"><i class="fa fa-hourglass-half"></i> 持续时长</span>
                         <span class="overview-value">{{ formatDurationUtil(currentRecord.occurredAt,
                             currentRecord.resolvedAt)
-                            }}</span>
+                        }}</span>
                     </div>
                 </div>
             </div>
@@ -147,8 +147,9 @@
 
         <!-- 新增/编辑对话框 -->
         <!-- RecordDialog组件内联 -->
-        <CustomDialog :visible="dialogVisible" @update:visible="dialogVisible = $event" title="新增预警记录" width="600px"
-            :loading="submitLoading" confirmButtonText="创建" @confirm="handleSubmit" @cancel="handleCloseRecordDialog">
+        <CustomDialog :visible="dialogVisible" @update:visible="dialogVisible = $event" title="新增预警记录"
+            width="var(--panel-height-default)" :loading="submitLoading" confirmButtonText="创建" @confirm="handleSubmit"
+            @cancel="handleCloseRecordDialog">
             <CommonForm ref="recordFormRef" v-model="formData" :items="recordFormItems" :rules="recordFormRules"
                 label-width="120px" :show-actions="false">
                 <!-- 预警类型选择器插槽 -->

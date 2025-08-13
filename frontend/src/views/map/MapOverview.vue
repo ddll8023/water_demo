@@ -78,8 +78,9 @@
 
         <!-- 监测点详情对话框 -->
         <CustomDialog v-model:visible="detailDialogVisible"
-            :title="`${detailDevice?.stationName || detailDevice?.name || '设备'} - 详细信息`" width="600px"
-            @confirm="detailDialogVisible = false" @cancel="detailDialogVisible = false">
+            :title="`${detailDevice?.stationName || detailDevice?.name || '设备'} - 详细信息`"
+            width="var(--panel-height-default)" @confirm="detailDialogVisible = false"
+            @cancel="detailDialogVisible = false">
             <div class="device-detail" v-if="detailDevice">
                 <!-- 基础信息 -->
                 <div class="detail-section">
@@ -828,7 +829,7 @@ const getIndicatorUnit = (key) => {
                 min-width: 160px;
                 max-width: 220px;
                 overflow: hidden;
-                transition: all var(--panel-transition-duration) var(--panel-transition-ease);
+                transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
                 transform-origin: top left;
 
                 &.collapsed {
@@ -836,7 +837,7 @@ const getIndicatorUnit = (key) => {
                     max-width: 48px;
                     width: 48px;
                     height: 48px;
-                    transform: scale(var(--panel-hidden-scale));
+                    transform: scale(var(--map-panel-hidden-scale));
 
                     .panel-header {
                         justify-content: center;
@@ -845,7 +846,7 @@ const getIndicatorUnit = (key) => {
                             margin: 0;
                             font-size: 18px;
                             color: var(--primary-color);
-                            transition: all var(--panel-transition-duration) var(--panel-transition-ease);
+                            transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
 
                             &:hover {
                                 color: var(--primary-light);
@@ -856,7 +857,7 @@ const getIndicatorUnit = (key) => {
 
                     .panel-content {
                         opacity: 0;
-                        transform: translateY(var(--panel-hidden-translate-y)) scale(var(--panel-hidden-scale));
+                        transform: translateY(var(--map-panel-hidden-translate-y)) scale(var(--map-panel-hidden-scale));
                         pointer-events: none;
                         max-height: 0;
                     }
@@ -869,14 +870,14 @@ const getIndicatorUnit = (key) => {
                     display: flex;
                     align-items: center;
                     cursor: pointer;
-                    transition: all var(--panel-transition-duration) var(--panel-transition-ease);
+                    transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
                     position: relative;
                     overflow: hidden;
 
                     &:hover {
                         background: var(--bg-tertiary);
                         transform: translateY(-1px);
-                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                        box-shadow: var(--shadow-card);
                     }
 
                     &:active {
@@ -887,7 +888,7 @@ const getIndicatorUnit = (key) => {
                         color: var(--primary-color);
                         font-size: 16px;
                         margin-right: var(--spacing-small);
-                        transition: all var(--panel-transition-duration) var(--panel-transition-ease);
+                        transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
 
                         &:hover {
                             transform: scale(1.1);
@@ -899,13 +900,13 @@ const getIndicatorUnit = (key) => {
                         font-weight: var(--font-weight-medium);
                         color: var(--text-primary);
                         font-size: var(--font-size-base);
-                        transition: all var(--panel-transition-duration) var(--panel-transition-ease);
+                        transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
                     }
 
                     .toggle-icon {
                         color: var(--text-secondary);
                         font-size: 12px;
-                        transition: all var(--panel-transition-duration) var(--panel-transition-ease);
+                        transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
                         margin-left: var(--spacing-small);
                         transform-origin: center center;
 
@@ -933,9 +934,9 @@ const getIndicatorUnit = (key) => {
 
                 .panel-content {
                     padding: var(--spacing-base);
-                    transition: all var(--panel-transition-duration) var(--panel-transition-ease);
+                    transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
                     transform-origin: top center;
-                    max-height: 2000px;
+                    max-height: var(--map-panel-max-height);
                     opacity: 1;
                     transform: translateY(0) scale(1);
 
@@ -970,7 +971,7 @@ const getIndicatorUnit = (key) => {
                                 border: 1px solid var(--border-color-light);
                                 border-radius: var(--border-radius-base);
                                 cursor: pointer;
-                                transition: all var(--panel-transition-duration) var(--panel-transition-ease);
+                                transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
                                 font-size: var(--font-size-small);
                                 position: relative;
                                 overflow: hidden;
@@ -984,7 +985,7 @@ const getIndicatorUnit = (key) => {
                                     width: 100%;
                                     height: 100%;
                                     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-                                    transition: left var(--panel-transition-duration) var(--panel-transition-ease);
+                                    transition: left var(--map-panel-transition-duration) var(--map-panel-transition-ease);
                                 }
 
                                 &:hover {
@@ -1015,7 +1016,7 @@ const getIndicatorUnit = (key) => {
                                     border-color: var(--primary-color);
                                     color: var(--primary-color);
                                     transform: translateY(-1px);
-                                    box-shadow: 0 2px 8px rgba(64, 158, 255, 0.2);
+                                    box-shadow: var(--shadow-card-strong);
 
                                     i {
                                         color: var(--primary-color);
@@ -1032,13 +1033,13 @@ const getIndicatorUnit = (key) => {
                                     color: var(--text-secondary);
                                     width: 16px;
                                     text-align: center;
-                                    transition: all var(--panel-transition-duration) var(--panel-transition-ease);
+                                    transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
                                 }
 
                                 span {
                                     color: var(--text-primary);
                                     font-weight: var(--font-weight-normal);
-                                    transition: all var(--panel-transition-duration) var(--panel-transition-ease);
+                                    transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
                                 }
                             }
                         }
@@ -1168,7 +1169,7 @@ const getIndicatorUnit = (key) => {
             max-width: 100%;
 
             &.loading {
-                opacity: 0.7;
+                opacity: var(--opacity-medium);
             }
 
             .trend-card {

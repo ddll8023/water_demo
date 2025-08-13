@@ -53,7 +53,7 @@
                             }" @click="handleListItemClick(item)">
                                 <div class="device-icon" :style="{
                                     backgroundColor: getItemIconConfig(item).bgColor,
-                                    border: `2px solid ${getItemIconConfig(item).color}`
+                                    border: `var(--border-width-normal) solid ${getItemIconConfig(item).color}`
                                 }">
                                     <span class="icon-symbol" :style="{ color: getItemIconConfig(item).color }">
                                         {{ getItemIconSymbol(item) }}
@@ -123,7 +123,7 @@
                     }" @click="handleListItemClick(item)">
                         <div class="device-icon" :style="{
                             backgroundColor: getItemIconConfig(item).bgColor,
-                            border: `2px solid ${getItemIconConfig(item).color}`
+                            border: `var(--border-width-normal) solid ${getItemIconConfig(item).color}`
                         }">
                             <span class="icon-symbol" :style="{ color: getItemIconConfig(item).color }">
                                 {{ getItemIconSymbol(item) }}
@@ -234,16 +234,18 @@ const dragOffset = ref({ x: 0, y: 0 });
 const dragAnimationId = ref(null);
 const viewportSize = ref({ width: 0, height: 0 });
 
-// 默认面板尺寸
-const defaultPanelSize = { width: 320, height: 600 };
-const collapsedPanelHeight = 48;
+// 面板尺寸硬编码（组件专用交互逻辑）
+const PANEL_WIDTH = 320;
+const PANEL_HEIGHT = 600;
+const COLLAPSED_HEIGHT = 48;
+const BOUNDARY_DISTANCE = 50;
 
 // 计算面板样式（使用左侧定位）
 const panelStyle = computed(() => ({
     left: `${panelPosition.value.x}px`,
     top: `${panelPosition.value.y}px`,
-    width: `${defaultPanelSize.width}px`,
-    height: panelCollapsed.value ? `${collapsedPanelHeight}px` : `${defaultPanelSize.height}px`,
+    width: `${PANEL_WIDTH}px`,
+    height: panelCollapsed.value ? `${COLLAPSED_HEIGHT}px` : `${PANEL_HEIGHT}px`,
     zIndex: isDragging.value ? 1002 : 1001,
     opacity: isDragging.value ? 1 : (panelHovered.value ? 1 : 0.9)
 }));
@@ -369,16 +371,16 @@ const handleDrag = (event) => {
     event.preventDefault();
 
     const { width: viewportWidth, height: viewportHeight } = viewportSize.value;
-    const panelWidth = defaultPanelSize.width;
-    const panelHeight = panelCollapsed.value ? collapsedPanelHeight : defaultPanelSize.height;
+    const panelWidth = PANEL_WIDTH;
+    const panelHeight = panelCollapsed.value ? COLLAPSED_HEIGHT : PANEL_HEIGHT;
 
     // 计算新位置（基于左侧坐标系统）
     let newX = event.clientX - dragOffset.value.x;
     let newY = event.clientY - dragOffset.value.y;
 
-    // 边界限制（确保面板始终在视窗内，但允许50px边缘操作）
-    const minX = -panelWidth + 50; // 左边界：允许大部分超出，保留50px可见
-    const maxX = viewportWidth - 50; // 右边界：保留50px可见
+    // 边界限制（确保面板始终在视窗内，但允许边缘操作）
+    const minX = -panelWidth + BOUNDARY_DISTANCE; // 左边界：允许大部分超出，保留边缘距离可见
+    const maxX = viewportWidth - BOUNDARY_DISTANCE; // 右边界：保留边缘距离可见
     const minY = 0; // 上边界：不能超出
     const maxY = viewportHeight - Math.min(panelHeight, 60); // 下边界：至少保留标题栏可见
 
@@ -427,12 +429,12 @@ const updateViewportSize = () => {
 
     // 当视窗大小变化时，检查面板位置是否需要调整
     const { x, y } = panelPosition.value;
-    const panelWidth = defaultPanelSize.width;
-    const panelHeight = panelCollapsed.value ? collapsedPanelHeight : defaultPanelSize.height;
+    const panelWidth = PANEL_WIDTH;
+    const panelHeight = panelCollapsed.value ? COLLAPSED_HEIGHT : PANEL_HEIGHT;
 
     // 确保面板不会完全超出新的视窗边界
-    const minX = -panelWidth + 50;
-    const maxX = viewportSize.value.width - 50;
+    const minX = -panelWidth + BOUNDARY_DISTANCE;
+    const maxX = viewportSize.value.width - BOUNDARY_DISTANCE;
     const minY = 0;
     const maxY = viewportSize.value.height - Math.min(panelHeight, 60);
 
@@ -590,50 +592,52 @@ const getItemLocation = (item) => {
 // 悬浮面板样式
 .floating-panel {
     position: fixed;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: var(--panel-width-default);
+    background: var(--white-transparent-full);
+    backdrop-filter: blur(var(--blur-medium));
+    border-radius: var(--border-radius-xl);
+    box-shadow: var(--shadow-popup);
+    border: var(--border-width-thin) solid var(--white-transparent-base);
     overflow: hidden;
-    user-select: none;
-    transition: height var(--panel-transition-duration) var(--panel-transition-ease),
-        box-shadow var(--panel-transition-duration) var(--panel-transition-ease),
-        transform var(--panel-transition-duration) var(--panel-transition-ease),
-        backdrop-filter var(--panel-transition-duration) var(--panel-transition-ease);
+    @include user-select(none);
+    transition: height var(--map-panel-transition-duration) var(--map-panel-transition-ease),
+        box-shadow var(--map-panel-transition-duration) var(--map-panel-transition-ease),
+        transform var(--map-panel-transition-duration) var(--map-panel-transition-ease),
+        backdrop-filter var(--map-panel-transition-duration) var(--map-panel-transition-ease);
 
     &.dragging {
-        box-shadow: 0 12px 48px rgba(0, 0, 0, 0.25);
+        box-shadow: var(--shadow-drag);
     }
 
     &.collapsed {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-        backdrop-filter: blur(8px);
+        box-shadow: var(--shadow-collapsed);
+        backdrop-filter: blur(var(--blur-light));
+        height: var(--map-panel-collapsed-height);
     }
 
     .floating-panel-header {
-        background: linear-gradient(135deg, #409eff 0%, #409eff 100%);
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color) 100%);
         color: white;
         padding: 0;
         cursor: move;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        transition: background var(--panel-transition-duration) var(--panel-transition-ease);
+        border-bottom: var(--border-width-thin) solid var(--white-transparent-light);
+        transition: background var(--map-panel-transition-duration) var(--map-panel-transition-ease);
 
         &:hover {
-            background: linear-gradient(135deg, #66b1ff 0%, #66b1ff 100%);
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-light) 100%);
         }
 
         .header-content {
             display: flex;
             align-items: center;
-            padding: 12px 16px;
+            padding: var(--spacing-medium) var(--spacing-base);
 
             .drag-handle {
-                margin-right: 12px;
-                font-size: 14px;
-                opacity: 0.8;
+                margin-right: var(--spacing-medium);
+                font-size: var(--font-size-base);
+                opacity: var(--opacity-high);
                 cursor: grab;
-                transition: opacity var(--panel-transition-duration) var(--panel-transition-ease);
+                transition: opacity var(--map-panel-transition-duration) var(--map-panel-transition-ease);
 
                 &:hover {
                     opacity: 1;
@@ -647,35 +651,35 @@ const getItemLocation = (item) => {
 
             .panel-title {
                 flex: 1;
-                font-weight: 600;
-                font-size: 14px;
+                font-weight: var(--font-weight-bold);
+                font-size: var(--font-size-base);
                 margin: 0;
             }
 
             .header-actions {
                 display: flex;
-                gap: 8px;
+                gap: var(--spacing-small);
 
                 .action-btn {
-                    background: rgba(255, 255, 255, 0.2);
+                    background: var(--white-transparent-base);
                     border: none;
                     color: white;
-                    width: 28px;
-                    height: 28px;
-                    border-radius: 6px;
+                    width: var(--button-size-small);
+                    height: var(--button-size-small);
+                    border-radius: var(--border-radius-md);
                     cursor: pointer;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    transition: background-color var(--panel-transition-duration) var(--panel-transition-ease);
-                    font-size: 12px;
+                    transition: background-color var(--map-panel-transition-duration) var(--map-panel-transition-ease);
+                    font-size: var(--font-size-extra-small);
 
                     &:hover {
-                        background: rgba(255, 255, 255, 0.3);
+                        background: var(--white-transparent-medium);
                     }
 
                     &:active {
-                        background: rgba(255, 255, 255, 0.4);
+                        background: var(--white-transparent-active);
                     }
                 }
             }
@@ -683,17 +687,17 @@ const getItemLocation = (item) => {
     }
 
     .floating-panel-content {
-        height: calc(100% - 48px);
+        height: calc(100% - var(--map-panel-collapsed-height));
         overflow: hidden;
-        transition: all var(--panel-transition-duration) var(--panel-transition-ease);
-        max-height: 2000px;
+        transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
+        max-height: var(--map-panel-max-height);
         opacity: 1;
         transform: translateY(0) scale(1);
         transform-origin: top center;
 
         &.content-hidden {
             opacity: 0;
-            transform: translateY(var(--panel-hidden-translate-y)) scale(var(--panel-hidden-scale));
+            transform: translateY(var(--map-panel-hidden-translate-y)) scale(var(--map-panel-hidden-scale));
             pointer-events: none;
             max-height: 0;
         }
@@ -722,35 +726,34 @@ const getItemLocation = (item) => {
     height: 100%;
     display: flex;
     flex-direction: column;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--shadow-card);
 
     .panel-header {
-        padding: 16px;
-        border-bottom: 1px solid #ebeef5;
-        display: flex;
-        align-items: center;
-        background: #f8f9fa;
+        padding: var(--spacing-base);
+        border-bottom: var(--border-width-thin) solid var(--border-light);
+        @include flex-start;
+        background: var(--bg-secondary);
 
         .panel-icon {
-            font-size: 18px;
-            margin-right: 8px;
-            color: #409eff;
+            font-size: var(--font-size-large);
+            margin-right: var(--spacing-small);
+            color: var(--primary-color);
         }
 
         .panel-title {
-            font-weight: 600;
-            color: #303133;
-            font-size: 16px;
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            font-size: var(--font-size-medium);
         }
     }
 
     .panel-content {
         flex: 1;
         overflow: hidden;
-        min-height: 300px;
-        padding: 16px;
+        min-height: var(--panel-content-min-height);
+        padding: var(--spacing-base);
         display: flex;
         flex-direction: column;
 
@@ -760,17 +763,17 @@ const getItemLocation = (item) => {
             align-items: center;
             justify-content: center;
             height: 250px;
-            color: #606266;
+            color: var(--text-secondary);
 
             .empty-icon {
-                font-size: 48px;
-                margin-bottom: 16px;
-                color: #c0c4cc;
+                font-size: var(--icon-size-xxl);
+                margin-bottom: var(--spacing-base);
+                color: var(--text-disabled);
             }
 
             p {
                 margin: 0;
-                font-size: 14px;
+                font-size: var(--font-size-base);
             }
         }
 
@@ -778,41 +781,41 @@ const getItemLocation = (item) => {
         .facilities-tab,
         .monitoring-stations-tab {
             .device-type-selector {
-                margin-bottom: 16px;
+                margin-bottom: var(--spacing-base);
                 flex-shrink: 0;
 
                 .selector-group {
-                    margin-bottom: 12px;
+                    margin-bottom: var(--spacing-medium);
 
                     .selector-label {
                         display: block;
-                        font-size: 14px;
-                        font-weight: 500;
-                        color: #303133;
-                        margin-bottom: 8px;
+                        font-size: var(--font-size-base);
+                        font-weight: var(--font-weight-medium);
+                        color: var(--text-primary);
+                        margin-bottom: var(--spacing-small);
                     }
                 }
 
                 .selector-stats {
-                    font-size: 12px;
-                    color: #606266;
+                    font-size: var(--font-size-extra-small);
+                    color: var(--text-secondary);
                     text-align: center;
-                    padding: 8px;
-                    background: #f8f9fa;
-                    border-radius: 4px;
+                    padding: var(--spacing-small);
+                    background: var(--bg-secondary);
+                    border-radius: var(--border-radius-base);
 
                     .stats-main {
-                        margin-bottom: 4px;
+                        margin-bottom: var(--spacing-mini);
                     }
 
                     .stats-detail {
-                        font-size: 11px;
-                        color: #909399;
+                        font-size: var(--font-size-mini);
+                        color: var(--text-tertiary);
                         font-style: italic;
                     }
 
                     .invalid-count {
-                        color: #e6a23c;
+                        color: var(--warning-color);
                     }
                 }
             }
@@ -821,7 +824,7 @@ const getItemLocation = (item) => {
         // 监测站点标签页特殊样式
         .monitoring-stations-tab {
             .selector-stats {
-                margin-bottom: 16px;
+                margin-bottom: var(--spacing-base);
                 flex-shrink: 0;
             }
         }
@@ -833,55 +836,54 @@ const getItemLocation = (item) => {
             .device-items {
                 display: flex;
                 flex-direction: column;
-                gap: 12px;
+                gap: var(--spacing-medium);
             }
         }
     }
 
     .device-item {
-        display: flex;
-        align-items: center;
-        padding: 16px;
-        border-radius: 6px;
+        @include flex-start;
+        padding: var(--spacing-base);
+        border-radius: var(--border-radius-md);
         cursor: pointer;
-        transition: background-color 0.2s ease, border-color 0.2s ease;
-        border: 1px solid #f0f0f0;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+        transition: background-color var(--transition-duration-fast) var(--transition-timing-function), border-color var(--transition-duration-fast) var(--transition-timing-function);
+        border: var(--border-width-thin) solid var(--border-light);
+        box-shadow: var(--shadow-card-light);
 
         &:hover {
-            background: #f5f7fa;
-            border-color: #d9d9d9;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            background: var(--bg-disabled);
+            border-color: var(--border-color);
+            box-shadow: var(--shadow-card-medium);
         }
 
         &.active {
-            background: #ecf5ff;
-            border-color: #409eff;
-            box-shadow: 0 2px 8px rgba(64, 158, 255, 0.15);
+            background: var(--primary-bg-light);
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-card-strong);
         }
 
         &.no-location {
-            opacity: 0.7;
+            opacity: var(--opacity-medium);
 
             .device-location.invalid {
-                color: #e6a23c;
+                color: var(--warning-color);
                 font-style: italic;
             }
         }
 
         .device-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 6px;
+            width: var(--icon-container-size);
+            height: var(--icon-container-size);
+            border-radius: var(--border-radius-md);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 12px;
+            margin-right: var(--spacing-medium);
             box-sizing: border-box;
 
             .icon-symbol {
-                font-size: 18px;
-                font-weight: bold;
+                font-size: var(--font-size-large);
+                font-weight: var(--font-weight-bold);
                 line-height: 1;
                 user-select: none;
             }
@@ -892,68 +894,66 @@ const getItemLocation = (item) => {
             min-width: 0;
 
             .device-name {
-                font-weight: 600;
-                color: #303133;
-                margin-bottom: 4px;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
+                font-weight: var(--font-weight-bold);
+                color: var(--text-primary);
+                margin-bottom: var(--spacing-mini);
+                @include text-ellipsis;
             }
 
             .device-type {
-                font-size: 12px;
-                color: #303133;
-                margin-bottom: 2px;
+                font-size: var(--font-size-extra-small);
+                color: var(--text-primary);
+                margin-bottom: var(--spacing-micro);
             }
 
             .device-status {
-                font-size: 12px;
-                padding: 2px 6px;
-                border-radius: 3px;
-                font-weight: 500;
-                margin-bottom: 2px;
+                font-size: var(--font-size-extra-small);
+                padding: var(--spacing-micro) var(--spacing-xs);
+                border-radius: var(--border-radius-small);
+                font-weight: var(--font-weight-medium);
+                margin-bottom: var(--spacing-micro);
 
                 &.status-normal,
                 &.status-online {
-                    background: #f0f9ff;
-                    color: #409eff;
+                    background: var(--status-normal-bg);
+                    color: var(--primary-color);
                 }
 
                 &.status-offline {
-                    background: #f4f4f5;
-                    color: #909399;
+                    background: var(--bg-secondary);
+                    color: var(--text-tertiary);
                 }
 
                 &.status-maintenance {
-                    background: #fdf6ec;
-                    color: #e6a23c;
+                    background: var(--warning-bg-color);
+                    color: var(--warning-color);
                 }
 
                 &.status-fault {
-                    background: #fef0f0;
-                    color: #f56c6c;
+                    background: var(--danger-bg-light);
+                    color: var(--danger-color);
                 }
 
                 &.status-default {
-                    background: #f4f4f5;
-                    color: #909399;
+                    background: var(--bg-secondary);
+                    color: var(--text-tertiary);
                 }
             }
 
             .device-location {
-                font-size: 11px;
-                color: #909399;
+                font-size: var(--font-size-mini);
+                color: var(--text-tertiary);
                 display: flex;
                 align-items: center;
 
                 .location-icon,
                 .warning-icon {
-                    margin-right: 4px;
-                    font-size: 10px;
+                    margin-right: var(--spacing-mini);
+                    font-size: var(--font-size-micro);
                 }
 
                 &.invalid {
-                    color: #e6a23c;
+                    color: var(--warning-color);
                     font-style: italic;
                 }
             }
@@ -969,44 +969,44 @@ const getItemLocation = (item) => {
         .panel-content {
             height: 100%;
             min-height: auto;
-            padding: 12px;
+            padding: var(--spacing-medium);
         }
 
         .device-item {
-            padding: 12px;
-            margin-bottom: 8px;
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(5px);
+            padding: var(--spacing-medium);
+            margin-bottom: var(--spacing-small);
+            background: var(--white-transparent-strong);
+            backdrop-filter: blur(var(--blur-light));
 
             &:hover {
-                background: rgba(245, 247, 250, 0.9);
+                background: var(--bg-disabled);
             }
 
             &.active {
-                background: rgba(236, 245, 255, 0.9);
+                background: var(--primary-bg-light);
             }
         }
 
         .selector-stats {
-            background: rgba(248, 249, 250, 0.8);
-            backdrop-filter: blur(5px);
-            padding: 8px;
-            border-radius: 4px;
+            background: var(--map-panel-stats-bg);
+            backdrop-filter: blur(var(--blur-light));
+            padding: var(--spacing-small);
+            border-radius: var(--border-radius-base);
         }
     }
 }
 
 // 响应式设计
-@media (max-width: 768px) {
+@include respond-to(sm) {
     .facility-panel {
         .panel-content {
-            padding: 12px;
+            padding: var(--spacing-medium);
 
             .device-item {
-                padding: 12px;
+                padding: var(--spacing-medium);
 
                 .device-info .device-name {
-                    font-size: 13px;
+                    font-size: var(--font-size-small);
                 }
             }
         }

@@ -106,6 +106,8 @@ $bg-tertiary: #FAFAFA;
   --font-size-base: 14px;
   --font-size-small: 13px;
   --font-size-extra-small: 12px;
+  --font-size-mini: 11px;
+  --font-size-micro: 10px;
 
   // 字重规范
   --font-weight-light: 300;
@@ -159,6 +161,13 @@ $spacing-extra-large: var(--spacing-extra-large);
   --sidebar-collapsed-width: 64px;
   --main-content-padding: 20px;
 
+  // 面板尺寸规范（跨组件复用）
+  --panel-width-default: 320px; // 默认面板宽度
+  --panel-height-default: 600px; // 默认面板高度
+
+  // 边界距离规范（跨组件复用）  
+  --boundary-edge-distance: 50px; // 边界边缘距离
+
   // 圆角规范
   --border-radius-small: 2px;
   --border-radius-base: 4px;
@@ -172,6 +181,10 @@ $spacing-extra-large: var(--spacing-extra-large);
   --box-shadow-light: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
   --box-shadow-base: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.12);
   --box-shadow-dark: 0 4px 8px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.12);
+
+  // 边框宽度规范
+  --border-width-thin: 1px;
+  --border-width-normal: 2px;
 
   // 表格布局专用变量
   --table-header-height: 60px; // 表格头部高度
@@ -264,15 +277,27 @@ $breakpoint-xl: 1920px;
   --icon-size-xxxl: 28px; // 页面主标题图标
   --icon-size-xxl: 48px; // 巨大图标
 
+  // 按钮和容器尺寸变量
+  --button-size-small: 28px; // 小按钮尺寸
+  --icon-container-size: 36px; // 图标容器尺寸
+
   // 通用卡片阴影层级
   --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.1);
   --shadow-card-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
   --shadow-popup: 0 6px 20px rgba(0, 0, 0, 0.15);
 
+  // 扩展阴影系统（跨组件复用）
+  --shadow-drag: 0 12px 48px var(--black-transparent-strong);
+  --shadow-collapsed: 0 4px 16px var(--black-transparent-light-10);
+  --shadow-card-light: 0 1px 3px var(--black-transparent-thin);
+  --shadow-card-medium: 0 2px 6px var(--black-transparent-light-10);
+  --shadow-card-strong: 0 2px 8px var(--primary-transparent-medium);
+
   // 通用尺寸
   --table-row-height: 48px; // 表格行高
   --form-item-height: 40px; // 表单项高度
   --search-form-min-height: 60px; // 搜索表单最小高度
+  --panel-content-min-height: 300px; // 面板内容最小高度
 
   // 缩略图尺寸
   --thumbnail-width: 60px; // 缩略图宽度
@@ -282,6 +307,14 @@ $breakpoint-xl: 1920px;
   --page-min-height-offset: 200px;
 
   // ==================== 透明度相关颜色 ====================
+  // 通用透明度系统
+  --opacity-medium: 0.7; // 中等透明度
+  --opacity-high: 0.8; // 高透明度
+
+  // 模糊度系统
+  --blur-light: 8px; // 轻度模糊
+  --blur-medium: 10px; // 中等模糊
+
   // 黑色透明度系列
   --black-transparent-light: rgba(0, 0, 0, 0.04);
   --black-transparent-xxlight: rgba(0, 0, 0, 0.05);
@@ -296,6 +329,8 @@ $breakpoint-xl: 1920px;
   // 白色透明度系列
   --white-transparent-light: rgba(255, 255, 255, 0.1);
   --white-transparent-base: rgba(255, 255, 255, 0.2);
+  --white-transparent-medium: rgba(255, 255, 255, 0.3);
+  --white-transparent-active: rgba(255, 255, 255, 0.4);
   --white-transparent-strong: rgba(255, 255, 255, 0.8);
   --white-transparent-full: rgba(255, 255, 255, 0.95);
 
@@ -317,9 +352,8 @@ $breakpoint-xl: 1920px;
   // 深色背景上的图标颜色
   --icon-color-on-dark: #bfcbd9;
 
-
-
-
+  // 状态背景颜色（跨组件复用）
+  --status-normal-bg: #f0f9ff;
 }
 
 // ==================== 布局特定变量（从 layout.scss 合并）====================

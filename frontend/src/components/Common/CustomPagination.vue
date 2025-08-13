@@ -320,8 +320,8 @@ const handleJumper = (event) => {
 
         .nav-button,
         .page-list .page-item {
-            min-width: 28px;
-            height: 28px;
+            min-width: var(--button-size-small);
+            height: var(--button-size-small);
         }
 
         .page-list {

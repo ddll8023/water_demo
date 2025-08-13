@@ -49,9 +49,9 @@
     </div>
 
     <!-- 合并 PositionForm 组件 -->
-    <CustomDialog v-model:visible="formDialogVisible" :title="isEdit ? '编辑岗位' : '新增岗位'" width="600px"
-      :close-on-click-modal="false" @cancel="handleFormDialogClose" @confirm="handlePositionSubmit"
-      :loading="submitLoading">
+    <CustomDialog v-model:visible="formDialogVisible" :title="isEdit ? '编辑岗位' : '新增岗位'"
+      width="var(--panel-height-default)" :close-on-click-modal="false" @cancel="handleFormDialogClose"
+      @confirm="handlePositionSubmit" :loading="submitLoading">
       <CommonForm ref="positionFormRef" v-model="positionForm" :items="formItems" :rules="positionFormRules"
         label-width="100px" label-position="right" :show-actions="false" @update:modelValue="handleFormUpdate" />
     </CustomDialog>

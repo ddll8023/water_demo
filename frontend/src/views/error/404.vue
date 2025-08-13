@@ -198,7 +198,7 @@ onMounted(() => {
     padding: 60px 40px;
     text-align: center;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(var(--blur-medium));
     position: relative;
     z-index: 2;
 
@@ -227,7 +227,7 @@ onMounted(() => {
       .error-icon {
         font-size: 80px;
         color: var(--el-color-primary-light-3);
-        opacity: 0.8;
+        opacity: var(--opacity-high);
       }
     }
 
@@ -240,7 +240,7 @@ onMounted(() => {
       .error-title {
         font-size: 32px;
         color: var(--el-text-color-primary);
-        margin-bottom: 16px;
+        margin-bottom: var(--spacing-base);
         font-weight: 600;
       }
 
@@ -297,7 +297,7 @@ onMounted(() => {
         h3 {
           font-size: 16px;
           color: var(--el-text-color-primary);
-          margin-bottom: 16px;
+          margin-bottom: var(--spacing-base);
           text-align: center;
         }
 

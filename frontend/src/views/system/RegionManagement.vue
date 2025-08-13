@@ -61,7 +61,7 @@ const loading = ref(false)
   }
 
   .notice-card {
-    max-width: 600px;
+    max-width: var(--panel-height-default);
     width: 100%;
     border: none;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -77,7 +77,7 @@ const loading = ref(false)
   .notice-icon {
     font-size: 64px;
     color: #409eff;
-    opacity: 0.8;
+    opacity: var(--opacity-high);
   }
 
   .notice-text {
@@ -133,7 +133,7 @@ const loading = ref(false)
     }
 
     .notice-icon {
-      font-size: 48px;
+      font-size: var(--icon-size-xxl);
     }
 
     .notice-text h3 {

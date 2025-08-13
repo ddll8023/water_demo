@@ -864,7 +864,7 @@ const startImport = async () => {
  * ----------------------------------------
  */
 .preview-section {
-  max-height: 600px;
+  max-height: var(--panel-height-default);
   overflow-y: auto;
 }
 
@@ -963,7 +963,7 @@ const startImport = async () => {
  */
 @include respond-to(sm) {
   .excel-importer {
-    min-height: 300px;
+    min-height: var(--panel-content-min-height);
   }
 
   .upload-dragger .el-upload-dragger {

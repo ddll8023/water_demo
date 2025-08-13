@@ -1206,10 +1206,10 @@ const zoomOut = (chartIndex) => updateChartZoom(0.7, 'multiply', chartIndex)
                 align-items: center;
 
                 .indicator-dot {
-                    width: 36px;
-                    height: 36px;
+                    width: var(--icon-container-size);
+                    height: var(--icon-container-size);
                     border-radius: 50%;
-                    border: 2px solid rgba(64, 158, 255, 0.2);
+                    border: var(--border-width-normal) solid rgba(64, 158, 255, 0.2);
                     background: rgba(255, 255, 255, 0.95);
                     cursor: pointer;
                     transition: all 0.3s ease;
@@ -1322,7 +1322,7 @@ const zoomOut = (chartIndex) => updateChartZoom(0.7, 'multiply', chartIndex)
                             padding: var(--spacing-small);
                             border-radius: var(--border-radius-large);
                             background: rgba(255, 255, 255, 0.8);
-                            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+                            box-shadow: var(--shadow-card);
                         }
 
                         .chart-title {
@@ -1359,7 +1359,7 @@ const zoomOut = (chartIndex) => updateChartZoom(0.7, 'multiply', chartIndex)
                 .chart-content {
                     padding: clamp(var(--spacing-xs), 2vw, var(--spacing-large));
                     height: calc(100% - 60px);
-                    background: rgba(255, 255, 255, 0.3);
+                    background: var(--white-transparent-medium);
                     position: relative;
 
                     .chart-canvas {
@@ -1388,8 +1388,8 @@ const zoomOut = (chartIndex) => updateChartZoom(0.7, 'multiply', chartIndex)
                         border: var(--chart-standard-border);
 
                         .zoom-btn {
-                            width: 28px;
-                            height: 28px;
+                            width: var(--button-size-small);
+                            height: var(--button-size-small);
                             border: none;
                             border-radius: var(--border-radius-base);
                             background: transparent;
@@ -1419,7 +1419,7 @@ const zoomOut = (chartIndex) => updateChartZoom(0.7, 'multiply', chartIndex)
                         gap: 6px;
                         font-size: 9px;
                         color: var(--text-secondary);
-                        opacity: 0.8;
+                        opacity: var(--opacity-high);
 
                         .hint-item {
                             display: flex;
@@ -1454,8 +1454,8 @@ const zoomOut = (chartIndex) => updateChartZoom(0.7, 'multiply', chartIndex)
                         border-radius: var(--border-radius-xl);
 
                         .fa {
-                            font-size: 48px;
-                            margin-bottom: 16px;
+                            font-size: var(--icon-size-xxl);
+                            margin-bottom: var(--spacing-base);
                             opacity: 0.6;
                         }
 

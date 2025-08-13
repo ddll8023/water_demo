@@ -129,33 +129,33 @@ defineExpose({
     backdrop-filter: blur(12px);
     border-radius: 12px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: var(--border-width-thin) solid rgba(255, 255, 255, 0.2);
     z-index: 1000;
-    min-width: 320px;
+    min-width: var(--panel-width-default);
     max-width: 400px;
     overflow: hidden;
-    transition: all var(--panel-transition-duration) var(--panel-transition-ease);
-    animation: glassPanelFadeIn var(--panel-transition-duration) var(--panel-transition-ease);
+    transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
+    animation: glassPanelFadeIn var(--map-panel-transition-duration) var(--map-panel-transition-ease);
     will-change: transform, opacity, box-shadow;
 
     &:hover {
-        box-shadow: 0 12px 48px rgba(0, 0, 0, 0.2);
+        box-shadow: var(--shadow-drag);
         backdrop-filter: blur(16px);
     }
 
     &.collapsed {
         min-width: 200px;
-        height: var(--panel-collapsed-height);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-        backdrop-filter: blur(8px);
+        height: var(--map-panel-collapsed-height);
+        box-shadow: var(--shadow-collapsed);
+        backdrop-filter: blur(var(--blur-light));
 
         .panel-header {
             background: rgba(248, 249, 250, 0.95);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(var(--blur-medium));
 
             .header-icon {
                 color: #409eff;
-                transition: all var(--panel-transition-duration) var(--panel-transition-ease);
+                transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
                 transform: scale(1.1);
 
                 &:hover {
@@ -170,7 +170,7 @@ defineExpose({
             }
 
             .toggle-icon {
-                opacity: 0.7;
+                opacity: var(--opacity-medium);
                 transform: rotate(0deg) scale(0.9);
 
                 &:hover {
@@ -182,7 +182,7 @@ defineExpose({
 
         .panel-content {
             opacity: 0;
-            transform: translateY(var(--panel-hidden-translate-y)) scale(var(--panel-hidden-scale));
+            transform: translateY(var(--map-panel-hidden-translate-y)) scale(var(--map-panel-hidden-scale));
             pointer-events: none;
             max-height: 0;
         }
@@ -192,12 +192,12 @@ defineExpose({
         display: flex;
         align-items: center;
         padding: 12px 16px;
-        background: rgba(248, 249, 250, 0.8);
-        backdrop-filter: blur(8px);
-        border-bottom: 1px solid rgba(222, 226, 230, 0.6);
+        background: var(--map-panel-stats-bg);
+        backdrop-filter: blur(var(--blur-light));
+        border-bottom: var(--border-width-thin) solid rgba(222, 226, 230, 0.6);
         cursor: pointer;
         position: relative;
-        transition: all var(--panel-transition-duration) var(--panel-transition-ease);
+        transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
 
         &:hover {
             background: rgba(240, 242, 245, 0.9);
@@ -212,7 +212,7 @@ defineExpose({
             color: #409eff;
             font-size: 16px;
             margin-right: 10px;
-            transition: all var(--panel-transition-duration) var(--panel-transition-ease);
+            transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
             transform-origin: center;
         }
 
@@ -221,12 +221,12 @@ defineExpose({
             font-weight: 600;
             color: #303133;
             font-size: 14px;
-            transition: all var(--panel-transition-duration) var(--panel-transition-ease);
+            transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
 
             &.collapsed-title {
                 opacity: 0;
                 transform: translateX(-10px);
-                transition: all var(--panel-transition-duration) var(--panel-transition-ease) 0.1s;
+                transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease) 0.1s;
             }
         }
 
@@ -234,7 +234,7 @@ defineExpose({
             color: #606266;
             font-size: 14px;
             margin-left: 8px;
-            transition: all var(--panel-transition-duration) var(--panel-transition-ease);
+            transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
             transform-origin: center;
 
             &.expanded {
@@ -251,15 +251,15 @@ defineExpose({
 
     .panel-content {
         padding: 16px;
-        transition: all var(--panel-transition-duration) var(--panel-transition-ease);
-        max-height: 2000px;
+        transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
+        max-height: var(--map-panel-max-height);
         opacity: 1;
         transform: translateY(0) scale(1);
         transform-origin: top center;
 
         &.content-hidden {
             opacity: 0;
-            transform: translateY(var(--panel-hidden-translate-y)) scale(var(--panel-hidden-scale));
+            transform: translateY(var(--map-panel-hidden-translate-y)) scale(var(--map-panel-hidden-scale));
             pointer-events: none;
             max-height: 0;
             padding: 0 16px;
@@ -318,12 +318,12 @@ defineExpose({
                     align-items: center;
                     padding: 10px 12px;
                     background: rgba(255, 255, 255, 0.9);
-                    backdrop-filter: blur(8px);
-                    border: 1px solid rgba(255, 255, 255, 0.3);
+                    backdrop-filter: blur(var(--blur-light));
+                    border: var(--border-width-thin) solid var(--white-transparent-medium);
                     border-radius: 8px;
-                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+                    box-shadow: var(--shadow-card);
                     font-size: 12px;
-                    transition: all var(--panel-transition-duration) var(--panel-transition-ease);
+                    transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
                     cursor: pointer;
                     position: relative;
                     overflow: hidden;
@@ -336,13 +336,13 @@ defineExpose({
                         width: 100%;
                         height: 100%;
                         background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-                        transition: left var(--panel-transition-duration) var(--panel-transition-ease);
+                        transition: left var(--map-panel-transition-duration) var(--map-panel-transition-ease);
                     }
 
                     &:hover {
                         background: rgba(248, 250, 252, 0.95);
                         border-color: rgba(64, 158, 255, 0.2);
-                        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+                        box-shadow: 0 4px 16px var(--black-transparent-light-10);
                         transform: translateY(-2px);
 
                         &::before {
@@ -355,7 +355,7 @@ defineExpose({
                         margin-right: 10px;
                         width: 18px;
                         text-align: center;
-                        transition: transform var(--panel-transition-duration) var(--panel-transition-ease);
+                        transition: transform var(--map-panel-transition-duration) var(--map-panel-transition-ease);
 
                         &.fa {
                             font-family: FontAwesome;
@@ -371,7 +371,7 @@ defineExpose({
                         font-weight: 500;
                         font-size: 12px;
                         line-height: 1.3;
-                        transition: color var(--panel-transition-duration) var(--panel-transition-ease);
+                        transition: color var(--map-panel-transition-duration) var(--map-panel-transition-ease);
                     }
 
                     &:hover span:last-child {
@@ -385,7 +385,7 @@ defineExpose({
                     height: 3px;
                     border-radius: 2px;
                     margin-right: 8px;
-                    transition: all var(--panel-transition-duration) var(--panel-transition-ease);
+                    transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
 
                     &.main-pipeline {
                         background: linear-gradient(90deg, #1890ff, #40a9ff);
@@ -400,7 +400,7 @@ defineExpose({
 
                 .legend-item:hover .pipeline-legend {
                     transform: scaleX(1.2);
-                    box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
+                    box-shadow: var(--shadow-card-strong);
                 }
             }
         }
@@ -423,7 +423,7 @@ defineExpose({
 @media (max-width: 768px) {
     .right-control-panel {
         min-width: 280px;
-        max-width: 320px;
+        max-width: var(--panel-width-default);
         right: 8px;
 
         &.collapsed {

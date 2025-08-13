@@ -1391,7 +1391,7 @@ onMounted(async () => {
      * 部门树卡片样式
      */
     .tree-card {
-      height: 600px;
+      height: var(--panel-height-default);
       border: 1px solid var(--neutral-dark);
       box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
       background: var(--bg-primary);
@@ -1567,7 +1567,7 @@ onMounted(async () => {
      * 部门详情卡片样式
      */
     .detail-card {
-      height: 600px;
+      height: var(--panel-height-default);
       border: 1px solid var(--neutral-dark);
       box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
       background: var(--bg-primary);
@@ -1597,7 +1597,7 @@ onMounted(async () => {
           padding: 0 20px;
 
           :deep(.el-tabs__header) {
-            margin-bottom: 16px;
+            margin-bottom: var(--spacing-base);
           }
 
           :deep(.el-tabs__content) {
@@ -1735,7 +1735,7 @@ onMounted(async () => {
           flex-direction: column;
 
           .subdepartments-header {
-            margin-bottom: 16px;
+            margin-bottom: var(--spacing-base);
             display: flex;
             justify-content: flex-start;
             align-items: center;
@@ -1839,7 +1839,7 @@ onMounted(async () => {
     .organization-view {
       .tree-card {
         height: auto;
-        min-height: 300px;
+        min-height: var(--panel-content-min-height);
 
         .tree-controls {
           padding: 12px;

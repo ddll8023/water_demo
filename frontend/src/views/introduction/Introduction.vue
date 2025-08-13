@@ -175,7 +175,7 @@ onMounted(() => {
   padding: 16px 20px;
   background: white;
   border-radius: 8px;
-  margin-bottom: 16px;
+  margin-bottom: var(--spacing-base);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   .header-content {
@@ -203,7 +203,7 @@ onMounted(() => {
 }
 
 .video-section {
-  margin-bottom: 16px;
+  margin-bottom: var(--spacing-base);
 
   .video-container {
     background: #000;
