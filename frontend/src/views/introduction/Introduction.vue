@@ -42,7 +42,7 @@
                     <CustomCard :padding="'small'" :hoverable="false" :bordered="true" :shadow="false">
                       <div class="stat-card">
                         <div class="stat-card__value">{{ stat.value }}<span class="stat-card__unit">{{ stat.unit
-                        }}</span>
+                            }}</span>
                         </div>
                         <div class="stat-card__label">{{ stat.label }}</div>
                       </div>
@@ -187,7 +187,7 @@ onMounted(() => {
     .page-title {
       font-size: var(--font-size-xl);
       font-weight: var(--font-weight-semibold);
-      color: var(--el-text-color-primary);
+      color: var(--text-primary);
       margin: 0 0 var(--spacing-small) 0;
     }
 
@@ -223,7 +223,7 @@ onMounted(() => {
 
 .video-description {
   font-size: var(--font-size-base);
-  color: var(--el-text-color-regular);
+  color: var(--text-secondary);
   line-height: var(--line-height-large);
   margin: 0;
 }
@@ -235,7 +235,7 @@ onMounted(() => {
 
   li {
     font-size: var(--font-size-base);
-    color: var(--el-text-color-regular);
+    color: var(--text-secondary);
     line-height: var(--line-height-large);
     margin-bottom: var(--spacing-small);
     position: relative;
@@ -243,7 +243,7 @@ onMounted(() => {
 
     &::before {
       content: '•';
-      color: var(--el-color-primary);
+      color: var(--primary-color);
       position: absolute;
       left: 0;
     }
@@ -270,7 +270,7 @@ onMounted(() => {
 
   .feature-text {
     font-size: var(--font-size-base);
-    color: var(--el-text-color-regular);
+    color: var(--text-secondary);
   }
 }
 
@@ -283,7 +283,7 @@ onMounted(() => {
   &__value {
     font-size: var(--font-size-large);
     font-weight: 700;
-    color: var(--el-text-color-primary);
+    color: var(--text-primary);
 
     .stat-card__unit {
       margin-left: var(--spacing-mini);
@@ -295,7 +295,7 @@ onMounted(() => {
 
   &__label {
     font-size: var(--font-size-extra-small);
-    color: var(--el-text-color-regular);
+    color: var(--text-secondary);
   }
 }
 </style>

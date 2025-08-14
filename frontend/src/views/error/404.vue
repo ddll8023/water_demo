@@ -158,11 +158,11 @@ onMounted(() => {
       .error-code {
         font-size: 120px;
         font-weight: 900;
-        color: var(--el-color-primary);
+        color: var(--primary-color);
         line-height: 1;
         margin-bottom: var(--spacing-large);
         text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        background: linear-gradient(45deg, var(--el-color-primary), var(--el-color-primary-light-3));
+        background: linear-gradient(45deg, var(--primary-color), var(--primary-lighter));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -171,7 +171,7 @@ onMounted(() => {
       // 错误图标样式
       .error-icon {
         font-size: 80px;
-        color: var(--el-color-primary-light-3);
+        color: var(--primary-lighter);
         opacity: var(--opacity-high);
       }
     }

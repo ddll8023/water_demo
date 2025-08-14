@@ -188,12 +188,12 @@ defineExpose({
             backdrop-filter: blur(var(--blur-medium));
 
             .header-icon {
-                color: var(--el-color-primary);
+                color: var(--primary-color);
                 transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
                 transform: scale(1.1);
 
                 &:hover {
-                    color: var(--el-color-primary-light-3);
+                    color: var(--primary-lighter);
                     transform: scale(1.2);
                 }
             }
@@ -243,7 +243,7 @@ defineExpose({
         }
 
         .header-icon {
-            color: var(--el-color-primary);
+            color: var(--primary-color);
             font-size: var(--font-size-medium);
             margin-right: var(--spacing-sm);
             transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
@@ -253,7 +253,7 @@ defineExpose({
         .header-title {
             flex: 1;
             font-weight: 600;
-            color: var(--el-text-color-primary);
+            color: var(--text-primary);
             font-size: var(--font-size-base);
             transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
 
@@ -265,7 +265,7 @@ defineExpose({
         }
 
         .toggle-icon {
-            color: var(--el-text-color-regular);
+            color: var(--text-secondary);
             font-size: var(--font-size-base);
             margin-left: 8px;
             transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
@@ -273,11 +273,11 @@ defineExpose({
 
             &.expanded {
                 transform: rotate(180deg);
-                color: var(--el-color-primary);
+                color: var(--primary-color);
             }
 
             &:hover {
-                color: var(--el-color-primary);
+                color: var(--primary-color);
                 transform: scale(1.1);
             }
         }
@@ -321,7 +321,7 @@ defineExpose({
 
             .group-title {
                 font-size: var(--font-size-small);
-                color: var(--el-text-color-regular);
+                color: var(--text-secondary);
                 font-weight: 600;
                 margin-bottom: var(--spacing-medium);
                 text-transform: uppercase;
@@ -337,7 +337,7 @@ defineExpose({
                     transform: translateY(-50%);
                     width: 3px;
                     height: 12px;
-                    background: linear-gradient(135deg, var(--el-color-primary), var(--el-color-primary-light-3));
+                    background: linear-gradient(135deg, var(--primary-color), var(--primary-lighter));
                     border-radius: var(--border-radius-small);
                 }
             }
@@ -401,7 +401,7 @@ defineExpose({
                     }
 
                     span:last-child {
-                        color: var(--el-text-color-primary);
+                        color: var(--text-primary);
                         font-weight: 500;
                         font-size: var(--font-size-extra-small);
                         line-height: 1.3;
@@ -409,7 +409,7 @@ defineExpose({
                     }
 
                     &:hover span:last-child {
-                        color: var(--el-color-primary);
+                        color: var(--primary-color);
                     }
                 }
 

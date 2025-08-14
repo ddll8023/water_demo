@@ -58,7 +58,7 @@ defineProps({
             color: var(--text-primary);
             font-size: var(--font-size-extra-large);
             font-weight: var(--font-weight-bold);
-            margin-bottom: var(--spacing-small);
+            margin: var(--spacing-small) 0;
             @include flex-start;
 
             .fa {

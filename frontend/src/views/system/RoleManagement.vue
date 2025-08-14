@@ -519,7 +519,6 @@ onMounted(() => {
  * ===========================
  */
 .role-management {
-  padding: var(--spacing-large);
   background: var(--el-bg-color-page);
   height: calc(100vh - var(--header-height));
   display: flex;
@@ -568,7 +567,7 @@ onMounted(() => {
 
       .custom-button {
         width: 100%;
-        font-size: var(--font-size-extra-small);
+        font-size: var(--font-size-sm);
       }
     }
   }
@@ -586,8 +585,8 @@ onMounted(() => {
 
   .form-tip {
     margin-left: var(--spacing-sm);
-    font-size: var(--font-size-extra-small);
-    color: var(--el-text-color-secondary);
+    font-size: var(--font-size-sm);
+    color: var(--text-tertiary);
   }
 
   .el-input-number {

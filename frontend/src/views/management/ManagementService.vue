@@ -1378,7 +1378,6 @@ onMounted(async () => {
  * ----------------------------------------
  */
 .management-service {
-  padding: var(--spacing-large);
   background-color: var(--bg-secondary);
   min-height: calc(100vh - var(--header-height));
 
@@ -1509,8 +1508,8 @@ onMounted(async () => {
           }
 
           :deep(.el-tree-node__expand-icon) {
-            color: var(--el-text-color-secondary);
-            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+            font-size: var(--font-size-extra-small);
           }
         }
 

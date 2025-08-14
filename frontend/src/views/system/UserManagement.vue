@@ -627,7 +627,6 @@ onMounted(async () => {
  * -------------------------------------------------------
  */
 .user-management {
-  padding: var(--spacing-large);
   background: var(--el-bg-color-page);
   height: calc(100vh - var(--header-height));
   display: flex;
@@ -658,8 +657,8 @@ onMounted(async () => {
 
     .custom-button {
       min-width: 56px; // 稍微减小最小宽度
-      padding: 5px 10px; // 减小内边距
-      font-size: var(--font-size-extra-small); // 稍微减小字体
+      padding: var(--spacing-xs) var(--spacing-sm); // 减小内边距
+      font-size: var(--font-size-sm); // 稍微减小字体
       flex: 0 0 auto; // 不允许伸缩，保持固定尺寸
       border-radius: var(--border-radius-base); // 圆角
 
@@ -702,13 +701,13 @@ onMounted(async () => {
 
         .user-desc {
           font-size: var(--font-size-base);
-          color: var(--el-text-color-secondary);
+          color: var(--text-tertiary);
         }
       }
 
       .role-stats {
         font-size: var(--font-size-base);
-        color: var(--el-text-color-secondary);
+        color: var(--text-tertiary);
       }
     }
 

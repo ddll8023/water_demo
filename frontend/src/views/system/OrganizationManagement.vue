@@ -51,7 +51,6 @@ const loading = ref(false)
  * ===================================
  */
 .organization-management {
-  padding: var(--spacing-large);
   background-color: var(--bg-secondary);
   min-height: calc(100vh - var(--header-height));
 }
@@ -83,8 +82,8 @@ const loading = ref(false)
 }
 
 .notice-icon {
-  font-size: var(--font-size-notice-icon);
-  color: var(--el-color-primary);
+  font-size: var(--font-size-icon-notice);
+  color: var(--primary-color);
   opacity: var(--opacity-high);
 }
 
@@ -93,14 +92,14 @@ const loading = ref(false)
 
   h3 {
     font-size: var(--font-size-xl);
-    color: var(--el-text-color-primary);
+    color: var(--text-primary);
     margin: 0 0 8px 0;
     font-weight: var(--font-weight-semibold);
   }
 
   p {
     font-size: var(--font-size-medium);
-    color: var(--el-text-color-regular);
+    color: var(--text-secondary);
     margin: 0 0 var(--spacing-base) 0;
     line-height: var(--line-height-base);
   }
@@ -118,7 +117,7 @@ const loading = ref(false)
   gap: var(--spacing-xs);
   padding: var(--spacing-xs) var(--spacing-medium);
   background: var(--hover-bg-light);
-  color: var(--el-color-primary);
+  color: var(--primary-color);
   border-radius: var(--border-radius-feature-tag);
   font-size: var(--font-size-small);
   border: 1px solid var(--hover-border-light);

@@ -659,7 +659,6 @@ const handleFormSuccess = () => {
  * ==============================
  */
 .department-management {
-  padding: var(--spacing-large);
   background: var(--bg-color-page);
   height: calc(100vh - var(--header-height));
   display: flex;
@@ -673,7 +672,7 @@ const handleFormSuccess = () => {
       .page-title {
         @include flex-center-y;
         gap: var(--spacing-small);
-        font-size: var(--font-size-extra-large);
+        font-size: var(--font-size-xl);
         font-weight: var(--font-weight-medium);
         color: var(--text-primary);
         margin: 0 0 var(--spacing-small) 0;
@@ -710,7 +709,7 @@ const handleFormSuccess = () => {
 }
 
 .form-tip {
-  font-size: var(--font-size-extra-small);
+  font-size: var(--font-size-sm);
   color: var(--text-tertiary);
   margin-top: var(--spacing-mini);
 }
@@ -730,7 +729,7 @@ const handleFormSuccess = () => {
 
       .custom-button {
         width: 100%;
-        font-size: var(--font-size-extra-small);
+        font-size: var(--font-size-sm);
       }
     }
   }

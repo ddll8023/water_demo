@@ -658,7 +658,7 @@ defineExpose({
       flex-direction: column;
       align-items: center;
       gap: var(--spacing-small);
-      color: var(--el-text-color-secondary);
+      color: var(--text-tertiary);
       z-index: var(--z-index-base);
     }
 
@@ -693,7 +693,7 @@ defineExpose({
             padding: var(--spacing-medium) var(--spacing-small);
             border: 1px solid var(--el-border-color-light);
             font-weight: var(--font-weight-medium);
-            color: var(--el-text-color-primary);
+            color: var(--text-primary);
             text-align: center;
             white-space: normal;
             word-wrap: break-word;
@@ -715,13 +715,13 @@ defineExpose({
             }
 
             &.row-selected {
-              background-color: var(--el-color-primary-light-9);
+              background-color: var(--primary-light-9);
             }
 
             td {
               padding: var(--spacing-medium) var(--spacing-small);
               border: 1px solid var(--el-border-color-light);
-              color: var(--el-text-color-primary);
+              color: var(--text-primary);
               white-space: normal;
               word-wrap: break-word;
               word-break: break-all;
@@ -748,7 +748,7 @@ defineExpose({
                 flex-direction: column;
                 align-items: center;
                 gap: var(--spacing-small);
-                color: var(--el-text-color-secondary);
+                color: var(--text-tertiary);
 
                 .fa {
                   font-size: var(--icon-size-xxl);
@@ -947,11 +947,11 @@ defineExpose({
 
           i {
             font-size: var(--icon-size-xs);
-            color: var(--el-text-color-placeholder);
+            color: var(--text-placeholder);
             line-height: 1;
 
             &.active {
-              color: var(--el-color-primary);
+              color: var(--primary-color);
             }
 
             &:first-child {

@@ -516,12 +516,12 @@ const handleFormUpdate = (value) => {
         margin: 0 0 var(--spacing-small) 0;
         font-size: var(--font-size-xl);
         font-weight: var(--font-weight-semibold);
-        color: var(--el-text-color-primary);
+        color: var(--text-primary);
       }
 
       .page-description {
         margin: 0;
-        color: var(--el-text-color-regular);
+        color: var(--text-secondary);
         font-size: var(--font-size-base);
       }
     }
@@ -539,7 +539,7 @@ const handleFormUpdate = (value) => {
   .text-placeholder {
     color: var(--text-placeholder);
     font-style: italic;
-    font-size: var(--font-size-extra-small);
+    font-size: var(--font-size-sm);
   }
 
   // =============================================
@@ -574,7 +574,7 @@ const handleFormUpdate = (value) => {
 .permission-preview {
   .preview-title {
     font-size: var(--font-size-base);
-    color: var(--el-text-color-regular);
+    color: var(--text-secondary);
     margin-bottom: var(--spacing-small);
   }
 
@@ -599,6 +599,6 @@ const handleFormUpdate = (value) => {
 
 :deep(.el-divider__text) {
   font-weight: 500;
-  color: var(--el-color-primary);
+  color: var(--primary-color);
 }
 </style>

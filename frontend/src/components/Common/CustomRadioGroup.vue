@@ -358,7 +358,7 @@ watch(() => props.options, () => {
 
       .radio-text {
         margin-left: var(--spacing-small);
-        color: var(--el-text-color-regular);
+        color: var(--text-secondary);
         font-size: inherit;
         line-height: 1;
       }

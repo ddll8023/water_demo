@@ -2,171 +2,175 @@
 // ----------------------------------------------------------------
 // 规范：组件的主题样式必须优先考虑本文件定义的项目通用主题。
 // 基于index.html设计的标准化颜色系统
+//
 
 // ==================== 标准颜色系统 ====================
 :root {
-  // 主色调系统（来自index.html标准设计）
+  // ==================== 基础色系统（品牌主色调）====================
+  // 主色调 - 项目品牌色，用于主要操作按钮、链接、选中状态
   --primary-color: #165DFF;
-  --primary-light: #4080FF;
-  --primary-lighter: #7AA3FF;
-  --primary-dark: #0E4FCC;
-  --primary-hover: #a0cfff;
-  --primary-bg-light: #ecf5ff;
+  --primary-light: #4080FF; // 浅色变体，用于悬停状态
+  --primary-lighter: #7AA3FF; // 更浅变体，用于渐变和背景
+  --primary-dark: #0E4FCC; // 深色变体，用于按下状态
+  --primary-hover: #a0cfff; // 悬停色，用于交互反馈
+  --primary-bg-light: #ecf5ff; // 浅背景色，用于区域背景
+  --primary-light-9: #f0f9ff; // 极浅背景色，用于状态提示
 
-  // Element Plus 兼容主题色（跨组件复用）
-  --el-color-primary: #409eff;
-  --el-color-primary-light-3: #66b1ff;
-
-  // 功能色系（来自index.html标准设计）
-  --secondary-color: #6B7280;
+  // ==================== 功能色系统（语义化状态色）====================
+  // 成功色 - 用于成功状态、确认操作、正常运行状态
   --success-color: #00B42A;
+
+  // 警告色 - 用于警告状态、注意事项、待处理状态
   --warning-color: #FF7D00;
-  --warning-light-color: #ffc766;
-  --warning-bg-color: #fff7e6;
-  --warning-dark-color: #d98200;
+  --warning-light-color: #ffc766; // 浅色警告，用于背景
+  --warning-bg-color: #fff7e6; // 警告背景色
+  --warning-dark-color: #d98200; // 深色警告，用于边框
+
+  // 危险色 - 用于错误状态、删除操作、故障状态
   --danger-color: #F53F3F;
-  --danger-dark: #E53E3E;
-  --danger-bg-light: #fef0f0;
+  --danger-dark: #E53E3E; // 深色危险，用于按下状态
+  --danger-bg-light: #fef0f0; // 危险背景色
+
+  // 信息色 - 用于提示信息、辅助说明、中性状态
   --info-color: #6B7280;
 
-  // 中性色系（来自index.html标准设计）
-  --neutral-color: #F2F3F5;
-  --neutral-dark: #E5E6EB;
+  // ==================== 中性色系统（文本、边框、背景）====================
+  // 文本色阶 - 用于不同层级的文本内容
+  --text-primary: #1D2129; // 主要文本，标题、重要内容
+  --text-secondary: #4E5969; // 次要文本，描述、说明
+  --text-tertiary: #86909C; // 三级文本，提示、辅助信息
+  --text-disabled: #C0C4CC; // 禁用文本
+  --text-placeholder: #C0C4CC; // 占位符文本
 
-  // 文本色系（来自index.html标准设计）
-  --text-primary: #1D2129;
-  --text-secondary: #4E5969;
-  --text-tertiary: #86909C;
-  --text-disabled: #C0C4CC;
-  --text-placeholder: #C0C4CC;
+  // 边框色阶 - 用于组件边框、分割线
+  --border-color: #C9CDD4; // 标准边框色
+  --border-light: #EBEEF5; // 浅色边框
+  --border-color-light: #E4E7ED; // 轻量边框
+  --border-color-lighter: #EBEEF5; // 更轻边框
+  --border-color-extra-light: #F2F6FC; // 极轻边框
+  --border-dark: #434a50; // 深色边框（深色主题用）
 
-  // Element Plus 兼容文本色（跨组件复用）
-  --el-text-color-primary: #303133;
-  --el-text-color-regular: #606266;
+  // 背景色阶 - 用于页面和组件背景
+  --bg-primary: #FFFFFF; // 主背景色，卡片、弹窗
+  --bg-secondary: #F2F3F5; // 次背景色，页面背景
+  --bg-tertiary: #FAFAFA; // 三级背景色，区域划分
+  --bg-disabled: #f5f7fa; // 禁用背景色
+  --bg-dark-secondary: #304156; // 深色次背景（深色主题用）
 
-  // 边框色系（来自index.html标准设计）
-  --border-color: #C9CDD4;
-  --border-light: #EBEEF5;
-  --border-color-light: #E4E7ED;
-  --border-color-lighter: #EBEEF5;
-  --border-color-extra-light: #F2F6FC;
+  // ==================== 透明度色系统（用于遮罩、玻璃效果）====================
+  // 黑色透明度系列 - 用于遮罩、阴影、边框
+  --black-transparent-light: rgba(0, 0, 0, 0.04); // 极轻遮罩
+  --black-transparent-thin: rgba(0, 0, 0, 0.06); // 薄遮罩
+  --black-transparent-light-10: rgba(0, 0, 0, 0.1); // 轻遮罩
+  --black-transparent-medium: rgba(0, 0, 0, 0.15); // 中等遮罩
+  --black-transparent-strong: rgba(0, 0, 0, 0.25); // 强遮罩
+  --black-transparent-heavy: rgba(0, 0, 0, 0.8); // 重遮罩
+  --black-transparent-overlay: rgba(0, 0, 0, 0.3); // 弹窗遮罩
 
-  // 深色边框系列
-  --border-dark: #434a50;
+  // 白色透明度系列 - 用于玻璃效果、高亮、面板
+  --white-transparent-light: rgba(255, 255, 255, 0.1); // 轻透明白
+  --white-transparent-base: rgba(255, 255, 255, 0.2); // 标准透明白
+  --white-transparent-medium: rgba(255, 255, 255, 0.3); // 中等透明白
+  --white-transparent-active: rgba(255, 255, 255, 0.4); // 激活透明白
+  --white-transparent-strong: rgba(255, 255, 255, 0.8); // 强透明白
+  --white-transparent-strong-90: rgba(255, 255, 255, 0.9); // 极强透明白
+  --white-transparent-full: rgba(255, 255, 255, 0.95); // 接近不透明白
 
-  // 背景色系（来自index.html标准设计）
-  --bg-primary: #FFFFFF;
-  --bg-secondary: #F2F3F5;
-  --bg-tertiary: #FAFAFA;
-  --bg-disabled: #f5f7fa;
+  // 主色透明度系列 - 用于主色相关的半透明效果
+  --primary-transparent-light: rgba(22, 93, 255, 0.1); // 主色浅透明
+  --primary-transparent-medium: rgba(22, 93, 255, 0.3); // 主色中透明
 
-  // 深色背景系列
-  --bg-dark-primary: #2b2f3a;
-  --bg-dark-secondary: #304156;
+  // ==================== 状态色系统（交互状态专用）====================
+  // 悬停状态背景色
+  --hover-bg-light: #f0f9ff; // 浅蓝色悬停背景（系统管理通用）
+  --hover-border-light: #b3d8ff; // 浅蓝色悬停边框（系统管理通用）
+  --status-normal-bg: #f0f9ff; // 正常状态背景
 
-  // ==================== 向后兼容性变量 ====================
-  // 保持旧版本变量的兼容性，避免破坏现有代码
-  // 文本颜色兼容
-  --text-color-primary: var(--text-primary);
-  --text-color-regular: var(--text-secondary);
-  --text-color-secondary: var(--text-tertiary);
-  --text-placeholder: var(--text-placeholder);
+  // 深色背景上的颜色（深色主题专用）
+  --text-on-dark: #ffffff; // 深色背景主文本
+  --text-on-dark-secondary: rgba(255, 255, 255, 0.8); // 深色背景次文本
+  --icon-color-on-dark: #bfcbd9; // 深色背景图标色
 
-  // 背景颜色兼容
-  --background-color-white: var(--bg-primary);
-  --background-color-base: var(--bg-secondary);
-  --background-color-light: var(--bg-tertiary);
+  // 玻璃面板专用变量（结合透明度系统）
+  --glass-panel-bg: var(--white-transparent-full); // 玻璃面板背景
+  --glass-panel-border: var(--white-transparent-base); // 玻璃面板边框
+
 }
 
-// ==================== SCSS变量（用于计算和混入）====================
-// 标准颜色系统的SCSS变量版本
-$primary-color: #165DFF;
-$secondary-color: #6B7280;
-$success-color: #00B42A;
-$warning-color: #FF7D00;
-$danger-color: #F53F3F;
-$info-color: #6B7280;
+// ==================== 深色主题颜色系统 ====================
+[data-theme="dark"] {
+  // 深色主题边框色重写
+  --border-primary: #4c4d4f;
+  --border-secondary: #4c4d4f;
+  --border-tertiary: #4c4d4f;
 
-// 中性色系
-$neutral-color: #F2F3F5;
-$neutral-dark: #E5E6EB;
+  // 深色主题背景色重写
+  --bg-primary: #1d1e1f; // 深色主背景
+  --bg-secondary: #0a0a0a; // 深色次背景
+  --bg-tertiary: #0a0a0a; // 深色三级背景
 
-// 文本色系
-$text-primary: #1D2129;
-$text-secondary: #4E5969;
-$text-tertiary: #86909C;
-
-// 边框色系
-$border-color: #C9CDD4;
-
-// 背景色系
-$bg-primary: #FFFFFF;
-$bg-secondary: #F2F3F5;
-$bg-tertiary: #FAFAFA;
+  // 深色主题文本色重写
+  --text-primary: #e5eaf3; // 深色主文本
+  --text-regular: #cfd3dc; // 深色常规文本
+  --text-secondary: #a3a6ad; // 深色次文本
+  --text-placeholder: #6c6e72; // 深色占位符文本
+}
 
 // ==================== 字体系统 ====================
 :root {
-  // 字体族
+  // ==================== 字体族系统 ====================
   --font-family-base: 'PingFang SC', 'Helvetica Neue', Helvetica, 'Microsoft YaHei', Arial, sans-serif;
   --font-family-number: 'Roboto Mono', 'SF Mono', Monaco, 'Cascadia Code', monospace;
 
-  // 字号规范
-  --font-size-extra-large: 20px;
-  --font-size-large: 18px;
-  --font-size-medium: 16px;
-  --font-size-base: 14px;
-  --font-size-small: 13px;
-  --font-size-extra-small: 12px;
-  --font-size-mini: 11px;
-  --font-size-micro: 10px;
+  // ==================== 基础字号规范（常用尺寸，按从小到大排序）====================
+  --font-size-extra-small: 10px; // 极小字号 - 提示文字、辅助信息
+  --font-size-sm: 12px; // 小字号 - 辅助文本、表格数据、状态标签
+  --font-size-base: 14px; // 基础字号 - 正文内容、按钮文字、表单输入
+  --font-size-lg: 18px; // 大字号 - 页面副标题、重要提示
+  --font-size-xl: 20px; // 超大字号 - 页面主标题、重要数值
+  --font-size-xxl: 24px; // 巨大字号 - 页面主标题、关键数据展示
 
-  // 补充缺失的字号变量（用于替换硬编码值）
-  --font-size-xl: 24px; // 对应原来的 font-size: 24px
-  --font-size-lg: 20px; // 对应原来的 font-size: 20px  
-  --font-size-sm: 14px; // 对应原来的 font-size: 14px
-  --font-size-notice-icon: 64px; // 提示页面图标字体大小（多组件复用）
+  // ==================== 扩展字号规范（特殊用途）====================
+  --font-size-extra-large: 28px; // 超大字号 - 大标题显示
+  --font-size-micro: 8px; // 微型字号 - 图表标注、极小标签
+  --font-size-mini: 9px; // 迷你字号 - 图表刻度、细节标注
+  --font-size-small: 11px; // 小号字号 - 次要信息、辅助标签
+  --font-size-medium: 15px; // 中号字号 - 强调文本、按钮加强版
+  --font-size-large: 32px; // 大号字号 - 关键指标、统计数字
 
-  // 字重规范
-  --font-weight-light: 300;
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-  --font-weight-bold: 600;
-  --font-weight-primary: 500;
+  // ==================== 特殊用途字号（页面专用）====================
+  --font-size-icon-notice: 64px; // 提示页面图标字体大小
 
-  // 补充缺失的字重变量（用于替换硬编码值）
-  --font-weight-semibold: 600; // 对应原来的 font-weight: 600
+  // ==================== 字重规范（按数值从轻到重排序）====================
+  --font-weight-normal: 400; // 常规 - 正文内容、默认文本
+  --font-weight-medium: 500; // 中等 - 重要内容、强调文本
+  --font-weight-semibold: 600; // 半粗体 - 标题、关键信息
+  --font-weight-bold: 700; // 粗体 - 主标题、强调标题
 
-  // 行高规范
-  --line-height-base: 1.5;
-  --line-height-small: 1.4;
-  --line-height-large: 1.6;
+  // ==================== 行高规范（基于字号的相对行高）====================
+  --line-height-small: 1.4; // 小行高 - 小字号内容、紧密排版
+  --line-height-base: 1.5; // 基础行高 - 正文内容、标准排版
+  --line-height-large: 1.6; // 大行高 - 长文本、易读性优先
 }
 
 // ==================== 间距系统 ====================
 :root {
   // 间距变量
-  --spacing-1: 1px;
   --spacing-micro: 2px;
-  --spacing-3: 3px;
   --spacing-mini: 4px;
-  --spacing-5: 5px;
   --spacing-xs: 6px;
   --spacing-small: 8px;
   --spacing-sm: 10px;
   --spacing-medium: 12px;
-  --spacing-15: 15px;
   --spacing-base: 16px;
   --spacing-large: 20px;
   --spacing-extra-large: 24px;
 
-  // 补充缺失的间距变量（用于替换硬编码值）
-  --spacing-2: 8px; // 对应原来的 gap: 8px
-  --spacing-4: 20px; // 对应原来的 padding: 20px
+  // 特殊用途间距变量
   --spacing-40: 40px; // 用于开发中提示区域的上边距（多组件复用）
 
   // 组件间距
   --component-margin-bottom: 16px;
-  --form-item-margin-bottom: 18px;
   --form-item-margin-bottom-large: 22px; // 表单项大间距（跨组件复用）
   --card-padding: 20px;
 
@@ -176,256 +180,126 @@ $bg-tertiary: #FAFAFA;
   --padding-legend-item-mobile: var(--spacing-small) var(--spacing-sm); // 移动端图例项内边距（8px 10px）
 }
 
-// SCSS间距变量（从CSS变量映射，避免重复定义）
-$spacing-mini: var(--spacing-mini);
-$spacing-small: var(--spacing-small);
-$spacing-medium: var(--spacing-medium);
-$spacing-base: var(--spacing-base);
-$spacing-large: var(--spacing-large);
-$spacing-extra-large: var(--spacing-extra-large);
+
 
 // ==================== 布局系统 ====================
-:root {
-  // 布局尺寸
-  --header-height: 60px;
-  --sidebar-width: 200px;
-  --sidebar-collapsed-width: 64px;
-  --main-content-padding: 20px;
 
-  // 面板尺寸规范（跨组件复用）
+// ==================== 尺寸规范系统 ====================
+:root {
+  // ==================== 基础布局尺寸 ====================
+  --header-height: 60px; // 应用头部高度
+  --sidebar-width: 200px; // 侧边栏展开宽度
+  --sidebar-collapsed-width: 64px; // 侧边栏折叠宽度
+  --main-content-padding: 20px; // 主内容区内边距
+
+  // ==================== 面板尺寸规范 ====================
   --panel-width-default: 320px; // 默认面板宽度
   --panel-height-default: 600px; // 默认面板高度
   --panel-min-width-collapsed: 200px; // 面板折叠状态最小宽度
 
-  // 边界距离规范（跨组件复用）  
-  --boundary-edge-distance: 50px; // 边界边缘距离
-
-  // 圆角规范
-  --border-radius-small: 2px;
-  --border-radius-base: 4px;
-  --border-radius-md: 6px;
-  --border-radius-large: 8px;
-  --border-radius-xl: 12px;
-  --border-radius-pill: 25px;
-  --border-radius-round: 50%;
-
-  // 补充缺失的圆角变量
-  --border-radius-feature-tag: 16px; // 功能标签圆角（多组件复用）
-
-  // 阴影规范
-  --box-shadow-light: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
-  --box-shadow-base: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.12);
-  --box-shadow-dark: 0 4px 8px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.12);
-
-  // 补充缺失的阴影变量（用于替换硬编码值）
-  --shadow-md: 0 2px 12px 0 rgba(0, 0, 0, 0.1); // 对应原来的 box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1)
-
-  // 边框宽度规范
-  --border-width-thin: 1px;
-  --border-width-normal: 2px;
-
-  // 表格布局专用变量
+  // ==================== 表格和卡片布局 ====================
   --table-header-height: 60px; // 表格头部高度
-  --table-max-content-height: 560px; // 表格内容区域最大高度（表头60px + 10行数据500px）
+  --table-row-height: 48px; // 表格行高度
   --pagination-container-height: 60px; // 分页容器高度
   --card-header-height: 60px; // 卡片头部高度
-  --card-content-padding: 20px; // 卡片内容padding
+
+  // ==================== 表单组件尺寸 ====================
+  --form-label-width-standard: 70px; // 标准搜索表单标签宽度
+  --form-label-width-search: 80px; // 搜索表单标签宽度
+  --form-label-width-compact: 60px; // 紧凑表单标签宽度
+  --form-label-width-detail: 100px; // 详细表单标签宽度
+  --form-item-height: 40px; // 表单项高度
+
+  // ==================== 按钮组件尺寸 ====================
+  --button-size-small: 28px; // 小按钮高度
+  --button-min-width: 80px; // 按钮最小宽度
+
+  // ==================== 图标组件尺寸 ====================
+  --icon-size-md: 16px; // 中等图标
+  --icon-size-xxl: 48px; // 超大图标
+
+  // ==================== 页面布局尺寸 ====================
+  --page-min-height-offset: 200px; // 页面最小高度偏移
 }
 
-// SCSS布局变量（从CSS变量映射，避免重复定义）
-$header-height: var(--header-height);
-$sidebar-width: var(--sidebar-width);
-$sidebar-collapsed-width: var(--sidebar-collapsed-width);
-
-// ==================== 响应式断点 ====================
-$breakpoint-xs: 480px;
-$breakpoint-sm: 768px;
-$breakpoint-md: 992px;
-$breakpoint-lg: 1200px;
-$breakpoint-xl: 1920px;
-
-// ==================== Z-index层级 ====================
+// ==================== 视觉样式系统 ====================
 :root {
-  // 基础层级
-  --z-index-base: 1;
+  // ==================== 圆角规范 ====================
+  --border-radius-small: 2px; // 小圆角 - 按钮、输入框细节
+  --border-radius-base: 4px; // 基础圆角 - 按钮、卡片、输入框
+  --border-radius-md: 6px; // 中等圆角 - 卡片区块
+  --border-radius-large: 8px; // 大圆角 - 面板、对话框
+  --border-radius-xl: 12px; // 超大圆角 - 大型面板
+  --border-radius-feature-tag: 16px; // 功能标签圆角
+  --border-radius-round: 50%; // 圆形 - 头像、指示器
 
-  // UI组件层级
-  --z-index-dropdown: 1000;
-  --z-index-sticky: 1020;
-  --z-index-fixed: 1030;
-  --z-index-modal-backdrop: 1040;
-  --z-index-modal: 1050;
-  --z-index-popover: 1060;
-  --z-index-tooltip: 1070;
+  // ==================== 阴影规范 ====================
+  --box-shadow-light: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04); // 轻量阴影
+  --shadow-md: 0 2px 12px 0 rgba(0, 0, 0, 0.1); // 中等阴影 - 卡片、面板
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.1); // 卡片阴影
+  --shadow-hover-button: 0 4px 12px rgba(0, 0, 0, 0.15); // 按钮悬停阴影
 
-  // 顶层元素
-  --z-index-notification: 2000;
-  --z-index-loading: 9999;
+  // ==================== 边框宽度规范 ====================
+  --border-width-thin: 1px; // 细边框 - 默认边框
+  --border-width-normal: 2px; // 标准边框 - 强调边框
 }
 
-// ==================== 过渡动画 ====================
+// ==================== 层级管理系统（Z-Index） ====================
 :root {
-  // 基础过渡时间
-  --transition-duration-base: 0.3s;
-  --transition-duration-fast: 0.2s;
-  --transition-duration-slow: 0.5s;
-  --transition-duration-micro: 0.08s;
-  --transition-duration-instant: 0.1s;
+  // ==================== 基础UI层级 ====================
+  --z-index-base: 1; // 基础层级
+  --z-index-dropdown: 1000; // 下拉菜单层级
+  --z-index-sticky: 1020; // 粘性定位层级
+  --z-index-fixed: 1030; // 固定定位层级
+  --z-index-modal-backdrop: 1040; // 模态框背景层级
 
-  // 过渡函数
-  --transition-timing-function: ease;
-  --transition-timing-function-ease-in: ease-in;
-  --transition-timing-function-ease-out: ease-out;
+  // ==================== 交互组件层级 ====================
+  --z-index-tooltip: 1050; // 工具提示层级
+  --z-index-popover: 1060; // 气泡弹出层级
 
-  // 完整过渡组合（保持向后兼容）
-  --transition-base: all 0.3s ease;
-  --transition-fast: all 0.2s ease;
-  --transition-slow: all 0.5s ease;
+  // ==================== 地图专用层级 ====================
+  --z-index-map-marker: 100; // 地图标记基础层级
+  --z-index-map-marker-hover: 150; // 地图标记悬停层级
+  --z-index-map-marker-selected: 200; // 地图标记选中层级
+}
 
-  // 专用过渡组合
-  --transition-transform: transform var(--transition-duration-base) var(--transition-timing-function);
-  --transition-opacity: opacity var(--transition-duration-fast) var(--transition-timing-function);
-  --transition-all-fast: all var(--transition-duration-fast) var(--transition-timing-function);
+
+
+// ==================== 响应式系统 ====================
+// 注意：这些SCSS变量被mixins.scss的响应式混入和组件直接使用，不能删除
+// 用途：@include respond-to($breakpoint) 混入函数和组件样式计算
+$breakpoint-xs: 480px; // 超小屏幕断点 - 手机竖屏
+$breakpoint-sm: 768px; // 小屏幕断点 - 手机横屏/平板竖屏  
+$breakpoint-md: 992px; // 中等屏幕断点 - 平板横屏
+$breakpoint-lg: 1200px; // 大屏幕断点 - 桌面显示器
+$breakpoint-xl: 1920px; // 超大屏幕断点 - 大屏显示器
+
+// ==================== 动画过渡系统 ====================
+:root {
+  // ==================== 基础过渡时间 ====================
+  --transition-duration-base: 0.3s; // 标准过渡时间
+  --transition-duration-fast: 0.2s; // 快速过渡时间
+
+  // ==================== 过渡缓动函数 ====================
+  --transition-timing-function: ease; // 标准缓动函数
+
+  // ==================== 完整过渡组合 ====================
+  --transition-base: all 0.3s ease; // 标准过渡组合
+  --transition-fast: all 0.2s ease; // 快速过渡组合
+  --transition-all-fast: all var(--transition-duration-fast) var(--transition-timing-function); // 快速过渡变体
+
+  // ==================== 专用过渡组合 ====================
+  --transition-opacity: opacity var(--transition-duration-fast) var(--transition-timing-function); // 透明度过渡
+  --transition-transform: transform var(--transition-duration-fast) var(--transition-timing-function); // 变换过渡
 
   // ==================== 毛玻璃弹窗动画变量 ====================
-  // 毛玻璃模糊效果参数
-  --glass-blur-start: 0px;
-  --glass-blur-popup: 18px;
-  --glass-blur-panel: 12px;
+  --glass-blur-start: 0px; // 毛玻璃起始模糊度
+  --glass-blur-popup: 18px; // 弹窗毛玻璃模糊度
+  --glass-blur-panel: 12px; // 面板毛玻璃模糊度
 
-  // 弹窗变换参数
-  --popup-scale-start: 0.95;
-  --popup-translate-y-start: -4px;
-  --panel-scale-start: 0.9;
-  --panel-translate-y-start: 20px;
-}
+  // ==================== 弹窗动画参数 ====================
+  --popup-scale-start: 0.95; // 弹窗起始缩放比例
 
-// ==================== 通用布局补充变量 ====================
-:root {
-  // 布局背景色补充（与layout.scss兼容）
-  --bg-color: var(--bg-primary);
-  --bg-color-page: var(--bg-secondary);
-
-  // 通用交互效果变量（跨组件复用）
-  --hover-transform-y: -2px; // 标准悬停变换距离
+  // ==================== 交互动画参数 ====================
   --hover-transform-y-small: -1px; // 小幅悬停变换距离
-
-  // 通用对话框和布局尺寸变量（跨组件复用）
-  --dialog-width-default: 500px; // 默认对话框宽度
-
-  // 通用图标规范变量
-  --icon-size-xs: 12px; // 超小图标
-  --icon-size-sm: 14px; // 小图标
-  --icon-size-md: 16px; // 中等图标
-  --icon-size-lg: 20px; // 大图标
-  --icon-size-xl: 24px; // 超大图标
-  --icon-size-xxxl: 28px; // 页面主标题图标
-  --icon-size-xxl: 48px; // 巨大图标
-
-  // 按钮和容器尺寸变量
-  --button-size-small: 28px; // 小按钮尺寸
-  --button-min-width: 80px; // 标准按钮最小宽度
-  --icon-container-size: 36px; // 图标容器尺寸
-
-  // 通用卡片阴影层级
-  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.1);
-  --shadow-card-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
-  --shadow-hover-button: 0 4px 8px rgba(0, 0, 0, 0.1); // 按钮悬停阴影
-  --shadow-popup: 0 6px 20px rgba(0, 0, 0, 0.15);
-
-  // 扩展阴影系统（跨组件复用）
-  --shadow-drag: 0 12px 48px var(--black-transparent-strong);
-  --shadow-collapsed: 0 4px 16px var(--black-transparent-light-10);
-  --shadow-card-light: 0 1px 3px var(--black-transparent-thin);
-  --shadow-card-medium: 0 2px 6px var(--black-transparent-light-10);
-  --shadow-card-strong: 0 2px 8px var(--primary-transparent-medium);
-  --shadow-primary-light: 0 4px 12px rgba(22, 93, 255, 0.15);
-
-  // 通用尺寸
-  --table-row-height: 48px; // 表格行高
-  --form-item-height: 40px; // 表单项高度
-  --search-form-min-height: 60px; // 搜索表单最小高度
-  --panel-content-min-height: 300px; // 面板内容最小高度
-
-  // 表单标签宽度规范（跨组件复用）
-  --form-label-width-compact: 50px; // 紧凑表单
-  --form-label-width-search: 60px; // 搜索表单  
-  --form-label-width-standard: 70px; // 标准搜索表单
-  --form-label-width-form: 100px; // 中等表单
-  --form-label-width-detail: 120px; // 详细表单
-
-  // 缩略图尺寸
-  --thumbnail-width: 60px; // 缩略图宽度
-  --thumbnail-height: 40px; // 缩略图高度
-
-  // 页面最小高度偏移（用于替代硬编码的 200px）
-  --page-min-height-offset: 200px;
-
-  // ==================== 透明度相关颜色 ====================
-  // 通用透明度系统
-  --opacity-medium: 0.7; // 中等透明度
-  --opacity-high: 0.8; // 高透明度
-
-  // 模糊度系统
-  --blur-light: 8px; // 轻度模糊
-  --blur-medium: 10px; // 中等模糊
-
-  // 黑色透明度系列
-  --black-transparent-light: rgba(0, 0, 0, 0.04);
-  --black-transparent-xxlight: rgba(0, 0, 0, 0.05);
-  --black-transparent-thin: rgba(0, 0, 0, 0.06);
-  --black-transparent-light-10: rgba(0, 0, 0, 0.1);
-  --black-transparent-base: rgba(0, 0, 0, 0.12);
-  --black-transparent-medium: rgba(0, 0, 0, 0.15);
-  --black-transparent-light-20: rgba(0, 0, 0, 0.2);
-  --black-transparent-strong: rgba(0, 0, 0, 0.25);
-  --black-transparent-heavy: rgba(0, 0, 0, 0.8);
-
-  // 白色透明度系列
-  --white-transparent-light: rgba(255, 255, 255, 0.1);
-  --white-transparent-base: rgba(255, 255, 255, 0.2);
-  --white-transparent-medium: rgba(255, 255, 255, 0.3);
-  --white-transparent-active: rgba(255, 255, 255, 0.4);
-  --white-transparent-strong: rgba(255, 255, 255, 0.8);
-  --white-transparent-strong-90: rgba(255, 255, 255, 0.9);
-  --white-transparent-full: rgba(255, 255, 255, 0.95);
-
-  // Primary颜色透明度系列
-  --primary-transparent-light: rgba(22, 93, 255, 0.1);
-  --primary-transparent-medium: rgba(22, 93, 255, 0.3);
-
-  // 玻璃面板通用变量
-  --glass-panel-bg: var(--white-transparent-full);
-  --glass-panel-border: var(--white-transparent-base);
-
-  // 遮罩层透明度变量
-  --black-transparent-overlay: rgba(0, 0, 0, 0.3);
-
-  // 深色背景上的文本颜色
-  --text-on-dark: #ffffff;
-  --text-on-dark-secondary: rgba(255, 255, 255, 0.8);
-
-  // 深色背景上的图标颜色
-  --icon-color-on-dark: #bfcbd9;
-
-  // 状态背景颜色（跨组件复用）
-  --status-normal-bg: #f0f9ff;
-  --hover-bg-light: #f0f9ff; // 浅蓝色悬停背景（系统管理组件通用）
-  --hover-border-light: #b3d8ff; // 浅蓝色悬停边框（系统管理组件通用）
-}
-
-// ==================== 布局特定变量（从 layout.scss 合并）====================
-
-// 暗色主题变量（从 layout.scss 合并）
-[data-theme="dark"] {
-  --border-primary: #4c4d4f;
-  --border-secondary: #4c4d4f;
-  --border-tertiary: #4c4d4f;
-  --bg-primary: #1d1e1f;
-  --bg-secondary: #0a0a0a;
-  --bg-tertiary: #0a0a0a;
-  --text-primary: #e5eaf3;
-  --text-regular: #cfd3dc;
-  --text-secondary: #a3a6ad;
-  --text-placeholder: #6c6e72;
 }

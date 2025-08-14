@@ -155,7 +155,7 @@
 
 // ==================== 卡片混入 ====================
 @mixin card-style($padding: var(--card-padding), $radius: var(--border-radius-base)) {
-  background: var(--background-color-white);
+  background: var(--bg-primary);
   border-radius: $radius;
   box-shadow: var(--box-shadow-light);
   padding: $padding;

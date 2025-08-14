@@ -276,7 +276,7 @@ onMounted(() => {
 
       .login-title {
         font-size: var(--font-size-extra-large);
-        color: var(--el-text-color-primary);
+        color: var(--text-primary);
         font-weight: var(--font-weight-medium);
         margin: 0 0 var(--spacing-xs) 0;
         line-height: var(--line-height-small);
@@ -300,7 +300,7 @@ onMounted(() => {
         margin-bottom: var(--spacing-xs);
 
         .el-checkbox {
-          color: var(--el-text-color-regular);
+          color: var(--text-secondary);
         }
       }
 

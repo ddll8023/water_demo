@@ -1507,7 +1507,6 @@ const getValidationRules = () => {
  * ----------------------------------------
  */
 .engineering-service {
-  padding: var(--spacing-large);
   background-color: var(--bg-secondary);
   min-height: calc(100vh - var(--header-height));
 

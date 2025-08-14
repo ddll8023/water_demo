@@ -695,13 +695,13 @@ const handleCurrentChange = (page) => {
           }
 
           .type-code {
-            font-size: var(--font-size-extra-small);
+            font-size: var(--font-size-sm);
             color: var(--text-tertiary);
             margin-bottom: var(--spacing-micro);
           }
 
           .type-count {
-            font-size: var(--font-size-extra-small);
+            font-size: var(--font-size-sm);
             color: var(--primary-color);
           }
         }

@@ -95,7 +95,7 @@ onUnmounted(() => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: var(--card-padding);
   position: relative;
   overflow: hidden;
 
@@ -142,7 +142,7 @@ onUnmounted(() => {
 
       .error-description {
         font-size: var(--font-size-medium);
-        color: var(--el-text-color-regular);
+        color: var(--text-secondary);
         margin-bottom: var(--spacing-large);
         line-height: var(--line-height-large);
       }

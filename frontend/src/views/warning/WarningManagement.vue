@@ -56,7 +56,6 @@ const handleTabChange = (tabName) => {
  * ----------------------------------------
  */
 .warning-management {
-  padding: var(--spacing-large);
   background-color: var(--bg-secondary);
   min-height: calc(100vh - var(--header-height));
 

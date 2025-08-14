@@ -51,7 +51,6 @@ const loading = ref(false)
 // 页面整体布局
 // ===========================
 .resource-management {
-  padding: 20px;
   background-color: #f5f5f5;
   min-height: calc(100vh - var(--header-height));
 
@@ -78,11 +77,11 @@ const loading = ref(false)
     display: flex;
     align-items: center;
     gap: 24px;
-    padding: 20px;
+    padding: var(--card-padding);
   }
 
   .notice-icon {
-    font-size: var(--font-size-notice-icon);
+    font-size: var(--font-size-icon-notice);
     color: #409eff;
     opacity: var(--opacity-high);
   }
