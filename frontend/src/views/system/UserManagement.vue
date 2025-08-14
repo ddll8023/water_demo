@@ -243,7 +243,7 @@ const searchFields = computed(() => [
     type: 'input',
     placeholder: '请输入用户名',
     span: 4,
-    labelWidth: '60px'
+    labelWidth: 'var(--form-label-width-search)'
   },
   {
     prop: 'roleId',
@@ -255,7 +255,7 @@ const searchFields = computed(() => [
       label: role.name,
       value: role.id
     })) || [],
-    labelWidth: '40px'
+    labelWidth: 'var(--form-label-width-compact)'
   },
   {
     prop: 'isActive',
@@ -265,7 +265,7 @@ const searchFields = computed(() => [
     clearable: true,
     span: 4,
     options: userStatusOptions.value,
-    labelWidth: '40px'
+    labelWidth: 'var(--form-label-width-compact)'
   }
 ])
 
@@ -620,14 +620,16 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 /**
  * 页面主布局样式
  * -------------------------------------------------------
  */
 .user-management {
-  padding: 20px;
+  padding: var(--spacing-large);
   background: var(--el-bg-color-page);
-  height: calc(100vh - 60px);
+  height: calc(100vh - var(--header-height));
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -637,7 +639,7 @@ onMounted(async () => {
   // 表格区域样式
   .table-section {
     background: var(--bg-primary);
-    border-radius: 8px;
+    border-radius: var(--border-radius-large);
     overflow: hidden;
     flex: 1;
     display: flex;
@@ -647,7 +649,7 @@ onMounted(async () => {
   // 操作按钮样式
   .action-buttons {
     display: flex;
-    gap: 6px;
+    gap: var(--spacing-xs);
     flex-wrap: nowrap;
     justify-content: center; // 居中对齐，更美观
     align-items: center;
@@ -657,12 +659,12 @@ onMounted(async () => {
     .custom-button {
       min-width: 56px; // 稍微减小最小宽度
       padding: 5px 10px; // 减小内边距
-      font-size: 12px; // 稍微减小字体
+      font-size: var(--font-size-extra-small); // 稍微减小字体
       flex: 0 0 auto; // 不允许伸缩，保持固定尺寸
-      border-radius: 4px; // 圆角
+      border-radius: var(--border-radius-base); // 圆角
 
       &.custom-button--small {
-        height: 28px;
+        height: var(--button-size-small);
         line-height: 1;
       }
     }
@@ -671,7 +673,7 @@ onMounted(async () => {
   // 用户表单样式
   .el-form {
     .el-form-item {
-      margin-bottom: 22px;
+      margin-bottom: var(--form-item-margin-bottom-large);
     }
 
     .el-input,
@@ -681,7 +683,7 @@ onMounted(async () => {
 
     .el-radio-group {
       .el-radio {
-        margin-right: 20px;
+        margin-right: var(--spacing-large);
       }
     }
   }
@@ -689,40 +691,36 @@ onMounted(async () => {
   // 角色分配样式
   .role-assignment {
     .assignment-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 0;
+      @include flex-between;
+      padding: var(--spacing-base) 0;
       border-bottom: 1px solid var(--el-border-color-light);
-      margin-bottom: 20px;
+      margin-bottom: var(--spacing-large);
 
       .user-info {
-        display: flex;
-        align-items: center;
-        gap: 12px;
+        @include flex-center-y;
+        gap: var(--spacing-medium);
 
         .user-desc {
-          font-size: 14px;
+          font-size: var(--font-size-base);
           color: var(--el-text-color-secondary);
         }
       }
 
       .role-stats {
-        font-size: 14px;
+        font-size: var(--font-size-base);
         color: var(--el-text-color-secondary);
       }
     }
 
     .assignment-content {
-      margin-bottom: 20px;
+      margin-bottom: var(--spacing-large);
 
       .role-name {
-        display: flex;
-        align-items: center;
-        gap: 8px;
+        @include flex-center-y;
+        gap: var(--spacing-small);
 
         .status-tag {
-          margin-left: 8px;
+          margin-left: var(--spacing-small);
         }
       }
     }

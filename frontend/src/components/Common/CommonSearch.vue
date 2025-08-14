@@ -8,7 +8,8 @@
           :xs="singleRow ? 24 : 12" :sm="singleRow ? getColumnSpan(item) : 8" :md="singleRow ? getColumnSpan(item) : 6"
           :lg="singleRow ? getColumnSpan(item) : 4" :xl="singleRow ? getColumnSpan(item) : 4">
           <el-form-item :label="item.label" :prop="item.prop"
-            :label-width="singleRow ? (item.labelWidth || '70px') : (item.labelWidth || '50px')" class="search-item">
+            :label-width="singleRow ? (item.labelWidth || 'var(--form-label-width-standard)') : (item.labelWidth || 'var(--form-label-width-compact)')"
+            class="search-item">
             <!-- 输入框 -->
             <CustomInput v-if="item.type === 'input' || !item.type" v-model="searchData[item.prop]"
               :placeholder="item.placeholder || `请输入${item.label}`" :clearable="item.clearable !== false"

@@ -43,10 +43,12 @@ const loading = ref(false)
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 .region-management {
-  padding: 20px;
-  background-color: #f5f5f5;
-  min-height: calc(100vh - 60px);
+  padding: var(--spacing-large);
+  background-color: var(--bg-secondary);
+  min-height: calc(100vh - var(--header-height));
 
   /**
    * ===================================
@@ -54,29 +56,26 @@ const loading = ref(false)
    * ===================================
    */
   .development-notice {
-    margin-top: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    margin-top: var(--spacing-40);
+    @include flex-center;
   }
 
   .notice-card {
-    max-width: var(--panel-height-default);
+    max-width: var(--panel-width-default);
     width: 100%;
     border: none;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
 
   .notice-content {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    padding: 20px;
+    @include flex-start;
+    gap: var(--spacing-extra-large);
+    padding: var(--spacing-large);
   }
 
   .notice-icon {
-    font-size: 64px;
-    color: #409eff;
+    font-size: var(--font-size-notice-icon);
+    color: var(--el-color-primary);
     opacity: var(--opacity-high);
   }
 
@@ -84,39 +83,38 @@ const loading = ref(false)
     flex: 1;
 
     h3 {
-      font-size: 24px;
-      color: #303133;
-      margin: 0 0 8px 0;
-      font-weight: 600;
+      font-size: var(--font-size-xl);
+      color: var(--el-text-color-primary);
+      margin: 0 0 var(--spacing-small) 0;
+      font-weight: var(--font-weight-bold);
     }
 
     p {
-      font-size: 16px;
-      color: #606266;
-      margin: 0 0 16px 0;
-      line-height: 1.5;
+      font-size: var(--font-size-medium);
+      color: var(--el-text-color-regular);
+      margin: 0 0 var(--spacing-base) 0;
+      line-height: var(--line-height-base);
     }
   }
 
   .notice-features {
-    display: flex;
+    @include flex-start;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: var(--spacing-medium);
   }
 
   .feature-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    background: #f0f9ff;
-    color: #409eff;
-    border-radius: 16px;
-    font-size: 14px;
-    border: 1px solid #b3d8ff;
+    @include flex-start;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-medium);
+    background: var(--hover-bg-light);
+    color: var(--el-color-primary);
+    border-radius: var(--border-radius-feature-tag);
+    font-size: var(--font-size-base);
+    border: 1px solid var(--hover-border-light);
 
     i {
-      font-size: 12px;
+      font-size: var(--font-size-extra-small);
     }
   }
 
@@ -125,11 +123,11 @@ const loading = ref(false)
    * 响应式设计
    * ===================================
    */
-  @media (max-width: 768px) {
+  @include respond-to(md) {
     .notice-content {
       flex-direction: column;
       text-align: center;
-      gap: 16px;
+      gap: var(--spacing-base);
     }
 
     .notice-icon {
@@ -137,11 +135,11 @@ const loading = ref(false)
     }
 
     .notice-text h3 {
-      font-size: 20px;
+      font-size: var(--font-size-lg);
     }
 
     .notice-text p {
-      font-size: 14px;
+      font-size: var(--font-size-base);
     }
 
     .notice-features {

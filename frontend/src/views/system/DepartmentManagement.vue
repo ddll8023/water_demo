@@ -65,8 +65,9 @@
     <!-- 部门表单对话框 -->
     <CustomDialog :visible="formDialogVisible" :title="isEdit ? '编辑部门' : '新增部门'" width="700px"
       :close-on-click-modal="false" @update:visible="handleFormDialogClose">
-      <CommonForm ref="formRef" v-model="form" :items="formItems" :rules="formRules" label-width="120px"
-        label-position="right" :show-actions="false" @submit="handleFormSubmit">
+      <CommonForm ref="formRef" v-model="form" :items="formItems" :rules="formRules"
+        :label-width="'var(--form-label-width-detail)'" label-position="right" :show-actions="false"
+        @submit="handleFormSubmit">
         <template #parentId>
           <el-tree-select v-model="form.parentId" :data="departmentTreeOptions" :props="treeSelectProps"
             placeholder="请选择上级部门" style="width: 100%" clearable check-strictly :default-expand-all="false"
@@ -650,44 +651,45 @@ const handleFormSuccess = () => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 /**
  * ==============================
  * 页面基础样式
  * ==============================
  */
 .department-management {
-  padding: 20px;
-  background: var(--el-bg-color-page);
-  height: calc(100vh - 60px);
+  padding: var(--spacing-large);
+  background: var(--bg-color-page);
+  height: calc(100vh - var(--header-height));
   display: flex;
   flex-direction: column;
   overflow: hidden;
 
   .page-header {
-    margin-bottom: 20px;
+    margin-bottom: var(--spacing-large);
 
     .header-content {
       .page-title {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 20px;
-        font-weight: 500;
+        @include flex-center-y;
+        gap: var(--spacing-small);
+        font-size: var(--font-size-extra-large);
+        font-weight: var(--font-weight-medium);
         color: var(--text-primary);
-        margin: 0 0 8px 0;
+        margin: 0 0 var(--spacing-small) 0;
       }
 
       .page-description {
         color: var(--text-secondary);
         margin: 0;
-        font-size: 14px;
+        font-size: var(--font-size-base);
       }
     }
   }
 
   .table-section {
     background: var(--bg-primary);
-    border-radius: 8px;
+    border-radius: var(--border-radius-large);
     overflow: hidden;
     flex: 1;
     display: flex;
@@ -696,24 +698,21 @@ const handleFormSuccess = () => {
   }
 
   .action-buttons {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    align-items: center;
+    @include flex-center;
+    gap: var(--spacing-small);
     flex-wrap: nowrap;
   }
 
   .dialog-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
+    @include flex-end;
+    gap: var(--spacing-medium);
   }
 }
 
 .form-tip {
-  font-size: 12px;
-  color: #909399;
-  margin-top: 4px;
+  font-size: var(--font-size-extra-small);
+  color: var(--text-tertiary);
+  margin-top: var(--spacing-mini);
 }
 
 /**
@@ -721,17 +720,17 @@ const handleFormSuccess = () => {
  * 响应式适配
  * ==============================
  */
-@media (max-width: 768px) {
+@include respond-to(sm) {
   .department-management {
-    padding: 10px;
+    padding: var(--spacing-sm);
 
     .action-buttons {
       flex-direction: column;
-      gap: 4px;
+      gap: var(--spacing-mini);
 
       .custom-button {
         width: 100%;
-        font-size: 12px;
+        font-size: var(--font-size-extra-small);
       }
     }
   }
@@ -739,11 +738,11 @@ const handleFormSuccess = () => {
 
 /* 深度选择器样式 */
 :deep(.el-form-item__label) {
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 :deep(.el-input__count) {
-  color: #909399;
+  color: var(--text-tertiary);
 }
 
 :deep(.el-tree-select) {

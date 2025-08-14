@@ -164,7 +164,7 @@ const searchFields = ref([
     options: [],
     placeholder: '请选择监测站点',
     span: 4,
-    labelWidth: '60px'
+    labelWidth: 'var(--form-label-width-search)'
   },
   {
     prop: 'timeRange',
@@ -174,7 +174,7 @@ const searchFields = ref([
     endPlaceholder: '请选择结束时间',
     showDuration: true,
     span: 8,
-    labelWidth: '60px'
+    labelWidth: 'var(--form-label-width-search)'
   }
 ])
 
@@ -476,6 +476,8 @@ const processTimeRangeParams = (timeRange) => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 // ============================================
 // 页面布局样式
 // ============================================
@@ -487,7 +489,7 @@ const processTimeRangeParams = (timeRange) => {
   .filter-section,
   .chart-carousel-section,
   .table-section {
-    margin-bottom: 20px;
+    margin-bottom: var(--spacing-large);
   }
 }
 </style>

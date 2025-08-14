@@ -511,15 +511,17 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 /**
  * ===========================
  * 页面布局样式
  * ===========================
  */
 .role-management {
-  padding: 20px;
+  padding: var(--spacing-large);
   background: var(--el-bg-color-page);
-  height: calc(100vh - 60px);
+  height: calc(100vh - var(--header-height));
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -527,7 +529,7 @@ onMounted(() => {
   // 表格区域样式
   .table-section {
     background: var(--bg-primary);
-    border-radius: 8px;
+    border-radius: var(--border-radius-large);
     overflow: hidden;
     flex: 1;
     display: flex;
@@ -535,7 +537,7 @@ onMounted(() => {
     box-shadow: var(--box-shadow-light);
 
     .pagination-container {
-      padding: 16px;
+      padding: var(--spacing-base);
       display: flex;
       justify-content: center;
     }
@@ -544,7 +546,7 @@ onMounted(() => {
   // 行操作按钮样式
   .action-buttons {
     display: flex;
-    gap: 8px;
+    gap: var(--spacing-small);
     justify-content: center;
     align-items: center;
     flex-wrap: nowrap;
@@ -558,15 +560,15 @@ onMounted(() => {
  */
 @media (max-width: 768px) {
   .role-management {
-    padding: 10px;
+    padding: var(--spacing-sm);
 
     .action-buttons {
       flex-direction: column;
-      gap: 4px;
+      gap: var(--spacing-mini);
 
       .custom-button {
         width: 100%;
-        font-size: 12px;
+        font-size: var(--font-size-extra-small);
       }
     }
   }
@@ -579,12 +581,12 @@ onMounted(() => {
  */
 .el-form {
   .el-form-item {
-    margin-bottom: 22px;
+    margin-bottom: var(--form-item-margin-bottom-large);
   }
 
   .form-tip {
-    margin-left: 10px;
-    font-size: 12px;
+    margin-left: var(--spacing-sm);
+    font-size: var(--font-size-extra-small);
     color: var(--el-text-color-secondary);
   }
 
@@ -594,42 +596,42 @@ onMounted(() => {
 
   .el-radio-group {
     .el-radio {
-      margin-right: 20px;
+      margin-right: var(--spacing-large);
     }
   }
 
   .permission-section {
     width: 100%;
     max-width: 800px;
-    border: 1px solid #e4e7ed;
-    border-radius: 4px;
-    padding: 16px;
-    background-color: #fafafa;
+    border: var(--border-width-thin) solid var(--border-color-light);
+    border-radius: var(--border-radius-base);
+    padding: var(--spacing-base);
+    background-color: var(--bg-tertiary);
 
     .permission-tree {
       max-height: 400px;
       overflow-y: auto;
-      border: 1px solid #e4e7ed;
-      border-radius: 4px;
-      padding: 8px;
-      background-color: #ffffff;
+      border: var(--border-width-thin) solid var(--border-color-light);
+      border-radius: var(--border-radius-base);
+      padding: var(--spacing-small);
+      background-color: var(--bg-primary);
 
       .tree-node {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: var(--spacing-small);
         width: 100%;
         padding: 2px 0;
 
         i {
           color: #909399;
-          width: 16px;
+          width: var(--icon-size-md);
           text-align: center;
         }
 
         .node-label {
           flex: 1;
-          margin-right: 8px;
+          margin-right: var(--spacing-small);
         }
 
         .el-tag {

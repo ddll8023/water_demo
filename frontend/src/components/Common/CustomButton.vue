@@ -272,7 +272,7 @@ const handleClick = (event) => {
 
 // 默认尺寸按钮
 .custom-button--default {
-  padding: 8px 16px;
+  padding: var(--spacing-small) var(--spacing-base);
   font-size: 14px;
   min-height: var(--form-item-height);
 

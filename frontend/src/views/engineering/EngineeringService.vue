@@ -1499,45 +1499,46 @@ const getValidationRules = () => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 /**
  * ----------------------------------------
  * 页面基本样式
  * ----------------------------------------
  */
 .engineering-service {
-  padding: 20px;
+  padding: var(--spacing-large);
   background-color: var(--bg-secondary);
-  min-height: calc(100vh - 60px);
+  min-height: calc(100vh - var(--header-height));
 
   /**
    * 页面头部样式
    */
   .page-header {
     background: var(--bg-primary);
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
-    border: 1px solid var(--neutral-dark);
+    padding: var(--spacing-large);
+    border-radius: var(--border-radius-large);
+    margin-bottom: var(--spacing-large);
+    box-shadow: var(--shadow-md);
+    border: var(--border-width-thin) solid var(--border-light);
 
     .header-content {
       .page-title {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 24px;
-        font-weight: 600;
+        @include flex-start;
+        gap: var(--spacing-small);
+        font-size: var(--font-size-xl);
+        font-weight: var(--font-weight-semibold);
         color: var(--text-primary);
-        margin: 0 0 8px 0;
+        margin: 0 0 var(--spacing-small) 0;
 
         .fa {
           color: var(--primary-color);
-          font-size: 20px;
+          font-size: var(--font-size-lg);
         }
       }
 
       .page-description {
-        font-size: 14px;
+        font-size: var(--font-size-sm);
         color: var(--text-tertiary);
         margin: 0;
       }
@@ -1549,11 +1550,11 @@ const getValidationRules = () => {
    */
   .facility-content {
     background: var(--bg-primary);
-    border-radius: 8px;
-    padding: 20px;
-    margin-top: 20px;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
-    border: 1px solid var(--neutral-dark);
+    border-radius: var(--border-radius-large);
+    padding: var(--spacing-large);
+    margin-top: var(--spacing-large);
+    box-shadow: var(--shadow-md);
+    border: var(--border-width-thin) solid var(--border-light);
   }
 }
 </style>

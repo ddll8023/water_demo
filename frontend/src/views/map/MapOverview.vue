@@ -825,7 +825,7 @@ const getIndicatorUnit = (key) => {
                 background: var(--bg-primary);
                 border-radius: var(--border-radius-large);
                 box-shadow: 0 2px 12px var(--black-transparent-medium);
-                z-index: 1000;
+                z-index: var(--z-index-dropdown);
                 min-width: 160px;
                 max-width: 220px;
                 overflow: hidden;
@@ -834,8 +834,8 @@ const getIndicatorUnit = (key) => {
 
                 &.collapsed {
                     min-width: auto;
-                    max-width: 48px;
-                    width: 48px;
+                    max-width: var(--icon-size-xxl);
+                    width: var(--icon-size-xxl);
                     height: 48px;
                     transform: scale(var(--map-panel-hidden-scale));
 
@@ -844,7 +844,7 @@ const getIndicatorUnit = (key) => {
 
                         .collapsed-icon {
                             margin: 0;
-                            font-size: 18px;
+                            font-size: var(--font-size-large);
                             color: var(--primary-color);
                             transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
 
@@ -886,7 +886,7 @@ const getIndicatorUnit = (key) => {
 
                     i:first-child {
                         color: var(--primary-color);
-                        font-size: 16px;
+                        font-size: var(--font-size-medium);
                         margin-right: var(--spacing-small);
                         transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
 
@@ -905,7 +905,7 @@ const getIndicatorUnit = (key) => {
 
                     .toggle-icon {
                         color: var(--text-secondary);
-                        font-size: 12px;
+                        font-size: var(--font-size-extra-small);
                         transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
                         margin-left: var(--spacing-small);
                         transform-origin: center center;
@@ -966,7 +966,7 @@ const getIndicatorUnit = (key) => {
                             .layer-button {
                                 display: flex;
                                 align-items: center;
-                                padding: 10px 12px;
+                                padding: var(--padding-legend-item);
                                 background: var(--bg-secondary);
                                 border: 1px solid var(--border-color-light);
                                 border-radius: var(--border-radius-base);
@@ -992,7 +992,7 @@ const getIndicatorUnit = (key) => {
                                     background: var(--bg-tertiary);
                                     border-color: var(--primary-color);
                                     transform: translateY(-2px) scale(1.02);
-                                    box-shadow: 0 4px 12px rgba(64, 158, 255, 0.15);
+                                    box-shadow: var(--shadow-primary-light);
 
                                     &::before {
                                         left: 100%;
@@ -1012,7 +1012,7 @@ const getIndicatorUnit = (key) => {
                                 }
 
                                 &.active {
-                                    background: #ecf5ff;
+                                    background: var(--primary-bg-light);
                                     border-color: var(--primary-color);
                                     color: var(--primary-color);
                                     transform: translateY(-1px);
@@ -1028,10 +1028,10 @@ const getIndicatorUnit = (key) => {
                                 }
 
                                 i {
-                                    font-size: 14px;
+                                    font-size: var(--font-size-base);
                                     margin-right: var(--spacing-small);
                                     color: var(--text-secondary);
-                                    width: 16px;
+                                    width: var(--icon-size-md);
                                     text-align: center;
                                     transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
                                 }
@@ -1111,7 +1111,7 @@ const getIndicatorUnit = (key) => {
                 background: var(--bg-primary);
                 border: 1px solid var(--border-color-light);
                 border-radius: var(--border-radius-base);
-                transition: all 0.2s ease;
+                transition: var(--transition-fast);
 
                 &:hover {
                     border-color: var(--primary-light);
@@ -1179,7 +1179,7 @@ const getIndicatorUnit = (key) => {
                 padding: var(--spacing-large);
                 max-width: 100%;
                 box-shadow: var(--shadow-light);
-                transition: box-shadow 0.2s ease;
+                transition: box-shadow var(--transition-duration-fast) var(--transition-timing-function);
                 display: flex;
                 flex-direction: column;
                 gap: var(--spacing-base);
@@ -1275,7 +1275,7 @@ const getIndicatorUnit = (key) => {
         font-size: var(--font-size-small);
         font-weight: var(--font-weight-medium);
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: var(--transition-fast);
 
         &--primary {
             background: var(--primary-color);

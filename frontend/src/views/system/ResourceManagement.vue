@@ -53,7 +53,7 @@ const loading = ref(false)
 .resource-management {
   padding: 20px;
   background-color: #f5f5f5;
-  min-height: calc(100vh - 60px);
+  min-height: calc(100vh - var(--header-height));
 
   /**
    * ===================================
@@ -61,14 +61,14 @@ const loading = ref(false)
    * ===================================
    */
   .development-notice {
-    margin-top: 40px;
+    margin-top: var(--spacing-40);
     display: flex;
     justify-content: center;
     align-items: center;
   }
 
   .notice-card {
-    max-width: var(--panel-height-default);
+    max-width: var(--panel-width-default);
     width: 100%;
     border: none;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -82,7 +82,7 @@ const loading = ref(false)
   }
 
   .notice-icon {
-    font-size: 64px;
+    font-size: var(--font-size-notice-icon);
     color: #409eff;
     opacity: var(--opacity-high);
   }
@@ -116,11 +116,11 @@ const loading = ref(false)
     align-items: center;
     gap: 6px;
     padding: 6px 12px;
-    background: #f0f9ff;
+    background: var(--hover-bg-light);
     color: #409eff;
-    border-radius: 16px;
+    border-radius: var(--border-radius-feature-tag);
     font-size: 14px;
-    border: 1px solid #b3d8ff;
+    border: 1px solid var(--hover-border-light);
 
     i {
       font-size: 12px;

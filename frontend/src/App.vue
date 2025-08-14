@@ -8,8 +8,13 @@ import { RouterView } from 'vue-router'
   </div>
 </template>
 
-<style>
-/* App.vue 中的样式已移至全局样式文件 */
-/* 全局样式在 @/assets/styles/index.scss 中定义 */
-/* Element Plus 主题定制在 @/assets/styles/element-plus.scss 中定义 */
+<style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
+#app {
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
 </style>

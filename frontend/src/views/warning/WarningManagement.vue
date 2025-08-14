@@ -48,59 +48,26 @@ const handleTabChange = (tabName) => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 /**
  * ----------------------------------------
  * 页面基本样式
  * ----------------------------------------
  */
 .warning-management {
-  padding: 20px;
+  padding: var(--spacing-large);
   background-color: var(--bg-secondary);
-  min-height: calc(100vh - 60px);
-
-  /**
-   * 页面头部样式
-   */
-  .page-header {
-    background: var(--bg-primary);
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
-    border: 1px solid var(--neutral-dark);
-
-    .header-content {
-      .page-title {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 24px;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin: 0 0 8px 0;
-
-        .fa {
-          color: var(--el-color-warning);
-          font-size: 20px;
-        }
-      }
-
-      .page-description {
-        font-size: 14px;
-        color: var(--text-tertiary);
-        margin: 0;
-      }
-    }
-  }
+  min-height: calc(100vh - var(--header-height));
 
   /**
    * 标签页内容样式
    */
   .tab-content-wrapper {
     background: var(--bg-primary);
-    border-radius: 8px;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
-    border: 1px solid var(--neutral-dark);
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-light);
     overflow: hidden;
   }
 }
@@ -110,35 +77,10 @@ const handleTabChange = (tabName) => {
  * 响应式设计
  * ----------------------------------------
  */
-// 中等屏幕适配
-@media (max-width: 1200px) {
-  .warning-management {
-    .page-header {
-      .header-content {
-        .page-title {
-          font-size: 20px;
-          gap: 6px;
-        }
-      }
-    }
-  }
-}
-
 // 小屏幕适配
-@media (max-width: 768px) {
+@include respond-to(sm) {
   .warning-management {
-    padding: 10px;
-
-    .page-header {
-      padding: 15px;
-
-      .header-content {
-        .page-title {
-          font-size: 18px;
-          gap: 6px;
-        }
-      }
-    }
+    padding: var(--spacing-sm);
   }
 }
 </style>

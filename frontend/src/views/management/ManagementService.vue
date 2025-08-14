@@ -520,14 +520,14 @@ const personnelSearchFields = [
     label: '姓名',
     type: 'input',
     placeholder: '请输入姓名',
-    labelWidth: '40px'
+    labelWidth: 'var(--form-label-width-compact)'
   },
   {
     prop: 'positionId',
     label: '职责',
     type: 'select',
     placeholder: '请选择职责',
-    labelWidth: '40px',
+    labelWidth: 'var(--form-label-width-compact)',
     options: [] // 将通过API动态加载
   }
 ]
@@ -1370,15 +1370,17 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 /**
  * ----------------------------------------
  * 页面基本样式
  * ----------------------------------------
  */
 .management-service {
-  padding: 20px;
+  padding: var(--spacing-large);
   background-color: var(--bg-secondary);
-  min-height: calc(100vh - 60px);
+  min-height: calc(100vh - var(--header-height));
 
   /**
  * ----------------------------------------
@@ -1392,22 +1394,26 @@ onMounted(async () => {
      */
     .tree-card {
       height: var(--panel-height-default);
-      border: 1px solid var(--neutral-dark);
-      box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
+      border: var(--border-width-thin) solid var(--border-light);
+      box-shadow: var(--shadow-md);
       background: var(--bg-primary);
 
       // 部门树控制区域
       .tree-controls {
-        padding: 16px;
-        border-bottom: 1px solid var(--neutral-dark);
-        background: var(--neutral-color);
+        padding: var(--spacing-medium);
+        border-bottom: var(--border-width-thin) solid var(--border-light);
+        background: var(--bg-tertiary);
+        @include flex-between;
+        flex-direction: column;
+        gap: var(--spacing-small);
 
         .search-input {
-          margin-bottom: 12px;
+          margin-bottom: var(--spacing-small);
 
           :deep(.el-input__wrapper) {
-            border-radius: 6px;
-            border-color: var(--neutral-dark);
+            border-radius: var(--border-radius-base);
+            border-color: var(--border-light);
+            transition: var(--transition-base);
 
             &:hover {
               border-color: var(--primary-color);
@@ -1415,30 +1421,32 @@ onMounted(async () => {
 
             &.is-focus {
               border-color: var(--primary-color);
-              box-shadow: 0 0 0 2px rgba(22, 93, 255, 0.1);
+              box-shadow: 0 0 0 2px var(--primary-transparent-light);
             }
           }
 
           :deep(.el-input__inner) {
             color: var(--text-primary);
+            font-size: var(--font-size-base);
 
             &::placeholder {
-              color: var(--text-tertiary);
+              color: var(--text-placeholder);
             }
           }
         }
 
         .control-buttons {
-          display: flex;
-          gap: 8px;
+          @include flex-start;
+          gap: var(--spacing-xs);
 
           .custom-button {
-            border-radius: 6px;
-            font-weight: 500;
-            transition: all 0.15s ease;
+            border-radius: var(--border-radius-base);
+            font-weight: var(--font-weight-medium);
+            transition: var(--transition-fast);
 
             .fa {
-              margin-right: 4px;
+              margin-right: var(--spacing-xs);
+              font-size: var(--icon-size-sm);
             }
           }
         }
@@ -1450,7 +1458,8 @@ onMounted(async () => {
       .tree-container {
         height: calc(100% - 120px);
         overflow-y: auto;
-        padding: 8px;
+        padding: var(--spacing-xs);
+        @include hide-scrollbar;
 
         .department-tree {
 
@@ -1489,10 +1498,10 @@ onMounted(async () => {
           }
 
           :deep(.el-tree-node__content) {
-            height: 36px;
-            border-radius: 6px;
+            height: var(--table-row-height);
+            border-radius: var(--border-radius-base);
             margin-bottom: 2px;
-            transition: all 0.3s ease;
+            transition: var(--transition-base);
 
             &:hover {
               background-color: var(--el-fill-color-light);
@@ -1501,7 +1510,7 @@ onMounted(async () => {
 
           :deep(.el-tree-node__expand-icon) {
             color: var(--el-text-color-secondary);
-            font-size: 12px;
+            font-size: var(--font-size-xs);
           }
         }
 
@@ -1509,37 +1518,35 @@ onMounted(async () => {
          * 树节点样式
          */
         .tree-node {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
+          @include flex-between;
           width: 100%;
-          padding-right: 8px;
+          padding-right: var(--spacing-xs);
 
           .node-content {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            @include flex-center-y;
+            gap: var(--spacing-xs);
             flex: 1;
 
             .node-icon {
               color: var(--primary-color);
-              font-size: 16px;
-              width: 16px;
+              font-size: var(--font-size-lg);
+              width: var(--font-size-lg);
               text-align: center;
             }
 
             .node-label {
-              font-size: 14px;
+              font-size: var(--font-size-base);
               color: var(--text-primary);
-              font-weight: 500;
+              font-weight: var(--font-weight-medium);
+              @include text-ellipsis;
             }
           }
 
           .node-actions {
             opacity: 0;
-            transition: opacity 0.15s ease;
-            display: flex;
-            gap: 4px;
+            transition: var(--transition-opacity);
+            @include flex-center-y;
+            gap: var(--spacing-xxs);
           }
 
           &:hover .node-actions {
@@ -1549,14 +1556,14 @@ onMounted(async () => {
           // 选中状态样式 - 参考index.html的tree-node-active样式
           &.tree-node-selected {
             :deep(.el-tree-node__content) {
-              background-color: rgba(22, 93, 255, 0.1);
-              border-left: 4px solid var(--primary-color);
+              background-color: var(--primary-transparent-light);
+              border-left: var(--border-width-normal) solid var(--primary-color);
               padding-left: 12px;
             }
 
             .node-content .node-label {
               color: var(--primary-color);
-              font-weight: 600;
+              font-weight: var(--font-weight-semibold);
             }
           }
         }
@@ -1568,20 +1575,21 @@ onMounted(async () => {
      */
     .detail-card {
       height: var(--panel-height-default);
-      border: 1px solid var(--neutral-dark);
-      box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
+      border: var(--border-width-thin) solid var(--border-light);
+      box-shadow: var(--shadow-md);
       background: var(--bg-primary);
 
       // 详情标题 - 参考index.html的详情标题区样式
       .detail-header {
-        padding: 16px 20px;
-        border-bottom: 1px solid var(--neutral-dark);
-        background: var(--neutral-color);
+        padding: var(--spacing-medium) var(--spacing-large);
+        border-bottom: var(--border-width-thin) solid var(--border-light);
+        background: var(--bg-tertiary);
+        @include flex-center;
 
         .detail-title {
           margin: 0;
-          font-size: 18px;
-          font-weight: 600;
+          font-size: var(--font-size-xl);
+          font-weight: var(--font-weight-semibold);
           color: var(--text-primary);
         }
       }
@@ -1590,23 +1598,26 @@ onMounted(async () => {
        * 部门详情标签页样式
        */
       .department-details {
-        height: calc(100% - 60px);
+        height: calc(100% - var(--card-header-height));
 
         .detail-tabs {
           height: 100%;
-          padding: 0 20px;
+          padding: 0 var(--spacing-large);
 
           :deep(.el-tabs__header) {
-            margin-bottom: var(--spacing-base);
+            margin-bottom: var(--spacing-medium);
           }
 
           :deep(.el-tabs__content) {
             height: calc(100% - 56px);
             overflow-y: auto;
+            @include hide-scrollbar;
           }
 
           :deep(.el-tabs__item) {
-            font-weight: 500;
+            font-weight: var(--font-weight-medium);
+            font-size: var(--font-size-base);
+            transition: var(--transition-base);
           }
         }
 
@@ -1618,40 +1629,41 @@ onMounted(async () => {
 
           // 部门信息卡片
           .department-info-card {
-            background: var(--neutral-color);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid var(--neutral-dark);
+            background: var(--bg-tertiary);
+            border-radius: var(--border-radius-large);
+            padding: var(--spacing-large);
+            margin-bottom: var(--spacing-large);
+            border: var(--border-width-thin) solid var(--border-light);
+            @include card-style;
 
             .info-header {
-              display: flex;
-              justify-content: space-between;
+              @include flex-between;
               align-items: flex-start;
-              margin-bottom: 20px;
+              margin-bottom: var(--spacing-large);
 
               .info-title-section {
                 flex: 1;
 
                 .department-name {
-                  margin: 0 0 8px 0;
-                  font-size: 20px;
-                  font-weight: 600;
+                  margin: 0 0 var(--spacing-small) 0;
+                  font-size: var(--font-size-xxl);
+                  font-weight: var(--font-weight-semibold);
                   color: var(--text-primary);
                 }
 
                 .department-description {
                   margin: 0;
-                  font-size: 14px;
+                  font-size: var(--font-size-base);
                   color: var(--text-secondary);
-                  line-height: 1.5;
+                  line-height: var(--line-height-base);
+                  @include text-ellipsis(2);
                 }
               }
 
               .info-actions {
                 .custom-button {
-                  border-radius: 6px;
-                  transition: all 0.15s ease;
+                  border-radius: var(--border-radius-base);
+                  transition: var(--transition-fast);
                 }
               }
             }
@@ -1662,26 +1674,23 @@ onMounted(async () => {
             .info-grid {
               display: grid;
               grid-template-columns: repeat(2, 1fr);
-              gap: 20px;
+              gap: var(--spacing-large);
 
               .info-item {
-                display: flex;
-                align-items: flex-start;
-                gap: 12px;
+                @include flex-start;
+                gap: var(--spacing-medium);
 
                 .info-icon {
-                  width: 40px;
-                  height: 40px;
-                  border-radius: 8px;
-                  background: rgba(22, 93, 255, 0.1);
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
+                  width: var(--icon-container-size);
+                  height: var(--icon-container-size);
+                  border-radius: var(--border-radius-base);
+                  background: var(--primary-transparent-light);
+                  @include flex-center;
                   color: var(--primary-color);
-                  font-size: 18px;
+                  font-size: var(--font-size-xl);
 
                   .fa {
-                    font-size: 18px;
+                    font-size: var(--font-size-xl);
                   }
                 }
 
@@ -1689,16 +1698,16 @@ onMounted(async () => {
                   flex: 1;
 
                   .info-label {
-                    margin: 0 0 4px 0;
-                    font-size: 12px;
+                    margin: 0 0 var(--spacing-xs) 0;
+                    font-size: var(--font-size-sm);
                     color: var(--text-secondary);
                   }
 
                   .info-value {
                     margin: 0;
-                    font-size: 14px;
+                    font-size: var(--font-size-base);
                     color: var(--text-primary);
-                    font-weight: 500;
+                    font-weight: var(--font-weight-medium);
                   }
                 }
               }
@@ -1710,17 +1719,17 @@ onMounted(async () => {
            */
           .department-duty-section {
             .section-title {
-              margin: 0 0 12px 0;
-              font-size: 16px;
-              font-weight: 600;
+              margin: 0 0 var(--spacing-medium) 0;
+              font-size: var(--font-size-lg);
+              font-weight: var(--font-weight-semibold);
               color: var(--text-primary);
             }
 
             .duty-description {
               margin: 0;
-              font-size: 14px;
+              font-size: var(--font-size-base);
               color: var(--text-secondary);
-              line-height: 1.6;
+              line-height: var(--line-height-base);
             }
           }
         }
@@ -1736,15 +1745,13 @@ onMounted(async () => {
 
           .subdepartments-header {
             margin-bottom: var(--spacing-base);
-            display: flex;
-            justify-content: flex-start;
+            @include flex-start;
             align-items: center;
           }
 
           .table-pagination {
-            margin-top: 16px;
-            display: flex;
-            justify-content: center;
+            margin-top: var(--spacing-medium);
+            @include flex-center;
           }
         }
 
@@ -1755,10 +1762,8 @@ onMounted(async () => {
        * 空状态样式
        */
       .empty-state {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 400px;
+        @include flex-center;
+        height: var(--empty-state-height);
       }
     }
   }
@@ -1770,10 +1775,11 @@ onMounted(async () => {
    */
   .personnel-view {
     background: var(--bg-primary);
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
-    border: 1px solid var(--neutral-dark);
+    border-radius: var(--border-radius-base);
+    padding: var(--spacing-large);
+    box-shadow: var(--shadow-md);
+    border: var(--border-width-thin) solid var(--border-light);
+    @include card-style;
   }
 }
 
@@ -1782,7 +1788,7 @@ onMounted(async () => {
  * 响应式设计样式
  * ----------------------------------------
  */
-@media (max-width: 1200px) {
+@include respond-to(lg) {
   .management-service {
     .organization-view {
       .el-row {
@@ -1796,12 +1802,12 @@ onMounted(async () => {
 
       .tree-card {
         height: 350px;
-        margin-bottom: 20px;
+        margin-bottom: var(--spacing-large);
 
         .tree-controls {
           .control-buttons {
             flex-wrap: wrap;
-            gap: 6px;
+            gap: var(--spacing-xs);
 
             .custom-button {
               flex: 1;
@@ -1819,7 +1825,7 @@ onMounted(async () => {
             .department-info-card {
               .info-grid {
                 grid-template-columns: 1fr;
-                gap: 16px;
+                gap: var(--spacing-medium);
               }
             }
           }
@@ -1832,9 +1838,9 @@ onMounted(async () => {
 /**
  * 移动端响应式样式
  */
-@media (max-width: 768px) {
+@include respond-to(sm) {
   .management-service {
-    padding: 10px;
+    padding: var(--spacing-small);
 
     .organization-view {
       .tree-card {
@@ -1842,11 +1848,11 @@ onMounted(async () => {
         min-height: var(--panel-content-min-height);
 
         .tree-controls {
-          padding: 12px;
+          padding: var(--spacing-small);
 
           .control-buttons {
             flex-direction: column;
-            gap: 8px;
+            gap: var(--spacing-xs);
 
             .custom-button {
               width: 100%;
@@ -1859,26 +1865,26 @@ onMounted(async () => {
         height: auto;
 
         .detail-header {
-          padding: 12px 15px;
+          padding: var(--spacing-small) var(--spacing-medium);
 
           .detail-title {
-            font-size: 16px;
+            font-size: var(--font-size-lg);
           }
         }
 
         .department-details {
           .detail-tabs {
-            padding: 0 15px;
+            padding: 0 var(--spacing-medium);
           }
 
           .basic-info-content {
             .department-info-card {
-              padding: 15px;
+              padding: var(--spacing-medium);
 
               .info-header {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 12px;
+                gap: var(--spacing-medium);
 
                 .info-actions {
                   width: 100%;
@@ -1891,13 +1897,13 @@ onMounted(async () => {
 
               .info-grid {
                 grid-template-columns: 1fr;
-                gap: 12px;
+                gap: var(--spacing-small);
 
                 .info-item {
                   .info-icon {
-                    width: 32px;
-                    height: 32px;
-                    font-size: 16px;
+                    width: var(--avatar-size-base);
+                    height: var(--avatar-size-base);
+                    font-size: var(--font-size-base);
                   }
                 }
               }
@@ -1910,7 +1916,7 @@ onMounted(async () => {
     }
 
     .personnel-view {
-      padding: 15px;
+      padding: var(--spacing-medium);
     }
   }
 }
@@ -1924,7 +1930,7 @@ onMounted(async () => {
   text-align: right;
 
   .custom-button {
-    margin-left: 10px;
+    margin-left: var(--spacing-small);
   }
 }
 </style>

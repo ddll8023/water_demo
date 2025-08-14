@@ -60,7 +60,7 @@ const handleTabChange = (tabName) => {
     background: var(--bg-primary);
     border-radius: var(--border-radius-large);
     box-shadow: var(--shadow-card);
-    border: 1px solid var(--neutral-dark);
+    border: 1px solid var(--border-light);
 
     .custom-tabs {
         padding: 0 var(--spacing-large);

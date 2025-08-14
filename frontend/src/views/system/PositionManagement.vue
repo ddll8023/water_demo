@@ -494,17 +494,11 @@ const handleFormUpdate = (value) => {
 
 
 
-// 组件卸载时销毁图表
-onMounted(() => {
-  // 监听窗口大小变化
-  window.addEventListener('resize', () => {
-    if (positionChart) positionChart.resize()
-    if (userChart) userChart.resize()
-  })
-})
 </script>
 
 <style lang="scss" scoped>
+@use "@/assets/styles/index.scss" as *;
+
 // =============================================
 // 页面布局样式
 // =============================================
@@ -512,40 +506,40 @@ onMounted(() => {
 
   // 页面头部样式
   .page-header {
-    margin-bottom: 20px;
+    margin-bottom: var(--spacing-large);
 
     .header-content {
       .page-title {
         display: flex;
         align-items: center;
-        gap: 8px;
-        margin: 0 0 8px 0;
-        font-size: 24px;
-        font-weight: 600;
+        gap: var(--spacing-small);
+        margin: 0 0 var(--spacing-small) 0;
+        font-size: var(--font-size-xl);
+        font-weight: var(--font-weight-semibold);
         color: var(--el-text-color-primary);
       }
 
       .page-description {
         margin: 0;
         color: var(--el-text-color-regular);
-        font-size: 14px;
+        font-size: var(--font-size-base);
       }
     }
   }
 
   // 表格区域样式
   .table-section {
-    margin-top: 20px;
-    background: var(--el-bg-color);
-    border-radius: 8px;
-    box-shadow: var(--el-box-shadow-light);
+    margin-top: var(--spacing-large);
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--box-shadow-light);
   }
 
   // 辅助文本样式
   .text-placeholder {
-    color: #c0c4cc;
+    color: var(--text-placeholder);
     font-style: italic;
-    font-size: 12px;
+    font-size: var(--font-size-extra-small);
   }
 
   // =============================================
@@ -554,10 +548,8 @@ onMounted(() => {
 
   // 操作按钮样式
   .action-buttons {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
+    @include flex-center;
+    gap: var(--spacing-small);
     flex-wrap: wrap;
   }
 
@@ -581,15 +573,15 @@ onMounted(() => {
 
 .permission-preview {
   .preview-title {
-    font-size: 14px;
-    color: #606266;
-    margin-bottom: 8px;
+    font-size: var(--font-size-base);
+    color: var(--el-text-color-regular);
+    margin-bottom: var(--spacing-small);
   }
 
   .permission-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: var(--spacing-small);
 
     .permission-tag {
       margin: 0;
@@ -602,11 +594,11 @@ onMounted(() => {
 }
 
 :deep(.el-input__count) {
-  color: #909399;
+  color: var(--text-tertiary);
 }
 
 :deep(.el-divider__text) {
   font-weight: 500;
-  color: #409eff;
+  color: var(--el-color-primary);
 }
 </style>

@@ -291,7 +291,7 @@ const handleExportRecords = async (searchParams) => {
 .inspection-management {
     padding: var(--spacing-lg);
     background-color: var(--bg-secondary);
-    min-height: calc(100vh - 60px);
+    min-height: calc(100vh - var(--header-height));
 
     .tab-content-wrapper {
         background: var(--bg-primary);

@@ -116,7 +116,7 @@ const searchFields = ref([
         options: [],
         placeholder: '请选择监测站点',
         span: 4,
-        labelWidth: '60px'
+        labelWidth: 'var(--form-label-width-search)'
     },
     {
         prop: 'timeRange',
@@ -126,7 +126,7 @@ const searchFields = ref([
         endPlaceholder: '请选择结束时间',
         showDuration: true,
         span: 8,
-        labelWidth: '60px'
+        labelWidth: 'var(--form-label-width-search)'
     }
 ])
 
@@ -489,6 +489,8 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 // ============================================
 // 页面布局样式
 // ============================================
@@ -500,7 +502,7 @@ onMounted(async () => {
     .filter-section,
     .chart-carousel-section,
     .table-section {
-        margin-bottom: 20px;
+        margin-bottom: var(--spacing-large);
     }
 
     .table-section {
@@ -522,16 +524,16 @@ onMounted(async () => {
     // 时间模式切换按钮组
     .time-mode-buttons {
         display: flex;
-        gap: 8px;
-        margin-right: 12px;
+        gap: var(--spacing-small);
+        margin-right: var(--spacing-medium);
 
         .custom-button {
-            min-width: 80px;
-            transition: all 0.3s ease;
+            min-width: var(--button-min-width);
+            transition: var(--transition-base);
 
             &:hover {
-                transform: translateY(-1px);
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                transform: translateY(var(--hover-transform-y-small));
+                box-shadow: var(--shadow-hover-button);
             }
         }
     }

@@ -13,65 +13,68 @@
       <el-row :gutter="20">
         <!-- 视频展示区域 -->
         <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
-          <div class="video-section">
+          <CustomCard :title="videoInfo.title" :padding="'normal'" :bordered="true" :shadow="false">
             <div class="video-container">
               <video ref="videoPlayer" :src="videoInfo.url" :poster="videoInfo.poster" controls preload="metadata"
                 class="video-player" @loadstart="onVideoLoadStart" @loadeddata="onVideoLoaded" @error="onVideoError">
                 您的浏览器不支持视频播放
               </video>
             </div>
-
-            <div class="video-info">
-              <h3>{{ videoInfo.title }}</h3>
-              <p>{{ videoInfo.description }}</p>
-            </div>
-          </div>
+            <p class="video-description">{{ videoInfo.description }}</p>
+          </CustomCard>
         </el-col>
 
         <!-- 文字介绍区域 -->
         <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
           <div class="text-section">
             <!-- 工程概况 -->
-            <div class="section-block">
-              <h3>工程概况</h3>
-              <p>{{ projectInfo.overview }}</p>
+            <div class="card-wrapper">
+              <CustomCard title="工程概况" :padding="'normal'" :bordered="true" :shadow="false">
+                <p>{{ projectInfo.overview }}</p>
+              </CustomCard>
             </div>
 
             <!-- 工程规模 -->
-            <div class="section-block">
-              <h3>工程规模</h3>
-              <el-row :gutter="16" class="stats-row">
-                <el-col :span="8" v-for="stat in projectStats" :key="stat.key">
-                  <CustomCard :padding="'small'" :hoverable="false" :bordered="true">
-                    <div class="stat-card">
-                      <div class="stat-card__value">{{ stat.value }}<span class="stat-card__unit">{{ stat.unit }}</span>
+            <div class="card-wrapper">
+              <CustomCard title="工程规模" :padding="'normal'" :bordered="true" :shadow="false">
+                <el-row :gutter="16">
+                  <el-col :span="8" v-for="stat in projectStats" :key="stat.key">
+                    <CustomCard :padding="'small'" :hoverable="false" :bordered="true" :shadow="false">
+                      <div class="stat-card">
+                        <div class="stat-card__value">{{ stat.value }}<span class="stat-card__unit">{{ stat.unit
+                        }}</span>
+                        </div>
+                        <div class="stat-card__label">{{ stat.label }}</div>
                       </div>
-                      <div class="stat-card__label">{{ stat.label }}</div>
-                    </div>
-                  </CustomCard>
-                </el-col>
-              </el-row>
+                    </CustomCard>
+                  </el-col>
+                </el-row>
+              </CustomCard>
             </div>
 
             <!-- 建设意义 -->
-            <div class="section-block">
-              <h3>建设意义</h3>
-              <ul class="significance-list">
-                <li v-for="item in projectSignificance" :key="item">{{ item }}</li>
-              </ul>
+            <div class="card-wrapper">
+              <CustomCard title="建设意义" :padding="'normal'" :bordered="true" :shadow="false">
+                <ul class="significance-list">
+                  <li v-for="item in projectSignificance" :key="item">{{ item }}</li>
+                </ul>
+              </CustomCard>
             </div>
 
             <!-- 工程特点 -->
-            <div class="section-block">
-              <h3>工程特点</h3>
-              <el-row :gutter="12" class="features-row">
-                <el-col :span="12" v-for="feature in projectFeatures" :key="feature.key">
-                  <div class="feature-card">
-                    <div class="feature-icon">{{ feature.icon }}</div>
-                    <div class="feature-text">{{ feature.text }}</div>
-                  </div>
-                </el-col>
-              </el-row>
+            <div class="card-wrapper">
+              <CustomCard title="工程特点" :padding="'normal'" :bordered="true" :shadow="false">
+                <el-row :gutter="12">
+                  <el-col :span="12" v-for="feature in projectFeatures" :key="feature.key">
+                    <CustomCard :padding="'small'" :bordered="false" :shadow="false">
+                      <div class="feature-content">
+                        <div class="feature-icon">{{ feature.icon }}</div>
+                        <div class="feature-text">{{ feature.text }}</div>
+                      </div>
+                    </CustomCard>
+                  </el-col>
+                </el-row>
+              </CustomCard>
             </div>
           </div>
         </el-col>
@@ -166,29 +169,31 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 .introduction-page {
   display: flex;
   flex-direction: column;
 }
 
 .page-header {
-  padding: 16px 20px;
-  background: white;
-  border-radius: 8px;
+  padding: var(--spacing-base) var(--spacing-large);
+  background: var(--bg-primary);
+  border-radius: var(--border-radius-large);
   margin-bottom: var(--spacing-base);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-card);
 
   .header-content {
     .page-title {
-      font-size: 24px;
-      font-weight: 600;
-      color: #303133;
-      margin: 0 0 8px 0;
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-semibold);
+      color: var(--el-text-color-primary);
+      margin: 0 0 var(--spacing-small) 0;
     }
 
     .page-subtitle {
-      font-size: 14px;
-      color: #909399;
+      font-size: var(--font-size-base);
+      color: var(--text-disabled);
       margin: 0;
     }
   }
@@ -196,90 +201,76 @@ onMounted(() => {
 
 .main-content {
   flex: 1;
-  padding: 16px 20px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: var(--spacing-base) var(--spacing-large);
+  background: var(--bg-primary);
+  border-radius: var(--border-radius-large);
+  box-shadow: var(--shadow-card);
 }
 
-.video-section {
-  margin-bottom: var(--spacing-base);
+.video-container {
+  background: #000;
+  border-radius: var(--border-radius-large);
+  overflow: hidden;
+  margin-bottom: var(--spacing-small);
 
-  .video-container {
-    background: #000;
-    border-radius: 8px;
-    overflow: hidden;
+  .video-player {
+    width: 100%;
+    height: 320px;
+    display: block;
+    object-fit: cover;
+  }
+}
 
-    .video-player {
-      width: 100%;
-      height: 320px;
-      display: block;
-      object-fit: cover;
+.video-description {
+  font-size: var(--font-size-base);
+  color: var(--el-text-color-regular);
+  line-height: var(--line-height-large);
+  margin: 0;
+}
+
+.significance-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    font-size: var(--font-size-base);
+    color: var(--el-text-color-regular);
+    line-height: var(--line-height-large);
+    margin-bottom: var(--spacing-small);
+    position: relative;
+    padding-left: var(--spacing-base);
+
+    &::before {
+      content: '•';
+      color: var(--el-color-primary);
+      position: absolute;
+      left: 0;
     }
   }
+}
 
-  .video-info {
-    margin-top: 12px;
+.text-section {
+  .card-wrapper {
+    margin-bottom: var(--spacing-base);
 
-    h3 {
-      font-size: 18px;
-      font-weight: 600;
-      color: #303133;
-      margin: 0 0 8px 0;
-      border-left: 4px solid #409eff;
-      padding-left: 12px;
-    }
-
-    p {
-      font-size: 14px;
-      color: #606266;
-      line-height: 1.8;
-      margin: 0;
+    &:last-child {
+      margin-bottom: 0;
     }
   }
+}
 
-  .stats-row {}
+.feature-content {
+  @include flex-center-y;
 
-  .significance-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-
-    li {
-      font-size: 14px;
-      color: #606266;
-      line-height: 1.8;
-      margin-bottom: 8px;
-      position: relative;
-      padding-left: 16px;
-
-      &::before {
-        content: '•';
-        color: #409eff;
-        position: absolute;
-        left: 0;
-      }
-    }
+  .feature-icon {
+    font-size: var(--font-size-large);
+    margin-right: var(--spacing-sm);
   }
 
-  .features-row {
-    .feature-card {
-      display: flex;
-      align-items: center;
-      padding: 10px 12px;
-      background: #f9fafb;
-      border-radius: 8px;
-
-      .feature-icon {
-        font-size: 18px;
-        margin-right: 10px;
-      }
-
-      .feature-text {
-        font-size: 14px;
-        color: #606266;
-      }
-    }
+  .feature-text {
+    font-size: var(--font-size-base);
+    color: var(--el-text-color-regular);
   }
 }
 
@@ -287,24 +278,24 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 6px;
+  gap: var(--spacing-xs);
 
   &__value {
-    font-size: 18px;
+    font-size: var(--font-size-large);
     font-weight: 700;
-    color: #303133;
+    color: var(--el-text-color-primary);
 
     .stat-card__unit {
-      margin-left: 4px;
-      font-size: 12px;
-      color: #909399;
-      font-weight: 500;
+      margin-left: var(--spacing-mini);
+      font-size: var(--font-size-extra-small);
+      color: var(--text-disabled);
+      font-weight: var(--font-weight-medium);
     }
   }
 
   &__label {
-    font-size: 12px;
-    color: #606266;
+    font-size: var(--font-size-extra-small);
+    color: var(--el-text-color-regular);
   }
 }
 </style>

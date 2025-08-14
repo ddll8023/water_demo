@@ -226,7 +226,7 @@ const recordSearchFields = ref([
         options: [],
         placeholder: '请选择设施类型',
         span: 3,
-        labelWidth: '60px',
+        labelWidth: 'var(--form-label-width-search)',
         clearable: true
     },
     {
@@ -236,7 +236,7 @@ const recordSearchFields = ref([
         options: [],
         placeholder: '请选择巡检设施',
         span: 3,
-        labelWidth: '60px',
+        labelWidth: 'var(--form-label-width-search)',
         clearable: true
     },
     {
@@ -247,7 +247,7 @@ const recordSearchFields = ref([
         endPlaceholder: '请选择结束时间',
         showDuration: true,
         span: 8,
-        labelWidth: '60px'
+        labelWidth: 'var(--form-label-width-search)'
     },
     {
         prop: 'issueFlag',
@@ -259,7 +259,7 @@ const recordSearchFields = ref([
         ],
         placeholder: '请选择',
         span: 3,
-        labelWidth: '60px',
+        labelWidth: 'var(--form-label-width-search)',
         clearable: true
     },
     {
@@ -272,7 +272,7 @@ const recordSearchFields = ref([
         ],
         placeholder: '请选择',
         span: 3,
-        labelWidth: '60px',
+        labelWidth: 'var(--form-label-width-search)',
         clearable: true
     },
     {
@@ -282,7 +282,7 @@ const recordSearchFields = ref([
         options: [],
         placeholder: '请选择负责人',
         span: 3,
-        labelWidth: '50px',
+        labelWidth: 'var(--form-label-width-compact)',
         clearable: true
     }
 ])
@@ -796,7 +796,7 @@ defineExpose({
                     font-weight: 500;
                     color: var(--text-primary);
                     white-space: nowrap;
-                    min-width: 80px;
+                    min-width: var(--button-min-width);
                 }
 
                 span {

@@ -870,7 +870,7 @@ defineExpose({
 
         .col-fullName {
           width: calc(12% - 2px);
-          min-width: 80px;
+          min-width: var(--button-min-width);
         }
 
         .col-phone {
@@ -890,7 +890,7 @@ defineExpose({
 
         .col-positionName {
           width: calc(10% - 2px);
-          min-width: 80px;
+          min-width: var(--button-min-width);
         }
 
         .col-roleName {

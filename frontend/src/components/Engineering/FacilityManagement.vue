@@ -57,7 +57,7 @@
     <CustomDialog v-model:visible="dialogVisible" :title="dialogTitle" width="60%" :close-on-click-modal="false"
       :close-on-press-escape="false" :loading="formLoading" @cancel="dialogVisible = false" @confirm="handleSubmit">
       <CommonForm ref="formRef" v-model="formData" :items="formFields" :rules="formRules" :submit-loading="formLoading"
-        :labelWidth="'120px'" :show-actions="false" />
+        :label-width="'var(--form-label-width-detail)'" :show-actions="false" />
     </CustomDialog>
 
   </div>

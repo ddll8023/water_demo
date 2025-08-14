@@ -81,6 +81,11 @@
   justify-content: flex-end;
 }
 
+@mixin flex-center-y {
+  display: flex;
+  align-items: center;
+}
+
 // 绝对定位居中
 @mixin absolute-center {
   position: absolute;

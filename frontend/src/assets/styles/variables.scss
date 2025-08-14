@@ -47,6 +47,9 @@
   // 边框色系（来自index.html标准设计）
   --border-color: #C9CDD4;
   --border-light: #EBEEF5;
+  --border-color-light: #E4E7ED;
+  --border-color-lighter: #EBEEF5;
+  --border-color-extra-light: #F2F6FC;
 
   // 深色边框系列
   --border-dark: #434a50;
@@ -117,12 +120,21 @@ $bg-tertiary: #FAFAFA;
   --font-size-mini: 11px;
   --font-size-micro: 10px;
 
+  // 补充缺失的字号变量（用于替换硬编码值）
+  --font-size-xl: 24px; // 对应原来的 font-size: 24px
+  --font-size-lg: 20px; // 对应原来的 font-size: 20px  
+  --font-size-sm: 14px; // 对应原来的 font-size: 14px
+  --font-size-notice-icon: 64px; // 提示页面图标字体大小（多组件复用）
+
   // 字重规范
   --font-weight-light: 300;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-bold: 600;
   --font-weight-primary: 500;
+
+  // 补充缺失的字重变量（用于替换硬编码值）
+  --font-weight-semibold: 600; // 对应原来的 font-weight: 600
 
   // 行高规范
   --line-height-base: 1.5;
@@ -147,9 +159,15 @@ $bg-tertiary: #FAFAFA;
   --spacing-large: 20px;
   --spacing-extra-large: 24px;
 
+  // 补充缺失的间距变量（用于替换硬编码值）
+  --spacing-2: 8px; // 对应原来的 gap: 8px
+  --spacing-4: 20px; // 对应原来的 padding: 20px
+  --spacing-40: 40px; // 用于开发中提示区域的上边距（多组件复用）
+
   // 组件间距
   --component-margin-bottom: 16px;
   --form-item-margin-bottom: 18px;
+  --form-item-margin-bottom-large: 22px; // 表单项大间距（跨组件复用）
   --card-padding: 20px;
 
   // 常用内边距组合（跨组件复用）
@@ -191,10 +209,16 @@ $spacing-extra-large: var(--spacing-extra-large);
   --border-radius-pill: 25px;
   --border-radius-round: 50%;
 
+  // 补充缺失的圆角变量
+  --border-radius-feature-tag: 16px; // 功能标签圆角（多组件复用）
+
   // 阴影规范
   --box-shadow-light: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
   --box-shadow-base: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.12);
   --box-shadow-dark: 0 4px 8px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.12);
+
+  // 补充缺失的阴影变量（用于替换硬编码值）
+  --shadow-md: 0 2px 12px 0 rgba(0, 0, 0, 0.1); // 对应原来的 box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1)
 
   // 边框宽度规范
   --border-width-thin: 1px;
@@ -282,6 +306,13 @@ $breakpoint-xl: 1920px;
   --bg-color: var(--bg-primary);
   --bg-color-page: var(--bg-secondary);
 
+  // 通用交互效果变量（跨组件复用）
+  --hover-transform-y: -2px; // 标准悬停变换距离
+  --hover-transform-y-small: -1px; // 小幅悬停变换距离
+
+  // 通用对话框和布局尺寸变量（跨组件复用）
+  --dialog-width-default: 500px; // 默认对话框宽度
+
   // 通用图标规范变量
   --icon-size-xs: 12px; // 超小图标
   --icon-size-sm: 14px; // 小图标
@@ -293,11 +324,13 @@ $breakpoint-xl: 1920px;
 
   // 按钮和容器尺寸变量
   --button-size-small: 28px; // 小按钮尺寸
+  --button-min-width: 80px; // 标准按钮最小宽度
   --icon-container-size: 36px; // 图标容器尺寸
 
   // 通用卡片阴影层级
   --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.1);
   --shadow-card-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-hover-button: 0 4px 8px rgba(0, 0, 0, 0.1); // 按钮悬停阴影
   --shadow-popup: 0 6px 20px rgba(0, 0, 0, 0.15);
 
   // 扩展阴影系统（跨组件复用）
@@ -306,6 +339,7 @@ $breakpoint-xl: 1920px;
   --shadow-card-light: 0 1px 3px var(--black-transparent-thin);
   --shadow-card-medium: 0 2px 6px var(--black-transparent-light-10);
   --shadow-card-strong: 0 2px 8px var(--primary-transparent-medium);
+  --shadow-primary-light: 0 4px 12px rgba(22, 93, 255, 0.15);
 
   // 通用尺寸
   --table-row-height: 48px; // 表格行高
@@ -353,6 +387,7 @@ $breakpoint-xl: 1920px;
   --white-transparent-medium: rgba(255, 255, 255, 0.3);
   --white-transparent-active: rgba(255, 255, 255, 0.4);
   --white-transparent-strong: rgba(255, 255, 255, 0.8);
+  --white-transparent-strong-90: rgba(255, 255, 255, 0.9);
   --white-transparent-full: rgba(255, 255, 255, 0.95);
 
   // Primary颜色透明度系列
@@ -375,6 +410,8 @@ $breakpoint-xl: 1920px;
 
   // 状态背景颜色（跨组件复用）
   --status-normal-bg: #f0f9ff;
+  --hover-bg-light: #f0f9ff; // 浅蓝色悬停背景（系统管理组件通用）
+  --hover-border-light: #b3d8ff; // 浅蓝色悬停边框（系统管理组件通用）
 }
 
 // ==================== 布局特定变量（从 layout.scss 合并）====================

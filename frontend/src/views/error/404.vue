@@ -39,38 +39,12 @@
             <i class="fa fa-arrow-left"></i>
             返回上页
           </CustomButton>
-          <CustomButton type="secondary" size="large" @click="refresh">
-            <i class="fa fa-refresh"></i>
-            刷新页面
-          </CustomButton>
         </div>
-
-
-
-        <!-- 快速导航 -->
-        <div class="quick-navigation">
-          <h3>快速导航：</h3>
-          <div class="nav-links">
-            <el-link v-for="link in quickLinks" :key="link.path" :href="link.path" class="nav-link"
-              @click.prevent="navigateTo(link.path)">
-              <i class="fa" :class="link.icon"></i>
-              {{ link.name }}
-            </el-link>
-          </div>
-        </div>
-      </div>
-
-      <!-- 装饰元素 -->
-      <div class="error-decoration">
-        <div class="floating-element element-1"></div>
-        <div class="floating-element element-2"></div>
-        <div class="floating-element element-3"></div>
       </div>
     </div>
 
     <!-- 页脚信息 -->
     <div class="error-footer">
-      <p>如果问题持续存在，请联系系统管理员</p>
       <p>错误代码：404 | 时间：{{ currentTime }}</p>
     </div>
   </div>
@@ -92,25 +66,8 @@ import CustomButton from '@/components/Common/CustomButton.vue'
 // 路由实例
 const router = useRouter()
 
-
-
 // 当前时间显示
 const currentTime = ref('')
-
-/**
- * ----------------------------------------
- * 页面配置数据
- * ----------------------------------------
- */
-// 快速导航链接配置
-const quickLinks = ref([
-  { name: '系统首页', path: '/dashboard', icon: 'fa-home' },
-  { name: '一张图', path: '/map', icon: 'fa-map-o' },
-  { name: '实时监测', path: '/monitoring', icon: 'fa-desktop' },
-  { name: '预警管理', path: '/warning', icon: 'fa-warning' },
-  { name: '管理服务', path: '/management', icon: 'fa-sitemap' },
-  { name: '工程服务', path: '/engineering', icon: 'fa-cog' }
-])
 
 /**
  * ----------------------------------------
@@ -132,19 +89,6 @@ const goBack = () => {
   }
   ElMessage.info('正在返回上一页...')
 }
-
-// 刷新当前页面
-const refresh = () => {
-  window.location.reload()
-}
-
-// 导航到指定路径
-const navigateTo = (path) => {
-  router.push(path)
-  ElMessage.success(`正在跳转到${quickLinks.value.find(link => link.path === path)?.name}...`)
-}
-
-
 
 /**
  * ----------------------------------------
@@ -171,6 +115,8 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 /**
  * ----------------------------------------
  * 404错误页面基础样式
@@ -178,12 +124,12 @@ onMounted(() => {
  */
 .error-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--bg-secondary);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: var(--spacing-large);
   position: relative;
   overflow: hidden;
 
@@ -193,12 +139,11 @@ onMounted(() => {
   .error-container {
     max-width: 800px;
     width: 100%;
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--bg-primary);
     border-radius: 20px;
     padding: 60px 40px;
     text-align: center;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(var(--blur-medium));
+    box-shadow: var(--shadow-card);
     position: relative;
     z-index: 2;
 
@@ -215,7 +160,7 @@ onMounted(() => {
         font-weight: 900;
         color: var(--el-color-primary);
         line-height: 1;
-        margin-bottom: 20px;
+        margin-bottom: var(--spacing-large);
         text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         background: linear-gradient(45deg, var(--el-color-primary), var(--el-color-primary-light-3));
         -webkit-background-clip: text;
@@ -239,142 +184,52 @@ onMounted(() => {
       // 错误标题样式
       .error-title {
         font-size: 32px;
-        color: var(--el-text-color-primary);
+        color: var(--text-primary);
         margin-bottom: var(--spacing-base);
-        font-weight: 600;
+        font-weight: var(--font-weight-semibold);
       }
 
       // 错误描述样式
       .error-description {
-        font-size: 16px;
-        color: var(--el-text-color-regular);
+        font-size: var(--font-size-medium);
+        color: var(--text-secondary);
         margin-bottom: 32px;
-        line-height: 1.6;
+        line-height: var(--line-height-large);
       }
 
       // 可能原因区域样式
       .error-reasons {
         text-align: left;
         margin-bottom: 32px;
-        padding: 20px;
-        background: var(--el-bg-color-light);
-        border-radius: 8px;
+        padding: var(--card-padding);
+        background: var(--bg-tertiary);
+        border-radius: var(--border-radius-large);
 
         h3 {
-          font-size: 16px;
-          color: var(--el-text-color-primary);
-          margin-bottom: 12px;
+          font-size: var(--font-size-medium);
+          color: var(--text-primary);
+          margin-bottom: var(--spacing-medium);
         }
 
         ul {
           margin: 0;
-          padding-left: 20px;
+          padding-left: var(--spacing-large);
 
           li {
-            font-size: 14px;
-            color: var(--el-text-color-regular);
-            margin-bottom: 8px;
-            line-height: 1.5;
+            font-size: var(--font-size-base);
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-small);
+            line-height: var(--line-height-base);
           }
         }
       }
 
       // 操作按钮区域样式
       .error-actions {
-        margin-bottom: 40px;
-        display: flex;
-        justify-content: center;
-        gap: 16px;
+        margin-bottom: var(--spacing-large);
+        @include flex-center;
+        gap: var(--spacing-base);
         flex-wrap: wrap;
-      }
-
-
-
-      // 快速导航区域样式
-      .quick-navigation {
-        text-align: left;
-
-        h3 {
-          font-size: 16px;
-          color: var(--el-text-color-primary);
-          margin-bottom: var(--spacing-base);
-          text-align: center;
-        }
-
-        .nav-links {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-          gap: 12px;
-
-          .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: var(--padding-panel-header);
-            background: var(--el-bg-color-light);
-            border-radius: 8px;
-            text-decoration: none;
-            color: var(--el-text-color-primary);
-            transition: all 0.3s;
-            font-size: 14px;
-
-            &:hover {
-              background: var(--el-color-primary-light-9);
-              color: var(--el-color-primary);
-              transform: translateY(-2px);
-            }
-
-            .fa {
-              font-size: 16px;
-            }
-          }
-        }
-      }
-    }
-
-    /**
-     * 装饰元素样式
-     */
-    .error-decoration {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      pointer-events: none;
-      z-index: -1;
-
-      // 浮动装饰元素
-      .floating-element {
-        position: absolute;
-        border-radius: 50%;
-        background: linear-gradient(45deg, var(--el-color-primary-light-8), var(--el-color-primary-light-9));
-        opacity: 0.6;
-        animation: float 6s ease-in-out infinite;
-
-        &.element-1 {
-          width: 60px;
-          height: 60px;
-          top: 10%;
-          left: 10%;
-          animation-delay: 0s;
-        }
-
-        &.element-2 {
-          width: 40px;
-          height: 40px;
-          top: 20%;
-          right: 15%;
-          animation-delay: 2s;
-        }
-
-        &.element-3 {
-          width: 80px;
-          height: 80px;
-          bottom: 15%;
-          left: 15%;
-          animation-delay: 4s;
-        }
       }
     }
   }
@@ -383,33 +238,15 @@ onMounted(() => {
    * 页脚信息样式
    */
   .error-footer {
-    margin-top: 40px;
+    margin-top: var(--spacing-40);
     text-align: center;
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 12px;
+    color: var(--text-secondary);
+    font-size: var(--font-size-extra-small);
     z-index: 2;
 
     p {
-      margin: 4px 0;
+      margin: var(--spacing-mini) 0;
     }
-  }
-}
-
-/**
- * ----------------------------------------
- * 动画效果定义
- * ----------------------------------------
- */
-// 浮动动画
-@keyframes float {
-
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-
-  50% {
-    transform: translateY(-20px);
   }
 }
 
@@ -419,7 +256,7 @@ onMounted(() => {
  * ----------------------------------------
  */
 // 移动端适配
-@media (max-width: 768px) {
+@include respond-to(md) {
   .error-page {
     padding: 10px;
 
@@ -432,7 +269,7 @@ onMounted(() => {
 
       .error-content {
         .error-title {
-          font-size: 24px;
+          font-size: var(--font-size-xl);
         }
 
         .error-actions {
@@ -443,10 +280,6 @@ onMounted(() => {
             width: 100%;
             max-width: 200px;
           }
-        }
-
-        .quick-navigation .nav-links {
-          grid-template-columns: 1fr;
         }
       }
     }

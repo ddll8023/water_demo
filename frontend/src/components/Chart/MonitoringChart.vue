@@ -1167,7 +1167,7 @@ const zoomOut = (chartIndex) => updateChartZoom(0.7, 'multiply', chartIndex)
      * 图表轮播区域样式
      */
     .chart-carousel-section {
-        margin-bottom: 20px;
+        margin-bottom: var(--spacing-large);
     }
 
     .carousel-card {
@@ -1367,7 +1367,7 @@ const zoomOut = (chartIndex) => updateChartZoom(0.7, 'multiply', chartIndex)
                         height: 100% !important;
                         display: block;
                         border-radius: var(--border-radius-large);
-                        background: rgba(255, 255, 255, 0.9);
+                        background: var(--white-transparent-strong-90);
                         cursor: grab;
 
                         &:active {
@@ -1425,7 +1425,7 @@ const zoomOut = (chartIndex) => updateChartZoom(0.7, 'multiply', chartIndex)
                             display: flex;
                             align-items: center;
                             gap: 2px;
-                            background: rgba(255, 255, 255, 0.9);
+                            background: var(--white-transparent-strong-90);
                             border-radius: var(--border-radius-base);
                             padding: 2px 4px;
                             border: var(--chart-standard-border);

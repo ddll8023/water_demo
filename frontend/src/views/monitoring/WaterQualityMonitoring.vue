@@ -149,7 +149,7 @@ const searchFields = ref([
     options: [],
     placeholder: '请选择监测站点',
     span: 4,
-    labelWidth: '60px'
+    labelWidth: 'var(--form-label-width-search)'
   },
   {
     prop: 'timeRange',
@@ -159,7 +159,7 @@ const searchFields = ref([
     endPlaceholder: '请选择结束时间',
     showDuration: true,
     span: 8,
-    labelWidth: '60px'
+    labelWidth: 'var(--form-label-width-search)'
   }
 ])
 
@@ -612,18 +612,20 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-/**
- * 水质监测页面样式
- */
+@use "@/assets/styles/index.scss" as *;
+
+// ============================================
+// 页面布局样式
+// ============================================
 .water-quality-monitoring {
 
-  /**
-   * 页面内容区域样式
-   */
+  // ============================================
+  // 页面内容区域样式
+  // ============================================
   .filter-section,
   .chart-carousel-section,
   .table-section {
-    margin-bottom: 20px;
+    margin-bottom: var(--spacing-large);
   }
 }
 </style>

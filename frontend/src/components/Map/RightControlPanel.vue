@@ -351,7 +351,7 @@ defineExpose({
                     display: flex;
                     align-items: center;
                     padding: var(--padding-legend-item);
-                    background: rgba(255, 255, 255, 0.9);
+                    background: var(--white-transparent-strong-90);
                     backdrop-filter: blur(var(--blur-light));
                     border: var(--border-width-thin) solid var(--white-transparent-medium);
                     border-radius: var(--border-radius-large);

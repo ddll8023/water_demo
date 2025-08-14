@@ -185,7 +185,7 @@ const enhancedSearchFields = computed(() => [
         prop: 'stationName',
         label: '测点名称',
         placeholder: '请输入测点名称',
-        labelWidth: '70px',
+        labelWidth: 'var(--form-label-width-standard)',
         span: 4,
     },
     {
@@ -193,7 +193,7 @@ const enhancedSearchFields = computed(() => [
         prop: 'monitoringItem',
         label: '监测项',
         placeholder: '请选择监测项',
-        labelWidth: '60px',
+        labelWidth: 'var(--form-label-width-search)',
         options: monitoringItemOptions.value,
         span: 4,
     },

@@ -678,7 +678,7 @@ const handleCurrentChange = (page) => {
 
         &:hover {
           border-color: var(--primary-color);
-          background-color: #f0f9ff;
+          background-color: var(--hover-bg-light);
         }
 
         &.active {
@@ -742,8 +742,8 @@ const handleCurrentChange = (page) => {
     /* 无选择状态样式 */
     .no-selection {
       @include flex-center;
-      height: calc(100vh - var(--page-min-height-offset) - 60px);
-      min-height: calc(var(--panel-height-default) - 60px);
+      height: calc(100vh - var(--page-min-height-offset) - var(--card-header-height));
+      min-height: calc(var(--panel-height-default) - var(--card-header-height));
     }
   }
 }

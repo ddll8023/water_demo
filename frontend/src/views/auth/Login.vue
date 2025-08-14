@@ -235,26 +235,26 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/index.scss" as *;
+
 /**
  * ----------------------------------------
  * 页面基本样式
  * ----------------------------------------
  */
 .login-container {
-  background: #f5f5f5;
+  background: var(--bg-secondary);
   height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include flex-center;
 
   /**
    * 登录卡片样式
    */
   .login-card {
     width: 400px;
-    background: #ffffff;
-    border-radius: 8px;
-    border: 1px solid #e4e7ed;
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-large);
+    border: var(--border-width-thin) solid var(--border-light);
     padding: 32px;
 
     /**
@@ -262,31 +262,31 @@ onMounted(() => {
      */
     .login-header {
       text-align: center;
-      margin-bottom: 24px;
+      margin-bottom: var(--spacing-extra-large);
 
       .login-logo {
-        margin-bottom: 12px;
+        margin-bottom: var(--spacing-medium);
 
         img {
-          width: 48px;
-          height: 48px;
-          border-radius: 4px;
+          width: var(--icon-size-xxl);
+          height: var(--icon-size-xxl);
+          border-radius: var(--border-radius-base);
         }
       }
 
       .login-title {
-        font-size: 20px;
-        color: #303133;
-        font-weight: 500;
-        margin: 0 0 6px 0;
-        line-height: 1.2;
+        font-size: var(--font-size-extra-large);
+        color: var(--el-text-color-primary);
+        font-weight: var(--font-weight-medium);
+        margin: 0 0 var(--spacing-xs) 0;
+        line-height: var(--line-height-small);
       }
 
       .login-subtitle {
-        color: #909399;
-        font-size: 13px;
+        color: var(--text-tertiary);
+        font-size: var(--font-size-small);
         margin: 0;
-        line-height: 1.4;
+        line-height: var(--line-height-base);
       }
     }
 
@@ -295,24 +295,22 @@ onMounted(() => {
      */
     .login-form {
       .login-options {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        @include flex-between;
         width: 100%;
-        margin-bottom: 6px;
+        margin-bottom: var(--spacing-xs);
 
         .el-checkbox {
-          color: #606266;
+          color: var(--el-text-color-regular);
         }
       }
 
       .login-button {
         width: 100%;
         height: 44px;
-        font-size: 14px;
-        font-weight: 400;
-        border-radius: 4px;
-        margin-top: 6px;
+        font-size: var(--font-size-base);
+        font-weight: var(--font-weight-normal);
+        border-radius: var(--border-radius-base);
+        margin-top: var(--spacing-xs);
       }
     }
 
@@ -321,11 +319,11 @@ onMounted(() => {
      */
     .login-footer {
       text-align: center;
-      margin-top: 20px;
+      margin-top: var(--spacing-large);
 
       .copyright {
-        color: #c0c4cc;
-        font-size: 12px;
+        color: var(--text-disabled);
+        font-size: var(--font-size-extra-small);
         margin: 0;
       }
     }
@@ -337,20 +335,20 @@ onMounted(() => {
  * 响应式设计
  * ----------------------------------------
  */
-@media (max-width: 768px) {
+@include respond-to(sm) {
   .login-container {
-    padding: 16px;
+    padding: var(--spacing-base);
 
     .login-card {
       width: 100%;
       max-width: 360px;
-      padding: 24px 20px;
+      padding: var(--spacing-extra-large) var(--spacing-large);
 
       .login-header {
-        margin-bottom: 20px;
+        margin-bottom: var(--spacing-large);
 
         .login-title {
-          font-size: 18px;
+          font-size: var(--font-size-large);
         }
       }
     }
