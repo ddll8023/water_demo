@@ -6,239 +6,243 @@
     <!-- 功能选项卡 -->
     <TabSection v-model="activeTab" :tabs="tabConfig" />
 
-    <!-- 组织架构管理视图 -->
-    <div v-if="activeTab === 'organization'" class="organization-view">
-      <el-row :gutter="20">
-        <!-- 左侧部门树 -->
-        <el-col :span="8">
-          <el-card class="tree-card">
-            <!-- 部门搜索和控制区域 -->
-            <div class="tree-controls">
-              <CustomInput v-model="departmentSearchText" placeholder="搜索部门..." clearable
-                @input="handleDepartmentSearch" prefix-icon="fa-search" class="search-input" />
-              <div class="control-buttons">
-                <CustomButton type="primary" size="small" @click="handleAddDepartment" v-permission="'business:manage'">
-                  新增
-                </CustomButton>
-                <CustomButton type="secondary" size="small" @click="handleToggleAll" :disabled="!departmentTree.length">
-                  <i class="fa fa-compress"></i>
-                  展开/折叠
-                </CustomButton>
+    <div class="tab-content-wrapper">
+      <!-- 组织架构管理视图 -->
+      <div v-if="activeTab === 'organization'" class="organization-section">
+        <el-row :gutter="20">
+          <!-- 左侧部门树 -->
+          <el-col :span="8">
+            <div class="tree-card">
+              <!-- 部门搜索和控制区域 -->
+              <div class="tree-controls">
+                <CustomInput v-model="departmentSearchText" placeholder="搜索部门..." clearable
+                  @input="handleDepartmentSearch" prefix-icon="fa-search" class="search-input" />
+                <div class="control-buttons">
+                  <CustomButton type="primary" size="small" @click="handleAddDepartment"
+                    v-permission="'business:manage'">
+                    新增
+                  </CustomButton>
+                  <CustomButton type="secondary" size="small" @click="handleToggleAll"
+                    :disabled="!departmentTree.length">
+                    <i class="fa fa-compress"></i>
+                    展开/折叠
+                  </CustomButton>
+                </div>
+              </div>
+
+              <div class="tree-container">
+                <el-tree ref="departmentTreeRef" :data="filteredDepartmentTree" :props="treeProps" node-key="id"
+                  :expand-on-click-node="false" :highlight-current="true" @node-click="handleDepartmentClick"
+                  :expanded-keys="expandedKeys" :default-expand-all="true" class="department-tree">
+                  <template #default="{ node, data }">
+                    <span class="tree-node" :class="{ 'tree-node-selected': selectedDepartment.id === data.id }">
+                      <span class="node-content">
+                        <i class="node-icon fa" :class="{
+                          'fa-sitemap': node.level === 1,
+                          'fa-building-o': node.level === 2,
+                          'fa-users': node.level > 2
+                        }"></i>
+                        <span class="node-label">{{ node.label }}</span>
+                      </span>
+                      <span class="node-actions">
+                        <CustomButton type="text" text-type="primary" size="small"
+                          @click.stop="handleEditDepartment(data)" v-permission="'business:manage'">
+                          编辑
+                        </CustomButton>
+                        <CustomButton type="text" text-type="danger" size="small"
+                          @click.stop="handleDeleteDepartment(data)" v-permission="'business:manage'">
+                          删除
+                        </CustomButton>
+                      </span>
+                    </span>
+                  </template>
+                </el-tree>
               </div>
             </div>
+          </el-col>
 
-            <div class="tree-container">
-              <el-tree ref="departmentTreeRef" :data="filteredDepartmentTree" :props="treeProps" node-key="id"
-                :expand-on-click-node="false" :highlight-current="true" @node-click="handleDepartmentClick"
-                :expanded-keys="expandedKeys" :default-expand-all="true" class="department-tree">
-                <template #default="{ node, data }">
-                  <span class="tree-node" :class="{ 'tree-node-selected': selectedDepartment.id === data.id }">
-                    <span class="node-content">
-                      <i class="node-icon fa" :class="{
-                        'fa-sitemap': node.level === 1,
-                        'fa-building-o': node.level === 2,
-                        'fa-users': node.level > 2
-                      }"></i>
-                      <span class="node-label">{{ node.label }}</span>
-                    </span>
-                    <span class="node-actions">
-                      <CustomButton type="text" text-type="primary" size="small"
-                        @click.stop="handleEditDepartment(data)" v-permission="'business:manage'">
-                        编辑
-                      </CustomButton>
-                      <CustomButton type="text" text-type="danger" size="small"
-                        @click.stop="handleDeleteDepartment(data)" v-permission="'business:manage'">
-                        删除
-                      </CustomButton>
-                    </span>
-                  </span>
-                </template>
-              </el-tree>
-            </div>
-          </el-card>
-        </el-col>
+          <!-- 右侧部门详情面板 -->
+          <el-col :span="16">
+            <div class="detail-card">
+              <!-- 部门详情标题 -->
+              <div class="detail-header">
+                <h3 class="detail-title">
+                  部门详情：{{ selectedDepartment.name || '请选择部门' }}
+                </h3>
+              </div>
 
-        <!-- 右侧部门详情面板 -->
-        <el-col :span="16">
-          <el-card class="detail-card">
-            <!-- 部门详情标题 -->
-            <div class="detail-header">
-              <h3 class="detail-title">
-                部门详情：{{ selectedDepartment.name || '请选择部门' }}
-              </h3>
-            </div>
-
-            <!-- 部门详情标签页 -->
-            <div v-if="selectedDepartment.id" class="department-details">
-              <el-tabs v-model="activeDetailTab" class="detail-tabs">
-                <!-- 基本信息标签页 -->
-                <el-tab-pane label="基本信息" name="basic">
-                  <template #label>
-                    <span class="tab-label">
-                      <i class="fa fa-info-circle"></i>
-                      基本信息
-                    </span>
-                  </template>
-                  <div class="basic-info-content">
-                    <!-- 部门基本信息卡片 -->
-                    <div class="department-info-card">
-                      <div class="info-header">
-                        <div class="info-title-section">
-                          <h4 class="department-name">{{ selectedDepartment.name }}</h4>
-                          <p class="department-description">{{ selectedDepartment.duty }}</p>
+              <!-- 部门详情标签页 -->
+              <div v-if="selectedDepartment.id" class="department-details">
+                <el-tabs v-model="activeDetailTab" class="detail-tabs">
+                  <!-- 基本信息标签页 -->
+                  <el-tab-pane label="基本信息" name="basic">
+                    <template #label>
+                      <span class="tab-label">
+                        <i class="fa fa-info-circle"></i>
+                        基本信息
+                      </span>
+                    </template>
+                    <div class="basic-info-content">
+                      <!-- 部门基本信息卡片 -->
+                      <div class="department-info-card">
+                        <div class="info-header">
+                          <div class="info-title-section">
+                            <h4 class="department-name">{{ selectedDepartment.name }}</h4>
+                            <p class="department-description">{{ selectedDepartment.duty }}</p>
+                          </div>
+                          <div class="info-actions">
+                            <CustomButton type="primary" @click="handleEditDepartment(selectedDepartment)"
+                              v-permission="'business:manage'">
+                              <i class="fa fa-edit"></i>
+                              编辑信息
+                            </CustomButton>
+                          </div>
                         </div>
-                        <div class="info-actions">
-                          <CustomButton type="primary" @click="handleEditDepartment(selectedDepartment)"
-                            v-permission="'business:manage'">
-                            <i class="fa fa-edit"></i>
-                            编辑信息
+
+                        <div class="info-grid">
+                          <div class="info-item">
+                            <div class="info-icon">
+                              <i class="fa fa-users"></i>
+                            </div>
+                            <div class="info-content">
+                              <p class="info-label">部门人数</p>
+                              <p class="info-value">{{ departmentPersonnel.length }}人</p>
+                            </div>
+                          </div>
+
+                          <div class="info-item">
+                            <div class="info-icon">
+                              <i class="fa fa-calendar-o"></i>
+                            </div>
+                            <div class="info-content">
+                              <p class="info-label">成立日期</p>
+                              <p class="info-value">{{ formatDateTime(selectedDepartment.createdAt, 'YYYY-MM-DD') }}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- 部门职责描述 -->
+                      <div class="department-duty-section">
+                        <h4 class="section-title">部门职责</h4>
+                        <p class="duty-description">
+                          {{ selectedDepartment.duty || "无" }}
+                        </p>
+                      </div>
+                    </div>
+                  </el-tab-pane>
+
+                  <!-- 下级部门标签页 -->
+                  <el-tab-pane label="下级部门" name="subdepartments">
+                    <template #label>
+                      <span class="tab-label">
+                        <i class="fa fa-building-o"></i>
+                        下级部门
+                      </span>
+                    </template>
+                    <div class="subdepartments-content">
+                      <!-- 下级部门操作区域 -->
+                      <div class="subdepartments-header">
+                        <CustomButton type="primary" @click="handleAddSubDepartment" v-permission="'business:manage'">
+                          <i class="fa fa-plus"></i>
+                          新增下级部门
+                        </CustomButton>
+                      </div>
+
+                      <CommonTable :data="subDepartments" :columns="subDepartmentColumns"
+                        :loading="subDepartmentsLoading" :show-selection="true" :show-index="true"
+                        @edit="handleEditSubDepartment" @delete="handleDeleteSubDepartment">
+                        <template #isActive="{ row }">
+                          <el-tag :type="row.isActive ? 'success' : 'danger'" size="small">
+                            {{ row.isActive ? '启用' : '禁用' }}
+                          </el-tag>
+                        </template>
+                        <template #actions="{ row, index }">
+                          <CustomButton type="text" text-type="primary" size="small"
+                            @click.stop="handleEditSubDepartment(row)">
+                            编辑
                           </CustomButton>
-                        </div>
+                          <CustomButton type="text" text-type="danger" size="small"
+                            @click.stop="handleDeleteSubDepartment(row)">
+                            删除
+                          </CustomButton>
+
+                        </template>
+                      </CommonTable>
+                    </div>
+                  </el-tab-pane>
+
+                  <!-- 部门人员标签页 -->
+                  <el-tab-pane label="部门人员" name="personnel">
+                    <template #label>
+                      <span class="tab-label">
+                        <i class="fa fa-users"></i>
+                        部门人员
+                      </span>
+                    </template>
+                    <div class="personnel-content">
+                      <CommonTable :data="departmentPersonnel" :columns="personnelColumns" :loading="personnelLoading"
+                        :show-pagination="false" :show-index="true" @selection-change="handlePersonnelSelectionChange">
+                        <template #actions="{ row, index }">
+                          <CustomButton type="text" text-type="primary" size="small"
+                            @click.stop="handleEditPersonnel(row)">
+                            编辑
+                          </CustomButton>
+                          <CustomButton type="text" text-type="danger" size="small"
+                            @click.stop="handleDeletePersonnel(row)">
+                            删除
+                          </CustomButton>
+                        </template>
+                      </CommonTable>
+
+                      <!-- 部门人员分页器 -->
+                      <div class="table-pagination">
+                        <CustomPagination :currentPage="departmentPersonnelPage" :pageSize="departmentPersonnelSize"
+                          :total="departmentPersonnelTotal" @size-change="handleDepartmentPersonnelSizeChange"
+                          @current-change="handleDepartmentPersonnelCurrentChange" />
                       </div>
-
-                      <div class="info-grid">
-                        <div class="info-item">
-                          <div class="info-icon">
-                            <i class="fa fa-users"></i>
-                          </div>
-                          <div class="info-content">
-                            <p class="info-label">部门人数</p>
-                            <p class="info-value">{{ departmentPersonnel.length }}人</p>
-                          </div>
-                        </div>
-
-                        <div class="info-item">
-                          <div class="info-icon">
-                            <i class="fa fa-calendar-o"></i>
-                          </div>
-                          <div class="info-content">
-                            <p class="info-label">成立日期</p>
-                            <p class="info-value">{{ formatDateTime(selectedDepartment.createdAt, 'YYYY-MM-DD') }}</p>
-                          </div>
-                        </div>
-                      </div>
                     </div>
+                  </el-tab-pane>
+                </el-tabs>
+              </div>
 
-                    <!-- 部门职责描述 -->
-                    <div class="department-duty-section">
-                      <h4 class="section-title">部门职责</h4>
-                      <p class="duty-description">
-                        {{ selectedDepartment.duty || "无" }}
-                      </p>
-                    </div>
-                  </div>
-                </el-tab-pane>
-
-                <!-- 下级部门标签页 -->
-                <el-tab-pane label="下级部门" name="subdepartments">
-                  <template #label>
-                    <span class="tab-label">
-                      <i class="fa fa-building-o"></i>
-                      下级部门
-                    </span>
-                  </template>
-                  <div class="subdepartments-content">
-                    <!-- 下级部门操作区域 -->
-                    <div class="subdepartments-header">
-                      <CustomButton type="primary" @click="handleAddSubDepartment" v-permission="'business:manage'">
-                        <i class="fa fa-plus"></i>
-                        新增下级部门
-                      </CustomButton>
-                    </div>
-
-                    <CommonTable :data="subDepartments" :columns="subDepartmentColumns" :loading="subDepartmentsLoading"
-                      :show-selection="true" :show-index="true" @edit="handleEditSubDepartment"
-                      @delete="handleDeleteSubDepartment">
-                      <template #isActive="{ row }">
-                        <el-tag :type="row.isActive ? 'success' : 'danger'" size="small">
-                          {{ row.isActive ? '启用' : '禁用' }}
-                        </el-tag>
-                      </template>
-                      <template #actions="{ row, index }">
-                        <CustomButton type="text" text-type="primary" size="small"
-                          @click.stop="handleEditSubDepartment(row)">
-                          编辑
-                        </CustomButton>
-                        <CustomButton type="text" text-type="danger" size="small"
-                          @click.stop="handleDeleteSubDepartment(row)">
-                          删除
-                        </CustomButton>
-
-                      </template>
-                    </CommonTable>
-                  </div>
-                </el-tab-pane>
-
-                <!-- 部门人员标签页 -->
-                <el-tab-pane label="部门人员" name="personnel">
-                  <template #label>
-                    <span class="tab-label">
-                      <i class="fa fa-users"></i>
-                      部门人员
-                    </span>
-                  </template>
-                  <div class="personnel-content">
-                    <CommonTable :data="departmentPersonnel" :columns="personnelColumns" :loading="personnelLoading"
-                      :show-pagination="false" :show-index="true" @selection-change="handlePersonnelSelectionChange">
-                      <template #actions="{ row, index }">
-                        <CustomButton type="text" text-type="primary" size="small"
-                          @click.stop="handleEditPersonnel(row)">
-                          编辑
-                        </CustomButton>
-                        <CustomButton type="text" text-type="danger" size="small"
-                          @click.stop="handleDeletePersonnel(row)">
-                          删除
-                        </CustomButton>
-                      </template>
-                    </CommonTable>
-
-                    <!-- 部门人员分页器 -->
-                    <div class="table-pagination">
-                      <CustomPagination :currentPage="departmentPersonnelPage" :pageSize="departmentPersonnelSize"
-                        :total="departmentPersonnelTotal" @size-change="handleDepartmentPersonnelSizeChange"
-                        @current-change="handleDepartmentPersonnelCurrentChange" />
-                    </div>
-                  </div>
-                </el-tab-pane>
-              </el-tabs>
+              <!-- 空状态 -->
+              <div v-else class="empty-state">
+                <el-empty description="请从左侧选择部门查看详情" />
+              </div>
             </div>
+          </el-col>
+        </el-row>
+      </div>
 
-            <!-- 空状态 -->
-            <div v-else class="empty-state">
-              <el-empty description="请从左侧选择部门查看详情" />
-            </div>
-          </el-card>
-        </el-col>
-      </el-row>
-    </div>
+      <!-- 全局人员列表视图 -->
+      <div v-if="activeTab === 'personnel'" class="personnel-section">
+        <!-- 搜索区域 -->
+        <CommonSearch v-model="personnelSearchForm" :items="personnelSearchFields" :single-row="true"
+          @search="handlePersonnelSearch" @reset="handlePersonnelResetSearch">
+          <template #actions>
+            <CustomButton type="primary" @click="handleAddPersonnel" v-permission="'business:manage'">
+              新增
+            </CustomButton>
+            <CustomButton type="danger" @click="handleBatchDeletePersonnel" :disabled="selectedPersonnel.length === 0"
+              v-permission="'business:manage'">
+              批量删除
+            </CustomButton>
+          </template>
+        </CommonSearch>
 
-    <!-- 全局人员列表视图 -->
-    <div v-if="activeTab === 'personnel'" class="personnel-view">
-      <!-- 搜索区域 -->
-      <CommonSearch v-model="personnelSearchForm" :items="personnelSearchFields" :single-row="true"
-        @search="handlePersonnelSearch" @reset="handlePersonnelResetSearch">
-        <template #actions>
-          <CustomButton type="primary" @click="handleAddPersonnel" v-permission="'business:manage'">
-            新增
-          </CustomButton>
-          <CustomButton type="danger" @click="handleBatchDeletePersonnel" :disabled="selectedPersonnel.length === 0"
-            v-permission="'business:manage'">
-            批量删除
-          </CustomButton>
-        </template>
-      </CommonSearch>
+        <!-- 人员表格 -->
+        <CommonTable :data="allPersonnelList" :columns="allPersonnelColumns" :loading="personnelListLoading"
+          :show-selection="true" :show-index="true" :show-pagination="false" :current-page="personnelCurrentPage"
+          :page-size="personnelPageSize" :total="personnelTotal" :show-toolbar="false" @edit="handleEditPersonnel"
+          @delete="handleDeletePersonnel" @selection-change="handlePersonnelSelectionChange">
+        </CommonTable>
 
-      <!-- 人员表格 -->
-      <CommonTable :data="allPersonnelList" :columns="allPersonnelColumns" :loading="personnelListLoading"
-        :show-selection="true" :show-index="true" :show-pagination="false" :current-page="personnelCurrentPage"
-        :page-size="personnelPageSize" :total="personnelTotal" :show-toolbar="false" @edit="handleEditPersonnel"
-        @delete="handleDeletePersonnel" @selection-change="handlePersonnelSelectionChange">
-      </CommonTable>
-
-      <!-- 全局人员列表分页器 -->
-      <div class="table-pagination">
-        <CustomPagination :currentPage="personnelCurrentPage" :pageSize="personnelPageSize" :total="personnelTotal"
-          @size-change="handlePersonnelSizeChange" @current-change="handlePersonnelCurrentChange" />
+        <!-- 全局人员列表分页器 -->
+        <div class="table-pagination">
+          <CustomPagination :currentPage="personnelCurrentPage" :pageSize="personnelPageSize" :total="personnelTotal"
+            @size-change="handlePersonnelSizeChange" @current-change="handlePersonnelCurrentChange" />
+        </div>
       </div>
     </div>
 
@@ -1378,15 +1382,29 @@ onMounted(async () => {
  * ----------------------------------------
  */
 .management-service {
+  padding: var(--spacing-lg);
   background-color: var(--bg-secondary);
   min-height: calc(100vh - var(--header-height));
 
+  .content-wrapper {
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--border-color-light);
+    overflow: hidden;
+  }
+
+  .organization-section,
+  .personnel-section {
+    padding: var(--spacing-lg);
+  }
+
   /**
- * ----------------------------------------
- * 组织架构管理视图样式
- * ----------------------------------------
- */
-  .organization-view {
+  * ----------------------------------------
+  * 组织架构管理视图样式
+  * ----------------------------------------
+  */
+  .organization-section {
 
     /**
      * 部门树卡片样式
@@ -1420,7 +1438,7 @@ onMounted(async () => {
 
             &.is-focus {
               border-color: var(--primary-color);
-              box-shadow: 0 0 0 2px var(--primary-transparent-light);
+              box-shadow: var(--focus-shadow-offset) var(--primary-transparent-light);
             }
           }
 
@@ -1772,10 +1790,9 @@ onMounted(async () => {
    * 全局人员列表视图样式
    * ----------------------------------------
    */
-  .personnel-view {
+  .personnel-section {
     background: var(--bg-primary);
     border-radius: var(--border-radius-base);
-    padding: var(--spacing-large);
     box-shadow: var(--shadow-md);
     border: var(--border-width-thin) solid var(--border-light);
     @include card-style;
@@ -1789,7 +1806,7 @@ onMounted(async () => {
  */
 @include respond-to(lg) {
   .management-service {
-    .organization-view {
+    .organization-section {
       .el-row {
         flex-direction: column;
       }
@@ -1841,7 +1858,7 @@ onMounted(async () => {
   .management-service {
     padding: var(--spacing-small);
 
-    .organization-view {
+    .organization-section {
       .tree-card {
         height: auto;
         min-height: var(--panel-content-min-height);
@@ -1914,7 +1931,7 @@ onMounted(async () => {
       }
     }
 
-    .personnel-view {
+    .personnel-section {
       padding: var(--spacing-medium);
     }
   }

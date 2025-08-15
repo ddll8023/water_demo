@@ -691,7 +691,7 @@ defineExpose({
 
           th {
             padding: var(--spacing-medium) var(--spacing-small);
-            border: 1px solid var(--el-border-color-light);
+            border: var(--border-width-base) solid var(--el-border-color-light);
             font-weight: var(--font-weight-medium);
             color: var(--text-primary);
             text-align: center;
@@ -720,7 +720,7 @@ defineExpose({
 
             td {
               padding: var(--spacing-medium) var(--spacing-small);
-              border: 1px solid var(--el-border-color-light);
+              border: var(--border-width-base) solid var(--el-border-color-light);
               color: var(--text-primary);
               white-space: normal;
               word-wrap: break-word;
@@ -741,7 +741,7 @@ defineExpose({
             .empty-cell {
               text-align: center;
               padding: calc(var(--spacing-extra-large) * 1.7) var(--spacing-large);
-              border: 1px solid var(--el-border-color-light);
+              border: var(--border-width-base) solid var(--el-border-color-light);
 
               .empty-content {
                 display: flex;
@@ -772,7 +772,7 @@ defineExpose({
 
         // 边框样式
         &.table-bordered {
-          border: 1px solid var(--el-border-color);
+          border: var(--border-width-base) solid var(--el-border-color);
         }
 
         /**
@@ -829,7 +829,7 @@ defineExpose({
               margin: 0;
 
               &.custom-button--small {
-                padding: var(--spacing-5) var(--spacing-small);
+                padding: 6px var(--spacing-small);
                 font-size: var(--font-size-extra-small);
               }
             }

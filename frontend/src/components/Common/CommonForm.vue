@@ -463,7 +463,7 @@ defineExpose({
       color: var(--text-primary);
       margin-bottom: var(--spacing-base);
       padding-bottom: var(--spacing-small);
-      border-bottom: 1px solid var(--border-light);
+      border-bottom: var(--border-base);
     }
 
     .group-content {
@@ -475,7 +475,7 @@ defineExpose({
   .form-actions {
     margin-top: var(--spacing-extra-large);
     padding-top: var(--spacing-base);
-    border-top: 1px solid var(--border-light);
+    border-top: var(--border-base);
 
     :deep(.el-form-item) {
       margin-bottom: 0;

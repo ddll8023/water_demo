@@ -458,7 +458,7 @@ defineExpose({
   // 聚焦状态
   &.is-focused .input-wrapper {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px var(--primary-bg-light);
+    box-shadow: var(--focus-shadow-offset) var(--primary-bg-light);
   }
 
   // 禁用状态
@@ -480,7 +480,7 @@ defineExpose({
 
     &:focus-within {
       border-color: var(--danger-color);
-      box-shadow: 0 0 0 2px var(--danger-bg-light);
+      box-shadow: var(--focus-shadow-offset) var(--danger-bg-light);
     }
   }
 

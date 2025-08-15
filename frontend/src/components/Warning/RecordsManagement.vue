@@ -34,7 +34,7 @@
                     <el-tooltip v-if="row.warningContent && row.warningContent.length > 50"
                         :content="row.warningContent" placement="top" class="record-management__tooltip-wrapper">
                         <span class="record-management__content-text">{{ row.warningContent.substring(0, 50)
-                        }}...</span>
+                            }}...</span>
                     </el-tooltip>
                     <span v-else class="record-management__content-text">{{ row.warningContent || '-' }}</span>
                 </template>
@@ -111,7 +111,7 @@
                         <span class="overview-label"><i class="fa fa-hourglass-half"></i> 持续时长</span>
                         <span class="overview-value">{{ formatDurationUtil(currentRecord.occurredAt,
                             currentRecord.resolvedAt)
-                            }}</span>
+                        }}</span>
                     </div>
                 </div>
             </div>

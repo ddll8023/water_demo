@@ -4,23 +4,20 @@
     <div class="input-number-wrapper">
       <!-- 减少按钮 -->
       <button type="button" v-if="controls" class="input-number-decrease" :class="{ 'is-disabled': decreaseDisabled }"
-        :disabled="decreaseDisabled" @click="decrease" @mousedown="startRepeat('decrease')" @mouseup="stopRepeat"
-        @mouseleave="stopRepeat">
+        :disabled="decreaseDisabled" @click="decrease">
         <i class="fa fa-minus"></i>
       </button>
 
       <!-- 数字输入框 -->
       <div class="input-number-input">
         <input ref="inputRef" v-model="displayValue" type="text" :placeholder="placeholder" :disabled="disabled"
-          :readonly="readonly" :name="name" :id="inputId" class="input-inner" @input="handleInput"
-          @change="handleChange" @focus="handleFocus" @blur="handleBlur" @keyup="handleKeyup"
-          @keydown="handleKeydown" />
+          :readonly="readonly" :name="name" :id="inputId" class="input-inner" @change="handleChange"
+          @input="handleInput" @keydown="handleKeydown" />
       </div>
 
       <!-- 增加按钮 -->
       <button type="button" v-if="controls" class="input-number-increase" :class="{ 'is-disabled': increaseDisabled }"
-        :disabled="increaseDisabled" @click="increase" @mousedown="startRepeat('increase')" @mouseup="stopRepeat"
-        @mouseleave="stopRepeat">
+        :disabled="increaseDisabled" @click="increase">
         <i class="fa fa-plus"></i>
       </button>
     </div>
@@ -28,7 +25,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 // ===============================
 // 属性和事件定义
@@ -117,13 +114,7 @@ const props = defineProps({
  * 组件事件定义
  */
 const emit = defineEmits([
-  'update:modelValue',
-  'input',
-  'change',
-  'focus',
-  'blur',
-  'keyup',
-  'keydown'
+  'update:modelValue'
 ])
 
 // ===============================
@@ -134,9 +125,6 @@ const emit = defineEmits([
  * 基础响应式数据
  */
 const inputRef = ref()         // 输入框引用
-const focused = ref(false)     // 焦点状态
-const repeatTimer = ref(null)  // 重复操作计时器
-const userInput = ref(null)    // 用户输入值
 
 // ===============================
 // 计算属性
@@ -155,10 +143,6 @@ const numericValue = computed(() => {
 
 const displayValue = computed({
   get() {
-    if (userInput.value !== null) {
-      return userInput.value
-    }
-
     if (numericValue.value === null) {
       return ''
     }
@@ -170,7 +154,7 @@ const displayValue = computed({
     return String(numericValue.value)
   },
   set(value) {
-    userInput.value = value
+    updateValue(value)
   }
 })
 
@@ -188,7 +172,6 @@ const inputClasses = computed(() => {
     {
       'is-disabled': props.disabled,
       'is-readonly': props.readonly,
-      'is-focused': focused.value,
       'is-without-controls': !props.controls,
       [`is-${props.validateState}`]: props.validateState
     }
@@ -236,67 +219,117 @@ const formatValue = (value) => {
   return num
 }
 
+/**
+ * 过滤输入内容，只保留数字、小数点和负号
+ */
+const filterNumericInput = (value) => {
+  if (!value) return ''
+
+  // 如果最小值大于等于0，移除负号
+  const allowNegative = props.min < 0
+  const regex = allowNegative ? /[^0-9.-]/g : /[^0-9.]/g
+
+  // 移除所有非数字、非小数点、非负号的字符
+  let filtered = value.replace(regex, '')
+
+  // 确保只有一个小数点
+  const decimalIndex = filtered.indexOf('.')
+  if (decimalIndex !== -1) {
+    filtered = filtered.substring(0, decimalIndex + 1) +
+      filtered.substring(decimalIndex + 1).replace(/\./g, '')
+  }
+
+  // 确保负号只在开头（仅在允许负数时）
+  if (allowNegative && filtered.includes('-')) {
+    const negativeSign = filtered.charAt(0) === '-' ? '-' : ''
+    filtered = negativeSign + filtered.replace(/-/g, '')
+  }
+
+  return filtered
+}
+
 const updateValue = (value) => {
   const formattedValue = formatValue(value)
   emit('update:modelValue', formattedValue)
-  userInput.value = null
 }
 
 /**
  * 事件处理方法
  */
-const handleInput = (event) => {
-  const value = event.target.value
-  userInput.value = value
-
-  // 实时验证输入
-  if (value === '' || value === '-') {
-    return
-  }
-
-  const num = Number(value)
-  if (!isNaN(num)) {
-    emit('input', num)
-  }
-}
-
 const handleChange = (event) => {
   const value = event.target.value
   updateValue(value)
-  emit('change', numericValue.value)
 }
 
-const handleFocus = (event) => {
-  focused.value = true
-  emit('focus', event)
-}
+/**
+ * 输入事件处理 - 实时验证输入内容
+ */
+const handleInput = (event) => {
+  const value = event.target.value
+  const filteredValue = filterNumericInput(value)
 
-const handleBlur = (event) => {
-  focused.value = false
-
-  // 失焦时格式化值
-  if (userInput.value !== null) {
-    updateValue(userInput.value)
+  // 如果输入内容被过滤，更新输入框显示值
+  if (filteredValue !== value) {
+    event.target.value = filteredValue
+    displayValue.value = filteredValue
   }
-
-  emit('blur', event)
 }
 
-const handleKeyup = (event) => {
-  emit('keyup', event)
-}
-
+/**
+ * 按键事件处理 - 阻止非法字符输入
+ */
 const handleKeydown = (event) => {
-  // 支持上下箭头键
-  if (event.key === 'ArrowUp') {
-    event.preventDefault()
-    increase()
-  } else if (event.key === 'ArrowDown') {
-    event.preventDefault()
-    decrease()
+  // 允许的功能键
+  const allowedKeys = [
+    'Backspace', 'Delete', 'Tab', 'Escape', 'Enter',
+    'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
+    'Home', 'End'
+  ]
+
+  // 允许Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+  if (event.ctrlKey && ['a', 'c', 'v', 'x'].includes(event.key.toLowerCase())) {
+    return
   }
 
-  emit('keydown', event)
+  // 允许功能键
+  if (allowedKeys.includes(event.key)) {
+    return
+  }
+
+  // 允许数字
+  if (event.key >= '0' && event.key <= '9') {
+    return
+  }
+
+  // 允许小数点（只能输入一个）
+  if (event.key === '.') {
+    const currentValue = event.target.value
+    if (currentValue.includes('.')) {
+      event.preventDefault()
+      return
+    }
+    return
+  }
+
+  // 允许负号（只能在开头，且min值允许负数）
+  if (event.key === '-') {
+    // 如果最小值大于等于0，不允许输入负号
+    if (props.min >= 0) {
+      event.preventDefault()
+      return
+    }
+
+    const currentValue = event.target.value
+    const cursorPosition = event.target.selectionStart
+    if (cursorPosition === 0 && !currentValue.includes('-')) {
+      return
+    }
+    event.preventDefault()
+    return
+  }
+
+  // 阻止其他所有字符
+  event.preventDefault()
 }
 
 /**
@@ -308,7 +341,6 @@ const increase = () => {
   const currentValue = numericValue.value || 0
   const newValue = currentValue + props.step
   updateValue(newValue)
-  emit('change', numericValue.value)
 }
 
 const decrease = () => {
@@ -317,59 +349,7 @@ const decrease = () => {
   const currentValue = numericValue.value || 0
   const newValue = currentValue - props.step
   updateValue(newValue)
-  emit('change', numericValue.value)
 }
-
-/**
- * 重复操作控制
- */
-const startRepeat = (action) => {
-  if (repeatTimer.value) return
-
-  repeatTimer.value = setTimeout(() => {
-    repeatTimer.value = setInterval(() => {
-      if (action === 'increase') {
-        increase()
-      } else {
-        decrease()
-      }
-    }, 100)
-  }, 500)
-}
-
-const stopRepeat = () => {
-  if (repeatTimer.value) {
-    clearTimeout(repeatTimer.value)
-    clearInterval(repeatTimer.value)
-    repeatTimer.value = null
-  }
-}
-
-// ===============================
-// 对外暴露方法
-// ===============================
-
-/**
- * 组件公共方法
- */
-const focus = () => {
-  inputRef.value?.focus()
-}
-
-const blur = () => {
-  inputRef.value?.blur()
-}
-
-const select = () => {
-  inputRef.value?.select()
-}
-
-defineExpose({
-  focus,
-  blur,
-  select,
-  inputRef
-})
 
 // ===============================
 // 监听器
@@ -379,7 +359,7 @@ defineExpose({
  * 外部值变化监听
  */
 watch(() => props.modelValue, () => {
-  userInput.value = null
+  // 监听外部值变化以更新显示
 })
 </script>
 
@@ -444,7 +424,7 @@ watch(() => props.modelValue, () => {
     .input-number-decrease,
     .input-number-increase {
       @include flex-center;
-      width: 32px;
+      width: var(--button-standard-size);
       height: 100%;
       border: none;
       background: transparent;
@@ -491,7 +471,7 @@ watch(() => props.modelValue, () => {
 
       .input-number-decrease,
       .input-number-increase {
-        width: 40px;
+        width: var(--icon-size-xl);
       }
     }
   }
@@ -506,7 +486,7 @@ watch(() => props.modelValue, () => {
 
       .input-number-decrease,
       .input-number-increase {
-        width: 24px;
+        width: var(--icon-size-lg);
       }
     }
   }
@@ -525,11 +505,6 @@ watch(() => props.modelValue, () => {
   /**
    * 组件状态样式
    */
-  &.is-focused .input-number-wrapper {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px var(--primary-bg-light);
-  }
-
   &.is-disabled .input-number-wrapper {
     background: var(--bg-disabled);
     border-color: var(--border-light);
@@ -548,7 +523,7 @@ watch(() => props.modelValue, () => {
 
     &:focus-within {
       border-color: var(--danger-color);
-      box-shadow: 0 0 0 2px var(--danger-bg-light);
+      box-shadow: var(--focus-shadow-offset) var(--danger-bg-light);
     }
   }
 

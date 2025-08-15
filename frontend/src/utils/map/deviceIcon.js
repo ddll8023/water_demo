@@ -13,7 +13,9 @@ const getCSSVariable = (variableName) => {
 // 基础设施类型配置
 export const FACILITY_TYPE_CONFIG = {
 	pumping_station: {
-		symbol: "⚙️",
+		get symbol() {
+			return getCSSVariable("--facility-pumping-station-symbol");
+		},
 		get color() {
 			return getCSSVariable("--facility-pumping-station-color");
 		},
@@ -23,7 +25,9 @@ export const FACILITY_TYPE_CONFIG = {
 		name: "泵站",
 	},
 	water_plant: {
-		symbol: "🏭",
+		get symbol() {
+			return getCSSVariable("--facility-water-plant-symbol");
+		},
 		get color() {
 			return getCSSVariable("--facility-water-plant-color");
 		},
@@ -33,7 +37,9 @@ export const FACILITY_TYPE_CONFIG = {
 		name: "水厂",
 	},
 	reservoir: {
-		symbol: "💧",
+		get symbol() {
+			return getCSSVariable("--facility-reservoir-symbol");
+		},
 		get color() {
 			return getCSSVariable("--facility-reservoir-color");
 		},
@@ -43,7 +49,9 @@ export const FACILITY_TYPE_CONFIG = {
 		name: "水库",
 	},
 	monitoring_station: {
-		symbol: "📊",
+		get symbol() {
+			return getCSSVariable("--facility-monitoring-station-symbol");
+		},
 		get color() {
 			return getCSSVariable("--facility-monitoring-station-color");
 		},
@@ -53,7 +61,9 @@ export const FACILITY_TYPE_CONFIG = {
 		name: "监测站",
 	},
 	pipeline: {
-		symbol: "➡️",
+		get symbol() {
+			return getCSSVariable("--facility-pipeline-symbol");
+		},
 		get color() {
 			return getCSSVariable("--facility-pipeline-color");
 		},
@@ -63,7 +73,9 @@ export const FACILITY_TYPE_CONFIG = {
 		name: "管道",
 	},
 	village: {
-		symbol: "🏘️",
+		get symbol() {
+			return getCSSVariable("--facility-village-symbol");
+		},
 		get color() {
 			return getCSSVariable("--facility-village-color");
 		},
@@ -73,7 +85,9 @@ export const FACILITY_TYPE_CONFIG = {
 		name: "村庄",
 	},
 	floating_boat: {
-		symbol: "🚤",
+		get symbol() {
+			return getCSSVariable("--facility-floating-boat-symbol");
+		},
 		get color() {
 			return getCSSVariable("--facility-floating-boat-color");
 		},
@@ -83,7 +97,9 @@ export const FACILITY_TYPE_CONFIG = {
 		name: "漂浮船只",
 	},
 	disinfection_material: {
-		symbol: "🧪",
+		get symbol() {
+			return getCSSVariable("--facility-disinfection-material-symbol");
+		},
 		get color() {
 			return getCSSVariable("--facility-disinfection-material-color");
 		},
@@ -94,7 +110,9 @@ export const FACILITY_TYPE_CONFIG = {
 	},
 	// 新增设施类型
 	pressure_station: {
-		symbol: "💪",
+		get symbol() {
+			return getCSSVariable("--facility-pressure-station-symbol");
+		},
 		get color() {
 			return getCSSVariable("--facility-pressure-station-color");
 		},
@@ -104,7 +122,9 @@ export const FACILITY_TYPE_CONFIG = {
 		name: "加压站",
 	},
 	main_pipeline: {
-		symbol: "🔵",
+		get symbol() {
+			return getCSSVariable("--facility-main-pipeline-symbol");
+		},
 		get color() {
 			return getCSSVariable("--facility-main-pipeline-color");
 		},
@@ -114,7 +134,9 @@ export const FACILITY_TYPE_CONFIG = {
 		name: "供水干管",
 	},
 	branch_pipeline: {
-		symbol: "🔹",
+		get symbol() {
+			return getCSSVariable("--facility-branch-pipeline-symbol");
+		},
 		get color() {
 			return getCSSVariable("--facility-branch-pipeline-color");
 		},
@@ -128,7 +150,9 @@ export const FACILITY_TYPE_CONFIG = {
 // 监测项目类型配置
 export const MONITORING_ITEM_CONFIG = {
 	H: {
-		symbol: "📈",
+		get symbol() {
+			return getCSSVariable("--station-water-level-symbol");
+		},
 		get color() {
 			return getCSSVariable("--station-water-level-color");
 		},
@@ -138,7 +162,9 @@ export const MONITORING_ITEM_CONFIG = {
 		name: "水位监测",
 	},
 	Q: {
-		symbol: "🌊",
+		get symbol() {
+			return getCSSVariable("--station-flow-symbol");
+		},
 		get color() {
 			return getCSSVariable("--station-flow-color");
 		},
@@ -148,7 +174,9 @@ export const MONITORING_ITEM_CONFIG = {
 		name: "流量监测",
 	},
 	R: {
-		symbol: "🌧️",
+		get symbol() {
+			return getCSSVariable("--station-rainfall-symbol");
+		},
 		get color() {
 			return getCSSVariable("--station-rainfall-color");
 		},
@@ -158,7 +186,9 @@ export const MONITORING_ITEM_CONFIG = {
 		name: "降雨监测",
 	},
 	V: {
-		symbol: "📊",
+		get symbol() {
+			return getCSSVariable("--station-comprehensive-symbol");
+		},
 		get color() {
 			return getCSSVariable("--station-comprehensive-color");
 		},
@@ -168,7 +198,9 @@ export const MONITORING_ITEM_CONFIG = {
 		name: "综合监测",
 	},
 	WQ: {
-		symbol: "🧪",
+		get symbol() {
+			return getCSSVariable("--station-water-quality-symbol");
+		},
 		get color() {
 			return getCSSVariable("--station-water-quality-color");
 		},
@@ -178,7 +210,9 @@ export const MONITORING_ITEM_CONFIG = {
 		name: "水质监测",
 	},
 	WL: {
-		symbol: "📈",
+		get symbol() {
+			return getCSSVariable("--station-water-level-symbol");
+		},
 		get color() {
 			return getCSSVariable("--station-water-level-color");
 		},
@@ -188,7 +222,9 @@ export const MONITORING_ITEM_CONFIG = {
 		name: "水位监测",
 	},
 	FL: {
-		symbol: "🌊",
+		get symbol() {
+			return getCSSVariable("--station-flow-symbol");
+		},
 		get color() {
 			return getCSSVariable("--station-flow-color");
 		},
@@ -198,7 +234,9 @@ export const MONITORING_ITEM_CONFIG = {
 		name: "流量监测",
 	},
 	RF: {
-		symbol: "🌧️",
+		get symbol() {
+			return getCSSVariable("--station-rainfall-symbol");
+		},
 		get color() {
 			return getCSSVariable("--station-rainfall-color");
 		},
@@ -208,7 +246,9 @@ export const MONITORING_ITEM_CONFIG = {
 		name: "降雨监测",
 	},
 	RV: {
-		symbol: "🏔️",
+		get symbol() {
+			return getCSSVariable("--station-reservoir-symbol");
+		},
 		get color() {
 			return getCSSVariable("--station-reservoir-color");
 		},
@@ -222,7 +262,9 @@ export const MONITORING_ITEM_CONFIG = {
 // 预警级别配置
 export const WARNING_LEVEL_CONFIG = {
 	general: {
-		symbol: "⚠️",
+		get symbol() {
+			return getCSSVariable("--warning-level-general-symbol");
+		},
 		get color() {
 			return getCSSVariable("--warning-level-general-color");
 		},
@@ -233,7 +275,9 @@ export const WARNING_LEVEL_CONFIG = {
 		level: 1,
 	},
 	serious: {
-		symbol: "🚨",
+		get symbol() {
+			return getCSSVariable("--warning-level-serious-symbol");
+		},
 		get color() {
 			return getCSSVariable("--warning-level-serious-color");
 		},
@@ -244,7 +288,9 @@ export const WARNING_LEVEL_CONFIG = {
 		level: 2,
 	},
 	critical: {
-		symbol: "🔥",
+		get symbol() {
+			return getCSSVariable("--warning-level-critical-symbol");
+		},
 		get color() {
 			return getCSSVariable("--warning-level-critical-color");
 		},
@@ -259,7 +305,9 @@ export const WARNING_LEVEL_CONFIG = {
 // 泵站状态配置
 export const PUMP_STATUS_CONFIG = {
 	open: {
-		symbol: "▶️",
+		get symbol() {
+			return getCSSVariable("--pump-status-open-symbol");
+		},
 		get color() {
 			return getCSSVariable("--pump-status-open-color");
 		},
@@ -270,7 +318,9 @@ export const PUMP_STATUS_CONFIG = {
 		status: "运行",
 	},
 	closed: {
-		symbol: "⏹️",
+		get symbol() {
+			return getCSSVariable("--pump-status-closed-symbol");
+		},
 		get color() {
 			return getCSSVariable("--pump-status-closed-color");
 		},
@@ -281,7 +331,9 @@ export const PUMP_STATUS_CONFIG = {
 		status: "停止",
 	},
 	maintenance: {
-		symbol: "🔧",
+		get symbol() {
+			return getCSSVariable("--pump-status-maintenance-symbol");
+		},
 		get color() {
 			return getCSSVariable("--pump-status-maintenance-color");
 		},
@@ -296,7 +348,9 @@ export const PUMP_STATUS_CONFIG = {
 // 管线类型配置
 export const PIPELINE_TYPE_CONFIG = {
 	main: {
-		symbol: "━",
+		get symbol() {
+			return getCSSVariable("--pipeline-main-symbol");
+		},
 		get color() {
 			return getCSSVariable("--pipeline-main-color");
 		},
@@ -308,7 +362,9 @@ export const PIPELINE_TYPE_CONFIG = {
 		style: "solid",
 	},
 	branch: {
-		symbol: "─",
+		get symbol() {
+			return getCSSVariable("--pipeline-branch-symbol");
+		},
 		get color() {
 			return getCSSVariable("--pipeline-branch-color");
 		},
@@ -320,7 +376,9 @@ export const PIPELINE_TYPE_CONFIG = {
 		style: "solid",
 	},
 	distribution: {
-		symbol: "┄",
+		get symbol() {
+			return getCSSVariable("--pipeline-distribution-symbol");
+		},
 		get color() {
 			return getCSSVariable("--pipeline-distribution-color");
 		},
@@ -335,7 +393,9 @@ export const PIPELINE_TYPE_CONFIG = {
 
 // 默认设备图标
 export const DEFAULT_DEVICE_ICON = {
-	symbol: "🏢",
+	get symbol() {
+		return getCSSVariable("--facility-default-symbol");
+	},
 	get color() {
 		return getCSSVariable("--facility-default-color");
 	},

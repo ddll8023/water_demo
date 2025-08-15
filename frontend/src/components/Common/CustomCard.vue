@@ -13,7 +13,7 @@
         </div>
 
         <!-- 卡片内容 -->
-        <div class="custom-card-content" :style="contentStyle">
+        <div class="custom-card-content" :style="contentStyle" v-if="hasContent">
             <slot></slot>
         </div>
     </div>
@@ -58,6 +58,11 @@ const props = defineProps({
     padding: {
         type: String,
         default: 'normal' // 'none', 'small', 'normal', 'large'
+    },
+    // 是否隐藏头部边框
+    hideHeaderBorder: {
+        type: Boolean,
+        default: false
     }
 })
 
@@ -89,6 +94,11 @@ const cardClasses = computed(() => {
         classes.push('has-header')
     }
 
+    // 隐藏头部边框
+    if (props.hideHeaderBorder) {
+        classes.push('hide-header-border')
+    }
+
     // 内边距
     classes.push(`padding-${props.padding}`)
 
@@ -111,6 +121,13 @@ const contentStyle = computed(() => {
  */
 const hasHeader = computed(() => {
     return props.title || !!slots.header || !!slots.extra
+})
+
+/**
+ * 判断是否有内容区域
+ */
+const hasContent = computed(() => {
+    return !!slots.default
 })
 </script>
 
@@ -157,15 +174,14 @@ const hasHeader = computed(() => {
      */
     .custom-card-header {
         @include flex-between;
-        border-bottom: 1px solid var(--black-transparent-thin);
         background: var(--bg-primary);
 
         .header-content {
             flex: 1;
 
             .card-title {
-                font-size: 18px;
-                font-weight: 600;
+                font-size: var(--font-size-lg);
+                font-weight: var(--font-weight-semibold);
                 color: var(--text-primary);
                 margin: 0;
             }
@@ -176,6 +192,10 @@ const hasHeader = computed(() => {
         }
     }
 
+    // 显示头部边框的情况（默认行为）
+    &:not(.hide-header-border) .custom-card-header {
+        border-bottom: 1px solid var(--border-light);
+    }
 
 
     // 当没有头部时，内容区域保持顶部圆角
@@ -208,11 +228,11 @@ const hasHeader = computed(() => {
 
     &.padding-normal {
         .custom-card-header {
-            padding: clamp(var(--spacing-small), 2vw, var(--spacing-large));
+            padding: var(--padding-responsive-header);
         }
 
         .custom-card-content {
-            padding: clamp(var(--spacing-xs), 2vw, var(--spacing-large));
+            padding: var(--padding-responsive-content);
         }
     }
 

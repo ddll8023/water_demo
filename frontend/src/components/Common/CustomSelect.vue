@@ -403,7 +403,7 @@ defineExpose({
 
     &:focus-within {
       border-color: var(--primary-color);
-      box-shadow: 0 0 0 2px var(--primary-transparent-light);
+      box-shadow: var(--focus-shadow-offset) var(--primary-transparent-light);
     }
 
     .select-input {

@@ -17,8 +17,9 @@
     <!-- 数字输入框 -->
     <CustomInputNumber v-else-if="item.type === 'number' || item.type === 'input-number'"
       :model-value="formData[item.prop]" @update:model-value="handleChange" :placeholder="item.placeholder"
-      :disabled="disabled" :min="item.min" :max="item.max" :step="item.step" :precision="item.precision"
-      :controls="item.controls !== false" :controls-position="item.controlsPosition" style="width: 100%" />
+      :disabled="disabled" :readonly="item.readonly" :min="item.min" :max="item.max" :step="item.step"
+      :precision="item.precision" :controls="item.controls !== false" :controls-position="item.controlsPosition"
+      :size="item.size" :name="item.name" :id="item.id" :validate-state="item.validateState" style="width: 100%" />
 
     <!-- 选择器 -->
     <CustomSelect v-else-if="item.type === 'select'" :model-value="formData[item.prop]"

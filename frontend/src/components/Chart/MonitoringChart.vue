@@ -1310,7 +1310,7 @@ const zoomOut = (chartIndex) => updateChartZoom(0.7, 'multiply', chartIndex)
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
-                    padding: clamp(var(--spacing-small), 2vw, var(--spacing-large));
+                    padding: var(--padding-responsive-header);
 
                     .chart-info {
                         display: flex;
@@ -1357,7 +1357,7 @@ const zoomOut = (chartIndex) => updateChartZoom(0.7, 'multiply', chartIndex)
 
                 // 图表内容区域
                 .chart-content {
-                    padding: clamp(var(--spacing-xs), 2vw, var(--spacing-large));
+                    padding: var(--padding-responsive-content);
                     height: calc(100% - 60px);
                     background: var(--white-transparent-medium);
                     position: relative;
@@ -1456,7 +1456,7 @@ const zoomOut = (chartIndex) => updateChartZoom(0.7, 'multiply', chartIndex)
                         .fa {
                             font-size: var(--icon-size-xxl);
                             margin-bottom: var(--spacing-base);
-                            opacity: 0.6;
+                            opacity: var(--disabled-opacity);
                         }
 
                         p {
@@ -1543,7 +1543,7 @@ const zoomOut = (chartIndex) => updateChartZoom(0.7, 'multiply', chartIndex)
                         border-color: rgba(64, 158, 255, 0.8);
 
                         .resize-handle {
-                            opacity: 0.6;
+                            opacity: var(--disabled-opacity);
                             background: rgba(64, 158, 255, 0.8);
                         }
                     }

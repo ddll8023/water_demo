@@ -532,7 +532,7 @@ const handleFormUpdate = (value) => {
     margin-top: var(--spacing-large);
     background: var(--bg-primary);
     border-radius: var(--border-radius-large);
-    box-shadow: var(--box-shadow-light);
+    box-shadow: var(--shadow-light);
   }
 
   // 辅助文本样式

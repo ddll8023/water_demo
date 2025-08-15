@@ -5,9 +5,9 @@
             <!-- 设备标题 -->
             <div class="device-popup__header">
                 <div class="device-popup__title">
-                    <i class="device-popup__icon" :style="{ color: deviceIcon.color }">
+                    <div class="device-popup__icon" :style="{ color: deviceIcon.color }">
                         {{ deviceIcon.symbol }}
-                    </i>
+                    </div>
                     <span class="device-popup__name">{{ deviceName }}</span>
                 </div>
                 <CustomButton type="secondary" shape="circle" iconOnly @click="handleClose" title="关闭">
@@ -138,7 +138,7 @@ const getPopupDimensions = () => ({
     POPUP_HEIGHT: 200,
     MARGIN: getCSSVariableValue('--spacing-base'),
     GAP: getCSSVariableValue('--spacing-small'),
-    BORDER_WIDTH: getCSSVariableValue('--spacing-1'),
+    BORDER_WIDTH: getCSSVariableValue('--border-width-base'),
     OFFSET: getCSSVariableValue('--spacing-15')
 });
 
@@ -384,13 +384,15 @@ const handleViewDetail = () => {
 
     &__icon {
         @include flex-center;
-        display: inline-flex;
+        display: flex;
         width: var(--icon-size-xl);
         height: var(--icon-size-xl);
         border-radius: 50%;
         background: var(--white-transparent-full);
-        font-size: var(--font-size-extra-small);
+        font-size: var(--font-size-lg);
         font-weight: var(--font-weight-bold);
+        font-style: normal;
+        line-height: 1;
         margin-right: var(--spacing-small);
         flex-shrink: 0;
         border: 1px solid currentColor;
@@ -498,7 +500,9 @@ const handleViewDetail = () => {
         &__icon {
             width: var(--icon-size-lg);
             height: var(--icon-size-lg);
-            font-size: 10px;
+            font-size: var(--font-size-small);
+            font-style: normal;
+            line-height: 1;
         }
     }
 }

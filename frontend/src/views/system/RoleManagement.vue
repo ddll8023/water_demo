@@ -533,7 +533,7 @@ onMounted(() => {
     flex: 1;
     display: flex;
     flex-direction: column;
-    box-shadow: var(--box-shadow-light);
+    box-shadow: var(--shadow-light);
 
     .pagination-container {
       padding: var(--spacing-base);

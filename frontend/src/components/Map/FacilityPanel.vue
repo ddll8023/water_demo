@@ -598,7 +598,7 @@ const getItemLocation = (item) => {
     position: fixed;
     width: var(--panel-width-default);
     background: var(--white-transparent-full);
-    backdrop-filter: blur(var(--blur-medium));
+    backdrop-filter: blur(12px);
     border-radius: var(--border-radius-xl);
     box-shadow: var(--shadow-popup);
     border: var(--border-width-thin) solid var(--white-transparent-base);
@@ -610,12 +610,12 @@ const getItemLocation = (item) => {
         backdrop-filter var(--map-panel-transition-duration) var(--map-panel-transition-ease);
 
     &.dragging {
-        box-shadow: var(--shadow-drag);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     }
 
     &.collapsed {
-        box-shadow: var(--shadow-collapsed);
-        backdrop-filter: blur(var(--blur-light));
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        backdrop-filter: blur(8px);
         height: var(--map-panel-collapsed-height);
     }
 
@@ -639,7 +639,7 @@ const getItemLocation = (item) => {
             .drag-handle {
                 margin-right: var(--spacing-medium);
                 font-size: var(--font-size-base);
-                opacity: var(--opacity-high);
+                opacity: 0.8;
                 cursor: grab;
                 transition: opacity var(--map-panel-transition-duration) var(--map-panel-transition-ease);
 
@@ -854,22 +854,22 @@ const getItemLocation = (item) => {
         cursor: pointer;
         transition: background-color var(--transition-duration-fast) var(--transition-timing-function), border-color var(--transition-duration-fast) var(--transition-timing-function);
         border: var(--border-width-thin) solid var(--border-light);
-        box-shadow: var(--shadow-card-light);
+        box-shadow: var(--shadow-card);
 
         &:hover {
             background: var(--bg-disabled);
             border-color: var(--border-color);
-            box-shadow: var(--shadow-card-medium);
+            box-shadow: var(--shadow-card-hover);
         }
 
         &.active {
             background: var(--primary-bg-light);
             border-color: var(--primary-color);
-            box-shadow: var(--shadow-card-strong);
+            box-shadow: var(--shadow-card-hover);
         }
 
         &.no-location {
-            opacity: var(--opacity-medium);
+            opacity: var(--disabled-opacity);
 
             .device-location.invalid {
                 color: var(--warning-color);
@@ -878,8 +878,8 @@ const getItemLocation = (item) => {
         }
 
         .device-icon {
-            width: var(--icon-container-size);
-            height: var(--icon-container-size);
+            width: 40px;
+            height: 40px;
             border-radius: var(--border-radius-md);
             display: flex;
             align-items: center;
@@ -982,7 +982,7 @@ const getItemLocation = (item) => {
             padding: var(--spacing-medium);
             margin-bottom: var(--spacing-small);
             background: var(--white-transparent-strong);
-            backdrop-filter: blur(var(--blur-light));
+            backdrop-filter: blur(8px);
 
             &:hover {
                 background: var(--bg-disabled);
@@ -995,7 +995,7 @@ const getItemLocation = (item) => {
 
         .selector-stats {
             background: var(--map-panel-stats-bg);
-            backdrop-filter: blur(var(--blur-light));
+            backdrop-filter: blur(8px);
             padding: var(--spacing-small);
             border-radius: var(--border-radius-base);
         }

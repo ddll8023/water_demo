@@ -334,7 +334,7 @@ defineExpose({
     padding: var(--spacing-15) var(--spacing-base);
     border-radius: var(--border-radius-base);
     border: 1px solid var(--border-light);
-    min-height: var(--search-form-min-height);
+    min-height: 56px; // 表单项基础高度 + 内边距
     box-sizing: border-box;
     width: 100%; // 确保搜索表单占满全宽
 
@@ -366,11 +366,11 @@ defineExpose({
       }
 
       :deep(.el-input__wrapper) {
-        padding: var(--spacing-1) var(--spacing-small);
+        padding: var(--spacing-micro) var(--spacing-small);
       }
 
       :deep(.el-select .el-input__wrapper) {
-        padding: var(--spacing-1) var(--spacing-medium) var(--spacing-1) var(--spacing-small);
+        padding: var(--spacing-micro) var(--spacing-medium) var(--spacing-micro) var(--spacing-small);
       }
 
       // 修复选择器文本溢出问题
@@ -436,7 +436,7 @@ defineExpose({
   &.single-row {
     .search-form {
       padding: var(--spacing-15) var(--spacing-base);
-      min-height: var(--search-form-min-height);
+      min-height: 56px; // 表单项基础高度 + 内边距
       display: flex;
       align-items: center;
       width: 100%; // 确保单行模式下表单占满全宽

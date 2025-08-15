@@ -136,7 +136,9 @@
     --pipeline-distribution-color: #69c0ff;
     --pipeline-distribution-bg: #f0f8ff;
 
-
+    // ==================== 地图专用阴影系统 ====================
+    // 地图模块专用主色调阴影 - 用于地图控件的主色调悬停效果
+    --shadow-primary-light: 0 2px 8px rgba(22, 93, 255, 0.2);
 
     // ==================== 地图动画变量 ====================
     --animation-warning-pulse-scale: 1.15;
@@ -157,6 +159,7 @@
 
     // 面板尺寸变量（地图模块专用）
     --map-panel-max-height: 2000px;
+    --map-panel-min-width: 160px; // 地图面板最小宽度（地图模块组件复用）
 
     // 面板背景变量（地图模块专用）
     --map-panel-stats-bg: rgba(248, 249, 250, 0.8);

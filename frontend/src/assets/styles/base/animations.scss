@@ -1,5 +1,17 @@
 // 动画效果样式
 
+// ==================== 通用动画 ====================
+// 通用加载旋转动画
+@keyframes loading-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 // ==================== 地图相关动画 ====================
 // 旋转动画（加载状态）
 @keyframes amap-spin {

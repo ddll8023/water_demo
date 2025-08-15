@@ -138,14 +138,14 @@ const handleClick = (event) => {
   align-items: center;
   justify-content: center;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--border-radius-md);
   font-family: inherit;
-  font-weight: 400;
+  font-weight: var(--font-weight-normal);
   text-align: center;
   white-space: nowrap;
   cursor: pointer;
   outline: none;
-  transition: all 0.15s ease;
+  transition: var(--transition-fast);
   user-select: none;
   vertical-align: middle;
 
@@ -156,7 +156,7 @@ const handleClick = (event) => {
 
   // 图标间距
   i {
-    margin-right: 6px;
+    margin-right: var(--spacing-xs);
 
     &:last-child {
       margin-right: 0;
@@ -178,7 +178,7 @@ const handleClick = (event) => {
 .custom-button--primary {
   background-color: var(--primary-color);
   color: var(--text-on-dark);
-  border: 1px solid var(--primary-color);
+  border: var(--border-width-base) solid var(--primary-color);
 
   &:hover:not(.custom-button--disabled):not(.custom-button--loading) {
     background-color: var(--primary-dark);
@@ -196,7 +196,7 @@ const handleClick = (event) => {
 .custom-button--secondary {
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  border: 1px solid var(--border-color);
+  border: var(--border-width-base) solid var(--border-color);
 
   &:hover:not(.custom-button--disabled):not(.custom-button--loading) {
     background-color: var(--bg-tertiary);
@@ -213,7 +213,7 @@ const handleClick = (event) => {
 .custom-button--danger {
   background-color: var(--danger-color);
   color: var(--text-on-dark);
-  border: 1px solid var(--danger-color);
+  border: var(--border-width-base) solid var(--danger-color);
 
   &:hover:not(.custom-button--disabled):not(.custom-button--loading) {
     background-color: var(--danger-dark);
@@ -231,7 +231,7 @@ const handleClick = (event) => {
 .custom-button--text {
   background: none;
   border: none;
-  padding: 4px 8px;
+  padding: var(--padding-button-text);
 
   &.custom-button--text-primary {
     color: var(--primary-color);
@@ -262,33 +262,33 @@ const handleClick = (event) => {
 // 大尺寸按钮
 .custom-button--large {
   padding: 12px 20px;
-  font-size: 16px;
-  min-height: 44px;
+  font-size: var(--font-size-medium-button);
+  min-height: var(--button-height-large);
 
   &.custom-button--text {
-    padding: 8px 12px;
+    padding: var(--spacing-small) var(--spacing-medium);
   }
 }
 
 // 默认尺寸按钮
 .custom-button--default {
   padding: var(--spacing-small) var(--spacing-base);
-  font-size: 14px;
+  font-size: var(--font-size-base);
   min-height: var(--form-item-height);
 
   &.custom-button--text {
-    padding: 4px 8px;
+    padding: var(--padding-button-text);
   }
 }
 
 // 小尺寸按钮
 .custom-button--small {
-  padding: 5px 12px;
-  font-size: 12px;
-  min-height: 28px;
+  padding: 5px var(--spacing-medium);
+  font-size: var(--font-size-sm);
+  min-height: var(--button-size-small);
 
   &.custom-button--text {
-    padding: 2px 6px;
+    padding: var(--spacing-micro) var(--spacing-xs);
   }
 }
 
@@ -312,15 +312,15 @@ const handleClick = (event) => {
   }
 
   &.custom-button--large {
-    width: calc(var(--icon-size-2xl) + 8px);
-    height: calc(var(--icon-size-2xl) + 8px);
-    min-width: calc(var(--icon-size-2xl) + 8px);
+    width: calc(var(--icon-size-2xl) + var(--spacing-small));
+    height: calc(var(--icon-size-2xl) + var(--spacing-small));
+    min-width: calc(var(--icon-size-2xl) + var(--spacing-small));
   }
 
   &.custom-button--small {
-    width: calc(var(--icon-size-2xl) - 8px);
-    height: calc(var(--icon-size-2xl) - 8px);
-    min-width: calc(var(--icon-size-2xl) - 8px);
+    width: calc(var(--icon-size-2xl) - var(--spacing-small));
+    height: calc(var(--icon-size-2xl) - var(--spacing-small));
+    min-width: calc(var(--icon-size-2xl) - var(--spacing-small));
   }
 }
 
@@ -339,7 +339,7 @@ const handleClick = (event) => {
  */
 // 禁用状态样式
 .custom-button--disabled {
-  opacity: 0.6;
+  opacity: var(--disabled-opacity);
   cursor: not-allowed;
 
   &:hover,
@@ -353,7 +353,7 @@ const handleClick = (event) => {
   cursor: not-allowed;
 
   .custom-button__content--with-loading {
-    opacity: 0.6;
+    opacity: var(--disabled-opacity);
   }
 }
 
@@ -364,8 +364,8 @@ const handleClick = (event) => {
  */
 // 加载图标样式
 .custom-button__loading-icon {
-  margin-right: 6px;
-  animation: amap-spin 1s linear infinite;
+  margin-right: var(--spacing-xs);
+  animation: loading-spin 1s linear infinite;
 }
 
 /**
@@ -388,7 +388,7 @@ const handleClick = (event) => {
 
   .custom-button--small {
     padding: 4px 10px;
-    font-size: 11px;
+    font-size: var(--font-size-small);
     min-height: 26px;
   }
 }

@@ -53,8 +53,8 @@
     </div>
 
     <!-- 弹窗选择器 -->
-    <el-dialog v-model="pickerVisible" :title="pickerTitle" width="var(--panel-height-default)"
-      :before-close="closePicker" append-to-body class="custom-date-picker-dialog">
+    <CustomDialog v-model:visible="pickerVisible" :title="pickerTitle" width="var(--panel-height-default)"
+      :before-close="closePicker" :append-to-body="true" @cancel="closePicker" @confirm="confirmSelection">
       <div class="picker-content">
         <!-- 年份选择 -->
         <div v-if="type === 'year'" class="year-section">
@@ -104,21 +104,21 @@
           <div class="time-inputs">
             <div class="time-group">
               <label>小时</label>
-              <el-select v-model="tempHour" placeholder="时" style="width: 80px">
+              <el-select v-model="tempHour" placeholder="时" class="time-selector">
                 <el-option v-for="hour in hours" :key="hour" :label="hour" :value="hour" />
               </el-select>
             </div>
             <span class="time-separator">:</span>
             <div class="time-group">
               <label>分钟</label>
-              <el-select v-model="tempMinute" placeholder="分" style="width: 80px">
+              <el-select v-model="tempMinute" placeholder="分" class="time-selector">
                 <el-option v-for="minute in minutes" :key="minute" :label="minute" :value="minute" />
               </el-select>
             </div>
             <span class="time-separator">:</span>
             <div class="time-group">
               <label>秒钟</label>
-              <el-select v-model="tempSecond" placeholder="秒" style="width: 80px">
+              <el-select v-model="tempSecond" placeholder="秒" class="time-selector">
                 <el-option v-for="second in seconds" :key="second" :label="second" :value="second" />
               </el-select>
             </div>
@@ -137,13 +137,8 @@
         </div>
       </div>
 
-      <template #footer>
-        <div class="dialog-footer">
-          <CustomButton type="secondary" @click="closePicker">取消</CustomButton>
-          <CustomButton type="primary" @click="confirmSelection">确认</CustomButton>
-        </div>
-      </template>
-    </el-dialog>
+
+    </CustomDialog>
   </div>
 </template>
 
@@ -153,11 +148,12 @@
  * 导入依赖
  * ===========================
  */
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { formatDateTime } from '@/utils/shared/common'
 import CustomInput from './CustomInput.vue'
 import CustomButton from './CustomButton.vue'
+import CustomDialog from './CustomDialog.vue'
 
 /**
  * ===========================
@@ -216,72 +212,27 @@ const props = defineProps({
     type: String,
     default: 'YYYY-MM-DD'
   },
-  // 尺寸
-  size: {
-    type: String,
-    default: 'default',
-    validator: (value) => ['large', 'default', 'small'].includes(value)
-  },
+
   // 是否只读
   readonly: {
     type: Boolean,
     default: false
   },
-  // 是否可编辑
-  editable: {
-    type: Boolean,
-    default: true
-  },
-  // 前缀图标
-  prefixIcon: {
-    type: String,
-    default: ''
-  },
-  // 清除图标
-  clearIcon: {
-    type: String,
-    default: ''
-  },
-  // 是否触发表单验证
-  validateEvent: {
-    type: Boolean,
-    default: true
-  },
-  // 禁用日期函数
-  disabledDate: {
-    type: Function,
-    default: null
-  },
+
+
+
+
+
   // 快捷选项
   shortcuts: {
     type: Array,
     default: () => []
   },
-  // 默认值
-  defaultValue: {
-    type: [Date, Array],
-    default: null
-  },
-  // 默认时间
-  defaultTime: {
-    type: [Date, Array],
-    default: null
-  },
-  // 是否将弹出框插入到body
-  teleported: {
-    type: Boolean,
-    default: true
-  },
-  // 弹出框类名
-  popperClass: {
-    type: String,
-    default: ''
-  },
-  // 弹出框选项
-  popperOptions: {
-    type: Object,
-    default: () => ({})
-  },
+
+
+
+
+
   // 是否显示时间间隔（自定义属性）
   showDuration: {
     type: Boolean,
@@ -300,7 +251,6 @@ const emit = defineEmits([
   'blur',
   'focus',
   'calendar-change',
-  'panel-change',
   'visible-change'
 ])
 
@@ -765,7 +715,7 @@ defineExpose({
   color: var(--text-tertiary);
   cursor: pointer;
   padding: var(--spacing-micro);
-  border-radius: 50%;
+  border-radius: var(--border-radius-round);
   transition: var(--transition-all-fast);
 
   &:hover {
@@ -825,16 +775,6 @@ defineExpose({
  * 弹窗选择器样式
  * ===========================
  */
-:deep(.custom-date-picker-dialog) {
-  .el-dialog__header {
-    padding: var(--spacing-base) var(--spacing-large);
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  .el-dialog__body {
-    padding: var(--spacing-large);
-  }
-}
 
 .picker-content {
   .section-title {
@@ -876,6 +816,10 @@ defineExpose({
         color: var(--text-tertiary);
         margin-bottom: var(--spacing-small);
       }
+
+      .time-selector {
+        width: var(--button-min-width);
+      }
     }
   }
 
@@ -886,11 +830,6 @@ defineExpose({
       gap: var(--spacing-small);
     }
   }
-}
-
-.dialog-footer {
-  @include flex-end;
-  gap: var(--spacing-medium);
 }
 
 /**

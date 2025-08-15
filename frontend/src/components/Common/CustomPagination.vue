@@ -10,17 +10,25 @@
 
         <!-- 导航按钮和页码 -->
         <div class="pagination-nav">
-            <button class="nav-button" :disabled="currentPage === 1" @click="prevPage">
-                < </button>
+            <CustomButton type="secondary" size="small" :disabled="currentPage === 1" @click="prevPage">
+                < </CustomButton>
                     <ul class="page-list">
-                        <li v-for="(page, index) in pageNumbers" :key="index" class="page-item"
-                            :class="{ active: page === currentPage, ellipsis: page === '...' }" @click="goToPage(page)">
-                            {{ page }}
-                        </li>
+                        <template v-for="(page, index) in pageNumbers" :key="index">
+                            <li v-if="page === '...'" class="page-item ellipsis">
+                                {{ page }}
+                            </li>
+                            <li v-else class="page-button-wrapper">
+                                <CustomButton :type="page === currentPage ? 'primary' : 'secondary'" size="small"
+                                    @click="goToPage(page)">
+                                    {{ page }}
+                                </CustomButton>
+                            </li>
+                        </template>
                     </ul>
-                    <button class="nav-button" :disabled="currentPage === totalPages" @click="nextPage">
+                    <CustomButton type="secondary" size="small" :disabled="currentPage === totalPages"
+                        @click="nextPage">
                         >
-                    </button>
+                    </CustomButton>
         </div>
 
         <!-- 跳转输入框 -->
@@ -35,6 +43,7 @@
 
 <script setup>
 import { defineProps, defineEmits, computed } from 'vue'
+import CustomButton from './CustomButton.vue'
 
 // 定义组件的 props
 const props = defineProps({
@@ -186,7 +195,7 @@ const handleJumper = (event) => {
     }
 
     .size-selector {
-        padding: 4px 8px;
+        padding: var(--input-padding-compact);
         border: 1px solid var(--border-color);
         border-radius: var(--border-radius-base);
         cursor: pointer;
@@ -203,33 +212,7 @@ const handleJumper = (event) => {
         gap: var(--spacing-small);
     }
 
-    .nav-button {
-        width: 32px;
-        height: 32px;
-        border: 1px solid var(--border-color);
-        background-color: var(--bg-primary);
-        border-radius: var(--border-radius-base);
-        cursor: pointer;
-        transition: var(--transition-base);
 
-        &:hover:not(:disabled) {
-            color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        &:active:not(:disabled) {
-            color: var(--primary-dark);
-            border-color: var(--primary-dark);
-            transform: scale(0.98);
-        }
-
-        &:disabled {
-            cursor: not-allowed;
-            color: var(--text-tertiary);
-            background-color: var(--bg-secondary);
-            border-color: var(--border-light);
-        }
-    }
 
     .page-list {
         display: flex;
@@ -239,39 +222,20 @@ const handleJumper = (event) => {
         gap: var(--spacing-small);
 
         .page-item {
-            min-width: 32px;
-            height: 32px;
-            padding: 0 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius-base);
-            cursor: pointer;
-            transition: var(--transition-base);
-
-            &:hover:not(.active):not(.ellipsis) {
-                color: var(--primary-color);
-                border-color: var(--primary-color);
-            }
-
-            &:active:not(.active):not(.ellipsis) {
-                color: var(--primary-dark);
-                border-color: var(--primary-dark);
-                transform: scale(0.98);
-            }
-
-            &.active {
-                background-color: var(--primary-color);
-                color: var(--bg-primary);
-                border-color: var(--primary-color);
-                cursor: default;
-            }
-
             &.ellipsis {
+                min-width: var(--button-standard-size);
+                height: var(--button-standard-size);
+                padding: 0 var(--spacing-xs);
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 border: none;
                 cursor: default;
             }
+        }
+
+        .page-button-wrapper {
+            display: flex;
         }
     }
 
@@ -282,7 +246,7 @@ const handleJumper = (event) => {
 
         .jumper-input {
             width: 50px;
-            padding: 4px 8px;
+            padding: var(--input-padding-compact);
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius-base);
             text-align: center;
@@ -318,29 +282,28 @@ const handleJumper = (event) => {
     @include respond-to(sm) {
         gap: var(--spacing-mini);
 
-        .nav-button,
-        .page-list .page-item {
-            min-width: var(--button-size-small);
-            height: var(--button-size-small);
-        }
-
         .page-list {
             gap: var(--spacing-mini);
 
-            .page-item:not(.active):not(:first-child):not(:last-child) {
+            .page-button-wrapper:not(:first-child):not(:last-child) {
                 display: none;
+            }
+
+            .page-item.ellipsis {
+                min-width: var(--button-size-small);
+                height: var(--button-size-small);
             }
         }
 
         .jumper {
             .jumper-input {
                 width: 40px;
-                padding: 2px 4px;
+                padding: var(--spacing-micro) var(--spacing-mini);
             }
         }
 
         .size-selector {
-            padding: 2px 4px;
+            padding: var(--spacing-micro) var(--spacing-mini);
         }
     }
 }

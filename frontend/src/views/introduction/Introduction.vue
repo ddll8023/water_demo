@@ -5,10 +5,10 @@
 
     <!-- 主体内容区域 -->
     <div class="main-content">
-      <el-row :gutter="20">
+      <div class="content-grid">
         <!-- 视频展示区域 -->
-        <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
-          <CustomCard :title="videoInfo.title" :padding="'normal'" :bordered="true" :shadow="false">
+        <div class="video-section">
+          <CustomCard :title="videoInfo.title" :padding="'normal'" :bordered="true" shadow="never">
             <div class="video-container">
               <video ref="videoPlayer" :src="videoInfo.url" :poster="videoInfo.poster" controls preload="metadata"
                 class="video-player" @loadstart="onVideoLoadStart" @loadeddata="onVideoLoaded" @error="onVideoError">
@@ -17,63 +17,49 @@
             </div>
             <p class="video-description">{{ videoInfo.description }}</p>
           </CustomCard>
-        </el-col>
+        </div>
 
         <!-- 文字介绍区域 -->
-        <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
-          <div class="text-section">
-            <!-- 工程概况 -->
-            <div class="card-wrapper">
-              <CustomCard title="工程概况" :padding="'normal'" :bordered="true" :shadow="false">
-                <p>{{ projectInfo.overview }}</p>
-              </CustomCard>
-            </div>
+        <div class="text-section">
+          <!-- 工程概况 -->
+          <CustomCard title="工程概况" :padding="'normal'" :bordered="true" shadow="never" class="content-card">
+            <p class="overview-text">{{ projectInfo.overview }}</p>
+          </CustomCard>
 
-            <!-- 工程规模 -->
-            <div class="card-wrapper">
-              <CustomCard title="工程规模" :padding="'normal'" :bordered="true" :shadow="false">
-                <el-row :gutter="16">
-                  <el-col :span="8" v-for="stat in projectStats" :key="stat.key">
-                    <CustomCard :padding="'small'" :hoverable="false" :bordered="true" :shadow="false">
-                      <div class="stat-card">
-                        <div class="stat-card__value">{{ stat.value }}<span class="stat-card__unit">{{ stat.unit
-                        }}</span>
-                        </div>
-                        <div class="stat-card__label">{{ stat.label }}</div>
-                      </div>
-                    </CustomCard>
-                  </el-col>
-                </el-row>
+          <!-- 工程规模 -->
+          <CustomCard title="工程规模" :padding="'normal'" :bordered="true" shadow="never" class="content-card">
+            <div class="stats-grid">
+              <CustomCard v-for="stat in projectStats" :key="stat.key" :padding="'small'" :hoverable="false"
+                :bordered="true" shadow="never" class="stat-item">
+                <div class="stat-card">
+                  <div class="stat-card__value">{{ stat.value }}<span class="stat-card__unit">{{ stat.unit }}</span>
+                  </div>
+                  <div class="stat-card__label">{{ stat.label }}</div>
+                </div>
               </CustomCard>
             </div>
+          </CustomCard>
 
-            <!-- 建设意义 -->
-            <div class="card-wrapper">
-              <CustomCard title="建设意义" :padding="'normal'" :bordered="true" :shadow="false">
-                <ul class="significance-list">
-                  <li v-for="item in projectSignificance" :key="item">{{ item }}</li>
-                </ul>
-              </CustomCard>
-            </div>
+          <!-- 建设意义 -->
+          <CustomCard title="建设意义" :padding="'normal'" :bordered="true" shadow="never" class="content-card">
+            <ul class="significance-list">
+              <li v-for="item in projectSignificance" :key="item">{{ item }}</li>
+            </ul>
+          </CustomCard>
 
-            <!-- 工程特点 -->
-            <div class="card-wrapper">
-              <CustomCard title="工程特点" :padding="'normal'" :bordered="true" :shadow="false">
-                <el-row :gutter="12">
-                  <el-col :span="12" v-for="feature in projectFeatures" :key="feature.key">
-                    <CustomCard :padding="'small'" :bordered="false" :shadow="false">
-                      <div class="feature-content">
-                        <div class="feature-icon">{{ feature.icon }}</div>
-                        <div class="feature-text">{{ feature.text }}</div>
-                      </div>
-                    </CustomCard>
-                  </el-col>
-                </el-row>
-              </CustomCard>
+          <!-- 工程特点 -->
+          <CustomCard title="工程特点" :padding="'normal'" :bordered="true" shadow="never" class="content-card">
+            <div class="features-grid">
+              <div v-for="feature in projectFeatures" :key="feature.key" class="feature-item">
+                <div class="feature-content">
+                  <div class="feature-icon">{{ feature.icon }}</div>
+                  <div class="feature-text">{{ feature.text }}</div>
+                </div>
+              </div>
             </div>
-          </div>
-        </el-col>
-      </el-row>
+          </CustomCard>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -117,20 +103,13 @@ const projectSignificance = reactive([
 
 // 工程特点
 const projectFeatures = reactive([
-  { key: 'feature1', icon: '🚧', text: '暂未开发' },
-  { key: 'feature2', icon: '🚧', text: '暂未开发' },
-  { key: 'feature3', icon: '🚧', text: '暂未开发' },
-  { key: 'feature4', icon: '🚧', text: '暂未开发' }
+  { key: 'feature1', icon: '🏗️', text: '工程规模宏大' },
+  { key: 'feature2', icon: '💧', text: '供水技术先进' },
+  { key: 'feature3', icon: '🌱', text: '生态环保理念' },
+  { key: 'feature4', icon: '🔧', text: '智能化管理' }
 ])
 
-// 系统信息
-const systemInfo = reactive({
-  version: 'v2.1.0',
-  onlineUsers: 28,
-  serverTime: '2024-01-15 14:30:25'
-})
-
-// 视频事件处理
+// 视频事件处理 - 简化版本
 const onVideoLoadStart = () => {
   // 视频开始加载
 }
@@ -139,29 +118,9 @@ const onVideoLoaded = () => {
   // 视频加载完成
 }
 
-const onVideoError = (error) => {
-  console.error('视频加载失败:', error)
+const onVideoError = () => {
   ElMessage.error('视频加载失败，请检查网络连接')
 }
-
-// 更新服务器时间
-const updateServerTime = () => {
-  const now = new Date()
-  systemInfo.serverTime = now.toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
-  })
-}
-
-onMounted(() => {
-  // 每秒更新服务器时间
-  setInterval(updateServerTime, 1000)
-  updateServerTime()
-})
 </script>
 
 <style scoped lang="scss">
@@ -172,8 +131,6 @@ onMounted(() => {
   flex-direction: column;
 }
 
-
-
 .main-content {
   flex: 1;
   padding: var(--spacing-base) var(--spacing-large);
@@ -182,17 +139,52 @@ onMounted(() => {
   box-shadow: var(--shadow-card);
 }
 
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-large);
+
+  @include respond-to(md) {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-extra-large);
+  }
+}
+
+.video-section {
+  @include respond-to(md) {
+    grid-column: 1;
+  }
+}
+
+.text-section {
+  @include respond-to(md) {
+    grid-column: 2;
+  }
+
+  .content-card {
+    margin-bottom: var(--spacing-base);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
 .video-container {
-  background: #000;
+  background: #000000;
   border-radius: var(--border-radius-large);
   overflow: hidden;
   margin-bottom: var(--spacing-small);
 
   .video-player {
     width: 100%;
-    height: 320px;
+    height: clamp(200px, 40vw, 360px);
     display: block;
     object-fit: cover;
+
+    @include respond-to(sm) {
+      height: clamp(180px, 50vw, 280px);
+    }
   }
 }
 
@@ -201,6 +193,14 @@ onMounted(() => {
   color: var(--text-secondary);
   line-height: var(--line-height-large);
   margin: 0;
+}
+
+.overview-text {
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
+  line-height: var(--line-height-large);
+  margin: 0;
+  @include text-ellipsis(10);
 }
 
 .significance-list {
@@ -221,56 +221,106 @@ onMounted(() => {
       color: var(--primary-color);
       position: absolute;
       left: 0;
+      font-weight: var(--font-weight-bold);
     }
   }
 }
 
-.text-section {
-  .card-wrapper {
-    margin-bottom: var(--spacing-base);
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--spacing-medium);
 
-    &:last-child {
-      margin-bottom: 0;
+  @include respond-to(sm) {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-small);
+  }
+}
+
+.stat-card {
+  @include flex-center-y;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-xs);
+
+  &__value {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+
+    @include respond-to(sm) {
+      font-size: var(--font-size-lg);
+    }
+
+    .stat-card__unit {
+      margin-left: var(--spacing-mini);
+      font-size: var(--font-size-base);
+      color: var(--text-secondary);
+      font-weight: var(--font-weight-bold);
     }
   }
+
+  &__label {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    font-weight: var(--font-weight-medium);
+  }
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--spacing-medium);
+
+  @include respond-to(sm) {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-small);
+  }
+}
+
+.feature-item {
+  padding: var(--spacing-small);
+  border-radius: var(--border-radius-base);
+  background: var(--bg-tertiary);
 }
 
 .feature-content {
   @include flex-center-y;
 
   .feature-icon {
-    font-size: var(--font-size-large);
-    margin-right: var(--spacing-sm);
+    font-size: var(--font-size-xl);
+    margin-right: var(--spacing-medium);
+
+    @include respond-to(sm) {
+      font-size: var(--font-size-lg);
+      margin-right: var(--spacing-small);
+    }
   }
 
   .feature-text {
     font-size: var(--font-size-base);
     color: var(--text-secondary);
+    font-weight: var(--font-weight-medium);
+
+    @include respond-to(sm) {
+      font-size: var(--font-size-sm);
+    }
   }
 }
 
-.stat-card {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--spacing-xs);
-
-  &__value {
-    font-size: var(--font-size-large);
-    font-weight: 700;
-    color: var(--text-primary);
-
-    .stat-card__unit {
-      margin-left: var(--spacing-mini);
-      font-size: var(--font-size-extra-small);
-      color: var(--text-disabled);
-      font-weight: var(--font-weight-medium);
-    }
+// 响应式优化
+@include respond-to(sm) {
+  .main-content {
+    padding: var(--spacing-small) var(--spacing-medium);
+    border-radius: var(--border-radius-md);
   }
 
-  &__label {
-    font-size: var(--font-size-extra-small);
-    color: var(--text-secondary);
+  .content-grid {
+    gap: var(--spacing-medium);
+  }
+
+  .text-section .content-card {
+    margin-bottom: var(--spacing-small);
   }
 }
 </style>

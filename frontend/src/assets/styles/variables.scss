@@ -85,6 +85,7 @@
   --hover-bg-light: #f0f9ff; // 浅蓝色悬停背景（系统管理通用）
   --hover-border-light: #b3d8ff; // 浅蓝色悬停边框（系统管理通用）
   --status-normal-bg: #f0f9ff; // 正常状态背景
+  --disabled-opacity: 0.6; // 禁用状态通用透明度 - 用于禁用按钮、开关、单选框等组件
 
   // 深色背景上的颜色（深色主题专用）
   --text-on-dark: #ffffff; // 深色背景主文本
@@ -136,6 +137,7 @@
   --font-size-mini: 9px; // 迷你字号 - 图表刻度、细节标注
   --font-size-small: 11px; // 小号字号 - 次要信息、辅助标签
   --font-size-medium: 15px; // 中号字号 - 强调文本、按钮加强版
+  --font-size-medium-button: 16px; // 中等按钮字号 - 大尺寸按钮文字
   --font-size-large: 32px; // 大号字号 - 关键指标、统计数字
 
   // ==================== 特殊用途字号（页面专用）====================
@@ -179,6 +181,12 @@
   --padding-panel-header: var(--spacing-medium) var(--spacing-base);
   --padding-legend-item: var(--spacing-sm) var(--spacing-medium); // 图例项内边距（10px 12px）
   --padding-legend-item-mobile: var(--spacing-small) var(--spacing-sm); // 移动端图例项内边距（8px 10px）
+  --input-padding-compact: var(--spacing-mini) var(--spacing-small); // 紧凑型输入框内边距（4px 8px）
+  --padding-button-text: var(--spacing-mini) var(--spacing-small); // 文本按钮内边距（4px 8px，多组件复用）
+
+  // 响应式内边距组合（跨组件复用）
+  --padding-responsive-header: clamp(var(--spacing-small), 2vw, var(--spacing-large)); // 响应式头部内边距（卡片、面板头部复用）
+  --padding-responsive-content: clamp(var(--spacing-xs), 2vw, var(--spacing-large)); // 响应式内容内边距（卡片、面板内容复用）
 }
 
 
@@ -213,6 +221,8 @@
 
   // ==================== 按钮组件尺寸 ====================
   --button-size-small: 28px; // 小按钮高度
+  --button-standard-size: 32px; // 标准按钮尺寸（多组件复用）
+  --button-height-large: 44px; // 大按钮高度（多组件复用）
   --button-min-width: 80px; // 按钮最小宽度
 
   // ==================== 图标组件尺寸 ====================
@@ -231,6 +241,7 @@
   --container-min-width-compact: 400px; // 紧凑容器最小宽度（多组件复用）
   --dialog-width-standard: 500px; // 标准对话框宽度（多组件复用）
   --element-min-width-small: 150px; // 小元素最小宽度（多组件复用）
+  --element-min-width-compact: 60px; // 紧凑元素最小宽度（表格、标签、弹窗等组件复用）
   --panel-content-min-height: 400px; // 面板内容最小高度
 }
 
@@ -249,12 +260,17 @@
   --box-shadow-light: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04); // 轻量阴影
   --shadow-md: 0 2px 12px 0 rgba(0, 0, 0, 0.1); // 中等阴影 - 卡片、面板
   --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.1); // 卡片阴影
+  --shadow-card-hover: 0 4px 16px rgba(0, 0, 0, 0.15); // 卡片悬停阴影 - 对话框、卡片悬停效果
   --shadow-hover-button: 0 4px 12px rgba(0, 0, 0, 0.15); // 按钮悬停阴影
+  --shadow-popup: 0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08); // 弹窗阴影 - 信息弹窗、提示框
 
   // ==================== 边框宽度规范 ====================
   --border-width-base: 1px; // 基础边框 - 默认边框
   --border-width-thin: 1px; // 细边框 - 默认边框
   --border-width-normal: 2px; // 标准边框 - 强调边框
+
+  // ==================== 焦点状态样式规范 ====================
+  --focus-shadow-offset: 0 0 0 2px; // 焦点阴影偏移值（跨组件复用）
 }
 
 // ==================== 层级管理系统（Z-Index） ====================

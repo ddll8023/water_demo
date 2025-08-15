@@ -828,7 +828,7 @@ defineExpose({
 
                     &:hover {
                         border-color: var(--primary-color);
-                        box-shadow: var(--box-shadow-light);
+                        box-shadow: var(--shadow-light);
                     }
 
                     img {

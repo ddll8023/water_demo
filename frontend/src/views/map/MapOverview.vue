@@ -815,18 +815,18 @@ const getIndicatorUnit = (key) => {
             position: relative;
             background: var(--bg-primary);
             border-radius: var(--border-radius-large);
-            box-shadow: var(--box-shadow-light);
+            box-shadow: var(--shadow-light);
             overflow: visible;
 
             .layer-control-panel {
                 position: absolute;
-                top: 16px;
-                left: 16px;
+                top: var(--spacing-base);
+                left: var(--spacing-base);
                 background: var(--bg-primary);
                 border-radius: var(--border-radius-large);
                 box-shadow: 0 2px 12px var(--black-transparent-medium);
                 z-index: var(--z-index-dropdown);
-                min-width: 160px;
+                min-width: var(--map-panel-min-width);
                 max-width: 220px;
                 overflow: hidden;
                 transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
@@ -836,7 +836,7 @@ const getIndicatorUnit = (key) => {
                     min-width: auto;
                     max-width: var(--icon-size-xxl);
                     width: var(--icon-size-xxl);
-                    height: 48px;
+                    height: var(--map-panel-collapsed-height);
                     transform: scale(var(--map-panel-hidden-scale));
 
                     .panel-header {
@@ -867,8 +867,7 @@ const getIndicatorUnit = (key) => {
                     padding: var(--padding-panel-header);
                     background: var(--bg-secondary);
                     border-bottom: 1px solid var(--border-color-lighter);
-                    display: flex;
-                    align-items: center;
+                    @include flex-center-y;
                     cursor: pointer;
                     transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
                     position: relative;
@@ -964,8 +963,7 @@ const getIndicatorUnit = (key) => {
                             gap: var(--spacing-small);
 
                             .layer-button {
-                                display: flex;
-                                align-items: center;
+                                @include flex-center-y;
                                 padding: var(--padding-legend-item);
                                 background: var(--bg-secondary);
                                 border: 1px solid var(--border-color-light);
@@ -984,7 +982,7 @@ const getIndicatorUnit = (key) => {
                                     left: -100%;
                                     width: 100%;
                                     height: 100%;
-                                    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+                                    background: linear-gradient(90deg, transparent, var(--white-transparent-active), transparent);
                                     transition: left var(--map-panel-transition-duration) var(--map-panel-transition-ease);
                                 }
 
@@ -1016,7 +1014,7 @@ const getIndicatorUnit = (key) => {
                                     border-color: var(--primary-color);
                                     color: var(--primary-color);
                                     transform: translateY(-1px);
-                                    box-shadow: var(--shadow-card-strong);
+                                    box-shadow: var(--shadow-card-hover);
 
                                     i {
                                         color: var(--primary-color);
@@ -1073,9 +1071,7 @@ const getIndicatorUnit = (key) => {
             gap: var(--spacing-base);
 
             .info-item {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
+                @include flex-between;
                 padding: var(--spacing-small);
                 background: var(--bg-tertiary);
                 border-radius: var(--border-radius-base);
@@ -1104,9 +1100,7 @@ const getIndicatorUnit = (key) => {
             gap: var(--spacing-base);
 
             .data-item {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
+                @include flex-between;
                 padding: var(--spacing-small);
                 background: var(--bg-primary);
                 border: 1px solid var(--border-color-light);
@@ -1115,7 +1109,7 @@ const getIndicatorUnit = (key) => {
 
                 &:hover {
                     border-color: var(--primary-light);
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                    box-shadow: 0 2px 4px var(--black-transparent-light);
                 }
 
                 .data-label {
@@ -1145,9 +1139,7 @@ const getIndicatorUnit = (key) => {
         }
 
         .no-data {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            @include flex-center;
             padding: var(--spacing-large);
             color: var(--text-tertiary);
             font-size: var(--font-size-small);
@@ -1169,7 +1161,7 @@ const getIndicatorUnit = (key) => {
             max-width: 100%;
 
             &.loading {
-                opacity: var(--opacity-medium);
+                opacity: var(--disabled-opacity);
             }
 
             .trend-card {
@@ -1223,9 +1215,7 @@ const getIndicatorUnit = (key) => {
                 }
 
                 .trend-row {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
+                    @include flex-between;
                     color: var(--text-secondary);
                     padding: var(--spacing-xs) 0;
                     border-bottom: 1px solid var(--border-color-extra-light);
@@ -1238,7 +1228,7 @@ const getIndicatorUnit = (key) => {
                 .trend-row .label {
                     font-weight: var(--font-weight-medium);
                     font-size: var(--font-size-small);
-                    min-width: 60px;
+                    min-width: var(--element-min-width-compact);
                 }
 
                 .trend-row .value {
@@ -1264,8 +1254,7 @@ const getIndicatorUnit = (key) => {
 }
 
 .dialog-footer {
-    display: flex;
-    justify-content: flex-end;
+    @include flex-end;
     gap: var(--spacing-base);
 
     .dialog-btn {
@@ -1284,7 +1273,7 @@ const getIndicatorUnit = (key) => {
             &:hover {
                 background: var(--primary-dark);
                 transform: translateY(-1px);
-                box-shadow: 0 4px 12px rgba(22, 93, 255, 0.3);
+                box-shadow: 0 4px 12px var(--primary-transparent-medium);
             }
         }
     }

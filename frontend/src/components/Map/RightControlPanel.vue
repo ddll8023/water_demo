@@ -158,7 +158,7 @@ defineExpose({
 .right-control-panel {
     position: absolute;
     top: 80px;
-    right: 16px;
+    right: var(--spacing-base);
     background: var(--white-transparent-full);
     backdrop-filter: blur(var(--blur-medium));
     border-radius: var(--border-radius-xl);
@@ -204,7 +204,7 @@ defineExpose({
             }
 
             .toggle-icon {
-                opacity: var(--opacity-medium);
+                opacity: var(--disabled-opacity);
                 transform: rotate(0deg) scale(0.9);
 
                 &:hover {
@@ -434,7 +434,7 @@ defineExpose({
 
                 .legend-item:hover .pipeline-legend {
                     transform: scaleX(1.2);
-                    box-shadow: var(--shadow-card-strong);
+                    box-shadow: var(--shadow-card-hover);
                 }
             }
         }

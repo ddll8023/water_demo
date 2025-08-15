@@ -693,7 +693,7 @@ const handleFormSuccess = () => {
     flex: 1;
     display: flex;
     flex-direction: column;
-    box-shadow: var(--box-shadow-light);
+    box-shadow: var(--shadow-light);
   }
 
   .action-buttons {

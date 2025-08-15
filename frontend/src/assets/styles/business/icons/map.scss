@@ -4,86 +4,86 @@
 :root {
     // ==================== 设施类型图标符号 ====================
     // 泵站图标
-    --facility-pumping-station-symbol: "⚙️";
+    --facility-pumping-station-symbol: ⚙️;
 
     // 水厂图标
-    --facility-water-plant-symbol: "🏭";
+    --facility-water-plant-symbol: 🏭;
 
     // 水库图标
-    --facility-reservoir-symbol: "💧";
+    --facility-reservoir-symbol: 💧;
 
     // 监测站设施图标
-    --facility-monitoring-station-symbol: "📊";
+    --facility-monitoring-station-symbol: 📊;
 
     // 管道图标
-    --facility-pipeline-symbol: "➡️";
+    --facility-pipeline-symbol: ➡️;
 
     // 村庄图标
-    --facility-village-symbol: "🏘️";
+    --facility-village-symbol: 🏘️;
 
     // 漂浮船只图标
-    --facility-floating-boat-symbol: "🚤";
+    --facility-floating-boat-symbol: 🚤;
 
     // 消毒材料图标
-    --facility-disinfection-material-symbol: "🧪";
+    --facility-disinfection-material-symbol: 🧪;
 
     // 默认设施图标
-    --facility-default-symbol: "🏢";
+    --facility-default-symbol: 🏢;
 
     // 新增设施类型图标
-    --facility-pressure-station-symbol: "💪";
-    --facility-main-pipeline-symbol: "🔵";
-    --facility-branch-pipeline-symbol: "🔹";
+    --facility-pressure-station-symbol: 💪;
+    --facility-main-pipeline-symbol: 🔵;
+    --facility-branch-pipeline-symbol: 🔹;
 
     // ==================== 监测站类型图标符号 ====================
     // 水位监测图标
-    --station-water-level-symbol: "📈";
+    --station-water-level-symbol: 📈;
 
     // 流量监测图标
-    --station-flow-symbol: "🌊";
+    --station-flow-symbol: 🌊;
 
     // 降雨监测图标
-    --station-rainfall-symbol: "🌧️";
+    --station-rainfall-symbol: 🌧️;
 
     // 综合监测图标
-    --station-comprehensive-symbol: "📊";
+    --station-comprehensive-symbol: 📊;
 
     // 水质监测图标
-    --station-water-quality-symbol: "🧪";
+    --station-water-quality-symbol: 🧪;
 
     // 水库监测图标
-    --station-reservoir-symbol: "🏔️";
+    --station-reservoir-symbol: 🏔️;
 
     // 默认监测站图标
-    --station-default-symbol: "📊";
+    --station-default-symbol: 📊;
 
     // ==================== 预警级别图标符号 ====================
     // 一般预警图标
-    --warning-level-general-symbol: "⚠️";
+    --warning-level-general-symbol: ⚠️;
 
     // 严重预警图标
-    --warning-level-serious-symbol: "🚨";
+    --warning-level-serious-symbol: 🚨;
 
     // 特别严重预警图标
-    --warning-level-critical-symbol: "🔥";
+    --warning-level-critical-symbol: 🔥;
 
     // ==================== 泵站状态图标符号 ====================
     // 泵站运行状态图标
-    --pump-status-open-symbol: "▶️";
+    --pump-status-open-symbol: ▶️;
 
     // 泵站停止状态图标
-    --pump-status-closed-symbol: "⏹️";
+    --pump-status-closed-symbol: ⏹️;
 
     // 泵站维护状态图标
-    --pump-status-maintenance-symbol: "🔧";
+    --pump-status-maintenance-symbol: 🔧;
 
     // ==================== 管线类型图标符号 ====================
     // 供水干管图标
-    --pipeline-main-symbol: "━";
+    --pipeline-main-symbol: ━;
 
     // 供水支管图标
-    --pipeline-branch-symbol: "─";
+    --pipeline-branch-symbol: ─;
 
     // 分配管图标
-    --pipeline-distribution-symbol: "┄";
+    --pipeline-distribution-symbol: ┄;
 }

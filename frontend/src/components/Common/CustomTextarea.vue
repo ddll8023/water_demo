@@ -453,7 +453,7 @@ onMounted(() => {
   // 状态样式
   &.is-focused .textarea-wrapper {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px var(--primary-bg-light);
+    box-shadow: var(--focus-shadow-offset) var(--primary-bg-light);
   }
 
   &.is-disabled .textarea-wrapper {
@@ -472,7 +472,7 @@ onMounted(() => {
 
     &:focus-within {
       border-color: var(--danger-color);
-      box-shadow: 0 0 0 2px var(--danger-bg-light);
+      box-shadow: var(--focus-shadow-offset) var(--danger-bg-light);
     }
   }
 

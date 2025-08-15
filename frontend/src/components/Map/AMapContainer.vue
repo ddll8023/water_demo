@@ -570,37 +570,16 @@ const createIconHtml = (iconConfig, size, title, markerId = '') => {
         `amap-marker--${markerType}`,
     ].filter(Boolean).join(' ');
 
-    // 直接使用内联样式确保尺寸正确应用，特别注意pointer-events
-    const iconStyle = [
-        `width: ${size}px`,
-        `height: ${size}px`,
-        `font-size: ${fontSize}px`,
-        `border-width: ${borderWidth}px`,
-        `border-style: solid`,
-        `border-color: ${iconConfig.color}`,
-        `background-color: ${iconConfig.bgColor}`,
-        `color: ${iconConfig.color}`,
-        `border-radius: 50%`,
-        `display: flex`,
-        `align-items: center`,
-        `justify-content: center`,
-        `font-weight: 500`,
-        `line-height: 1`,
-        `position: relative`,
-        `box-sizing: border-box`,
-        `opacity: 0.85`,
-        `pointer-events: auto` // 确保可以接收点击事件
-    ].join('; ');
-
-    // 容器样式，确保整个区域都可以点击
-    const containerStyle = [
-        `position: relative`,
-        `cursor: pointer`,
-        `user-select: none`,
-        `pointer-events: auto`, // 确保容器可以接收点击事件
-        `z-index: 100`,
-        `width: ${size}px`,
-        `height: ${size}px`
+    // 动态样式通过CSS自定义属性传递
+    const dynamicStyle = [
+        `--marker-size: ${size}px`,
+        `--marker-font-size: ${fontSize}px`,
+        `--marker-border-width: ${borderWidth}px`,
+        `--marker-border-color: ${iconConfig.color}`,
+        `--marker-bg-color: ${iconConfig.bgColor}`,
+        `--marker-color: ${iconConfig.color}`,
+        // pointer-events 必须在此处设置以确保事件可被捕获
+        `pointer-events: auto`
     ].join('; ');
 
     const htmlContent = `
@@ -608,8 +587,8 @@ const createIconHtml = (iconConfig, size, title, markerId = '') => {
              data-marker-id="${markerId}" 
              data-marker-type="${markerType}"
              title="${title}"
-             style="${containerStyle}">
-            <div class="amap-marker__icon" style="${iconStyle}">
+             style="${dynamicStyle}">
+            <div class="amap-marker__icon">
                 ${iconConfig.symbol}
             </div>
         </div>
@@ -907,25 +886,14 @@ const createWarningIconHtml = (iconConfig, size, name, markerId) => {
         iconConfig.level > 1 ? 'amap-marker--warning-urgent' : '',
     ].filter(Boolean).join(' ');
 
-    // 直接使用内联样式确保尺寸正确应用
-    const iconStyle = [
-        `width: ${size}px`,
-        `height: ${size}px`,
-        `font-size: ${fontSize}px`,
-        `border-width: ${borderWidth}px`,
-        `border-style: solid`,
-        `border-color: ${iconConfig.color}`,
-        `background-color: ${iconConfig.bgColor}`,
-        `color: ${iconConfig.color}`,
-        `border-radius: 50%`,
-        `display: flex`,
-        `align-items: center`,
-        `justify-content: center`,
-        `font-weight: 500`,
-        `line-height: 1`,
-        `position: relative`,
-        `box-sizing: border-box`,
-        `opacity: 0.85`
+    // 动态样式通过CSS自定义属性传递
+    const dynamicStyle = [
+        `--marker-size: ${size}px`,
+        `--marker-font-size: ${fontSize}px`,
+        `--marker-border-width: ${borderWidth}px`,
+        `--marker-border-color: ${iconConfig.color}`,
+        `--marker-bg-color: ${iconConfig.bgColor}`,
+        `--marker-color: ${iconConfig.color}`
     ].join('; ');
 
     return `
@@ -933,8 +901,8 @@ const createWarningIconHtml = (iconConfig, size, name, markerId) => {
              data-marker-id="${markerId}" 
              data-marker-type="warning"
              title="${name}"
-             style="position: relative; cursor: pointer; user-select: none;">
-            <div class="amap-marker__icon" style="${iconStyle}">
+             style="${dynamicStyle}">
+            <div class="amap-marker__icon">
                 ${iconConfig.symbol}
             </div>
         </div>
@@ -1057,7 +1025,7 @@ defineExpose({
         border-radius: var(--border-radius-large);
         box-shadow: var(--shadow-card);
         z-index: var(--z-index-dropdown);
-        opacity: 0.95;
+        opacity: var(--opacity-intense);
         position: absolute;
         top: 50%;
         left: 50%;
@@ -1093,13 +1061,19 @@ defineExpose({
     user-select: none;
     pointer-events: auto !important;
     /* 强制确保可以接收点击事件 */
-    z-index: 100;
+    z-index: var(--z-index-map-marker);
 }
 
 :deep(.amap-marker__icon) {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
+    width: var(--marker-size);
+    height: var(--marker-size);
+    font-size: var(--marker-font-size);
+    border-width: var(--marker-border-width);
+    border-color: var(--marker-border-color);
+    background-color: var(--marker-bg-color);
+    color: var(--marker-color);
+    opacity: var(--opacity-heavy);
+    border-radius: var(--border-radius-round);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1107,26 +1081,7 @@ defineExpose({
     line-height: 1;
     position: relative;
     border-style: solid;
-}
-
-// 设施类型标记
-:deep(.amap-marker--facility .amap-marker__icon) {
-    border-color: var(--facility-default-color, var(--info-color));
-    background-color: var(--facility-default-bg, var(--bg-secondary));
-    color: var(--text-primary);
-}
-
-// 监测站类型标记  
-:deep(.amap-marker--station .amap-marker__icon) {
-    border-color: var(--station-default-color, var(--success-color));
-    background-color: var(--station-default-bg, var(--bg-tertiary));
-    color: var(--text-primary);
-}
-
-:deep(.amap-marker--warning .amap-marker__icon) {
-    border-color: var(--warning-level-general-color, var(--warning-color));
-    background-color: var(--warning-level-general-bg, var(--bg-primary));
-    color: var(--warning-level-general-color, var(--warning-color));
+    box-sizing: border-box;
 }
 
 // 悬停状态 - 重叠图标可视性优化
@@ -1143,7 +1098,7 @@ defineExpose({
 // 工具提示
 :deep(.amap-marker__tooltip) {
     position: absolute;
-    bottom: calc(var(--marker-size-base) + var(--spacing-mini));
+    bottom: calc(var(--spacing-base) + var(--spacing-mini));
     left: 50%;
     transform: translateX(-50%);
     background: var(--black-transparent-heavy);
@@ -1176,8 +1131,6 @@ defineExpose({
             }
         }
     }
-
-
 }
 
 @include respond-to(sm) {
@@ -1196,8 +1149,6 @@ defineExpose({
             }
         }
     }
-
-
 }
 
 @include respond-to(xs) {
@@ -1208,5 +1159,4 @@ defineExpose({
         }
     }
 }
-
-// 动画定义已移至 @/assets/styles/base/animations.scss</style>
+</style>

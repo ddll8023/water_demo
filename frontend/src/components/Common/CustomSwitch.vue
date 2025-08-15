@@ -301,7 +301,7 @@ watch(() => props.modelValue, (newValue) => {
         background-color: var(--bg-primary);
         border-radius: var(--border-radius-round);
         transition: var(--transition-base);
-        box-shadow: var(--box-shadow-light);
+        box-shadow: var(--shadow-light);
       }
     }
 
@@ -384,7 +384,7 @@ watch(() => props.modelValue, (newValue) => {
 
   // 禁用状态
   &.is-disabled {
-    opacity: 0.6;
+    opacity: var(--disabled-opacity);
     cursor: not-allowed;
 
     .switch-label {
