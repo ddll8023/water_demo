@@ -9,9 +9,7 @@
             </template>
             <!-- 收缩状态显示 -->
             <template v-else>
-                <i class="fa fa-list-ul header-icon collapsed-icon" title="点击展开图例说明"></i>
-                <span class="header-title collapsed-title">图例</span>
-                <i class="fa fa-angle-down toggle-icon" :class="{ expanded: panelVisible }"></i>
+                <i class="fa fa-list-ul collapsed-icon" title="点击展开图例说明"></i>
             </template>
         </div>
 
@@ -160,7 +158,7 @@ defineExpose({
     top: 80px;
     right: var(--spacing-base);
     background: var(--white-transparent-full);
-    backdrop-filter: blur(var(--blur-medium));
+    backdrop-filter: blur(12px);
     border-radius: var(--border-radius-xl);
     box-shadow: 0 8px 32px var(--black-transparent-medium);
     border: var(--border-width-thin) solid var(--white-transparent-base);
@@ -171,45 +169,35 @@ defineExpose({
     transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
     animation: glassPanelFadeIn var(--map-panel-transition-duration) var(--map-panel-transition-ease);
     will-change: transform, opacity, box-shadow;
+    transform-origin: top right;
 
     &:hover {
-        box-shadow: var(--shadow-drag);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
         backdrop-filter: blur(16px);
     }
 
     &.collapsed {
-        min-width: var(--panel-min-width-collapsed);
+        min-width: auto;
+        width: var(--map-panel-collapsed-height);
         height: var(--map-panel-collapsed-height);
-        box-shadow: var(--shadow-collapsed);
-        backdrop-filter: blur(var(--blur-light));
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        backdrop-filter: blur(8px);
+        transform: scale(var(--map-panel-hidden-scale));
 
         .panel-header {
             background: rgba(248, 249, 250, 0.95);
-            backdrop-filter: blur(var(--blur-medium));
+            backdrop-filter: blur(12px);
+            justify-content: center;
 
-            .header-icon {
+            .collapsed-icon {
+                margin: 0;
+                font-size: 24px;
                 color: var(--primary-color);
                 transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
-                transform: scale(1.1);
 
                 &:hover {
-                    color: var(--primary-lighter);
-                    transform: scale(1.2);
-                }
-            }
-
-            .header-title.collapsed-title {
-                opacity: 1;
-                transform: translateX(0);
-            }
-
-            .toggle-icon {
-                opacity: var(--disabled-opacity);
-                transform: rotate(0deg) scale(0.9);
-
-                &:hover {
-                    opacity: 1;
-                    transform: rotate(0deg) scale(1);
+                    color: var(--primary-light);
+                    transform: scale(1.15) rotate(5deg);
                 }
             }
         }
@@ -227,7 +215,7 @@ defineExpose({
         align-items: center;
         padding: var(--padding-panel-header);
         background: var(--map-panel-stats-bg);
-        backdrop-filter: blur(var(--blur-light));
+        backdrop-filter: blur(8px);
         border-bottom: var(--border-width-thin) solid rgba(222, 226, 230, 0.6);
         cursor: pointer;
         position: relative;
@@ -235,7 +223,7 @@ defineExpose({
 
         &:hover {
             background: rgba(240, 242, 245, 0.9);
-            backdrop-filter: blur(var(--blur-medium));
+            backdrop-filter: blur(12px);
         }
 
         &:active {
@@ -301,7 +289,7 @@ defineExpose({
 
         .control-group {
             margin-bottom: var(--spacing-large);
-            animation: groupFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: controlGroupFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 
             &:nth-child(1) {
                 animation-delay: 0.1s;
@@ -352,7 +340,7 @@ defineExpose({
                     align-items: center;
                     padding: var(--padding-legend-item);
                     background: var(--white-transparent-strong-90);
-                    backdrop-filter: blur(var(--blur-light));
+                    backdrop-filter: blur(8px);
                     border: var(--border-width-thin) solid var(--white-transparent-medium);
                     border-radius: var(--border-radius-large);
                     box-shadow: var(--shadow-card);
@@ -440,7 +428,7 @@ defineExpose({
         }
     }
 
-    @keyframes groupFadeIn {
+    @keyframes controlGroupFadeIn {
         0% {
             opacity: 0;
             transform: translateY(10px);

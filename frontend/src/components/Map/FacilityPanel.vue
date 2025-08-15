@@ -235,7 +235,6 @@ const panelHovered = ref(false);
 const isDragging = ref(false);
 const panelPosition = ref(props.initialPosition);
 const dragOffset = ref({ x: 0, y: 0 });
-const dragAnimationId = ref(null);
 const viewportSize = ref({ width: 0, height: 0 });
 
 // 面板尺寸硬编码（组件专用交互逻辑）
@@ -290,9 +289,6 @@ onUnmounted(() => {
     if (props.enableFloating) {
         cleanupDragListeners();
         window.removeEventListener('resize', updateViewportSize);
-        if (dragAnimationId.value) {
-            cancelAnimationFrame(dragAnimationId.value);
-        }
     }
 });
 
@@ -349,21 +345,8 @@ const startDrag = (event) => {
     };
 
     // 添加拖拽事件监听
-    document.addEventListener('mousemove', handleDragThrottled);
+    document.addEventListener('mousemove', handleDrag);
     document.addEventListener('mouseup', endDrag);
-};
-
-/**
- * 节流处理拖拽
- */
-const handleDragThrottled = (event) => {
-    if (dragAnimationId.value) {
-        cancelAnimationFrame(dragAnimationId.value);
-    }
-
-    dragAnimationId.value = requestAnimationFrame(() => {
-        handleDrag(event);
-    });
 };
 
 /**
@@ -404,12 +387,6 @@ const endDrag = () => {
 
         // 移除拖拽事件监听
         cleanupDragListeners();
-
-        // 取消待处理的动画帧
-        if (dragAnimationId.value) {
-            cancelAnimationFrame(dragAnimationId.value);
-            dragAnimationId.value = null;
-        }
 
         savePanelState();
     }
@@ -455,7 +432,7 @@ const updateViewportSize = () => {
  * 清理拖拽事件监听
  */
 const cleanupDragListeners = () => {
-    document.removeEventListener('mousemove', handleDragThrottled);
+    document.removeEventListener('mousemove', handleDrag);
     document.removeEventListener('mouseup', endDrag);
 };
 
@@ -604,19 +581,26 @@ const getItemLocation = (item) => {
     border: var(--border-width-thin) solid var(--white-transparent-base);
     overflow: hidden;
     @include user-select(none);
-    transition: height var(--map-panel-transition-duration) var(--map-panel-transition-ease),
-        box-shadow var(--map-panel-transition-duration) var(--map-panel-transition-ease),
+    transition: box-shadow var(--map-panel-transition-duration) var(--map-panel-transition-ease),
+        backdrop-filter var(--map-panel-transition-duration) var(--map-panel-transition-ease),
         transform var(--map-panel-transition-duration) var(--map-panel-transition-ease),
-        backdrop-filter var(--map-panel-transition-duration) var(--map-panel-transition-ease);
+        width var(--map-panel-transition-duration) var(--map-panel-transition-ease),
+        height var(--map-panel-transition-duration) var(--map-panel-transition-ease);
+    transform-origin: top left;
 
     &.dragging {
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        transition: box-shadow var(--map-panel-transition-duration) var(--map-panel-transition-ease),
+            backdrop-filter var(--map-panel-transition-duration) var(--map-panel-transition-ease);
     }
 
     &.collapsed {
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         backdrop-filter: blur(8px);
+        min-width: auto;
+        width: var(--map-panel-collapsed-height);
         height: var(--map-panel-collapsed-height);
+        transform: scale(var(--map-panel-hidden-scale));
     }
 
     .floating-panel-header {
@@ -888,7 +872,7 @@ const getItemLocation = (item) => {
             box-sizing: border-box;
 
             .icon-symbol {
-                font-size: var(--font-size-large);
+                font-size: 28px;
                 font-weight: var(--font-weight-bold);
                 line-height: 1;
                 user-select: none;

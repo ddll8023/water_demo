@@ -844,7 +844,7 @@ const getIndicatorUnit = (key) => {
 
                         .collapsed-icon {
                             margin: 0;
-                            font-size: var(--font-size-large);
+                            font-size: 24px;
                             color: var(--primary-color);
                             transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
 
