@@ -77,6 +77,13 @@
             format="YYYY 第 ww 周" @change="handleTempChange" />
         </div>
 
+        <!-- 时间选择 -->
+        <div v-else-if="type === 'time'" class="time-section">
+          <h4 class="section-title">选择时间</h4>
+          <el-time-picker v-model="tempSingleValue" placeholder="选择时间" style="width: 100%"
+            :format="format || 'HH:mm:ss'" @change="handleTempChange" />
+        </div>
+
         <!-- 多日期选择 -->
         <div v-else-if="type === 'dates'" class="dates-section">
           <h4 class="section-title">选择多个日期</h4>
@@ -167,7 +174,7 @@ const props = defineProps({
   type: {
     type: String,
     default: 'date',
-    validator: (value) => ['date', 'datetime', 'daterange', 'datetimerange', 'month', 'year', 'dates', 'week'].includes(value)
+    validator: (value) => ['date', 'datetime', 'daterange', 'datetimerange', 'month', 'year', 'dates', 'week', 'time'].includes(value)
   },
   // 占位文字
   placeholder: {
@@ -347,7 +354,8 @@ const pickerTitle = computed(() => {
     'month': '选择月份',
     'year': '选择年份',
     'dates': '选择多个日期',
-    'week': '选择周'
+    'week': '选择周',
+    'time': '选择时间'
   }
 
   if (isRangeType.value) {
@@ -447,6 +455,11 @@ const endInputValue = computed({
 const formatValueByType = (value) => {
   if (!value) return ''
 
+  // time 类型直接返回时间字符串，不需要转换为Date对象
+  if (props.type === 'time') {
+    return typeof value === 'string' ? value : value.toString()
+  }
+
   const date = new Date(value)
   if (isNaN(date.getTime())) return ''
 
@@ -458,7 +471,8 @@ const formatValueByType = (value) => {
     'month': 'YYYY-MM',
     'year': 'YYYY',
     'week': 'YYYY 第 ww 周',
-    'dates': props.format || 'YYYY-MM-DD'
+    'dates': props.format || 'YYYY-MM-DD',
+    'time': props.format || 'HH:mm:ss'
   }
 
   return formatDateTime(date, formatMap[props.type] || props.format)
@@ -467,6 +481,11 @@ const formatValueByType = (value) => {
 // 根据类型格式化输出值
 const formatOutputValue = (value) => {
   if (!value) return value
+
+  // time 类型直接处理时间字符串
+  if (props.type === 'time') {
+    return typeof value === 'string' ? value : value.toString()
+  }
 
   const date = new Date(value)
   if (isNaN(date.getTime())) return value
@@ -479,7 +498,8 @@ const formatOutputValue = (value) => {
     'month': 'YYYY-MM',
     'year': 'YYYY',
     'week': 'YYYY-MM-DD',
-    'dates': props.valueFormat || 'YYYY-MM-DD'
+    'dates': props.valueFormat || 'YYYY-MM-DD',
+    'time': props.valueFormat || 'HH:mm:ss'
   }
 
   return formatDateTime(date, formatMap[props.type] || props.valueFormat)
@@ -587,7 +607,7 @@ const confirmSelection = () => {
   if (props.type === 'dates') {
     // 多日期选择
     newValue = tempMultipleValue.value.map(date => formatOutputValue(date))
-  } else if (['year', 'month', 'week'].includes(props.type)) {
+  } else if (['year', 'month', 'week', 'time'].includes(props.type)) {
     // 特殊类型直接使用临时值
     newValue = tempSingleValue.value ? formatOutputValue(tempSingleValue.value) : null
   } else if (isRangeType.value) {

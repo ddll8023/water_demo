@@ -69,7 +69,7 @@ const handleTabChange = (tabName) => {
             @include flex-start;
             gap: var(--spacing-small);
             color: var(--text-secondary);
-            transition: color var(--transition-duration-fast) var(--transition-timing-function);
+            transition: color var(--transition-fast);
 
             .fa {
                 font-size: var(--font-size-base);

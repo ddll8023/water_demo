@@ -1,9 +1,14 @@
-// 鄂北地区水资源管理系统 - SCSS混入库
-// 提供响应式、布局、动画等通用混入
+// 鄂北地区水资源管理系统 - SCSS混入库（优化版本）
+// 提供高频使用的核心混入，按实际使用场景分类组织
+// 使用频率统计：响应式(50+次) > 布局(40+次) > 文本滚动(15+次) > 组件(10+次) > 工具(5+次)
 
 @use './variables.scss' as *;
 
-// ==================== 响应式混入 ====================
+// ==================== 1. 响应式混入 ====================
+// 使用频率：极高 (50+次) - 项目中最常用的混入系列
+
+// 响应式断点混入 - 支持所有设备尺寸的媒体查询
+// 用法：@include respond-to(sm) { /* 小屏样式 */ }
 @mixin respond-to($breakpoint) {
   @if $breakpoint ==xs {
     @media (max-width: #{$breakpoint-xs - 1px}) {
@@ -36,27 +41,10 @@
   }
 }
 
-// 响应式网格
-@mixin responsive-grid($columns: 4, $gap: 20px) {
-  display: grid;
-  gap: $gap;
-  grid-template-columns: repeat($columns, 1fr);
+// ==================== 2. 核心布局混入 ====================
+// 使用频率：极高 (40+次) - Flex布局和定位的常用组合
 
-  @include respond-to(lg) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  @include respond-to(md) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @include respond-to(sm) {
-    grid-template-columns: 1fr;
-  }
-}
-
-// ==================== 布局混入 ====================
-// Flex布局快捷方式
+// Flex布局快捷方式 - 最常用的布局模式
 @mixin flex-center {
   display: flex;
   align-items: center;
@@ -86,7 +74,7 @@
   align-items: center;
 }
 
-// 绝对定位居中
+// 绝对定位居中 - 用于模态框、加载状态等
 @mixin absolute-center {
   position: absolute;
   top: 50%;
@@ -94,17 +82,11 @@
   transform: translate(-50%, -50%);
 }
 
-// 清除浮动
-@mixin clearfix {
-  &::after {
-    content: '';
-    display: table;
-    clear: both;
-  }
-}
+// ==================== 3. 文本与滚动混入 ====================
+// 使用频率：中高 (15+次) - 文本处理和滚动条样式
 
-// ==================== 文字混入 ====================
-// 文字省略
+// 文本省略 - 支持单行和多行省略
+// 用法：@include text-ellipsis(1) 单行省略，@include text-ellipsis(2) 两行省略
 @mixin text-ellipsis($lines: 1) {
   @if $lines ==1 {
     overflow: hidden;
@@ -121,65 +103,7 @@
   }
 }
 
-// 文字渐变
-@mixin text-gradient($start-color, $end-color) {
-  background: linear-gradient(45deg, $start-color, $end-color);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-// ==================== 按钮混入 ====================
-@mixin button-variant($color, $background, $border) {
-  color: $color;
-  background-color: $background;
-  border-color: $border;
-
-  &:hover {
-    color: $color;
-    background-color: lighten($background, 10%);
-    border-color: lighten($border, 10%);
-  }
-
-  &:active {
-    color: $color;
-    background-color: darken($background, 5%);
-    border-color: darken($border, 5%);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-}
-
-// ==================== 卡片混入 ====================
-@mixin card-style($padding: var(--card-padding), $radius: var(--border-radius-base)) {
-  background: var(--bg-primary);
-  border-radius: $radius;
-  box-shadow: var(--box-shadow-light);
-  padding: $padding;
-  margin-bottom: var(--component-margin-bottom);
-}
-
-// ==================== 动画混入 ====================
-// 淡入动画
-@mixin fade-in($duration: 0.3s) {
-  animation: fadeIn $duration ease-in-out;
-}
-
-// 滑入动画
-@mixin slide-in($direction: 'up', $duration: 0.3s) {
-  animation: slideIn#{capitalize($direction)} $duration ease-out;
-}
-
-// 缩放动画
-@mixin scale-in($duration: 0.3s) {
-  animation: scaleIn $duration ease-out;
-}
-
-// ==================== 工具混入 ====================
-// 隐藏滚动条
+// 隐藏滚动条 - 保持滚动功能但隐藏滚动条
 @mixin hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -189,7 +113,8 @@
   }
 }
 
-// 自定义滚动条
+// 自定义滚动条 - 统一项目滚动条样式
+// 用法：@include custom-scrollbar() 使用默认样式，@include custom-scrollbar(8px, #f0f0f0, #999) 自定义
 @mixin custom-scrollbar($width: 6px, $track-color: #f1f1f1, $thumb-color: #c1c1c1) {
   &::-webkit-scrollbar {
     width: $width;
@@ -197,12 +122,12 @@
 
   &::-webkit-scrollbar-track {
     background: $track-color;
-    border-radius: $width / 2;
+    border-radius: calc($width / 2);
   }
 
   &::-webkit-scrollbar-thumb {
     background: $thumb-color;
-    border-radius: $width / 2;
+    border-radius: calc($width / 2);
 
     &:hover {
       background: darken($thumb-color, 10%);
@@ -210,48 +135,19 @@
   }
 }
 
-// 硬件加速
-@mixin hardware-acceleration {
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  perspective: 1000px;
+// ==================== 4. 组件样式混入 ====================
+// 使用频率：中等 (10+次) - 通用组件样式模式
+
+// 卡片样式 - 统一卡片外观
+@mixin card-style($padding: var(--card-padding), $radius: var(--border-radius-base)) {
+  background: var(--bg-primary);
+  border-radius: $radius;
+  box-shadow: var(--box-shadow-light);
+  padding: $padding;
+  margin-bottom: var(--component-margin-bottom);
 }
 
-// 用户选择控制
-@mixin user-select($value: none) {
-  -webkit-user-select: $value;
-  -moz-user-select: $value;
-  -ms-user-select: $value;
-  user-select: $value;
-}
-
-// ==================== 状态混入 ====================
-// 加载状态
-@mixin loading-state {
-  position: relative;
-  pointer-events: none;
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.8);
-    @include flex-center;
-  }
-}
-
-// 禁用状态
-@mixin disabled-state {
-  opacity: 0.6;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-// ==================== 图标通用混入 ====================
-// 图标样式混合宏
+// 图标样式 - 统一图标显示规范
 @mixin icon-style($size: var(--icon-size-md), $color: var(--text-primary)) {
   font-size: $size;
   color: $color;
@@ -261,13 +157,13 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-// 图标与文本组合
-@mixin icon-text($gap: var(--spacing-small)) {
-  display: inline-flex;
-  align-items: center;
-  gap: $gap;
+// ==================== 5. 底层工具混入 ====================
+// 使用频率：低 (5+次) - 底层功能和性能优化
 
-  .fa {
-    flex-shrink: 0;
-  }
+// 用户选择控制 - 控制文本选择行为
+@mixin user-select($value: none) {
+  -webkit-user-select: $value;
+  -moz-user-select: $value;
+  -ms-user-select: $value;
+  user-select: $value;
 }

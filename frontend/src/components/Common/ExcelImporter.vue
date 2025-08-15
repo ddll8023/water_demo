@@ -1,6 +1,7 @@
 <template>
-  <el-dialog v-model="dialogVisible" title="Excel数据导入" width="80%" :close-on-click-modal="false"
-    :close-on-press-escape="false" @close="handleClose">
+  <CustomDialog :visible="dialogVisible" @update:visible="dialogVisible = $event" title="Excel数据导入" width="80%"
+    :close-on-click-modal="false" :close-on-press-escape="false" :show-cancel-button="false"
+    :show-confirm-button="false" @close="handleClose">
     <div class="excel-importer">
       <!-- 文件上传区域 -->
       <div v-if="currentStep === 1" class="upload-section">
@@ -16,7 +17,7 @@
         </el-upload>
 
         <div v-if="selectedFile" class="file-info">
-          <el-card>
+          <CustomCard :bordered="true" shadow="hover" padding="normal">
             <div class="file-details">
               <i class="fa fa-file-excel-o"
                 style="color: var(--success-color); margin-right: var(--spacing-small);"></i>
@@ -27,11 +28,12 @@
                 移除
               </CustomButton>
             </div>
-          </el-card>
+          </CustomCard>
         </div>
 
         <!-- Excel格式说明 -->
-        <el-card class="format-info" style="margin-top: var(--spacing-large);">
+        <CustomCard class="format-info" style="margin-top: var(--spacing-large);" :bordered="true" shadow="never"
+          padding="normal">
           <template #header>
             <div class="card-header">
               <i class="fa fa-info-circle" style="margin-right: var(--spacing-small);"></i>
@@ -92,7 +94,7 @@
               </div>
             </div>
           </div>
-        </el-card>
+        </CustomCard>
       </div>
 
       <!-- 数据预览区域 -->
@@ -142,7 +144,7 @@
           </div>
 
           <div v-if="importResult" class="import-result">
-            <el-card>
+            <CustomCard :bordered="true" shadow="always" padding="normal">
               <template #header>
                 <div class="card-header">
                   <i v-if="importResult.successRows > 0 && importResult.errorRows === 0" class="fa fa-check-circle"
@@ -174,7 +176,7 @@
                   <span class="value warning">{{ importResult.duplicateRows }}</span>
                 </div>
               </div>
-            </el-card>
+            </CustomCard>
           </div>
         </div>
       </div>
@@ -201,7 +203,7 @@
         </CustomButton>
       </div>
     </template>
-  </el-dialog>
+  </CustomDialog>
 </template>
 
 <script setup>
@@ -209,6 +211,8 @@ import { ref, computed, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import * as XLSX from 'xlsx'
 import CustomButton from './CustomButton.vue'
+import CustomDialog from './CustomDialog.vue'
+import CustomCard from './CustomCard.vue'
 import CommonTable from './CommonTable.vue'
 import { importFlowData, importWaterQualityData, importWaterLevelData } from '@/api/monitoring'
 
@@ -778,7 +782,7 @@ const startImport = async () => {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 @use "@/assets/styles/index.scss" as *;
 
 /**
@@ -787,7 +791,7 @@ const startImport = async () => {
  * ----------------------------------------
  */
 .excel-importer {
-  min-height: 400px;
+  min-height: var(--panel-content-min-height);
 }
 
 /**
@@ -856,6 +860,16 @@ const startImport = async () => {
 .example-data code {
   font-family: var(--font-family-number);
   color: var(--warning-color);
+}
+
+/**
+ * ----------------------------------------
+ * 对话框底部样式
+ * ----------------------------------------
+ */
+.dialog-footer {
+  @include flex-end;
+  gap: var(--spacing-medium);
 }
 
 /**
@@ -946,15 +960,7 @@ const startImport = async () => {
   color: var(--warning-color);
 }
 
-/**
- * ----------------------------------------
- * 对话框底部样式
- * ----------------------------------------
- */
-.dialog-footer {
-  @include flex-end;
-  gap: var(--spacing-medium);
-}
+
 
 /**
  * ----------------------------------------

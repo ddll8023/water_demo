@@ -1,12 +1,7 @@
 <template>
   <div class="introduction-page">
     <!-- 页面标题区域 -->
-    <div class="page-header">
-      <div class="header-content">
-        <h1 class="page-title">工程简介</h1>
-        <p class="page-subtitle">鄂北地区水资源配置工程项目介绍</p>
-      </div>
-    </div>
+    <PageHeader title="工程简介" icon="fa-info-circle" description="鄂北地区水资源配置工程项目介绍" />
 
     <!-- 主体内容区域 -->
     <div class="main-content">
@@ -42,7 +37,7 @@
                     <CustomCard :padding="'small'" :hoverable="false" :bordered="true" :shadow="false">
                       <div class="stat-card">
                         <div class="stat-card__value">{{ stat.value }}<span class="stat-card__unit">{{ stat.unit
-                            }}</span>
+                        }}</span>
                         </div>
                         <div class="stat-card__label">{{ stat.label }}</div>
                       </div>
@@ -87,6 +82,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import CustomCard from '@/components/Common/CustomCard.vue'
+import PageHeader from '@/components/Common/PageHeader.vue'
 
 // 响应式数据
 const videoPlayer = ref(null)
@@ -176,28 +172,7 @@ onMounted(() => {
   flex-direction: column;
 }
 
-.page-header {
-  padding: var(--spacing-base) var(--spacing-large);
-  background: var(--bg-primary);
-  border-radius: var(--border-radius-large);
-  margin-bottom: var(--spacing-base);
-  box-shadow: var(--shadow-card);
 
-  .header-content {
-    .page-title {
-      font-size: var(--font-size-xl);
-      font-weight: var(--font-weight-semibold);
-      color: var(--text-primary);
-      margin: 0 0 var(--spacing-small) 0;
-    }
-
-    .page-subtitle {
-      font-size: var(--font-size-base);
-      color: var(--text-disabled);
-      margin: 0;
-    }
-  }
-}
 
 .main-content {
   flex: 1;

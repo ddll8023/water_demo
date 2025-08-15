@@ -167,6 +167,7 @@
   --spacing-extra-large: 24px;
 
   // 特殊用途间距变量
+  --spacing-15: 15px; // 用于特殊布局间距（多组件复用）
   --spacing-40: 40px; // 用于开发中提示区域的上边距（多组件复用）
 
   // 组件间距
@@ -215,11 +216,22 @@
   --button-min-width: 80px; // 按钮最小宽度
 
   // ==================== 图标组件尺寸 ====================
+  --icon-size-xs: 12px; // 极小图标
+  --icon-size-sm: 14px; // 小图标
   --icon-size-md: 16px; // 中等图标
-  --icon-size-xxl: 48px; // 超大图标
+  --icon-size-lg: 24px; // 大图标
+  --icon-size-xl: 32px; // 超大图标
+  --icon-size-2xl: 36px; // 特大图标
+  --icon-size-xxl: 48px; // 巨大图标
 
   // ==================== 页面布局尺寸 ====================
   --page-min-height-offset: 200px; // 页面最小高度偏移
+
+  // ==================== 容器和对话框尺寸 ====================
+  --container-min-width-compact: 400px; // 紧凑容器最小宽度（多组件复用）
+  --dialog-width-standard: 500px; // 标准对话框宽度（多组件复用）
+  --element-min-width-small: 150px; // 小元素最小宽度（多组件复用）
+  --panel-content-min-height: 400px; // 面板内容最小高度
 }
 
 // ==================== 视觉样式系统 ====================
@@ -240,6 +252,7 @@
   --shadow-hover-button: 0 4px 12px rgba(0, 0, 0, 0.15); // 按钮悬停阴影
 
   // ==================== 边框宽度规范 ====================
+  --border-width-base: 1px; // 基础边框 - 默认边框
   --border-width-thin: 1px; // 细边框 - 默认边框
   --border-width-normal: 2px; // 标准边框 - 强调边框
 }
@@ -299,6 +312,11 @@ $breakpoint-xl: 1920px; // 超大屏幕断点 - 大屏显示器
 
   // ==================== 弹窗动画参数 ====================
   --popup-scale-start: 0.95; // 弹窗起始缩放比例
+  --popup-translate-y-start: 30px; // 弹窗起始Y轴偏移
+
+  // ==================== 面板动画参数 ====================
+  --panel-scale-start: 0.95; // 面板起始缩放比例
+  --panel-translate-y-start: 20px; // 面板起始Y轴偏移
 
   // ==================== 交互动画参数 ====================
   --hover-transform-y-small: -1px; // 小幅悬停变换距离

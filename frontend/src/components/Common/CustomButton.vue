@@ -300,9 +300,9 @@ const handleClick = (event) => {
 // 圆形按钮
 .custom-button--circle {
   border-radius: var(--border-radius-round);
-  width: var(--icon-size-xxxl);
-  height: var(--icon-size-xxxl);
-  min-width: var(--icon-size-xxxl);
+  width: var(--icon-size-2xl);
+  height: var(--icon-size-2xl);
+  min-width: var(--icon-size-2xl);
   padding: 0;
   flex-shrink: 0;
   border: none;
@@ -312,15 +312,15 @@ const handleClick = (event) => {
   }
 
   &.custom-button--large {
-    width: calc(var(--icon-size-xxxl) + 8px);
-    height: calc(var(--icon-size-xxxl) + 8px);
-    min-width: calc(var(--icon-size-xxxl) + 8px);
+    width: calc(var(--icon-size-2xl) + 8px);
+    height: calc(var(--icon-size-2xl) + 8px);
+    min-width: calc(var(--icon-size-2xl) + 8px);
   }
 
   &.custom-button--small {
-    width: calc(var(--icon-size-xxxl) - 8px);
-    height: calc(var(--icon-size-xxxl) - 8px);
-    min-width: calc(var(--icon-size-xxxl) - 8px);
+    width: calc(var(--icon-size-2xl) - 8px);
+    height: calc(var(--icon-size-2xl) - 8px);
+    min-width: calc(var(--icon-size-2xl) - 8px);
   }
 }
 

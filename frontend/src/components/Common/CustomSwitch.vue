@@ -443,19 +443,19 @@ watch(() => props.modelValue, (newValue) => {
    * =========================== */
   &.is-error {
     .switch-track {
-      border: var(--spacing-1) solid var(--danger-color);
+      border: var(--border-width-base) solid var(--danger-color);
     }
   }
 
   &.is-warning {
     .switch-track {
-      border: var(--spacing-1) solid var(--warning-color);
+      border: var(--border-width-base) solid var(--warning-color);
     }
   }
 
   &.is-success {
     .switch-track {
-      border: var(--spacing-1) solid var(--success-color);
+      border: var(--border-width-base) solid var(--success-color);
     }
   }
 }

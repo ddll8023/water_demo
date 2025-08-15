@@ -30,9 +30,9 @@
 
 
     <!-- 日期选择器 -->
-    <el-date-picker v-else-if="item.type === 'date'" :model-value="getSafeValue(item.prop)"
-      @update:model-value="(value) => handleDateChange(item.prop, value)" type="date" :placeholder="item.placeholder"
-      :disabled="disabled" :clearable="item.clearable !== false" :format="item.format || 'YYYY-MM-DD'"
+    <CustomDatePicker v-else-if="item.type === 'date'" :model-value="formData[item.prop]"
+      @update:model-value="handleChange" type="date" :placeholder="item.placeholder" :disabled="disabled"
+      :clearable="item.clearable !== false" :format="item.format || 'YYYY-MM-DD'"
       :value-format="item.valueFormat || 'YYYY-MM-DD'" style="width: 100%" />
 
     <!-- 日期时间选择器 -->
@@ -42,8 +42,8 @@
       :value-format="item.valueFormat || 'YYYY-MM-DDTHH:mm:ss'" style="width: 100%" />
 
     <!-- 时间选择器 -->
-    <el-time-picker v-else-if="item.type === 'time'" :model-value="formData[item.prop]"
-      @update:model-value="handleChange" :placeholder="item.placeholder" :disabled="disabled"
+    <CustomDatePicker v-else-if="item.type === 'time'" :model-value="formData[item.prop]"
+      @update:model-value="handleChange" type="time" :placeholder="item.placeholder" :disabled="disabled"
       :clearable="item.clearable !== false" :format="item.format || 'HH:mm:ss'"
       :value-format="item.valueFormat || 'HH:mm:ss'" style="width: 100%" />
 
@@ -89,9 +89,9 @@
       :on-progress="item.onProgress" :on-change="item.onChange" :on-preview="item.onPreview" :on-remove="item.onRemove"
       :before-upload="item.beforeUpload" :before-remove="item.beforeRemove" :file-list="formData[item.prop] || []">
       <slot :name="`upload-${item.prop}`">
-        <el-button type="primary" :disabled="disabled">
+        <CustomButton type="primary" :disabled="disabled">
           {{ item.uploadText || '点击上传' }}
-        </el-button>
+        </CustomButton>
       </slot>
     </el-upload>
 
@@ -120,6 +120,7 @@ import CustomSelect from './CustomSelect.vue'
 import CustomDatePicker from './CustomDatePicker.vue'
 import CustomSwitch from './CustomSwitch.vue'
 import CustomRadioGroup from './CustomRadioGroup.vue'
+import CustomButton from './CustomButton.vue'
 
 /**
  * 组件属性定义
@@ -161,47 +162,7 @@ const handleChange = (value) => {
   emit('change', props.item.prop, value, props.item)
 }
 
-/**
- * 获取安全的值，用于日期选择器
- * @param {string} prop - 属性名
- * @returns {*} - 安全的值
- */
-const getSafeValue = (prop) => {
-  const value = props.formData[prop]
 
-  // 如果是 null 或 undefined，返回 undefined
-  if (value === null || value === undefined) {
-    return undefined
-  }
-
-  // 如果是字符串且包含 Invalid 或 NaN，返回 undefined
-  if (typeof value === 'string' && (value.includes('Invalid') || value.includes('NaN'))) {
-    return undefined
-  }
-
-  // 如果是 Date 对象且无效，返回 undefined
-  if (value instanceof Date && isNaN(value.getTime())) {
-    return undefined
-  }
-
-  return value
-}
-
-/**
- * 处理日期变化
- * @param {string} prop - 属性名
- * @param {*} value - 新的日期值
- */
-const handleDateChange = (prop, value) => {
-  // 防止传递无效值
-  if (value === 'Invalid Date' ||
-    (value instanceof Date && isNaN(value.getTime())) ||
-    (typeof value === 'string' && (value.includes('Invalid') || value.includes('NaN')))) {
-    return
-  }
-
-  emit('change', prop, value, props.item)
-}
 </script>
 
 <style scoped lang="scss">

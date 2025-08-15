@@ -64,7 +64,7 @@ defineProps({
             .fa {
                 color: var(--primary-color);
                 margin-right: var(--spacing-medium);
-                font-size: var(--icon-size-xxxl);
+                font-size: var(--icon-size-2xl);
             }
         }
 
