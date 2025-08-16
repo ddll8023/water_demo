@@ -226,7 +226,7 @@ const recordSearchFields = ref([
         options: [],
         placeholder: '请选择设施类型',
         span: 3,
-        labelWidth: 'var(--form-label-width-search)',
+        labelWidth: 'var(--form-label-width-standard)',
         clearable: true
     },
     {
@@ -236,7 +236,7 @@ const recordSearchFields = ref([
         options: [],
         placeholder: '请选择巡检设施',
         span: 3,
-        labelWidth: 'var(--form-label-width-search)',
+        labelWidth: 'var(--form-label-width-standard)',
         clearable: true
     },
     {
@@ -246,8 +246,8 @@ const recordSearchFields = ref([
         startPlaceholder: '请选择开始时间',
         endPlaceholder: '请选择结束时间',
         showDuration: true,
-        span: 8,
-        labelWidth: 'var(--form-label-width-search)'
+        width: '360px',
+        labelWidth: 'var(--form-label-width-standard)'
     },
     {
         prop: 'issueFlag',
@@ -259,7 +259,7 @@ const recordSearchFields = ref([
         ],
         placeholder: '请选择',
         span: 3,
-        labelWidth: 'var(--form-label-width-search)',
+        labelWidth: 'var(--form-label-width-standard)',
         clearable: true
     },
     {
@@ -272,7 +272,7 @@ const recordSearchFields = ref([
         ],
         placeholder: '请选择',
         span: 3,
-        labelWidth: 'var(--form-label-width-search)',
+        labelWidth: 'var(--form-label-width-standard)',
         clearable: true
     },
     {

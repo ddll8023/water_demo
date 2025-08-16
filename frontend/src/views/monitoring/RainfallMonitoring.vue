@@ -45,18 +45,15 @@
 
         <!-- 数据表格区域 -->
         <div class="table-section">
-            <div class="table-section__header">
-                <div class="table-section__unit">
-                    单位: 时段雨量(mm) 累计雨量(mm)
-                </div>
-            </div>
-            <CommonTable :data="tableData" :columns="tableColumns" :loading="tableLoading" :show-index="true"
-                :show-actions="false" />
+            <div class="table-content">
+                <CommonTable :data="tableData" :columns="tableColumns" :loading="tableLoading" :show-index="true"
+                    :show-actions="false" />
 
-            <!-- 使用自定义分页组件 -->
-            <CustomPagination :current-page="pagination.currentPage" :page-size="pagination.pageSize"
-                :total="pagination.total" :page-sizes="[10, 20, 50, 100]" @size-change="handleSizeChange"
-                @current-change="handleCurrentChange" />
+                <!-- 使用自定义分页组件 -->
+                <CustomPagination :current-page="pagination.currentPage" :page-size="pagination.pageSize"
+                    :total="pagination.total" :page-sizes="[10, 20, 50, 100]" @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange" />
+            </div>
         </div>
 
         <!-- Excel导入组件 -->
@@ -115,8 +112,8 @@ const searchFields = ref([
         type: 'select',
         options: [],
         placeholder: '请选择监测站点',
-        span: 4,
-        labelWidth: 'var(--form-label-width-search)'
+        width: '240px',
+        labelWidth: 'var(--form-label-width-standard)'
     },
     {
         prop: 'timeRange',
@@ -125,8 +122,8 @@ const searchFields = ref([
         startPlaceholder: '请选择开始时间',
         endPlaceholder: '请选择结束时间',
         showDuration: true,
-        span: 8,
-        labelWidth: 'var(--form-label-width-search)'
+        width: '405px',
+        labelWidth: 'var(--form-label-width-standard)'
     }
 ])
 
@@ -506,18 +503,32 @@ onMounted(async () => {
     }
 
     .table-section {
-        &__header {
-            height: var(--table-row-height);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding: 0 var(--spacing-base);
+        background: var(--bg-primary);
+        border-radius: var(--border-radius-md);
+        box-shadow: var(--shadow-light);
+        border: 1px solid var(--border-color-light);
+        overflow: hidden;
+
+        .table-content {
+            padding: var(--spacing-md);
+            padding-bottom: 20px;
         }
 
-        &__unit {
-            font-size: var(--font-size-small);
-            color: var(--text-secondary);
+
+
+        // 响应式适配
+        @include respond-to(md) {
+            .table-content {
+                padding: var(--spacing-md);
+                padding-bottom: 20px;
+            }
+        }
+
+        @include respond-to(sm) {
+            .table-content {
+                padding: var(--spacing-sm);
+                padding-bottom: 20px;
+            }
         }
     }
 

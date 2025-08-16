@@ -39,9 +39,9 @@
             </CommonTable>
 
             <!-- 分页区域 -->
-            <CustomPagination class="custom-pagination" :current-page="pagination.currentPage"
-                :page-size="pagination.pageSize" :total="pagination.total" :page-sizes="[10, 20, 50, 100]"
-                @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+            <CustomPagination :current-page="pagination.currentPage" :page-size="pagination.pageSize"
+                :total="pagination.total" :page-sizes="[10, 20, 50, 100]" @size-change="handleSizeChange"
+                @current-change="handleCurrentChange" />
         </div>
 
         <!-- 编辑对话框 -->
@@ -193,7 +193,7 @@ const enhancedSearchFields = computed(() => [
         prop: 'monitoringItem',
         label: '监测项',
         placeholder: '请选择监测项',
-        labelWidth: 'var(--form-label-width-search)',
+        labelWidth: 'var(--form-label-width-standard)',
         options: monitoringItemOptions.value,
         span: 4,
     },
@@ -732,8 +732,6 @@ onMounted(async () => {
 
 .threshold-management {
     padding: var(--spacing-large);
-    background: var(--bg-primary);
-    min-height: calc(100vh - var(--page-min-height-offset));
 
     &__search {
         margin-bottom: var(--spacing-large);
@@ -751,18 +749,6 @@ onMounted(async () => {
 
     // 表格容器
     &__table {
-        background: var(--bg-primary);
-        border-radius: var(--border-radius-large);
-        box-shadow: var(--shadow-card);
-        border: 1px solid var(--border-color);
-        overflow: hidden;
-
-        /* 自定义分页样式 */
-        :deep(.custom-pagination) {
-            padding: var(--spacing-base);
-            justify-content: center;
-            border-top: 1px solid var(--border-color);
-        }
 
         // 表格加载状态修饰符
         &--loading {
@@ -856,14 +842,9 @@ onMounted(async () => {
         }
     }
 
-    // 超小屏幕适配
-    @include respond-to(xs) {
-        padding: var(--spacing-small);
-
-        &__table {
-            border-radius: 0;
-            margin: 0 -#{var(--spacing-small)};
-        }
+    // 小屏幕适配
+    @include respond-to(sm) {
+        padding: var(--spacing-sm);
     }
 }
 </style>

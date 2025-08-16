@@ -9,8 +9,12 @@
 
     <!-- 标签页内容区域 -->
     <div class="tab-content-wrapper">
-      <RecordsManagement v-if="activeTab === 'records'" />
-      <ThresholdsManagement v-if="activeTab === 'thresholds'" />
+      <div v-if="activeTab === 'records'" class="content-section">
+        <RecordsManagement />
+      </div>
+      <div v-if="activeTab === 'thresholds'" class="content-section">
+        <ThresholdsManagement />
+      </div>
     </div>
   </div>
 </template>
@@ -56,6 +60,7 @@ const handleTabChange = (tabName) => {
  * ----------------------------------------
  */
 .warning-management {
+  padding: var(--spacing-lg);
   background-color: var(--bg-secondary);
   min-height: calc(100vh - var(--header-height));
 
@@ -64,10 +69,17 @@ const handleTabChange = (tabName) => {
    */
   .tab-content-wrapper {
     background: var(--bg-primary);
-    border-radius: var(--border-radius-large);
-    box-shadow: var(--shadow-md);
-    border: 1px solid var(--border-light);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--border-color-light);
     overflow: hidden;
+  }
+
+  /**
+   * 内容区域样式
+   */
+  .content-section {
+    padding: var(--spacing-md);
   }
 }
 
@@ -76,10 +88,21 @@ const handleTabChange = (tabName) => {
  * 响应式设计
  * ----------------------------------------
  */
+// 中屏幕适配
+@include respond-to(md) {
+  .warning-management {
+    padding: var(--spacing-md);
+  }
+}
+
 // 小屏幕适配
 @include respond-to(sm) {
   .warning-management {
     padding: var(--spacing-sm);
+
+    .content-section {
+      padding: var(--spacing-sm);
+    }
   }
 }
 </style>

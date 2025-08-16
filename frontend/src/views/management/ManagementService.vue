@@ -12,24 +12,21 @@
         <el-row :gutter="20">
           <!-- 左侧部门树 -->
           <el-col :span="8">
-            <div class="tree-card">
-              <!-- 部门搜索和控制区域 -->
-              <div class="tree-controls">
-                <CustomInput v-model="departmentSearchText" placeholder="搜索部门..." clearable
-                  @input="handleDepartmentSearch" prefix-icon="fa-search" class="search-input" />
-                <div class="control-buttons">
-                  <CustomButton type="primary" size="small" @click="handleAddDepartment"
+            <CustomCard shadow="always" class="tree-card">
+              <template #header>
+                <div class="tree-controls">
+                  <CustomInput v-model="departmentSearchText" placeholder="搜索部门..." clearable
+                    @input="handleDepartmentSearch" prefix-icon="fa-search" class="search-input" />
+                  <CustomButton type="primary" size="default" @click="handleAddDepartment"
                     v-permission="'business:manage'">
                     新增
                   </CustomButton>
-                  <CustomButton type="secondary" size="small" @click="handleToggleAll"
+                  <CustomButton type="secondary" size="default" @click="handleToggleAll"
                     :disabled="!departmentTree.length">
-                    <i class="fa fa-compress"></i>
                     展开/折叠
                   </CustomButton>
                 </div>
-              </div>
-
+              </template>
               <div class="tree-container">
                 <el-tree ref="departmentTreeRef" :data="filteredDepartmentTree" :props="treeProps" node-key="id"
                   :expand-on-click-node="false" :highlight-current="true" @node-click="handleDepartmentClick"
@@ -58,19 +55,12 @@
                   </template>
                 </el-tree>
               </div>
-            </div>
+            </CustomCard>
           </el-col>
 
           <!-- 右侧部门详情面板 -->
           <el-col :span="16">
-            <div class="detail-card">
-              <!-- 部门详情标题 -->
-              <div class="detail-header">
-                <h3 class="detail-title">
-                  部门详情：{{ selectedDepartment.name || '请选择部门' }}
-                </h3>
-              </div>
-
+            <CustomCard :title="`部门详情：${selectedDepartment.name || '请选择部门'}`" shadow="always" class="detail-card">
               <!-- 部门详情标签页 -->
               <div v-if="selectedDepartment.id" class="department-details">
                 <el-tabs v-model="activeDetailTab" class="detail-tabs">
@@ -210,7 +200,7 @@
               <div v-else class="empty-state">
                 <el-empty description="请从左侧选择部门查看详情" />
               </div>
-            </div>
+            </CustomCard>
           </el-col>
         </el-row>
       </div>
@@ -277,6 +267,7 @@ import CustomDialog from '@/components/Common/CustomDialog.vue'
 import PageHeader from '@/components/Common/PageHeader.vue'
 import TabSection from '@/components/Common/TabSection.vue'
 import CustomPagination from '@/components/Common/CustomPagination.vue'
+import CustomCard from '@/components/Common/CustomCard.vue'
 
 
 // API接口导入
@@ -1411,21 +1402,17 @@ onMounted(async () => {
      */
     .tree-card {
       height: var(--panel-height-default);
-      border: var(--border-width-thin) solid var(--border-light);
-      box-shadow: var(--shadow-md);
-      background: var(--bg-primary);
 
       // 部门树控制区域
       .tree-controls {
-        padding: var(--spacing-medium);
-        border-bottom: var(--border-width-thin) solid var(--border-light);
-        background: var(--bg-tertiary);
-        @include flex-between;
-        flex-direction: column;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
         gap: var(--spacing-small);
 
         .search-input {
-          margin-bottom: var(--spacing-small);
+          flex: 1;
+          min-width: 200px;
 
           :deep(.el-input__wrapper) {
             border-radius: var(--border-radius-base);
@@ -1452,19 +1439,14 @@ onMounted(async () => {
           }
         }
 
-        .control-buttons {
-          @include flex-start;
-          gap: var(--spacing-xs);
+        .custom-button {
+          border-radius: var(--border-radius-base);
+          font-weight: var(--font-weight-medium);
+          transition: var(--transition-fast);
 
-          .custom-button {
-            border-radius: var(--border-radius-base);
-            font-weight: var(--font-weight-medium);
-            transition: var(--transition-fast);
-
-            .fa {
-              margin-right: var(--spacing-xs);
-              font-size: var(--icon-size-sm);
-            }
+          .fa {
+            margin-right: var(--spacing-xs);
+            font-size: var(--icon-size-sm);
           }
         }
       }
@@ -1473,7 +1455,6 @@ onMounted(async () => {
        * 部门树容器样式
        */
       .tree-container {
-        height: calc(100% - 120px);
         overflow-y: auto;
         padding: var(--spacing-xs);
         @include hide-scrollbar;
@@ -1527,7 +1508,8 @@ onMounted(async () => {
 
           :deep(.el-tree-node__expand-icon) {
             color: var(--text-tertiary);
-            font-size: var(--font-size-extra-small);
+            font-size: var(--font-size-lg);
+            transition: transform var(--transition-base);
           }
         }
 
@@ -1563,7 +1545,7 @@ onMounted(async () => {
             opacity: 0;
             transition: var(--transition-opacity);
             @include flex-center-y;
-            gap: var(--spacing-xxs);
+            gap: var(--spacing-mini);
           }
 
           &:hover .node-actions {
@@ -1592,42 +1574,28 @@ onMounted(async () => {
      */
     .detail-card {
       height: var(--panel-height-default);
-      border: var(--border-width-thin) solid var(--border-light);
-      box-shadow: var(--shadow-md);
-      background: var(--bg-primary);
-
-      // 详情标题 - 参考index.html的详情标题区样式
-      .detail-header {
-        padding: var(--spacing-medium) var(--spacing-large);
-        border-bottom: var(--border-width-thin) solid var(--border-light);
-        background: var(--bg-tertiary);
-        @include flex-center;
-
-        .detail-title {
-          margin: 0;
-          font-size: var(--font-size-xl);
-          font-weight: var(--font-weight-semibold);
-          color: var(--text-primary);
-        }
-      }
 
       /**
        * 部门详情标签页样式
        */
       .department-details {
-        height: calc(100% - var(--card-header-height));
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
 
         .detail-tabs {
-          height: 100%;
-          padding: 0 var(--spacing-large);
+          flex: 1;
+          min-height: 0;
 
           :deep(.el-tabs__header) {
             margin-bottom: var(--spacing-medium);
+            padding: 0 var(--spacing-large);
           }
 
           :deep(.el-tabs__content) {
-            height: calc(100% - 56px);
+            flex: 1;
             overflow-y: auto;
+            padding: 0 var(--spacing-large);
             @include hide-scrollbar;
           }
 
@@ -1642,7 +1610,9 @@ onMounted(async () => {
          * 基本信息内容样式
          */
         .basic-info-content {
-          height: 100%;
+          display: flex;
+          flex-direction: column;
+          gap: var(--spacing-large);
 
           // 部门信息卡片
           .department-info-card {
@@ -1650,8 +1620,6 @@ onMounted(async () => {
             border-radius: var(--border-radius-large);
             padding: var(--spacing-large);
             margin-bottom: var(--spacing-large);
-            border: var(--border-width-thin) solid var(--border-light);
-            @include card-style;
 
             .info-header {
               @include flex-between;
@@ -1756,7 +1724,6 @@ onMounted(async () => {
          */
         .subdepartments-content,
         .personnel-content {
-          height: 100%;
           display: flex;
           flex-direction: column;
 
@@ -1890,7 +1857,13 @@ onMounted(async () => {
 
         .department-details {
           .detail-tabs {
-            padding: 0 var(--spacing-medium);
+            :deep(.el-tabs__header) {
+              padding: 0 var(--spacing-medium);
+            }
+
+            :deep(.el-tabs__content) {
+              padding: 0 var(--spacing-medium);
+            }
           }
 
           .basic-info-content {

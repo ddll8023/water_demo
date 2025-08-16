@@ -11,11 +11,12 @@
                         </span>
                         <!-- 轮播指示器 -->
                         <div v-if="enableCarousel" class="carousel-indicators">
-                            <button v-for="(item, index) in chartItems" :key="item.code" class="indicator-dot"
+                            <CustomButton v-for="(item, index) in chartItems" :key="item.code" class="indicator-dot"
                                 :class="{ 'active': index === activeIndex }" @click="goToSlide(index)"
-                                :title="item.name">
+                                :title="item.name" :type="index === activeIndex ? 'primary' : 'secondary'"
+                                shape="circle" size="small" :iconOnly="true">
                                 <i :class="['fa', item.icon]"></i>
-                            </button>
+                            </CustomButton>
                         </div>
                     </div>
                 </template>
@@ -59,12 +60,14 @@
                                     <!-- 图表缩放控制按钮 -->
                                     <div v-if="hasStation && hasSearched" class="chart-zoom-controls">
                                         <div class="zoom-button-group">
-                                            <button class="zoom-btn zoom-in" @click="zoomIn(index)" title="放大">
+                                            <CustomButton class="zoom-btn zoom-in" @click="zoomIn(index)" title="放大"
+                                                type="secondary" size="small" shape="circle" :iconOnly="true">
                                                 <i class="fa fa-plus"></i>
-                                            </button>
-                                            <button class="zoom-btn zoom-out" @click="zoomOut(index)" title="缩小">
+                                            </CustomButton>
+                                            <CustomButton class="zoom-btn zoom-out" @click="zoomOut(index)" title="缩小"
+                                                type="secondary" size="small" shape="circle" :iconOnly="true">
                                                 <i class="fa fa-minus"></i>
-                                            </button>
+                                            </CustomButton>
                                         </div>
                                     </div>
 
@@ -124,6 +127,7 @@ import Chart from 'chart.js/auto'
 import zoomPlugin from 'chartjs-plugin-zoom'
 import { formatDateTime } from '@/utils/shared/common'
 import CustomCard from '@/components/Common/CustomCard.vue'
+import CustomButton from '@/components/Common/CustomButton.vue'
 
 // 注册Chart.js缩放插件
 Chart.register(zoomPlugin)
@@ -1180,6 +1184,7 @@ const zoomOut = (chartIndex) => updateChartZoom(0.7, 'multiply', chartIndex)
             justify-content: center;
             align-items: center;
             position: relative;
+            height: 40px;
 
             .carousel-title {
                 font-size: 18px;
@@ -1205,36 +1210,36 @@ const zoomOut = (chartIndex) => updateChartZoom(0.7, 'multiply', chartIndex)
                 gap: 10px;
                 align-items: center;
 
-                .indicator-dot {
-                    width: var(--icon-container-size);
-                    height: var(--icon-container-size);
-                    border-radius: 50%;
-                    border: var(--border-width-normal) solid rgba(64, 158, 255, 0.2);
-                    background: rgba(255, 255, 255, 0.95);
-                    cursor: pointer;
-                    transition: all 0.3s ease;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
+                :deep(.indicator-dot) {
+                    width: 32px;
+                    height: 32px;
+                    min-width: 32px;
 
                     .fa {
-                        color: var(--text-secondary);
                         font-size: 14px;
-                        transition: color 0.3s ease;
+                        margin-right: 0;
                     }
 
-                    &:hover {
-                        border-color: var(--primary-color);
+                    // 覆盖CustomButton的默认样式以适配原有设计
+                    &.custom-button--secondary {
+                        background: rgba(255, 255, 255, 0.95) !important;
+                        border: var(--border-width-normal) solid rgba(64, 158, 255, 0.2) !important;
 
                         .fa {
-                            color: var(--primary-color);
+                            color: var(--text-secondary);
+                        }
+
+                        &:hover {
+                            background: rgba(255, 255, 255, 0.95) !important;
+                            border: var(--border-width-normal) solid var(--primary-color) !important;
+
+                            .fa {
+                                color: var(--primary-color);
+                            }
                         }
                     }
 
-                    &.active {
-                        background: var(--primary-color);
-                        border-color: var(--primary-color);
-
+                    &.custom-button--primary {
                         .fa {
                             color: white;
                         }
@@ -1256,9 +1261,10 @@ const zoomOut = (chartIndex) => updateChartZoom(0.7, 'multiply', chartIndex)
                 .carousel-indicators {
                     gap: clamp(4px, 1vw, 6px);
 
-                    .indicator-dot {
+                    :deep(.indicator-dot) {
                         width: clamp(24px, 4vw, 32px);
                         height: clamp(24px, 4vw, 32px);
+                        min-width: clamp(24px, 4vw, 32px);
 
                         .fa {
                             font-size: clamp(8px, 1.5vw, 12px);
@@ -1387,26 +1393,27 @@ const zoomOut = (chartIndex) => updateChartZoom(0.7, 'multiply', chartIndex)
                         padding: var(--spacing-mini);
                         border: var(--chart-standard-border);
 
-                        .zoom-btn {
+                        :deep(.zoom-btn) {
                             width: var(--button-size-small);
                             height: var(--button-size-small);
-                            border: none;
-                            border-radius: var(--border-radius-base);
-                            background: transparent;
-                            color: var(--text-secondary);
-                            cursor: pointer;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            transition: var(--chart-quick-transition);
+                            min-width: var(--button-size-small);
 
-                            &:hover {
-                                background: var(--primary-color);
-                                color: white;
+                            // 覆盖CustomButton的默认样式以适配原有设计
+                            &.custom-button--secondary {
+                                background: transparent;
+                                border: none;
+                                color: var(--text-secondary);
+
+                                &:hover {
+                                    background: var(--primary-color);
+                                    color: white;
+                                    border: none;
+                                }
                             }
 
                             .fa {
                                 font-size: 11px;
+                                margin-right: 0;
                             }
                         }
                     }
@@ -1419,7 +1426,7 @@ const zoomOut = (chartIndex) => updateChartZoom(0.7, 'multiply', chartIndex)
                         gap: 6px;
                         font-size: 9px;
                         color: var(--text-secondary);
-                        opacity: var(--opacity-high);
+                        opacity: 0.8;
 
                         .hint-item {
                             display: flex;
@@ -1478,7 +1485,7 @@ const zoomOut = (chartIndex) => updateChartZoom(0.7, 'multiply', chartIndex)
                         @extend .chart-placeholder-base;
 
                         .fa {
-                            color: var(--el-color-warning);
+                            color: #FF7D00;
                         }
                     }
                 }

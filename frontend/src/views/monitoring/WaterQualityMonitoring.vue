@@ -31,13 +31,15 @@
 
     <!-- 数据表格区域 -->
     <div class="table-section">
-      <CommonTable :data="tableData" :columns="tableColumns" :loading="tableLoading" :show-selection="false"
-        :show-index="true" :show-actions="false" />
+      <div class="table-content">
+        <CommonTable :data="tableData" :columns="tableColumns" :loading="tableLoading" :show-selection="false"
+          :show-index="true" :show-actions="false" />
 
-      <!-- 使用自定义分页组件 -->
-      <CustomPagination v-model:current-page="pagination.currentPage" v-model:page-size="pagination.pageSize"
-        :total="pagination.total" :page-sizes="[10, 20, 50, 100]" @size-change="handleSizeChange"
-        @current-change="handleCurrentChange" layout="total, sizes, prev, pager, next, jumper" />
+        <!-- 使用自定义分页组件 -->
+        <CustomPagination v-model:current-page="pagination.currentPage" v-model:page-size="pagination.pageSize"
+          :total="pagination.total" :page-sizes="[10, 20, 50, 100]" @size-change="handleSizeChange"
+          @current-change="handleCurrentChange" layout="total, sizes, prev, pager, next, jumper" />
+      </div>
     </div>
 
     <!-- Excel导入组件 -->
@@ -148,8 +150,8 @@ const searchFields = ref([
     type: 'select',
     options: [],
     placeholder: '请选择监测站点',
-    span: 4,
-    labelWidth: 'var(--form-label-width-search)'
+    width: '240px',
+    labelWidth: 'var(--form-label-width-standard)'
   },
   {
     prop: 'timeRange',
@@ -158,8 +160,8 @@ const searchFields = ref([
     startPlaceholder: '请选择开始时间',
     endPlaceholder: '请选择结束时间',
     showDuration: true,
-    span: 8,
-    labelWidth: 'var(--form-label-width-search)'
+    width: '405px',
+    labelWidth: 'var(--form-label-width-standard)'
   }
 ])
 
@@ -626,6 +628,35 @@ onMounted(async () => {
   .chart-carousel-section,
   .table-section {
     margin-bottom: var(--spacing-large);
+  }
+
+  // 表格区域样式
+  .table-section {
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--border-color-light);
+    overflow: hidden;
+
+    .table-content {
+      padding: var(--spacing-md);
+      padding-bottom: 20px;
+    }
+
+    // 响应式适配
+    @include respond-to(md) {
+      .table-content {
+        padding: var(--spacing-md);
+        padding-bottom: 20px;
+      }
+    }
+
+    @include respond-to(sm) {
+      .table-content {
+        padding: var(--spacing-sm);
+        padding-bottom: 20px;
+      }
+    }
   }
 }
 </style>

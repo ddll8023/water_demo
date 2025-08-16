@@ -142,6 +142,8 @@ const hasContent = computed(() => {
     border-radius: var(--border-radius-large);
     overflow: hidden;
     transition: var(--transition-base);
+    display: flex;
+    flex-direction: column;
 
     // 边框样式
     &.bordered {
@@ -197,6 +199,43 @@ const hasContent = computed(() => {
         border-bottom: 1px solid var(--border-light);
     }
 
+    .custom-card-content {
+        flex: 1;
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        min-height: 0; // 防止 flex 子项溢出
+
+        // 统一滚动条样式
+        @include custom-scrollbar();
+
+        // 优化嵌套组件布局
+        >*:not(.el-tabs) {
+            flex-shrink: 0;
+        }
+
+        // 为常见嵌套组件提供更好的适配
+        :deep(.el-tree) {
+            background: transparent;
+        }
+
+        :deep(.el-tabs) {
+            height: 100%;
+
+            .el-tabs__content {
+                flex: 1;
+                overflow: auto;
+                @include custom-scrollbar();
+            }
+        }
+
+        :deep(.el-table) {
+            .el-table__body-wrapper {
+                @include custom-scrollbar();
+            }
+        }
+    }
 
     // 当没有头部时，内容区域保持顶部圆角
     &:not(.has-header) .custom-card-content {
@@ -223,6 +262,7 @@ const hasContent = computed(() => {
 
         .custom-card-content {
             padding: var(--spacing-small);
+            gap: var(--spacing-xs);
         }
     }
 
@@ -233,6 +273,7 @@ const hasContent = computed(() => {
 
         .custom-card-content {
             padding: var(--padding-responsive-content);
+            gap: var(--spacing-small);
         }
     }
 
@@ -243,6 +284,7 @@ const hasContent = computed(() => {
 
         .custom-card-content {
             padding: var(--spacing-large);
+            gap: var(--spacing-medium);
         }
     }
 
@@ -263,11 +305,66 @@ const hasContent = computed(() => {
             }
         }
 
+        .custom-card-content {
+            // 提升小屏幕下的内容密度
+            min-height: 0;
+
+            // 嵌套组件在小屏幕下的优化
+            :deep(.el-tabs) {
+                .el-tabs__nav-wrap {
+                    padding: 0 var(--spacing-xs);
+                }
+            }
+
+            :deep(.el-tree) {
+                font-size: var(--font-size-sm);
+
+                .el-tree-node__content {
+                    height: var(--button-standard-size);
+                    padding: 0 var(--spacing-xs);
+                }
+            }
+
+            :deep(.el-table) {
+                font-size: var(--font-size-sm);
+
+                .el-table__header th {
+                    padding: var(--spacing-xs);
+                }
+
+                .el-table__body td {
+                    padding: var(--spacing-xs);
+                }
+            }
+        }
+
         &.padding-normal {
 
             .custom-card-header,
             .custom-card-content {
                 padding: var(--spacing-small);
+            }
+        }
+
+        // 进一步优化极小屏幕
+        @include respond-to(xs) {
+            .custom-card-content {
+                :deep(.el-tabs__nav-wrap) {
+                    padding: 0;
+                }
+
+                :deep(.el-tree-node__content) {
+                    height: var(--button-size-small);
+                    font-size: var(--font-size-extra-small);
+                }
+            }
+
+            &.padding-normal {
+
+                .custom-card-header,
+                .custom-card-content {
+                    padding: var(--spacing-xs);
+                }
             }
         }
     }

@@ -288,7 +288,7 @@ const handleClick = (event) => {
   min-height: var(--button-size-small);
 
   &.custom-button--text {
-    padding: var(--spacing-micro) var(--spacing-xs);
+    padding: var(--padding-button-text);
   }
 }
 

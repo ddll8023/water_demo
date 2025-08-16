@@ -827,22 +827,12 @@ defineExpose({
 
             .custom-button {
               margin: 0;
-
-              &.custom-button--small {
-                padding: 6px var(--spacing-small);
-                font-size: var(--font-size-extra-small);
-              }
             }
           }
 
           @include respond-to(lg) {
-            .actions-col .action-buttons {
+            .action-buttons {
               gap: var(--spacing-micro);
-            }
-
-            .actions-col .action-buttons .custom-button {
-              padding: var(--spacing-mini) var(--spacing-xs);
-              font-size: var(--font-size-extra-small);
             }
           }
         }

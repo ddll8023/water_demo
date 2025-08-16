@@ -156,7 +156,7 @@ const taskSearchFields = ref([
         options: [],
         placeholder: '请选择计划状态',
         span: 3,
-        labelWidth: 'var(--form-label-width-search)',
+        labelWidth: 'var(--form-label-width-standard)',
         clearable: true
     },
     {
@@ -166,7 +166,7 @@ const taskSearchFields = ref([
         options: [],
         placeholder: '请选择巡检频率',
         span: 3,
-        labelWidth: 'var(--form-label-width-search)',
+        labelWidth: 'var(--form-label-width-standard)',
         clearable: true
     },
     {
@@ -176,7 +176,7 @@ const taskSearchFields = ref([
         options: [],
         placeholder: '请选择巡检类型',
         span: 3,
-        labelWidth: 'var(--form-label-width-search)',
+        labelWidth: 'var(--form-label-width-standard)',
         clearable: true
     }
 ])

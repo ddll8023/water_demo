@@ -508,11 +508,7 @@ const loadDictMaps = async () => {
 @use "@/assets/styles/index.scss" as *;
 
 .facility-management {
-  background: var(--bg-primary);
-  border-radius: var(--border-radius-large);
-  box-shadow: var(--shadow-card);
-  overflow: hidden;
-  transition: var(--transition-base);
+  padding: var(--spacing-large);
 }
 
 .table-section {

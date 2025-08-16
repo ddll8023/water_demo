@@ -34,7 +34,7 @@
                     <el-tooltip v-if="row.warningContent && row.warningContent.length > 50"
                         :content="row.warningContent" placement="top" class="record-management__tooltip-wrapper">
                         <span class="record-management__content-text">{{ row.warningContent.substring(0, 50)
-                            }}...</span>
+                        }}...</span>
                     </el-tooltip>
                     <span v-else class="record-management__content-text">{{ row.warningContent || '-' }}</span>
                 </template>
@@ -111,7 +111,7 @@
                         <span class="overview-label"><i class="fa fa-hourglass-half"></i> 持续时长</span>
                         <span class="overview-value">{{ formatDurationUtil(currentRecord.occurredAt,
                             currentRecord.resolvedAt)
-                        }}</span>
+                            }}</span>
                     </div>
                 </div>
             </div>
@@ -318,6 +318,7 @@ const enhancedSearchFields = computed(() => {
             endPlaceholder: '结束时间',
             labelWidth: 'var(--form-label-width-standard)',
             showDuration: true,
+            width: '360px',
             format: 'YYYY-MM-DD HH:mm:ss',
             span: 8
         },
@@ -851,8 +852,6 @@ const handleCloseRecordDialog = () => {
 
 /* 预警记录管理组件样式 */
 .record-management {
-    background: var(--bg-primary);
-    min-height: calc(100vh - var(--page-min-height-offset));
     padding: var(--spacing-large);
 
     &__search-section {
@@ -861,22 +860,10 @@ const handleCloseRecordDialog = () => {
 
     // ==================== 表格容器样式 ====================
     /**
-     * 表格容器 - 卡片风格设计
+     * 表格容器 - 简化样式设计
      * 包含表格内容和分页组件
      */
     &__table {
-        background: var(--bg-primary);
-        border-radius: var(--border-radius-large);
-        box-shadow: var(--shadow-card);
-        border: 1px solid var(--border-color);
-        overflow: hidden;
-
-        /* 自定义分页样式 */
-        :deep(.custom-pagination) {
-            padding: var(--spacing-base);
-            justify-content: center;
-            border-top: 1px solid var(--border-color);
-        }
 
         // 表格加载状态修饰符
         &--loading {
@@ -1103,11 +1090,10 @@ const handleCloseRecordDialog = () => {
 
 @include respond-to(xs) {
     .record-management {
-        padding: var(--spacing-small);
+        padding: var(--spacing-sm);
 
         &__table {
-            border-radius: 0;
-            margin: 0 -#{var(--spacing-small)};
+            margin: 0;
         }
     }
 }

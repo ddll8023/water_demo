@@ -1,71 +1,73 @@
 <!-- 工程信息服务页面 - 水利工程设施和设备档案管理平台 -->
 <template>
-  <div class="engineering-service">
+  <div class="page-container">
     <!-- 使用页面头部组件 -->
     <PageHeader title="工程信息服务" icon="fa-wrench" description="水利工程设施和设备档案管理平台" />
 
     <!-- 功能选项卡 -->
     <TabSection v-model="activeTab" :tabs="tabOptions" @tab-change="handleTabChange" />
 
-    <!-- 根据activeTab条件渲染不同的设施管理内容 -->
-    <!-- 监测站点 -->
-    <div v-show="activeTab === 'monitoring-stations'" class="facility-content">
-      <FacilityManagement ref="monitoringStationRef" :facility-type="'monitoring-stations'" :facility-name="'监测站点'"
-        :search-fields="monitoringStationSearchFields" :table-columns="monitoringStationColumns"
-        :form-fields="monitoringStationFormFields" :api-functions="monitoringStationApi"
-        :validation-rules="getValidationRules()" @refresh="refreshData" />
-    </div>
+    <!-- Tab内容容器 -->
+    <div class="tab-content-wrapper">
+      <!-- 监测站点 -->
+      <div v-if="activeTab === 'monitoring-stations'" class="content-section">
+        <FacilityManagement ref="monitoringStationRef" :facility-type="'monitoring-stations'" :facility-name="'监测站点'"
+          :search-fields="monitoringStationSearchFields" :table-columns="monitoringStationColumns"
+          :form-fields="monitoringStationFormFields" :api-functions="monitoringStationApi"
+          :validation-rules="getValidationRules()" @refresh="refreshData" />
+      </div>
 
-    <!-- 泵站信息 -->
-    <div v-show="activeTab === 'pumping-stations'" class="facility-content">
-      <FacilityManagement ref="pumpingStationRef" :facility-type="'pumping-stations'" :facility-name="'泵站'"
-        :search-fields="pumpingStationSearchFields" :table-columns="pumpingStationColumns"
-        :form-fields="pumpingStationFormFields" :api-functions="pumpingStationApi"
-        :validation-rules="getValidationRules()" @refresh="refreshData" />
-    </div>
+      <!-- 泵站信息 -->
+      <div v-else-if="activeTab === 'pumping-stations'" class="content-section">
+        <FacilityManagement ref="pumpingStationRef" :facility-type="'pumping-stations'" :facility-name="'泵站'"
+          :search-fields="pumpingStationSearchFields" :table-columns="pumpingStationColumns"
+          :form-fields="pumpingStationFormFields" :api-functions="pumpingStationApi"
+          :validation-rules="getValidationRules()" @refresh="refreshData" />
+      </div>
 
-    <!-- 水库信息 -->
-    <div v-show="activeTab === 'reservoirs'" class="facility-content">
-      <FacilityManagement ref="reservoirRef" :facility-type="'reservoirs'" :facility-name="'水库'"
-        :search-fields="reservoirSearchFields" :table-columns="reservoirColumns" :form-fields="reservoirFormFields"
-        :api-functions="reservoirApi" :validation-rules="getValidationRules()" @refresh="refreshData" />
-    </div>
+      <!-- 水库信息 -->
+      <div v-else-if="activeTab === 'reservoirs'" class="content-section">
+        <FacilityManagement ref="reservoirRef" :facility-type="'reservoirs'" :facility-name="'水库'"
+          :search-fields="reservoirSearchFields" :table-columns="reservoirColumns" :form-fields="reservoirFormFields"
+          :api-functions="reservoirApi" :validation-rules="getValidationRules()" @refresh="refreshData" />
+      </div>
 
-    <!-- 水厂信息 -->
-    <div v-show="activeTab === 'water-plants'" class="facility-content">
-      <FacilityManagement ref="waterPlantRef" :facility-type="'water-plants'" :facility-name="'水厂'"
-        :search-fields="waterPlantSearchFields" :table-columns="waterPlantColumns" :form-fields="waterPlantFormFields"
-        :api-functions="waterPlantApi" :validation-rules="getValidationRules()" @refresh="refreshData" />
-    </div>
+      <!-- 水厂信息 -->
+      <div v-else-if="activeTab === 'water-plants'" class="content-section">
+        <FacilityManagement ref="waterPlantRef" :facility-type="'water-plants'" :facility-name="'水厂'"
+          :search-fields="waterPlantSearchFields" :table-columns="waterPlantColumns" :form-fields="waterPlantFormFields"
+          :api-functions="waterPlantApi" :validation-rules="getValidationRules()" @refresh="refreshData" />
+      </div>
 
-    <!-- 村庄信息 -->
-    <div v-show="activeTab === 'villages'" class="facility-content">
-      <FacilityManagement ref="villageRef" :facility-type="'villages'" :facility-name="'村庄'"
-        :search-fields="villageSearchFields" :table-columns="villageColumns" :form-fields="villageFormFields"
-        :api-functions="villageApi" :validation-rules="getValidationRules()" @refresh="refreshData" />
-    </div>
+      <!-- 村庄信息 -->
+      <div v-else-if="activeTab === 'villages'" class="content-section">
+        <FacilityManagement ref="villageRef" :facility-type="'villages'" :facility-name="'村庄'"
+          :search-fields="villageSearchFields" :table-columns="villageColumns" :form-fields="villageFormFields"
+          :api-functions="villageApi" :validation-rules="getValidationRules()" @refresh="refreshData" />
+      </div>
 
-    <!-- 浮船信息 -->
-    <div v-show="activeTab === 'floating-boats'" class="facility-content">
-      <FacilityManagement ref="floatingBoatRef" :facility-type="'floating-boats'" :facility-name="'浮船'"
-        :search-fields="floatingBoatSearchFields" :table-columns="floatingBoatColumns"
-        :form-fields="floatingBoatFormFields" :api-functions="floatingBoatApi" :validation-rules="getValidationRules()"
-        @refresh="refreshData" />
-    </div>
+      <!-- 浮船信息 -->
+      <div v-else-if="activeTab === 'floating-boats'" class="content-section">
+        <FacilityManagement ref="floatingBoatRef" :facility-type="'floating-boats'" :facility-name="'浮船'"
+          :search-fields="floatingBoatSearchFields" :table-columns="floatingBoatColumns"
+          :form-fields="floatingBoatFormFields" :api-functions="floatingBoatApi"
+          :validation-rules="getValidationRules()" @refresh="refreshData" />
+      </div>
 
-    <!-- 消毒药材 -->
-    <div v-show="activeTab === 'disinfection-materials'" class="facility-content">
-      <FacilityManagement ref="disinfectionMaterialRef" :facility-type="'disinfection-materials'"
-        :facility-name="'消毒药材'" :search-fields="disinfectionMaterialSearchFields"
-        :table-columns="disinfectionMaterialColumns" :form-fields="disinfectionMaterialFormFields"
-        :api-functions="disinfectionMaterialApi" :validation-rules="getValidationRules()" @refresh="refreshData" />
-    </div>
+      <!-- 消毒药材 -->
+      <div v-else-if="activeTab === 'disinfection-materials'" class="content-section">
+        <FacilityManagement ref="disinfectionMaterialRef" :facility-type="'disinfection-materials'"
+          :facility-name="'消毒药材'" :search-fields="disinfectionMaterialSearchFields"
+          :table-columns="disinfectionMaterialColumns" :form-fields="disinfectionMaterialFormFields"
+          :api-functions="disinfectionMaterialApi" :validation-rules="getValidationRules()" @refresh="refreshData" />
+      </div>
 
-    <!-- 管道信息 -->
-    <div v-show="activeTab === 'pipelines'" class="facility-content">
-      <FacilityManagement ref="pipelineRef" :facility-type="'pipelines'" :facility-name="'管道'"
-        :search-fields="pipelineSearchFields" :table-columns="pipelineColumns" :form-fields="pipelineFormFields"
-        :api-functions="pipelineApi" :validation-rules="getValidationRules()" @refresh="refreshData" />
+      <!-- 管道信息 -->
+      <div v-else-if="activeTab === 'pipelines'" class="content-section">
+        <FacilityManagement ref="pipelineRef" :facility-type="'pipelines'" :facility-name="'管道'"
+          :search-fields="pipelineSearchFields" :table-columns="pipelineColumns" :form-fields="pipelineFormFields"
+          :api-functions="pipelineApi" :validation-rules="getValidationRules()" @refresh="refreshData" />
+      </div>
     </div>
   </div>
 </template>
@@ -150,10 +152,10 @@ const pumpingStationColumns = [
     type: 'dict',
     dictType: 'operation_mode'
   },
-  { prop: 'unitCount', label: '机组数量(台)', width: 90 },
-  { prop: 'designScale', label: '设计规模(m³/天)', width: 120 },
-  { prop: 'installedCapacity', label: '装机容量(kw)', width: 110 },
-  { prop: 'liftHead', label: '扬程', width: 70 },
+  { prop: 'unitCount', label: '机组数量(台)', width: 60 },
+  { prop: 'designScale', label: '设计规模(m³/天)', width: 60 },
+  { prop: 'installedCapacity', label: '装机容量(kw)', width: 60 },
+  { prop: 'liftHead', label: '扬程', width: 60 },
   { prop: 'establishmentDate', label: '建站年月', width: 90 }
 ]
 
@@ -1501,59 +1503,33 @@ const getValidationRules = () => {
 <style scoped lang="scss">
 @use "@/assets/styles/index.scss" as *;
 
-/**
- * ----------------------------------------
- * 页面基本样式
- * ----------------------------------------
- */
-.engineering-service {
+.page-container {
+  padding: var(--spacing-lg);
   background-color: var(--bg-secondary);
   min-height: calc(100vh - var(--header-height));
 
-  /**
-   * 页面头部样式
-   */
-  .page-header {
+  .tab-content-wrapper {
     background: var(--bg-primary);
-    padding: var(--spacing-large);
-    border-radius: var(--border-radius-large);
-    margin-bottom: var(--spacing-large);
-    box-shadow: var(--shadow-md);
-    border: var(--border-width-thin) solid var(--border-light);
-
-    .header-content {
-      .page-title {
-        @include flex-start;
-        gap: var(--spacing-small);
-        font-size: var(--font-size-xl);
-        font-weight: var(--font-weight-semibold);
-        color: var(--text-primary);
-        margin: 0 0 var(--spacing-small) 0;
-
-        .fa {
-          color: var(--primary-color);
-          font-size: var(--font-size-lg);
-        }
-      }
-
-      .page-description {
-        font-size: var(--font-size-sm);
-        color: var(--text-tertiary);
-        margin: 0;
-      }
-    }
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--border-color-light);
+    overflow: hidden;
   }
 
-  /**
-   * 设施内容区域样式
-   */
-  .facility-content {
-    background: var(--bg-primary);
-    border-radius: var(--border-radius-large);
-    padding: var(--spacing-large);
-    margin-top: var(--spacing-large);
-    box-shadow: var(--shadow-md);
-    border: var(--border-width-thin) solid var(--border-light);
+  .content-section {
+    padding: var(--spacing-md);
+  }
+
+  @include respond-to(md) {
+    padding: var(--spacing-md);
+  }
+
+  @include respond-to(sm) {
+    padding: var(--spacing-sm);
+
+    .content-section {
+      padding: var(--spacing-sm);
+    }
   }
 }
 </style>

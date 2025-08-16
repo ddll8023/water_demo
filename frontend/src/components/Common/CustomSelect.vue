@@ -385,7 +385,7 @@ defineExpose({
 /* ===== 基础样式 ===== */
 .custom-select {
   position: relative;
-  width: 100%;
+  width: inherit; // 继承父容器宽度
 
   /* ===== 输入框样式 ===== */
   .select-input-wrapper {

@@ -671,7 +671,8 @@ defineExpose({
  * ===========================
  */
 .custom-date-picker {
-  width: 100%;
+  // 继承父容器宽度，不强制100%
+  width: inherit;
 
   &.single-picker {
     .single-picker-container {
@@ -682,6 +683,13 @@ defineExpose({
   &.range-picker {
     .range-picker-container {
       width: 100%;
+      display: flex;
+      flex-direction: column;
+
+      // 主输入区域使用垂直居中
+      .picker-inputs {
+        @include flex-center-y;
+      }
     }
   }
 }
@@ -730,22 +738,25 @@ defineExpose({
  * ===========================
  */
 .picker-inputs {
-  @include flex-start;
-  gap: var(--spacing-medium);
-  margin-bottom: var(--spacing-medium);
+  @include flex-center-y;
+  gap: var(--spacing-small); // 减小间距以节省空间
 
   .input-group {
     flex: 1;
+    min-width: 0; // 防止flex子项溢出
   }
 
   .range-separator {
     color: var(--text-secondary);
     font-size: var(--font-size-base);
     white-space: nowrap;
+    padding: 0 var(--spacing-mini); // 减小分隔符两侧间距
+    @include flex-center-y; // 确保分隔符也垂直居中
   }
 
   .picker-actions {
-    // CustomButton样式由组件本身处理
+    @include flex-center-y; // 确保操作按钮也垂直居中
+    flex-shrink: 0; // 防止按钮被压缩
   }
 }
 
@@ -755,10 +766,12 @@ defineExpose({
  * ===========================
  */
 .duration-display {
-  padding: var(--spacing-small) var(--spacing-medium);
+  padding: var(--spacing-xs) var(--spacing-small); // 减小内边距
   background: var(--bg-secondary);
   border-radius: var(--border-radius-base);
   font-size: var(--font-size-extra-small);
+  margin-top: var(--spacing-xs); // 减小与主输入区域的间距
+  align-self: flex-start; // 防止duration区域影响整体对齐
 
   .duration-label {
     color: var(--text-secondary);

@@ -330,7 +330,7 @@ defineExpose({
  */
 .custom-input {
   position: relative;
-  width: 100%;
+  width: inherit; // 继承父容器宽度
   font-size: var(--font-size-base);
 
   /**

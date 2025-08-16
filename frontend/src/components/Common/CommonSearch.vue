@@ -2,104 +2,99 @@
 <template>
   <div class="common-search">
     <div class="search-form" :class="{ 'single-row': singleRow }">
-      <el-row :gutter="12" class="search-row">
-        <!-- 搜索字段区域 -->
-        <el-col v-for="(item, index) in items" :key="item.prop || index" :span="singleRow ? getColumnSpan(item) : 4"
-          :xs="singleRow ? 24 : 12" :sm="singleRow ? getColumnSpan(item) : 8" :md="singleRow ? getColumnSpan(item) : 6"
-          :lg="singleRow ? getColumnSpan(item) : 4" :xl="singleRow ? getColumnSpan(item) : 4">
-          <el-form-item :label="item.label" :prop="item.prop"
-            :label-width="singleRow ? (item.labelWidth || 'var(--form-label-width-standard)') : (item.labelWidth || 'var(--form-label-width-compact)')"
-            class="search-item">
-            <!-- 输入框 -->
-            <CustomInput v-if="item.type === 'input' || !item.type" v-model="searchData[item.prop]"
-              :placeholder="item.placeholder || `请输入${item.label}`" :clearable="item.clearable !== false"
-              :disabled="item.disabled" :maxlength="item.maxlength" @keyup.enter="handleSearch" @clear="handleClear" />
+      <!-- 搜索区域：包含搜索字段和搜索按钮 -->
+      <div class="search-area">
+        <!-- 搜索字段容器 -->
+        <div class="search-fields-container" :style="getFieldsContainerStyle()">
+          <div v-for="(item, index) in items" :key="item.prop || index" class="search-field-item"
+            :style="getFieldItemStyle(item)">
+            <div class="search-field-label" v-if="item.label" :style="getFieldLabelStyle(item)">{{ item.label }}</div>
+            <div class="search-field-content">
+              <!-- 输入框 -->
+              <CustomInput v-if="item.type === 'input' || !item.type" v-model="searchData[item.prop]"
+                :placeholder="item.placeholder || `请输入${item.label}`" :clearable="item.clearable !== false"
+                :disabled="item.disabled" :maxlength="item.maxlength" @keyup.enter="handleSearch"
+                @clear="handleClear" />
 
-            <!-- 选择器 -->
-            <CustomSelect v-else-if="item.type === 'select'" v-model="searchData[item.prop]" :options="item.options"
-              value-key="value" label-key="label" :placeholder="item.placeholder || `请选择${item.label}`"
-              :clearable="item.clearable !== false" :disabled="item.disabled" :multiple="item.multiple"
-              :filterable="item.filterable" :remote="item.remote" :remote-method="item.remoteMethod"
-              :loading="item.loading" style="width: 100%" />
+              <!-- 选择器 -->
+              <CustomSelect v-else-if="item.type === 'select'" v-model="searchData[item.prop]" :options="item.options"
+                value-key="value" label-key="label" :placeholder="item.placeholder || `请选择${item.label}`"
+                :clearable="item.clearable !== false" :disabled="item.disabled" :multiple="item.multiple"
+                :filterable="item.filterable" :remote="item.remote" :remote-method="item.remoteMethod"
+                :loading="item.loading" style="width: 100%" />
 
+              <!-- 日期选择器 -->
+              <CustomDatePicker v-else-if="item.type === 'date'" v-model="searchData[item.prop]" type="date"
+                :placeholder="item.placeholder || `请选择${item.label}`" :clearable="item.clearable !== false"
+                :disabled="item.disabled" :format="item.format || 'YYYY-MM-DD'"
+                :value-format="item.valueFormat || 'YYYY-MM-DD'" style="width: 100%" />
 
+              <!-- 日期时间选择器 -->
+              <CustomDatePicker v-else-if="item.type === 'datetime'" v-model="searchData[item.prop]" type="datetime"
+                :placeholder="item.placeholder || `请选择${item.label}`" :clearable="item.clearable !== false"
+                :disabled="item.disabled" :format="item.format || 'YYYY-MM-DD HH:mm:ss'"
+                :value-format="item.valueFormat || 'YYYY-MM-DDTHH:mm:ss'" style="width: 100%" />
 
-            <!-- 日期选择器 -->
-            <CustomDatePicker v-else-if="item.type === 'date'" v-model="searchData[item.prop]" type="date"
-              :placeholder="item.placeholder || `请选择${item.label}`" :clearable="item.clearable !== false"
-              :disabled="item.disabled" :format="item.format || 'YYYY-MM-DD'"
-              :value-format="item.valueFormat || 'YYYY-MM-DD'" style="width: 100%" />
+              <!-- 日期范围选择器 -->
+              <CustomDatePicker v-else-if="item.type === 'daterange'" v-model="searchData[item.prop]" type="daterange"
+                range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"
+                :clearable="item.clearable !== false" :disabled="item.disabled" :format="item.format || 'YYYY-MM-DD'"
+                :value-format="item.valueFormat || 'YYYY-MM-DD'" style="width: 100%" />
 
-            <!-- 日期时间选择器 -->
-            <CustomDatePicker v-else-if="item.type === 'datetime'" v-model="searchData[item.prop]" type="datetime"
-              :placeholder="item.placeholder || `请选择${item.label}`" :clearable="item.clearable !== false"
-              :disabled="item.disabled" :format="item.format || 'YYYY-MM-DD HH:mm:ss'"
-              :value-format="item.valueFormat || 'YYYY-MM-DDTHH:mm:ss'" style="width: 100%" />
+              <!-- 日期时间范围选择器 -->
+              <CustomDatePicker v-else-if="item.type === 'datetimerange'" v-model="searchData[item.prop]"
+                type="datetimerange" range-separator="至" :start-placeholder="item.startPlaceholder || '开始时间'"
+                :end-placeholder="item.endPlaceholder || '结束时间'" :clearable="item.clearable !== false"
+                :disabled="item.disabled" :format="item.format || 'YYYY-MM-DD HH:mm:ss'"
+                :value-format="item.valueFormat || 'YYYY-MM-DDTHH:mm:ss'" :shortcuts="item.shortcuts || []"
+                :show-duration="item.showDuration" style="width: 100%" />
 
-            <!-- 日期范围选择器 -->
-            <CustomDatePicker v-else-if="item.type === 'daterange'" v-model="searchData[item.prop]" type="daterange"
-              range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" :clearable="item.clearable !== false"
-              :disabled="item.disabled" :format="item.format || 'YYYY-MM-DD'"
-              :value-format="item.valueFormat || 'YYYY-MM-DD'" style="width: 100%" />
+              <!-- 数字输入框 -->
+              <CustomInputNumber v-else-if="item.type === 'number'" v-model="searchData[item.prop]"
+                :placeholder="item.placeholder || `请输入${item.label}`" :disabled="item.disabled" :min="item.min"
+                :max="item.max" :step="item.step" :precision="item.precision" style="width: 100%" />
 
-            <!-- 日期时间范围选择器 -->
-            <CustomDatePicker v-else-if="item.type === 'datetimerange'" v-model="searchData[item.prop]"
-              type="datetimerange" range-separator="至" :start-placeholder="item.startPlaceholder || '开始时间'"
-              :end-placeholder="item.endPlaceholder || '结束时间'" :clearable="item.clearable !== false"
-              :disabled="item.disabled" :format="item.format || 'YYYY-MM-DD HH:mm:ss'"
-              :value-format="item.valueFormat || 'YYYY-MM-DDTHH:mm:ss'" :shortcuts="item.shortcuts || []"
-              :show-duration="item.showDuration" style="width: 100%" />
+              <!-- 开关 -->
+              <CustomSwitch v-else-if="item.type === 'switch'" v-model="searchData[item.prop]" :disabled="item.disabled"
+                :active-text="item.activeText" :inactive-text="item.inactiveText"
+                :active-value="item.activeValue !== undefined ? item.activeValue : true"
+                :inactive-value="item.inactiveValue !== undefined ? item.inactiveValue : false" />
 
-            <!-- 数字输入框 -->
-            <CustomInputNumber v-else-if="item.type === 'number'" v-model="searchData[item.prop]"
-              :placeholder="item.placeholder || `请输入${item.label}`" :disabled="item.disabled" :min="item.min"
-              :max="item.max" :step="item.step" :precision="item.precision" style="width: 100%" />
+              <!-- 单选框组 -->
+              <CustomRadioGroup v-else-if="item.type === 'radio'" v-model="searchData[item.prop]"
+                :options="item.options" value-key="value" label-key="label" disabled-key="disabled"
+                :disabled="item.disabled" />
 
-            <!-- 开关 -->
-            <CustomSwitch v-else-if="item.type === 'switch'" v-model="searchData[item.prop]" :disabled="item.disabled"
-              :active-text="item.activeText" :inactive-text="item.inactiveText"
-              :active-value="item.activeValue !== undefined ? item.activeValue : true"
-              :inactive-value="item.inactiveValue !== undefined ? item.inactiveValue : false" />
-
-            <!-- 单选框组 -->
-            <CustomRadioGroup v-else-if="item.type === 'radio'" v-model="searchData[item.prop]" :options="item.options"
-              value-key="value" label-key="label" disabled-key="disabled" :disabled="item.disabled" />
-
-            <!-- 复选框组 -->
-            <el-checkbox-group v-else-if="item.type === 'checkbox'" v-model="searchData[item.prop]"
-              :disabled="item.disabled">
-              <el-checkbox v-for="option in item.options" :key="option.value" :label="option.value"
-                :disabled="option.disabled">
-                {{ option.label }}
-              </el-checkbox>
-            </el-checkbox-group>
-          </el-form-item>
-        </el-col>
-
-        <!-- 搜索按钮区域 -->
-        <el-col :xs="24" :sm="singleRow ? getRemainingSpan() : 24" :md="singleRow ? getRemainingSpan() : 24"
-          :lg="singleRow ? getRemainingSpan() : 24" :xl="singleRow ? getRemainingSpan() : 24" class="search-actions-col"
-          :class="{ 'single-row-actions': singleRow }">
-          <div class="search-actions" :class="{ 'single-row-layout': singleRow }">
-            <div class="search-buttons">
-              <CustomButton type="primary" :loading="searchLoading" @click="handleSearch"
-                :size="singleRow ? 'default' : 'default'">
-                <i class="fa fa-search"></i>
-                {{ searchText }}
-              </CustomButton>
-              <CustomButton type="secondary" @click="handleReset" :size="singleRow ? 'default' : 'default'">
-                <i class="fa fa-refresh"></i>
-                {{ resetText }}
-              </CustomButton>
-            </div>
-
-            <!-- 自定义操作按钮插槽 -->
-            <div class="custom-actions">
-              <slot name="actions"></slot>
+              <!-- 复选框组 -->
+              <el-checkbox-group v-else-if="item.type === 'checkbox'" v-model="searchData[item.prop]"
+                :disabled="item.disabled">
+                <el-checkbox v-for="option in item.options" :key="option.value" :label="option.value"
+                  :disabled="option.disabled">
+                  {{ option.label }}
+                </el-checkbox>
+              </el-checkbox-group>
             </div>
           </div>
-        </el-col>
-      </el-row>
+        </div>
+
+        <!-- 搜索按钮容器 -->
+        <div class="search-buttons">
+          <CustomButton type="primary" :loading="searchLoading" @click="handleSearch"
+            :size="singleRow ? 'default' : 'default'">
+            <i class="fa fa-search"></i>
+            {{ searchText }}
+          </CustomButton>
+          <CustomButton type="secondary" @click="handleReset" :size="singleRow ? 'default' : 'default'">
+            <i class="fa fa-refresh"></i>
+            {{ resetText }}
+          </CustomButton>
+        </div>
+      </div>
+
+      <!-- 自定义操作按钮容器 -->
+      <div class="custom-actions-container">
+        <slot name="actions"></slot>
+      </div>
     </div>
   </div>
 </template>
@@ -211,38 +206,144 @@ const getDefaultValue = (type) => {
   }
 }
 
-// 获取单行模式下的列宽
-const getColumnSpan = (item) => {
-  if (item.span) return item.span
+// 根据字段类型获取默认宽度
+const getDefaultWidth = (item) => {
+  // 定义各类型的最小宽度要求
+  const minWidthMap = {
+    'input': 120,
+    'select': 120,
+    'date': 160,
+    'datetime': 200,
+    'daterange': 280,
+    'datetimerange': 320,
+    'number': 100,
+    'switch': 80
+  }
 
-  // 根据字段类型自动分配列宽，优化布局更紧凑
-  switch (item.type) {
-    case 'input':
-      return 3  // 减少输入框列宽
-    case 'select':
-      return 3
-    case 'date':
-    case 'datetime':
-      return 3  // 减少日期选择器列宽
-    case 'daterange':
-      return 4  // 减少日期范围选择器列宽
-    default:
-      return 3
+  // 获取类型默认宽度
+  const getTypeDefaultWidth = (type) => {
+    switch (type) {
+      case 'input':
+      case 'select':
+        return '200px'
+      case 'date':
+      case 'datetime':
+        return '200px'
+      case 'daterange':
+      case 'datetimerange':
+        return '320px'
+      case 'number':
+        return '160px'
+      case 'switch':
+        return '120px'
+      default:
+        return '200px'
+    }
+  }
+
+  let finalWidth = null
+
+  // 如果有自定义宽度，检查是否满足最小要求
+  if (item.width) {
+    const customWidthNum = parseInt(item.width)
+    const minRequired = minWidthMap[item.type] || 120
+
+    if (customWidthNum < minRequired) {
+      console.warn(`字段 ${item.prop} 的配置宽度 ${item.width} 小于最小要求 ${minRequired}px，将使用类型默认宽度`)
+      finalWidth = getTypeDefaultWidth(item.type)
+    } else {
+      finalWidth = item.width
+    }
+  }
+  // 如果有span配置，转换为宽度（向后兼容）
+  else if (item.span) {
+    const spanToWidth = {
+      3: '180px',
+      4: '200px',
+      5: '240px',
+      6: '280px',
+      8: '320px',
+      12: '400px',
+      16: '480px',
+      18: '520px',
+      24: '100%'
+    }
+    finalWidth = spanToWidth[item.span] || '200px'
+  }
+  // 使用类型默认宽度
+  else {
+    finalWidth = getTypeDefaultWidth(item.type)
+  }
+
+  return finalWidth
+}
+
+// 获取字段容器样式
+const getFieldsContainerStyle = () => {
+  if (!props.singleRow) {
+    return {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+      gap: 'var(--spacing-base)',
+      width: '100%'
+    }
+  }
+
+  // 单行模式：使用flexbox布局支持不同宽度
+  return {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 'var(--spacing-base)',
+    flexWrap: 'nowrap',
+    // 移除flex: '1'，让容器根据内容自适应宽度
+    width: 'auto'
   }
 }
 
-// 计算按钮区域剩余的列宽
-const getRemainingSpan = () => {
-  if (!props.singleRow) return 24
+// 获取字段项样式
+const getFieldItemStyle = (item) => {
+  if (!props.singleRow) {
+    return {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 'var(--spacing-mini)'
+    }
+  }
 
-  // 计算搜索字段占用的总列宽
-  const usedSpan = props.items.reduce((total, item) => {
-    return total + getColumnSpan(item)
-  }, 0)
+  // 单行模式：设置字段项宽度，使用flex-basis确保宽度生效
+  return {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 'var(--spacing-small)',
+    flexShrink: '0',
+    flexGrow: '0',
+    flexBasis: getDefaultWidth(item),
+    width: getDefaultWidth(item),
+    maxWidth: getDefaultWidth(item)
+  }
+}
 
-  // 返回剩余的列宽，确保至少有6列给按钮区域
-  const remaining = 24 - usedSpan
-  return Math.max(remaining, 6)
+// 获取字段标签样式
+const getFieldLabelStyle = (item) => {
+  const baseStyle = {
+    fontSize: 'var(--font-size-base)',
+    color: 'var(--text-secondary)',
+    fontWeight: 'var(--font-weight-medium)'
+  }
+
+  if (!props.singleRow) {
+    return baseStyle
+  }
+
+  // 单行模式：设置标签宽度
+  const labelWidth = item.labelWidth || props.labelWidth || 'var(--form-label-width-compact)'
+
+  return {
+    ...baseStyle,
+    flexShrink: '0',
+    width: labelWidth,
+    minWidth: labelWidth
+  }
 }
 
 /**
@@ -325,170 +426,151 @@ defineExpose({
 @use "@/assets/styles/index.scss" as *;
 
 .common-search {
-  flex-shrink: 0; // 防止搜索区域被压缩
-  width: 100%; // 确保搜索组件占满全宽
-  margin-bottom: var(--spacing-base); // 与表格区域保持间距
+  flex-shrink: 0;
+  width: 100%;
+  margin-bottom: var(--spacing-base);
 
   .search-form {
     background: var(--bg-primary);
-    padding: var(--spacing-15) var(--spacing-base);
+    padding: var(--spacing-base);
     border-radius: var(--border-radius-base);
     border: 1px solid var(--border-light);
-    min-height: 56px; // 表单项基础高度 + 内边距
-    box-sizing: border-box;
-    width: 100%; // 确保搜索表单占满全宽
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-base);
+    min-height: var(--form-item-height);
 
-    // 通用搜索项样式
-    .search-item {
-      margin-bottom: 0;
+    // 单行模式布局
+    &.single-row {
+      align-items: center;
+      padding: var(--spacing-medium) var(--spacing-base);
 
-      :deep(.el-form-item__label) {
-        font-size: var(--font-size-base);
-        color: var(--text-secondary);
-        font-weight: var(--font-weight-medium);
-        padding-right: var(--spacing-mini);
-      }
-
-      :deep(.el-form-item__content) {
-        width: 100%;
+      .search-area {
+        @include flex-center-y;
+        gap: var(--spacing-base);
         flex: 1;
+        min-width: 0;
       }
 
-      // 统一表单控件样式
-      :deep(.el-input),
-      :deep(.el-select),
-      :deep(.el-date-picker),
-      :deep(.el-cascader),
-      :deep(.custom-input),
-      :deep(.custom-select),
-      :deep(.custom-cascader) {
+      .custom-actions-container {
+        @include flex-center-y;
+        gap: var(--spacing-small);
+        flex-shrink: 0;
+        flex-wrap: wrap;
+      }
+
+      .search-field-content {
+        // 让内容区占据标签外的剩余空间
+        flex: 1;
+        min-width: 0; // 防止flex子项溢出
+        @include flex-center-y; // 添加垂直居中对齐
+
+        // 确保自定义组件能够填满可用空间
+        >* {
+          width: 100% !important;
+        }
+      }
+    }
+
+    // 多行模式布局
+    &:not(.single-row) {
+      flex-direction: column;
+      gap: var(--spacing-base);
+
+      .search-area {
+        width: 100%;
+        @include flex-between;
+        gap: var(--spacing-base);
+      }
+
+      .custom-actions-container {
+        @include flex-center-y;
+        gap: var(--spacing-small);
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .search-field-content {
         width: 100%;
       }
-
-      :deep(.el-input__wrapper) {
-        padding: var(--spacing-micro) var(--spacing-small);
-      }
-
-      :deep(.el-select .el-input__wrapper) {
-        padding: var(--spacing-micro) var(--spacing-medium) var(--spacing-micro) var(--spacing-small);
-      }
-
-      // 修复选择器文本溢出问题
-      :deep(.el-select .el-input__inner),
-      :deep(.el-select .el-select__selected-item) {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100%;
-      }
-
-      // 调整Element Plus选择器图标位置
-      :deep(.el-select .el-input__suffix) {
-        padding-right: var(--spacing-mini);
-      }
     }
 
-    .search-actions-col {
-      margin-top: var(--spacing-base);
-
-      &.single-row-actions {
-        margin-top: 0;
-        display: flex;
-        align-items: center;
-        height: var(--form-item-height); // 确保与搜索字段高度一致
-      }
-    }
-
-    .search-actions {
-      display: flex;
-      justify-content: space-between; // 两端对齐：左边搜索按钮，右边自定义按钮
-      align-items: center;
-      flex-wrap: wrap;
+    .search-buttons {
+      @include flex-center-y;
       gap: var(--spacing-small);
-      width: 100%; // 确保占满整个列宽
-
-      &.single-row-layout {
-        justify-content: space-between; // 两端对齐：左边搜索按钮，右边自定义按钮
-        height: var(--form-item-height);
-        flex-wrap: nowrap; // 防止按钮换行
-        width: 100%; // 确保占满整个列宽
-      }
-
-      .search-buttons {
-        display: flex;
-        gap: var(--spacing-small);
-        flex-wrap: wrap;
-        flex-shrink: 0; // 防止搜索按钮被压缩
-      }
-
-      .custom-actions {
-        display: flex;
-        gap: var(--spacing-small);
-        flex-wrap: wrap;
-        justify-content: flex-end; // 确保自定义按钮右对齐
-        margin-left: auto; // 推到右边
-        flex-shrink: 0; // 防止自定义按钮被压缩
-      }
+      flex-shrink: 0;
     }
-  }
 
-  // 单行模式样式
-  &.single-row {
-    .search-form {
-      padding: var(--spacing-15) var(--spacing-base);
-      min-height: 56px; // 表单项基础高度 + 内边距
-      display: flex;
-      align-items: center;
-      width: 100%; // 确保单行模式下表单占满全宽
+    // 统一表单控件样式 - 只对Element Plus原生组件设置100%宽度
+    :deep(.el-input),
+    :deep(.el-select),
+    :deep(.el-date-picker),
+    :deep(.el-cascader) {
+      width: 100%;
+    }
 
-      .search-row {
-        align-items: center;
-        width: 100%;
-        margin: 0; // 移除默认边距
-        flex: 1; // 让搜索行占满剩余空间
-      }
+    // 自定义组件继承父容器宽度，不强制设置100%
+    :deep(.custom-input),
+    :deep(.custom-select),
+    :deep(.custom-cascader),
+    :deep(.custom-date-picker) {
+      width: inherit;
+    }
 
-      // 单行模式下的搜索项样式调整
-      .search-item {
+    :deep(.el-input__wrapper) {
+      padding: var(--spacing-micro) var(--spacing-small);
+    }
 
-        :deep(.el-form-item__label),
-        :deep(.el-form-item__content) {
-          line-height: var(--form-item-height) !important;
-          margin-bottom: 0;
-        }
-      }
+    :deep(.el-select .el-input__wrapper) {
+      padding: var(--spacing-micro) var(--spacing-medium) var(--spacing-micro) var(--spacing-small);
+    }
 
-      .search-actions-col {
-        margin-top: 0;
-        flex: 1; // 让按钮列占满剩余空间
+    // 修复选择器文本溢出问题
+    :deep(.el-select .el-input__inner),
+    :deep(.el-select .el-select__selected-item) {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
 
-        &.single-row-actions {
-          display: flex;
-          align-items: center;
-          justify-content: flex-end; // 确保按钮右对齐
-          height: var(--form-item-height);
-        }
-      }
+    // 调整Element Plus选择器图标位置
+    :deep(.el-select .el-input__suffix) {
+      padding-right: var(--spacing-mini);
     }
   }
 
   // 响应式设计
   @include respond-to(md) {
     .search-form {
-      .search-actions {
+      &.single-row {
         flex-direction: column;
         align-items: stretch;
-        gap: var(--spacing-medium);
 
-        .search-buttons {
-          justify-content: center;
-          order: 1; // 搜索按钮在上方
+        .search-area {
+          flex-direction: column;
+          gap: var(--spacing-medium);
+          align-items: stretch;
+
+          .search-fields-container {
+            flex-direction: column;
+            gap: var(--spacing-medium);
+
+            .search-field-item {
+              width: 100% !important;
+            }
+          }
+
+          .search-buttons {
+            justify-content: center;
+            margin-top: var(--spacing-small);
+          }
         }
 
-        .custom-actions {
+        .custom-actions-container {
           justify-content: center;
-          order: 2; // 自定义按钮在下方
-          margin-left: 0; // 移动端取消左边距
+          margin-top: var(--spacing-small);
         }
       }
     }
@@ -498,21 +580,36 @@ defineExpose({
     .search-form {
       padding: var(--spacing-medium);
 
-      .search-actions {
-        gap: var(--spacing-small);
-
-        .search-buttons,
-        .custom-actions {
+      .search-fields-container {
+        .search-field-item {
+          width: 100% !important;
           flex-direction: column;
-          gap: var(--spacing-small);
+          align-items: flex-start !important;
+          gap: var(--spacing-mini);
 
-          .custom-button {
-            width: 100%;
+          .search-field-label {
+            width: auto !important;
+            min-width: auto !important;
           }
         }
+      }
 
-        .custom-actions {
-          margin-left: 0; // 小屏幕取消左边距
+      .search-buttons {
+        flex-direction: column;
+        width: 100%;
+
+        .custom-button {
+          width: 100%;
+        }
+      }
+
+      .custom-actions-container {
+        justify-content: center;
+        flex-direction: column;
+        width: 100%;
+
+        .custom-button {
+          width: 100%;
         }
       }
     }

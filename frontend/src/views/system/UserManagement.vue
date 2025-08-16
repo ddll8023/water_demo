@@ -242,15 +242,15 @@ const searchFields = computed(() => [
     label: '用户名',
     type: 'input',
     placeholder: '请输入用户名',
-    span: 4,
-    labelWidth: 'var(--form-label-width-search)'
+    width: '200px',
+    labelWidth: 'var(--form-label-width-standard)'
   },
   {
     prop: 'roleId',
     label: '角色',
     type: 'select',
     placeholder: '请选择角色',
-    span: 4,
+    width: '200px',
     options: roleOptions.value?.map(role => ({
       label: role.name,
       value: role.id
@@ -263,7 +263,7 @@ const searchFields = computed(() => [
     type: 'select',
     placeholder: '请选择状态',
     clearable: true,
-    span: 4,
+    width: '200px',
     options: userStatusOptions.value,
     labelWidth: 'var(--form-label-width-compact)'
   }
