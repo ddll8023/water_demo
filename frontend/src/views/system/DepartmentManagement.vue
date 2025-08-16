@@ -4,62 +4,69 @@
     <!-- 使用页面头部组件 -->
     <PageHeader title="部门管理" icon="fa-building-o" description="管理组织架构、部门层级和人员分配" />
 
-    <!-- 搜索区域 -->
-    <CommonSearch v-model="searchForm" :items="searchFields" :single-row="true" @search="handleSearch"
-      @reset="handleResetSearch">
-      <template #actions>
-        <CustomButton type="primary" @click="handleAdd" v-permission="'system:manage'">
-          <i class="fa fa-plus"></i>
-          新增部门
-        </CustomButton>
-
-      </template>
-    </CommonSearch>
-
-    <!-- 表格视图 -->
-    <div class="table-section">
-      <CommonTable :data="departmentList" :columns="tableColumns" :loading="loading" :total="pagination.total"
-        :current-page="pagination.currentPage" :page-size="pagination.pageSize" :show-selection="false"
-        :show-index="true" :show-actions="true" :show-toolbar="false" :actions-width="150" :actions-fixed="false"
-        @size-change="handleSizeChange" @current-change="handleCurrentChange" @row-click="handleRowClick">
-        <template #level="{ row }">
-          <el-tag :type="getLevelTagType(calculateLevel(row))" size="small">
-            第{{ calculateLevel(row) }}级
-          </el-tag>
-        </template>
-
-        <template #parentName="{ row }">
-          <span v-if="row.parentName">{{ row.parentName }}</span>
-          <el-tag v-else type="info" size="small">顶级部门</el-tag>
-        </template>
-
-        <template #isActive="{ row }">
-          <el-tag :type="row.isActive ? 'success' : 'danger'" size="small">
-            {{ row.isActive ? '启用' : '禁用' }}
-          </el-tag>
-        </template>
-
-        <template #personnelCount="{ row }">
-          <span>{{ row.personnelCount || 0 }}人</span>
-        </template>
-
-        <template #createdAt="{ row }">
-          {{ formatDateTime(row.createdAt) }}
-        </template>
-
-        <template #actions="{ row }">
-          <div class="action-buttons">
-            <CustomButton type="text" text-type="primary" size="small" @click="handleEdit(row)"
-              v-permission="'system:manage'">
-              编辑
+    <div class="content-wrapper">
+      <div class="department-section">
+        <!-- 搜索区域 -->
+        <CommonSearch v-model="searchForm" :items="searchFields" :single-row="true" @search="handleSearch"
+          @reset="handleResetSearch">
+          <template #actions>
+            <CustomButton type="primary" @click="handleAdd" v-permission="'system:manage'">
+              <i class="fa fa-plus"></i>
+              新增部门
             </CustomButton>
-            <CustomButton type="text" text-type="danger" size="small" @click="handleDelete(row)"
-              v-permission="'system:manage'">
-              删除
-            </CustomButton>
-          </div>
-        </template>
-      </CommonTable>
+
+          </template>
+        </CommonSearch>
+
+        <!-- 表格视图 -->
+        <div class="table-section">
+          <CommonTable :data="departmentList" :columns="tableColumns" :loading="loading" :show-selection="false"
+            :show-index="true" :show-actions="true" :show-toolbar="false" :actions-width="150" :actions-fixed="false"
+            @row-click="handleRowClick">
+            <template #level="{ row }">
+              <el-tag :type="getLevelTagType(calculateLevel(row))" size="small">
+                第{{ calculateLevel(row) }}级
+              </el-tag>
+            </template>
+
+            <template #parentName="{ row }">
+              <span v-if="row.parentName">{{ row.parentName }}</span>
+              <el-tag v-else type="info" size="small">顶级部门</el-tag>
+            </template>
+
+            <template #isActive="{ row }">
+              <el-tag :type="row.isActive ? 'success' : 'danger'" size="small">
+                {{ row.isActive ? '启用' : '禁用' }}
+              </el-tag>
+            </template>
+
+            <template #personnelCount="{ row }">
+              <span>{{ row.personnelCount || 0 }}人</span>
+            </template>
+
+            <template #createdAt="{ row }">
+              {{ formatDateTime(row.createdAt) }}
+            </template>
+
+            <template #actions="{ row }">
+              <div class="action-buttons">
+                <CustomButton type="text" text-type="primary" size="small" @click="handleEdit(row)"
+                  v-permission="'system:manage'">
+                  编辑
+                </CustomButton>
+                <CustomButton type="text" text-type="danger" size="small" @click="handleDelete(row)"
+                  v-permission="'system:manage'">
+                  删除
+                </CustomButton>
+              </div>
+            </template>
+          </CommonTable>
+
+          <CustomPagination v-model:current-page="pagination.currentPage" v-model:page-size="pagination.pageSize"
+            :total="pagination.total" :page-sizes="[10, 20, 50, 100]" @size-change="handleSizeChange"
+            @current-change="handleCurrentChange" />
+        </div>
+      </div>
     </div>
 
     <!-- 部门表单对话框 -->
@@ -114,6 +121,7 @@ import CommonTable from '@/components/Common/CommonTable.vue'
 import CommonForm from '@/components/Common/CommonForm.vue'
 import CustomButton from '@/components/Common/CustomButton.vue'
 import CustomDialog from '@/components/Common/CustomDialog.vue'
+import CustomPagination from '@/components/Common/CustomPagination.vue'
 import PageHeader from '@/components/Common/PageHeader.vue'
 
 import {
@@ -659,41 +667,23 @@ const handleFormSuccess = () => {
  * ==============================
  */
 .department-management {
-  background: var(--bg-color-page);
-  height: calc(100vh - var(--header-height));
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  background-color: var(--bg-secondary);
+  min-height: calc(100vh - var(--header-height));
 
-  .page-header {
-    margin-bottom: var(--spacing-large);
-
-    .header-content {
-      .page-title {
-        @include flex-center-y;
-        gap: var(--spacing-small);
-        font-size: var(--font-size-xl);
-        font-weight: var(--font-weight-medium);
-        color: var(--text-primary);
-        margin: 0 0 var(--spacing-small) 0;
-      }
-
-      .page-description {
-        color: var(--text-secondary);
-        margin: 0;
-        font-size: var(--font-size-base);
-      }
-    }
-  }
-
-  .table-section {
+  .content-wrapper {
     background: var(--bg-primary);
     border-radius: var(--border-radius-large);
-    overflow: hidden;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
     box-shadow: var(--shadow-light);
+    border: 1px solid var(--border-color-light);
+    overflow: hidden;
+  }
+
+  .department-section {
+    padding: var(--spacing-large);
+
+    .table-section {
+      margin-top: var(--spacing-large);
+    }
   }
 
   .action-buttons {
@@ -722,6 +712,10 @@ const handleFormSuccess = () => {
 @include respond-to(sm) {
   .department-management {
     padding: var(--spacing-sm);
+
+    .department-section {
+      padding: var(--spacing-sm);
+    }
 
     .action-buttons {
       flex-direction: column;

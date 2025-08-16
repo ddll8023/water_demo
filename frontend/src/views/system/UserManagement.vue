@@ -4,94 +4,98 @@
     <!-- 使用页面头部组件 -->
     <PageHeader title="用户管理" icon="fa-user" description="管理系统登录账号和权限分配" />
 
-    <!-- 搜索区域 -->
-    <CommonSearch v-model="searchForm" :items="searchFields" :single-row="true" @search="handleSearch"
-      @reset="handleResetSearch">
-      <template #actions>
-        <CustomButton type="primary" @click="handleAdd" v-permission="'system:manage'">
-          <i class="fa fa-plus"></i>
-          新增用户
-        </CustomButton>
-      </template>
-    </CommonSearch>
-
-    <!-- 用户列表表格 -->
-    <div class="table-section">
-      <CommonTable :data="userList" :columns="tableColumns" :loading="loading" :total="pagination.total"
-        :current-page="pagination.currentPage" :page-size="pagination.pageSize" :show-index="true" :show-toolbar="false"
-        :actions-width="240" :actions-fixed="false" @size-change="handleSizeChange"
-        @current-change="handleCurrentChange">
-        <template #isActive="{ row }">
-          <el-tag :type="row.isActive ? 'success' : 'danger'" size="small">
-            {{ getUserStatusLabel(row.isActive) }}
-          </el-tag>
-        </template>
-
-        <template #createdAt="{ row }">
-          {{ row.createdAt }}
-        </template>
-
-        <template #actions="{ row }">
-          <div class="action-buttons">
-            <CustomButton type="text" text-type="primary" size="small" @click="handleEdit(row)"
-              v-permission="'system:manage'">
-              编辑
+    <!-- 内容包装器 -->
+    <div class="content-wrapper">
+      <div class="user-section">
+        <!-- 搜索区域 -->
+        <CommonSearch v-model="searchForm" :items="searchFields" :single-row="true" @search="handleSearch"
+          @reset="handleResetSearch">
+          <template #actions>
+            <CustomButton type="primary" @click="handleAdd" v-permission="'system:manage'">
+              <i class="fa fa-plus"></i>
+              新增用户
             </CustomButton>
-            <CustomButton type="text" text-type="danger" size="small" @click="handleDelete(row)"
-              v-permission="'system:manage'">
-              删除
-            </CustomButton>
-          </div>
-        </template>
-      </CommonTable>
+          </template>
+        </CommonSearch>
 
-      <CustomPagination v-model:current-page="pagination.currentPage" v-model:page-size="pagination.pageSize"
-        :total="pagination.total" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
-    </div>
+        <!-- 表格区域 -->
+        <div class="table-section">
+          <CommonTable :data="userList" :columns="tableColumns" :loading="loading" :show-index="true"
+            :show-toolbar="false" :actions-width="240" :actions-fixed="false">
+            <template #isActive="{ row }">
+              <el-tag :type="row.isActive ? 'success' : 'danger'" size="small">
+                {{ getUserStatusLabel(row.isActive) }}
+              </el-tag>
+            </template>
 
-    <!-- 用户表单弹窗 -->
-    <CustomDialog v-model:visible="formDialogVisible" :title="isEdit ? '编辑用户信息' : '新增用户'" width="800px"
-      :close-on-click-modal="false" :loading="saving" @confirm="handleSaveUser" @cancel="formDialogVisible = false">
-      <CommonForm ref="userFormRef" v-model="currentUser" :items="formItems" :rules="formRules" label-width="120px"
-        label-position="right" size="default" :disabled="saving" :show-actions="false" />
-    </CustomDialog>
+            <template #createdAt="{ row }">
+              {{ row.createdAt }}
+            </template>
 
-    <!-- 用户角色分配弹窗 -->
-    <CustomDialog v-model:visible="roleDialogVisible" :title="`为用户「${currentUserName}」分配角色`"
-      width="var(--panel-height-default)" :close-on-click-modal="false" :close-on-press-escape="false"
-      :loading="assignRoleLoading" @close="handleRoleDialogClose" @cancel="handleRoleDialogClose"
-      @confirm="handleAssignRoleConfirm">
-      <div class="role-assignment">
-        <div class="assignment-header">
-          <div class="user-info">
-            <el-tag type="primary" size="large">{{ currentUserName }}</el-tag>
-            <span class="user-desc">{{ currentUserDepartment }}</span>
-          </div>
-          <div class="role-stats">
-            <span>{{ selectedRoles.length ? '已选择角色' : '请选择角色' }}</span>
-          </div>
-        </div>
-
-        <div class="assignment-content">
-          <CommonTable :data="roleList" :columns="roleTableColumns" :show-toolbar="false" :show-selection="true"
-            :show-index="false" :show-actions="false" :show-pagination="false" :selectable-function="isRoleSelectable"
-            :select-mode="'radio'" @selection-change="handleRoleSelectionChange">
-            <template #name="{ row }">
-              <div class="role-name">
-                <span>{{ row.name }}</span>
-                <el-tag v-if="!row.isActive" type="danger" size="small" class="status-tag">
-                  已禁用
-                </el-tag>
+            <template #actions="{ row }">
+              <div class="action-buttons">
+                <CustomButton type="text" text-type="primary" size="small" @click="handleEdit(row)"
+                  v-permission="'system:manage'">
+                  编辑
+                </CustomButton>
+                <CustomButton type="text" text-type="danger" size="small" @click="handleDelete(row)"
+                  v-permission="'system:manage'">
+                  删除
+                </CustomButton>
               </div>
             </template>
-
-            <template #permissionCount="{ row }">
-              <span>{{ row.permissionCount || 0 }}</span>
-            </template>
           </CommonTable>
+
+          <CustomPagination v-model:current-page="pagination.currentPage" v-model:page-size="pagination.pageSize"
+            :total="pagination.total" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
         </div>
+
+        <!-- 用户表单弹窗 -->
+        <CustomDialog v-model:visible="formDialogVisible" :title="isEdit ? '编辑用户信息' : '新增用户'" width="800px"
+          :close-on-click-modal="false" :loading="saving" @confirm="handleSaveUser" @cancel="formDialogVisible = false">
+          <CommonForm ref="userFormRef" v-model="currentUser" :items="formItems" :rules="formRules" label-width="120px"
+            label-position="right" size="default" :disabled="saving" :show-actions="false" />
+        </CustomDialog>
+
+        <!-- 用户角色分配弹窗 -->
+        <CustomDialog v-model:visible="roleDialogVisible" :title="`为用户「${currentUserName}」分配角色`"
+          width="var(--panel-height-default)" :close-on-click-modal="false" :close-on-press-escape="false"
+          :loading="assignRoleLoading" @close="handleRoleDialogClose" @cancel="handleRoleDialogClose"
+          @confirm="handleAssignRoleConfirm">
+          <div class="role-assignment">
+            <div class="assignment-header">
+              <div class="user-info">
+                <el-tag type="primary" size="large">{{ currentUserName }}</el-tag>
+                <span class="user-desc">{{ currentUserDepartment }}</span>
+              </div>
+              <div class="role-stats">
+                <span>{{ selectedRoles.length ? '已选择角色' : '请选择角色' }}</span>
+              </div>
+            </div>
+
+            <div class="assignment-content">
+              <CommonTable :data="roleList" :columns="roleTableColumns" :show-toolbar="false" :show-selection="true"
+                :show-index="false" :show-actions="false" :show-pagination="false"
+                :selectable-function="isRoleSelectable" :select-mode="'radio'"
+                @selection-change="handleRoleSelectionChange">
+                <template #name="{ row }">
+                  <div class="role-name">
+                    <span>{{ row.name }}</span>
+                    <el-tag v-if="!row.isActive" type="danger" size="small" class="status-tag">
+                      已禁用
+                    </el-tag>
+                  </div>
+                </template>
+
+                <template #permissionCount="{ row }">
+                  <span>{{ row.permissionCount || 0 }}</span>
+                </template>
+              </CommonTable>
+            </div>
+          </div>
+        </CustomDialog>
       </div>
-    </CustomDialog>
+    </div>
   </div>
 </template>
 
@@ -627,65 +631,38 @@ onMounted(async () => {
  * -------------------------------------------------------
  */
 .user-management {
-  background: var(--el-bg-color-page);
-  height: calc(100vh - var(--header-height));
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  padding: var(--spacing-large);
+  background-color: var(--bg-secondary);
+  min-height: calc(100vh - var(--header-height));
 
-  // 页面标题区域样式已移至PageHeader组件
-
-  // 表格区域样式
-  .table-section {
+  .content-wrapper {
     background: var(--bg-primary);
     border-radius: var(--border-radius-large);
+    box-shadow: var(--shadow-light);
+    border: 1px solid var(--border-color-light);
     overflow: hidden;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
   }
 
-  // 操作按钮样式
+  .user-section {
+    padding: var(--spacing-large);
+
+    .table-section {
+      margin-top: var(--spacing-large);
+    }
+  }
+
   .action-buttons {
-    display: flex;
-    gap: var(--spacing-xs);
+    @include flex-center;
+    gap: var(--spacing-small);
     flex-wrap: nowrap;
-    justify-content: center; // 居中对齐，更美观
-    align-items: center;
-    width: 100%; // 占满操作列宽度
-    flex-direction: row;
-
-    .custom-button {
-      min-width: 56px; // 稍微减小最小宽度
-      padding: var(--spacing-xs) var(--spacing-sm); // 减小内边距
-      font-size: var(--font-size-sm); // 稍微减小字体
-      flex: 0 0 auto; // 不允许伸缩，保持固定尺寸
-      border-radius: var(--border-radius-base); // 圆角
-
-      &.custom-button--small {
-        height: var(--button-size-small);
-        line-height: 1;
-      }
-    }
   }
 
-  // 用户表单样式
-  .el-form {
-    .el-form-item {
-      margin-bottom: var(--form-item-margin-bottom-large);
-    }
-
-    .el-input,
-    .el-select {
-      width: 100%;
-    }
-
-    .el-radio-group {
-      .el-radio {
-        margin-right: var(--spacing-large);
-      }
-    }
+  .dialog-footer {
+    @include flex-end;
+    gap: var(--spacing-medium);
   }
+
+
 
   // 角色分配样式
   .role-assignment {
@@ -726,41 +703,22 @@ onMounted(async () => {
   }
 }
 
-/**
- * 响应式布局适配
- * -------------------------------------------------------
- */
-// 移动端适配
-@media (max-width: 768px) {
+// 响应式适配
+@include respond-to(sm) {
   .user-management {
+    padding: var(--spacing-sm);
+
+    .user-section {
+      padding: var(--spacing-sm);
+    }
+
     .action-buttons {
       flex-direction: column;
-      gap: 6px;
+      gap: var(--spacing-mini);
 
       .custom-button {
         width: 100%;
-        min-width: 60px;
-        font-size: 12px;
-        padding: 6px 12px;
-      }
-    }
-
-    // 表格容器适配
-    .table-section {
-      margin: 0 -10px; // 扩展到屏幕边缘
-      border-radius: 0;
-    }
-  }
-}
-
-// 超小屏幕适配
-@media (max-width: 480px) {
-  .user-management {
-    .action-buttons {
-      .custom-button {
-        font-size: 11px;
-        padding: 4px 8px;
-        height: 28px;
+        font-size: var(--font-size-sm);
       }
     }
   }

@@ -318,8 +318,7 @@ const getFieldItemStyle = (item) => {
     flexShrink: '0',
     flexGrow: '0',
     flexBasis: getDefaultWidth(item),
-    width: getDefaultWidth(item),
-    maxWidth: getDefaultWidth(item)
+    width: getDefaultWidth(item)
   }
 }
 
@@ -328,7 +327,8 @@ const getFieldLabelStyle = (item) => {
   const baseStyle = {
     fontSize: 'var(--font-size-base)',
     color: 'var(--text-secondary)',
-    fontWeight: 'var(--font-weight-medium)'
+    fontWeight: 'var(--font-weight-medium)',
+    textAlign: 'center'
   }
 
   if (!props.singleRow) {

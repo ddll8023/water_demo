@@ -4,48 +4,49 @@
     <!-- 使用页面头部组件 -->
     <PageHeader title="岗位管理" icon="fa-briefcase" description="管理系统岗位信息和职责定义" />
 
-    <!-- 搜索区域 -->
-    <CommonSearch v-model="searchForm" :items="searchFields" :single-row="true" @search="handleSearch"
-      @reset="handleResetSearch">
-      <template #actions>
-        <CustomButton type="primary" @click="handleAdd" v-permission="'system:manage'">
-          <i class="fa fa-plus"></i>
-          新增岗位
-        </CustomButton>
-      </template>
-    </CommonSearch>
-
-
-
-    <!-- 岗位列表表格 -->
-    <div class="table-section">
-      <CommonTable :data="positionList" :columns="tableColumns" :loading="loading" :total="pagination.total"
-        :current-page="pagination.currentPage" :page-size="pagination.pageSize" :show-index="true" :actions-width="280"
-        @size-change="handleSizeChange" @current-change="handleCurrentChange" :show-pagination="false">
-
-
-        <template #createdAt="{ row }">
-          {{ formatDateTime(row.createdAt) }}
-        </template>
-
-        <template #actions="{ row }">
-          <div class="action-buttons">
-            <CustomButton type="text" text-type="primary" size="small" @click="handleEdit(row)"
-              v-permission="'system:manage'">
-              编辑
+    <div class="content-wrapper">
+      <div class="position-section">
+        <!-- 搜索区域 -->
+        <CommonSearch v-model="searchForm" :items="searchFields" :single-row="true" @search="handleSearch"
+          @reset="handleResetSearch">
+          <template #actions>
+            <CustomButton type="primary" @click="handleAdd" v-permission="'system:manage'">
+              <i class="fa fa-plus"></i>
+              新增岗位
             </CustomButton>
-            <CustomButton type="text" text-type="danger" size="small" @click="handleDelete(row)"
-              v-permission="'system:manage'">
-              删除
-            </CustomButton>
-          </div>
-        </template>
-      </CommonTable>
+          </template>
+        </CommonSearch>
 
-      <!-- 自定义分页组件 -->
-      <CustomPagination v-model:currentPage="pagination.currentPage" v-model:pageSize="pagination.pageSize"
-        :total="pagination.total" :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next, jumper"
-        @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+        <!-- 岗位列表表格 -->
+        <div class="table-section">
+          <CommonTable :data="positionList" :columns="tableColumns" :loading="loading" :show-selection="false"
+            :show-index="true" :show-actions="true" :actions-width="150">
+
+
+            <template #createdAt="{ row }">
+              {{ formatDateTime(row.createdAt) }}
+            </template>
+
+            <template #actions="{ row }">
+              <div class="action-buttons">
+                <CustomButton type="text" text-type="primary" size="small" @click="handleEdit(row)"
+                  v-permission="'system:manage'">
+                  编辑
+                </CustomButton>
+                <CustomButton type="text" text-type="danger" size="small" @click="handleDelete(row)"
+                  v-permission="'system:manage'">
+                  删除
+                </CustomButton>
+              </div>
+            </template>
+          </CommonTable>
+
+          <!-- 独立分页组件 -->
+          <CustomPagination v-model:current-page="pagination.currentPage" v-model:page-size="pagination.pageSize"
+            :total="pagination.total" :page-sizes="[10, 20, 50, 100]" @size-change="handleSizeChange"
+            @current-change="handleCurrentChange" />
+        </div>
+      </div>
     </div>
 
     <!-- 合并 PositionForm 组件 -->
@@ -496,109 +497,68 @@ const handleFormUpdate = (value) => {
 
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
 @use "@/assets/styles/index.scss" as *;
 
-// =============================================
-// 页面布局样式
-// =============================================
 .position-management {
+  background-color: var(--bg-secondary);
+  min-height: calc(100vh - var(--header-height));
 
-  // 页面头部样式
-  .page-header {
-    margin-bottom: var(--spacing-large);
-
-    .header-content {
-      .page-title {
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-small);
-        margin: 0 0 var(--spacing-small) 0;
-        font-size: var(--font-size-xl);
-        font-weight: var(--font-weight-semibold);
-        color: var(--text-primary);
-      }
-
-      .page-description {
-        margin: 0;
-        color: var(--text-secondary);
-        font-size: var(--font-size-base);
-      }
-    }
-  }
-
-  // 表格区域样式
-  .table-section {
-    margin-top: var(--spacing-large);
+  .content-wrapper {
     background: var(--bg-primary);
     border-radius: var(--border-radius-large);
     box-shadow: var(--shadow-light);
+    border: 1px solid var(--border-color-light);
+    overflow: hidden;
   }
 
-  // 辅助文本样式
-  .text-placeholder {
-    color: var(--text-placeholder);
-    font-style: italic;
-    font-size: var(--font-size-sm);
+  .position-section {
+    padding: var(--spacing-large);
+
+    .table-section {
+      margin-top: var(--spacing-large);
+    }
   }
 
-  // =============================================
-  // 按钮与交互元素样式
-  // =============================================
-
-  // 操作按钮样式
   .action-buttons {
     @include flex-center;
     gap: var(--spacing-small);
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
   }
 
-  // =============================================
-  // 双栏布局样式
-  // =============================================
-
-
-
-  // =============================================
-  // 响应式设计
-  // =============================================
-}
-
-// =============================================
-// 表单对话框样式 (来自PositionForm)
-// =============================================
-.dialog-footer {
-  text-align: right;
-}
-
-.permission-preview {
-  .preview-title {
-    font-size: var(--font-size-base);
-    color: var(--text-secondary);
-    margin-bottom: var(--spacing-small);
+  .dialog-footer {
+    @include flex-end;
+    gap: var(--spacing-medium);
   }
+}
 
-  .permission-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-small);
+// 响应式适配
+@include respond-to(sm) {
+  .position-management {
+    padding: var(--spacing-sm);
 
-    .permission-tag {
-      margin: 0;
+    .position-section {
+      padding: var(--spacing-sm);
+    }
+
+    .action-buttons {
+      flex-direction: column;
+      gap: var(--spacing-mini);
+
+      .custom-button {
+        width: 100%;
+        font-size: var(--font-size-sm);
+      }
     }
   }
 }
 
+/* 深度选择器样式 */
 :deep(.el-form-item__label) {
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
 }
 
 :deep(.el-input__count) {
   color: var(--text-tertiary);
-}
-
-:deep(.el-divider__text) {
-  font-weight: 500;
-  color: var(--primary-color);
 }
 </style>

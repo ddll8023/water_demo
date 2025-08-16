@@ -4,39 +4,43 @@
     <!-- 使用页面头部组件 -->
     <PageHeader title="角色管理" icon="fa-users" description="管理系统角色信息和权限分配" />
 
-    <!-- 搜索区域 -->
-    <CommonSearch v-model="searchForm" :items="searchFields" :single-row="true" @search="handleSearch"
-      @reset="handleResetSearch">
-      <template #actions>
-        <CustomButton type="primary" @click="handleAdd" v-permission="'system:manage'">
-          <i class="fa fa-plus"></i>
-          新增角色
-        </CustomButton>
-      </template>
-    </CommonSearch>
-
-    <!-- 角色列表表格 -->
-    <div class="table-section">
-      <CommonTable :data="roleList" :columns="tableColumns" :loading="loading" :show-index="true" :show-toolbar="false">
-
-
-        <template #actions="{ row }">
-          <div class="action-buttons">
-            <CustomButton type="text" text-type="primary" size="small" @click="handleEdit(row)">
-              编辑
+    <!-- 内容包装器 -->
+    <div class="content-wrapper">
+      <div class="role-section">
+        <!-- 搜索区域 -->
+        <CommonSearch v-model="searchForm" :items="searchFields" :single-row="true" @search="handleSearch"
+          @reset="handleResetSearch">
+          <template #actions>
+            <CustomButton type="primary" @click="handleAdd" v-permission="'system:manage'">
+              <i class="fa fa-plus"></i>
+              新增角色
             </CustomButton>
-            <CustomButton type="text" text-type="danger" size="small" @click="handleDelete(row)">
-              删除
-            </CustomButton>
-          </div>
-        </template>
-      </CommonTable>
+          </template>
+        </CommonSearch>
 
-      <!-- 使用自定义分页组件 -->
-      <div class="pagination-container">
-        <CustomPagination v-model:current-page="pagination.currentPage" v-model:page-size="pagination.pageSize"
-          :total="pagination.total" :page-sizes="[10, 20, 50, 100]" @size-change="handleSizeChange"
-          @current-change="handleCurrentChange" />
+        <!-- 角色列表表格 -->
+        <div class="table-section">
+          <CommonTable :data="roleList" :columns="tableColumns" :loading="loading" :show-selection="false"
+            :show-index="true" :show-actions="true" :show-toolbar="false" :actions-width="150" :actions-fixed="false">
+
+
+            <template #actions="{ row }">
+              <div class="action-buttons">
+                <CustomButton type="text" text-type="primary" size="small" @click="handleEdit(row)">
+                  编辑
+                </CustomButton>
+                <CustomButton type="text" text-type="danger" size="small" @click="handleDelete(row)">
+                  删除
+                </CustomButton>
+              </div>
+            </template>
+          </CommonTable>
+
+          <!-- 独立分页组件 -->
+          <CustomPagination v-model:current-page="pagination.currentPage" v-model:page-size="pagination.pageSize"
+            :total="pagination.total" :page-sizes="[10, 20, 50, 100]" @size-change="handleSizeChange"
+            @current-change="handleCurrentChange" />
+        </div>
       </div>
     </div>
 
@@ -519,47 +523,49 @@ onMounted(() => {
  * ===========================
  */
 .role-management {
-  background: var(--el-bg-color-page);
-  height: calc(100vh - var(--header-height));
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  background-color: var(--bg-secondary);
+  min-height: calc(100vh - var(--header-height));
 
-  // 表格区域样式
-  .table-section {
+  .content-wrapper {
     background: var(--bg-primary);
     border-radius: var(--border-radius-large);
-    overflow: hidden;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
     box-shadow: var(--shadow-light);
+    border: 1px solid var(--border-color-light);
+    overflow: hidden;
+  }
 
-    .pagination-container {
-      padding: var(--spacing-base);
-      display: flex;
-      justify-content: center;
+  .role-section {
+    padding: var(--spacing-large);
+
+    .table-section {
+      margin-top: var(--spacing-large);
     }
   }
 
-  // 行操作按钮样式
   .action-buttons {
-    display: flex;
+    @include flex-center;
     gap: var(--spacing-small);
-    justify-content: center;
-    align-items: center;
     flex-wrap: nowrap;
+  }
+
+  .dialog-footer {
+    @include flex-end;
+    gap: var(--spacing-medium);
   }
 }
 
 /**
  * ===========================
- * 响应式布局样式
+ * 响应式适配
  * ===========================
  */
-@media (max-width: 768px) {
+@include respond-to(sm) {
   .role-management {
     padding: var(--spacing-sm);
+
+    .role-section {
+      padding: var(--spacing-sm);
+    }
 
     .action-buttons {
       flex-direction: column;

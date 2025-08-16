@@ -142,11 +142,11 @@ const taskSearchForm = ref({
 const taskSearchFields = ref([
     {
         prop: 'keyword',
-        label: '关键词',
+        label: '工程/人员名称',
         type: 'input',
         placeholder: '请输入工程名称或人员姓名',
-        span: 4,
-        labelWidth: 'var(--form-label-width-compact)',
+        width: '285px',
+        labelWidth: '90px',
         clearable: true
     },
     {
@@ -155,7 +155,7 @@ const taskSearchFields = ref([
         type: 'select',
         options: [],
         placeholder: '请选择计划状态',
-        span: 3,
+        width: '220px',
         labelWidth: 'var(--form-label-width-standard)',
         clearable: true
     },
@@ -165,7 +165,7 @@ const taskSearchFields = ref([
         type: 'select',
         options: [],
         placeholder: '请选择巡检频率',
-        span: 3,
+        width: '220px',
         labelWidth: 'var(--form-label-width-standard)',
         clearable: true
     },
@@ -175,7 +175,7 @@ const taskSearchFields = ref([
         type: 'select',
         options: [],
         placeholder: '请选择巡检类型',
-        span: 3,
+        width: '220px',
         labelWidth: 'var(--form-label-width-standard)',
         clearable: true
     }
