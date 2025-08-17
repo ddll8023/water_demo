@@ -15,24 +15,22 @@
             reservoir_monitoring_data.inflow,
             reservoir_monitoring_data.outflow,
             reservoir_monitoring_data.data_quality,
-            CASE reservoir_monitoring_data.data_quality
-                WHEN 1 THEN '正常'
-                WHEN 2 THEN '异常'
-                WHEN 3 THEN '缺失'
-                ELSE '未知'
-            END AS data_quality_desc,
+            COALESCE(dq.data_label, '未知') AS data_quality_text,
             reservoir_monitoring_data.collection_method,
             CASE reservoir_monitoring_data.collection_method
                 WHEN 'AUTO' THEN '自动采集'
                 WHEN 'MANUAL' THEN '手动录入'
                 ELSE '未知'
-            END AS collection_method_desc,
+            END AS collection_method_text,
             reservoir_monitoring_data.data_source,
             reservoir_monitoring_data.remark
         FROM
             reservoir_monitoring_data
         LEFT JOIN
             monitoring_stations ON reservoir_monitoring_data.station_id = monitoring_stations.id
+        LEFT JOIN dict_data dq ON CAST(reservoir_monitoring_data.data_quality AS CHAR) COLLATE utf8mb4_unicode_ci = dq.data_value COLLATE utf8mb4_unicode_ci
+            AND dq.type_id = (SELECT id FROM dict_types WHERE type_code = 'data_quality' LIMIT 1)
+            AND dq.is_active = 1 AND dq.deleted_at IS NULL
         WHERE
             reservoir_monitoring_data.deleted_at IS NULL
             <if test="stationId != null">

@@ -67,6 +67,11 @@ public class FlowMonitoringDataResponseDTO {
     private String collectionMethod;
 
     /**
+     * 采集方式文本
+     */
+    private String collectionMethodText;
+
+    /**
      * 数据来源设备
      */
     private String dataSource;

@@ -78,12 +78,6 @@ public class Pipeline {
     private BigDecimal diameter;
 
     /**
-     * 管道材质（关联dict_data.data_value，type_code=pipeline_material）
-     */
-    @TableField("material")
-    private String material;
-
-    /**
      * 设计压力（MPa）
      */
     @TableField("design_pressure")
@@ -100,12 +94,6 @@ public class Pipeline {
      */
     @TableField("burial_depth")
     private BigDecimal burialDepth;
-
-    /**
-     * 运行状态（关联dict_data.data_value，type_code=operation_status）
-     */
-    @TableField("operation_status")
-    private String operationStatus;
 
     /**
      * 建设年月
@@ -146,15 +134,4 @@ public class Pipeline {
     @TableField(exist = false)
     private String pipelineTypeName;
 
-    /**
-     * 管道材质名称（非数据库字段）
-     */
-    @TableField(exist = false)
-    private String materialName;
-
-    /**
-     * 运行状态名称（非数据库字段）
-     */
-    @TableField(exist = false)
-    private String operationStatusName;
 }

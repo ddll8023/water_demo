@@ -20,6 +20,9 @@ public class InspectionRecord {
     @TableField("inspector_id")
     private Long inspectorId;
 
+    /**
+     * 设施类型（通过工程服务API获取类型选项）
+     */
     @TableField("facility_type")
     private String facilityType;
 

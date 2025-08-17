@@ -66,9 +66,9 @@ public class WaterConditionMonitoringDataResponseDTO {
     private Integer dataQuality;
 
     /**
-     * 数据质量描述
+     * 数据质量文本
      */
-    private String dataQualityDesc;
+    private String dataQualityText;
 
     /**
      * 采集方式(AUTO:自动,MANUAL:手动)
@@ -76,9 +76,9 @@ public class WaterConditionMonitoringDataResponseDTO {
     private String collectionMethod;
 
     /**
-     * 采集方式描述
+     * 采集方式文本
      */
-    private String collectionMethodDesc;
+    private String collectionMethodText;
 
     /**
      * 数据来源设备

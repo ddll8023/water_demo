@@ -2,54 +2,57 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.demo.mapper.WaterQualityMonitoringDataMapper">
 
-    <!-- 结果映射 -->
+    <!-- 结果映射：水质监测数据响应DTO -->
     <resultMap id="WaterQualityMonitoringDataResponseDTOMap" type="com.example.demo.dto.monitoring.WaterQualityMonitoringDataResponseDTO">
-        <id column="id" property="id"/>
-        <result column="station_id" property="stationId"/>
-        <result column="station_name" property="stationName"/>
-        <result column="station_code" property="stationCode"/>
-        <result column="monitoring_time" property="monitoringTime"/>
-        <result column="water_temperature" property="waterTemperature"/>
-        <result column="turbidity" property="turbidity"/>
-        <result column="ph_value" property="phValue"/>
-        <result column="conductivity" property="conductivity"/>
-        <result column="dissolved_oxygen" property="dissolvedOxygen"/>
-        <result column="ammonia_nitrogen" property="ammoniaNitrogen"/>
-        <result column="cod_value" property="codValue"/>
-        <result column="residual_chlorine" property="residualChlorine"/>
-        <result column="data_quality" property="dataQuality"/>
-        <result column="data_quality_text" property="dataQualityText"/>
-        <result column="collection_method" property="collectionMethod"/>
-        <result column="data_source" property="dataSource"/>
-        <result column="remark" property="remark"/>
-        <result column="created_at" property="createdAt"/>
-        <result column="updated_at" property="updatedAt"/>
+        <id property="id" column="id"/>
+        <result property="stationId" column="station_id"/>
+        <result property="stationName" column="station_name"/>
+        <result property="stationCode" column="station_code"/>
+        <result property="monitoringTime" column="monitoring_time"/>
+        <result property="waterTemperature" column="water_temperature"/>
+        <result property="turbidity" column="turbidity"/>
+        <result property="phValue" column="ph_value"/>
+        <result property="conductivity" column="conductivity"/>
+        <result property="dissolvedOxygen" column="dissolved_oxygen"/>
+        <result property="ammoniaNitrogen" column="ammonia_nitrogen"/>
+        <result property="codValue" column="cod_value"/>
+        <result property="residualChlorine" column="residual_chlorine"/>
+        <result property="dataQuality" column="data_quality"/>
+        <result property="dataQualityText" column="data_quality_text"/>
+        <result property="collectionMethod" column="collection_method"/>
+        <result property="collectionMethodText" column="collection_method_text"/>
+        <result property="dataSource" column="data_source"/>
+        <result property="remark" column="remark"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
     </resultMap>
 
     <!-- 分页查询水质监测数据（包含关联信息） -->
     <select id="selectWaterQualityMonitoringDataPage" resultMap="WaterQualityMonitoringDataResponseDTOMap">
-        SELECT
-        wqmd.id, wqmd.station_id, wqmd.monitoring_time,
-        wqmd.water_temperature, wqmd.turbidity, wqmd.ph_value, wqmd.conductivity,
-        wqmd.dissolved_oxygen, wqmd.ammonia_nitrogen, wqmd.cod_value, wqmd.residual_chlorine,
-        wqmd.data_quality, wqmd.collection_method, wqmd.data_source,
-        wqmd.remark, wqmd.created_at, wqmd.updated_at,
-        ms.name as station_name, ms.station_code,
-        CASE wqmd.data_quality
-          WHEN 1 THEN '正常'
-          WHEN 2 THEN '异常'
-          WHEN 3 THEN '缺失'
-          ELSE '未知'
-        END as data_quality_text
-        FROM water_quality_monitoring_data wqmd
-        LEFT JOIN monitoring_stations ms ON wqmd.station_id = ms.id AND ms.deleted_at IS NULL
-        WHERE wqmd.deleted_at IS NULL
-        <if test='stationId != null'> AND wqmd.station_id = #{stationId} </if>
-        <if test='startTime != null'> AND wqmd.monitoring_time &gt;= #{startTime} </if>
-        <if test='endTime != null'> AND wqmd.monitoring_time &lt;= #{endTime} </if>
-        <if test='dataQuality != null'> AND wqmd.data_quality = #{dataQuality} </if>
-        <if test='collectionMethod != null and collectionMethod != ""'> AND wqmd.collection_method = #{collectionMethod} </if>
-        <if test='dataSource != null and dataSource != ""'> AND wqmd.data_source = #{dataSource} </if>
+        SELECT wq.id, wq.station_id, wq.monitoring_time,
+               wq.water_temperature, wq.turbidity, wq.ph_value,
+               wq.conductivity, wq.dissolved_oxygen, wq.ammonia_nitrogen,
+               wq.cod_value, wq.residual_chlorine,
+               wq.data_quality, wq.collection_method, wq.data_source, wq.remark,
+               wq.created_at, wq.updated_at,
+               ms.name as station_name, ms.station_code,
+               COALESCE(dq.data_label, '未知') as data_quality_text,
+               COALESCE(cm.data_label, '未知') as collection_method_text
+        FROM water_quality_monitoring_data wq
+        LEFT JOIN monitoring_stations ms ON wq.station_id = ms.id AND ms.deleted_at IS NULL
+        LEFT JOIN dict_data dq ON CAST(wq.data_quality AS CHAR) COLLATE utf8mb4_unicode_ci = dq.data_value COLLATE utf8mb4_unicode_ci
+            AND dq.type_id = (SELECT id FROM dict_types WHERE type_code = 'data_quality' LIMIT 1)
+            AND dq.is_active = 1 AND dq.deleted_at IS NULL
+        LEFT JOIN dict_data cm ON wq.collection_method COLLATE utf8mb4_unicode_ci = cm.data_value COLLATE utf8mb4_unicode_ci
+            AND cm.type_id = (SELECT id FROM dict_types WHERE type_code = 'collection_method' LIMIT 1)
+            AND cm.is_active = 1 AND cm.deleted_at IS NULL
+        WHERE wq.deleted_at IS NULL
+        <if test='stationId != null'> AND wq.station_id = #{stationId} </if>
+        <if test='startTime != null'> AND wq.monitoring_time &gt;= #{startTime} </if>
+        <if test='endTime != null'> AND wq.monitoring_time &lt;= #{endTime} </if>
+        <if test='dataQuality != null'> AND wq.data_quality = #{dataQuality} </if>
+        <if test='collectionMethod != null and collectionMethod != ""'> AND wq.collection_method = #{collectionMethod} </if>
+        <if test='dataSource != null and dataSource != ""'> AND wq.data_source = #{dataSource} </if>
         <choose>
             <when test='sort != null and sort != ""'>
                 <bind name="sortFields" value="sort.split(',')"/>
@@ -57,10 +60,10 @@
                 <bind name="sortOrder" value="sortFields.length > 1 ? sortFields[1] : 'asc'"/>
                 ORDER BY 
                 <choose>
-                    <when test="sortColumn == 'monitoringTime'">wqmd.monitoring_time</when>
-                    <when test="sortColumn == 'dataQuality'">wqmd.data_quality</when>
+                    <when test="sortColumn == 'monitoringTime'">wq.monitoring_time</when>
+                    <when test="sortColumn == 'dataQuality'">wq.data_quality</when>
                     <when test="sortColumn == 'stationName'">ms.name</when>
-                    <otherwise>wqmd.monitoring_time</otherwise>
+                    <otherwise>wq.monitoring_time</otherwise>
                 </choose>
                 <choose>
                     <when test="sortOrder == 'desc'">DESC</when>
@@ -68,7 +71,7 @@
                 </choose>
             </when>
             <otherwise>
-                ORDER BY wqmd.monitoring_time DESC
+                ORDER BY wq.monitoring_time DESC
             </otherwise>
         </choose>
     </select>

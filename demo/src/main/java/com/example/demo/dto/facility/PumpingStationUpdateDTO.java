@@ -39,7 +39,7 @@ public class PumpingStationUpdateDTO {
     private String stationCode;
 
     /**
-     * 泵站类型（关联dict_data.data_value，type_code=facility_type）
+     * 泵站类型（通过工程服务API获取类型选项）
      */
     @Size(max = 100, message = "泵站类型长度不能超过100个字符")
     private String stationType;

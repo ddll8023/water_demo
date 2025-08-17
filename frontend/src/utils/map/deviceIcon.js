@@ -183,7 +183,7 @@ export const MONITORING_ITEM_CONFIG = {
 		get bgColor() {
 			return getCSSVariable("--station-rainfall-bg");
 		},
-		name: "降雨监测",
+		name: "雨情监测",
 	},
 	V: {
 		get symbol() {
@@ -195,7 +195,7 @@ export const MONITORING_ITEM_CONFIG = {
 		get bgColor() {
 			return getCSSVariable("--station-comprehensive-bg");
 		},
-		name: "综合监测",
+		name: "视频监控",
 	},
 	WQ: {
 		get symbol() {
@@ -209,53 +209,102 @@ export const MONITORING_ITEM_CONFIG = {
 		},
 		name: "水质监测",
 	},
-	WL: {
+	// 新增字典项目
+	WT: {
 		get symbol() {
-			return getCSSVariable("--station-water-level-symbol");
+			return getCSSVariable("--station-water-temperature-symbol");
 		},
 		get color() {
-			return getCSSVariable("--station-water-level-color");
+			return getCSSVariable("--station-water-temperature-color");
 		},
 		get bgColor() {
-			return getCSSVariable("--station-water-level-bg");
+			return getCSSVariable("--station-water-temperature-bg");
 		},
-		name: "水位监测",
+		name: "水温监测",
 	},
-	FL: {
+	TU: {
 		get symbol() {
-			return getCSSVariable("--station-flow-symbol");
+			return getCSSVariable("--station-turbidity-symbol");
 		},
 		get color() {
-			return getCSSVariable("--station-flow-color");
+			return getCSSVariable("--station-turbidity-color");
 		},
 		get bgColor() {
-			return getCSSVariable("--station-flow-bg");
+			return getCSSVariable("--station-turbidity-bg");
 		},
-		name: "流量监测",
+		name: "浊度监测",
 	},
-	RF: {
+	PH: {
 		get symbol() {
-			return getCSSVariable("--station-rainfall-symbol");
+			return getCSSVariable("--station-ph-symbol");
 		},
 		get color() {
-			return getCSSVariable("--station-rainfall-color");
+			return getCSSVariable("--station-ph-color");
 		},
 		get bgColor() {
-			return getCSSVariable("--station-rainfall-bg");
+			return getCSSVariable("--station-ph-bg");
 		},
-		name: "降雨监测",
+		name: "PH监测",
 	},
-	RV: {
+	EC: {
 		get symbol() {
-			return getCSSVariable("--station-reservoir-symbol");
+			return getCSSVariable("--station-conductivity-symbol");
 		},
 		get color() {
-			return getCSSVariable("--station-reservoir-color");
+			return getCSSVariable("--station-conductivity-color");
 		},
 		get bgColor() {
-			return getCSSVariable("--station-reservoir-bg");
+			return getCSSVariable("--station-conductivity-bg");
 		},
-		name: "水库监测",
+		name: "电导率监测",
+	},
+	DO: {
+		get symbol() {
+			return getCSSVariable("--station-dissolved-oxygen-symbol");
+		},
+		get color() {
+			return getCSSVariable("--station-dissolved-oxygen-color");
+		},
+		get bgColor() {
+			return getCSSVariable("--station-dissolved-oxygen-bg");
+		},
+		name: "溶解氧监测",
+	},
+	AN: {
+		get symbol() {
+			return getCSSVariable("--station-ammonia-nitrogen-symbol");
+		},
+		get color() {
+			return getCSSVariable("--station-ammonia-nitrogen-color");
+		},
+		get bgColor() {
+			return getCSSVariable("--station-ammonia-nitrogen-bg");
+		},
+		name: "氨氮监测",
+	},
+	COD: {
+		get symbol() {
+			return getCSSVariable("--station-cod-symbol");
+		},
+		get color() {
+			return getCSSVariable("--station-cod-color");
+		},
+		get bgColor() {
+			return getCSSVariable("--station-cod-bg");
+		},
+		name: "化学需氧量监测",
+	},
+	RC: {
+		get symbol() {
+			return getCSSVariable("--station-residual-chlorine-symbol");
+		},
+		get color() {
+			return getCSSVariable("--station-residual-chlorine-color");
+		},
+		get bgColor() {
+			return getCSSVariable("--station-residual-chlorine-bg");
+		},
+		name: "余氯监测",
 	},
 };
 

@@ -158,14 +158,7 @@
             ms.longitude,
             ms.latitude,
             ms.monitoring_item_code as monitoring_item,
-            CASE ms.monitoring_item_code
-                WHEN 'WQ' THEN '水质监测'
-                WHEN 'H' THEN '水位监测'
-                WHEN 'Q' THEN '流量监测'
-                WHEN 'R' THEN '降雨监测'
-                WHEN 'V' THEN '视频监测'
-                ELSE '未知监测项'
-            END as monitoring_item_name,
+            COALESCE(mi.data_label, '未知监测项') as monitoring_item_name,
             'ONLINE' as station_status,
             '在线' as station_status_name,
             CASE 
@@ -201,6 +194,9 @@
                 GROUP BY station_id
             ) t2 ON t1.station_id = t2.station_id AND t1.monitoring_time = t2.max_time
         ) wq ON wq.station_id = ms.id AND ms.monitoring_item_code = 'WQ'
+        LEFT JOIN dict_data mi ON ms.monitoring_item_code COLLATE utf8mb4_unicode_ci = mi.data_value COLLATE utf8mb4_unicode_ci
+            AND mi.type_id = (SELECT id FROM dict_types WHERE type_code = 'monitoring_item' LIMIT 1)
+            AND mi.is_active = 1 AND mi.deleted_at IS NULL
         WHERE ms.deleted_at IS NULL
         ORDER BY ms.monitoring_item_code, ms.name
     </select>

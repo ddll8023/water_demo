@@ -15,13 +15,9 @@
         <result property="endLatitude" column="end_latitude"/>
         <result property="length" column="length"/>
         <result property="diameter" column="diameter"/>
-        <result property="material" column="material"/>
-        <result property="materialName" column="material_name"/>
         <result property="designPressure" column="design_pressure"/>
         <result property="designFlow" column="design_flow"/>
         <result property="burialDepth" column="burial_depth"/>
-        <result property="operationStatus" column="operation_status"/>
-        <result property="operationStatusName" column="operation_status_name"/>
         <result property="constructionDate" column="construction_date"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
@@ -37,15 +33,11 @@
     <!-- 分页查询管道信息列表（包含关联信息） -->
     <select id="selectPipelinePage" resultMap="PipelineResponseDTOMap">
         SELECT pipelines.*,
-               dict_data.data_label as pipeline_type_name,
-               dict_data_material.data_label as material_name
+               dict_data.data_label as pipeline_type_name
         FROM pipelines
         LEFT JOIN dict_data ON pipelines.pipeline_type = dict_data.data_value
         AND dict_data.type_id = (SELECT id FROM dict_types WHERE type_code = 'pipeline_type' AND deleted_at IS NULL)
         AND dict_data.deleted_at IS NULL
-        LEFT JOIN dict_data dict_data_material ON pipelines.material = dict_data_material.data_value
-        AND dict_data_material.type_id = (SELECT id FROM dict_types WHERE type_code = 'pipeline_material' AND deleted_at IS NULL)
-        AND dict_data_material.deleted_at IS NULL
         WHERE pipelines.deleted_at IS NULL
         <if test="keyword != null and keyword != ''">
             AND (pipelines.name LIKE CONCAT('%', #{keyword}, '%')
@@ -54,27 +46,17 @@
         <if test="pipelineType != null and pipelineType != ''">
             AND pipelines.pipeline_type = #{pipelineType}
         </if>
-        <if test="material != null and material != ''">
-            AND pipelines.material = #{material}
-        </if>
-        <if test="operationStatus != null and operationStatus != ''">
-            AND pipelines.operation_status = #{operationStatus}
-        </if>
         ORDER BY pipelines.created_at DESC
     </select>
 
     <!-- 根据ID查询管道信息详情（包含关联信息） -->
     <select id="selectPipelineById" resultMap="PipelineResponseDTOMap">
         SELECT pipelines.*,
-               dict_data.data_label as pipeline_type_name,
-               dict_data_material.data_label as material_name
+               dict_data.data_label as pipeline_type_name
         FROM pipelines
         LEFT JOIN dict_data ON pipelines.pipeline_type = dict_data.data_value
         AND dict_data.type_id = (SELECT id FROM dict_types WHERE type_code = 'pipeline_type' AND deleted_at IS NULL)
         AND dict_data.deleted_at IS NULL
-        LEFT JOIN dict_data dict_data_material ON pipelines.material = dict_data_material.data_value
-        AND dict_data_material.type_id = (SELECT id FROM dict_types WHERE type_code = 'pipeline_material' AND deleted_at IS NULL)
-        AND dict_data_material.deleted_at IS NULL
         WHERE pipelines.id = #{id} AND pipelines.deleted_at IS NULL
     </select>
 
@@ -91,7 +73,7 @@
     <!-- 获取所有可用的管道信息（用于下拉选择） -->
     <select id="selectAvailablePipelines" resultMap="PipelineMap">
         SELECT id, pipeline_code, name FROM pipelines
-        WHERE deleted_at IS NULL AND operation_status = 'normal'
+        WHERE deleted_at IS NULL
         ORDER BY name
     </select>
 

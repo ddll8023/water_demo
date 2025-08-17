@@ -14,6 +14,7 @@
         <result property="dataQuality" column="data_quality"/>
         <result property="dataQualityText" column="data_quality_text"/>
         <result property="collectionMethod" column="collection_method"/>
+        <result property="collectionMethodText" column="collection_method_text"/>
         <result property="dataSource" column="data_source"/>
         <result property="remarks" column="remarks"/>
         <result property="createdAt" column="created_at"/>
@@ -22,26 +23,29 @@
 
     <!-- 分页查询流量监测数据（包含关联信息） -->
     <select id="selectFlowMonitoringDataPage" resultMap="FlowMonitoringDataResponseDTOMap">
-        SELECT 
-        f.id, f.station_id, f.monitoring_time, 
-        f.instant_flow as flow_rate, f.cumulative_flow, 
-        f.data_quality, f.collection_method, f.data_source, 
-        f.remark as remarks, f.created_at, f.updated_at, 
+        SELECT
+        f.id, f.station_id, f.monitoring_time,
+        f.instant_flow as flow_rate, f.cumulative_flow,
+        f.data_quality, f.collection_method, f.data_source,
+        f.remark as remarks, f.created_at, f.updated_at,
         ms.name as station_name, ms.station_code,
-        CASE f.data_quality 
-          WHEN 1 THEN '正常' 
-          WHEN 2 THEN '异常' 
-          WHEN 3 THEN '缺失' 
-          ELSE '未知' 
-        END as data_quality_text 
-        FROM flow_monitoring_data f 
-        /* 
+        COALESCE(dq.data_label, '未知') as data_quality_text,
+        COALESCE(cm.data_label, '未知') as collection_method_text
+        FROM flow_monitoring_data f
+        /*
          * 优化连接查询:
          * 1. 使用表别名缩短SQL语句并提高可读性
          * 2. 将LEFT JOIN改为INNER JOIN，因为一般站点数据必然存在
          * 3. 确保在station_id上有索引
+         * 4. 添加字典表关联查询替代硬编码
          */
-        INNER JOIN monitoring_stations ms ON f.station_id = ms.id AND ms.deleted_at IS NULL 
+        INNER JOIN monitoring_stations ms ON f.station_id = ms.id AND ms.deleted_at IS NULL
+        LEFT JOIN dict_data dq ON CAST(f.data_quality AS CHAR) COLLATE utf8mb4_unicode_ci = dq.data_value COLLATE utf8mb4_unicode_ci
+            AND dq.type_id = (SELECT id FROM dict_types WHERE type_code = 'data_quality' LIMIT 1)
+            AND dq.is_active = 1 AND dq.deleted_at IS NULL
+        LEFT JOIN dict_data cm ON f.collection_method COLLATE utf8mb4_unicode_ci = cm.data_value COLLATE utf8mb4_unicode_ci
+            AND cm.type_id = (SELECT id FROM dict_types WHERE type_code = 'collection_method' LIMIT 1)
+            AND cm.is_active = 1 AND cm.deleted_at IS NULL
         WHERE f.deleted_at IS NULL 
         <if test='stationId != null'> AND f.station_id = #{stationId} </if>
         <if test='startTime != null'> AND f.monitoring_time &gt;= #{startTime} </if>

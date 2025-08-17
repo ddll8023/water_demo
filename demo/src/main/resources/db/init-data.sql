@@ -119,25 +119,25 @@ VALUES
     ('加压视频3', '24043426', NULL, NULL, 'V', NULL, 113.522555, 31.854036, '2024-04-01', '暂无', NOW(), NOW());
 
 -- 管道信息示例数据（与前端显示数据一致）
-INSERT INTO pipelines (pipeline_code, name, pipeline_type, start_longitude, start_latitude, end_longitude, end_latitude, length, diameter, design_pressure, design_flow, burial_depth, operation_status, construction_date, remark, created_at, updated_at)
+INSERT INTO pipelines (pipeline_code, name, pipeline_type, start_longitude, start_latitude, end_longitude, end_latitude, length, diameter, design_pressure, design_flow, burial_depth, construction_date, remark, created_at, updated_at)
 VALUES
-('PL001', '干管1', 'main_pipeline', 112.1234, 31.6789, 112.2234, 31.7789, 5.0, 1200, 1.0, 10000, 2.0, 'normal', '2023-01-01', '供水干管', NOW(), NOW()),
-('PL002', '干管2', 'main_pipeline', 112.2234, 31.7789, 112.3234, 31.8789, 5.0, 1200,  1.0, 10000, 2.0, 'normal', '2023-01-01', '供水干管', NOW(), NOW()),
-('PL003', '干管3', 'main_pipeline', 112.3234, 31.8789, 112.4234, 31.9789, 5.0, 1200,  1.0, 10000, 2.0, 'normal', '2023-01-01', '供水干管', NOW(), NOW()),
-('PL004', '支管1', 'branch_pipeline', 112.1234, 31.6789, 112.1334, 31.6889, 2.0, 600, 0.6, 5000, 1.5, 'normal', '2023-01-01', '供水支管', NOW(), NOW()),
-('PL005', '支管2', 'branch_pipeline', 112.2234, 31.7789, 112.2334, 31.7889, 2.0, 600, 0.6, 5000, 1.5, 'normal', '2023-01-01', '供水支管', NOW(), NOW()),
-('PL006', '支管3', 'branch_pipeline', 112.3234, 31.8789, 112.3334, 31.8889, 2.0, 600, 0.6, 5000, 1.5, 'normal', '2023-01-01', '供水支管', NOW(), NOW()),
-('PL007', '支管4', 'branch_pipeline', 112.4234, 31.9789, 112.4334, 31.9889, 2.0, 600,  0.6, 5000, 1.5, 'normal', '2023-01-01', '供水支管', NOW(), NOW()),
-('PL008', '支管5', 'branch_pipeline', 112.1334, 31.6889, 112.1434, 31.6989, 2.0, 600, 0.6, 5000, 1.5, 'normal', '2023-01-01', '供水支管', NOW(), NOW()),
-('PL009', '支管6', 'branch_pipeline', 112.2334, 31.7889, 112.2434, 31.7989, 2.0, 600,  0.6, 5000, 1.5, 'normal', '2023-01-01', '干管2的下段', NOW(), NOW()),
-('PL010', '支管7', 'branch_pipeline', 112.3334, 31.8889, 112.3434, 31.8989, 2.0, 600, 0.6, 5000, 1.5, 'normal', '2023-01-01', '经过加压泵站5', NOW(), NOW());
+('PL001', '干管1', 'main_pipeline', 112.1234, 31.6789, 112.2234, 31.7789, 5.0, 1200, 1.0, 10000, 2.0, '2023-01-01', '供水干管', NOW(), NOW()),
+('PL002', '干管2', 'main_pipeline', 112.2234, 31.7789, 112.3234, 31.8789, 5.0, 1200,  1.0, 10000, 2.0, '2023-01-01', '供水干管', NOW(), NOW()),
+('PL003', '干管3', 'main_pipeline', 112.3234, 31.8789, 112.4234, 31.9789, 5.0, 1200,  1.0, 10000, 2.0, '2023-01-01', '供水干管', NOW(), NOW()),
+('PL004', '支管1', 'branch_pipeline', 112.1234, 31.6789, 112.1334, 31.6889, 2.0, 600, 0.6, 5000, 1.5, '2023-01-01', '供水支管', NOW(), NOW()),
+('PL005', '支管2', 'branch_pipeline', 112.2234, 31.7789, 112.2334, 31.7889, 2.0, 600, 0.6, 5000, 1.5, '2023-01-01', '供水支管', NOW(), NOW()),
+('PL006', '支管3', 'branch_pipeline', 112.3234, 31.8789, 112.3334, 31.8889, 2.0, 600, 0.6, 5000, 1.5, '2023-01-01', '供水支管', NOW(), NOW()),
+('PL007', '支管4', 'branch_pipeline', 112.4234, 31.9789, 112.4334, 31.9889, 2.0, 600,  0.6, 5000, 1.5, '2023-01-01', '供水支管', NOW(), NOW()),
+('PL008', '支管5', 'branch_pipeline', 112.1334, 31.6889, 112.1434, 31.6989, 2.0, 600, 0.6, 5000, 1.5, '2023-01-01', '供水支管', NOW(), NOW()),
+('PL009', '支管6', 'branch_pipeline', 112.2334, 31.7889, 112.2434, 31.7989, 2.0, 600,  0.6, 5000, 1.5, '2023-01-01', '干管2的下段', NOW(), NOW()),
+('PL010', '支管7', 'branch_pipeline', 112.3334, 31.8889, 112.3434, 31.8989, 2.0, 600, 0.6, 5000, 1.5, '2023-01-01', '经过加压泵站5', NOW(), NOW());
 
 
 
 -- 水库信息示例数据
-INSERT INTO reservoirs (reservoir_code, name, water_project, longitude, latitude, location, registration_no, admin_region_code, engineering_grade, engineering_scale, total_capacity, regulating_capacity, dead_capacity, created_at, updated_at)
+INSERT INTO reservoirs (reservoir_code, name, water_project, longitude, latitude, location, registration_no, admin_region_code, engineering_grade, engineering_scale, total_capacity, regulating_capacity, dead_capacity, establishment_date, created_at, updated_at)
 VALUES
-('24063432', '两河口水库', '鄂北水资源供水工程', 113.497584, 31.883842, '两河口位置', 'SK6589746', '曾都区万店镇', 'V', 'small_1', 50, 60, 50, NOW(), NOW());
+('24063432', '两河口水库', '鄂北水资源供水工程', 113.497584, 31.883842, '两河口位置', 'SK6589746', '曾都区万店镇', 'V', 'small_1', 50, 60, 50, '2020-06-01', NOW(), NOW());
 
 -- 水厂信息示例数据
 -- 首先确保有部门和人员数据

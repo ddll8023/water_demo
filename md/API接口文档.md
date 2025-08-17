@@ -10043,94 +10043,99 @@ Content-Length: 524288
 **功能描述**
 
 - 统一管理工程巡检任务与巡检记录（含文字与图片）。
-- 覆盖设施：加压泵站、水厂、流量站等，通过 `facility_type + facility_id` 统一引用。
+- 覆盖设施：加压泵站、水厂、流量站等，通过 `facility_type + facility_id` 统一引用（设施类型通过工程服务 API 获取）。
 - 权限：查询类接口需 `data:view`；创建/更新/删除类接口按职责分别需 `business:operate` 或 `business:manage`。
 
 ### 8.1 巡检任务（Tasks）
 
 #### 8.1.1 分页查询任务
+
 - **URL**: `/api/inspection/tasks`
 - **方法**: `GET`
 - **权限**: `data:view`
 
 **请求参数（Query Parameters）**
 
-| 字段 | 类型 | 必填 | 说明 |
-| --- | --- | --- | --- |
-| `page` | Integer | 否 | 页码，默认 1 |
-| `size` | Integer | 否 | 每页数量，默认 10 |
-| `status` | String | 否 | 任务状态：PENDING/IN_PROGRESS/COMPLETED/EXCEPTION |
-| `assigneeId` | Long | 否 | 责任人 ID（`personnel.id`） |
-| `facilityType` | String | 否 | 设施类型（字典 `facility_type` 的 `data_value`） |
-| `facilityId` | Long | 否 | 设施 ID |
-| `scheduledDate` | String | 否 | 计划执行日期（YYYY-MM-DD） |
-| `sort` | String | 否 | 排序（示例：`scheduled_date,asc` 或 `created_at,desc`） |
+| 字段            | 类型    | 必填 | 说明                                                    |
+| --------------- | ------- | ---- | ------------------------------------------------------- |
+| `page`          | Integer | 否   | 页码，默认 1                                            |
+| `size`          | Integer | 否   | 每页数量，默认 10                                       |
+| `status`        | String  | 否   | 任务状态：PENDING/IN_PROGRESS/COMPLETED/EXCEPTION       |
+| `assigneeId`    | Long    | 否   | 责任人 ID（`personnel.id`）                             |
+| `facilityType`  | String  | 否   | 设施类型（通过工程服务 API 获取类型选项）               |
+| `facilityId`    | Long    | 否   | 设施 ID                                                 |
+| `scheduledDate` | String  | 否   | 计划执行日期（YYYY-MM-DD）                              |
+| `sort`          | String  | 否   | 排序（示例：`scheduled_date,asc` 或 `created_at,desc`） |
 
 **成功响应 (200 OK)**
+
 ```json
 {
-  "code": 200,
-  "message": "查询成功",
-  "data": {
-    "total": 1,
-    "page": 1,
-    "size": 10,
-    "data": [
-      {
-        "id": 1,
-        "title": "1号泵站月度巡检",
-        "facilityType": "pumping_station",
-        "facilityId": 1,
-        "frequency": "monthly",
-        "content": "检查设备运行状态，记录异常",
-        "assigneeId": 5,
-        "status": "PENDING",
-        "scheduledDate": "2025-08-15",
-        "createdAt": "2025-07-20T10:00:00",
-        "updatedAt": "2025-07-20T10:00:00"
-      }
-    ]
-  }
+	"code": 200,
+	"message": "查询成功",
+	"data": {
+		"total": 1,
+		"page": 1,
+		"size": 10,
+		"data": [
+			{
+				"id": 1,
+				"title": "1号泵站月度巡检",
+				"facilityType": "pumping_station",
+				"facilityId": 1,
+				"frequency": "monthly",
+				"content": "检查设备运行状态，记录异常",
+				"assigneeId": 5,
+				"status": "PENDING",
+				"scheduledDate": "2025-08-15",
+				"createdAt": "2025-07-20T10:00:00",
+				"updatedAt": "2025-07-20T10:00:00"
+			}
+		]
+	}
 }
 ```
 
 ---
 
 #### 8.1.2 查询任务详情
+
 - **URL**: `/api/inspection/tasks/{id}`
 - **方法**: `GET`
 - **权限**: `data:view`
 
 **URL 路径参数**
 
-| 字段 | 类型 | 必填 | 描述 |
-| --- | --- | --- | --- |
-| `id` | Long | 是 | 任务ID |
+| 字段 | 类型 | 必填 | 描述    |
+| ---- | ---- | ---- | ------- |
+| `id` | Long | 是   | 任务 ID |
 
 **成功响应 (200 OK)**
+
 ```json
 {
-  "code": 200,
-  "message": "查询成功",
-  "data": {
-    "id": 1,
-    "title": "1号泵站月度巡检",
-    "facilityType": "pumping_station",
-    "facilityId": 1,
-    "frequency": "monthly",
-    "content": "检查设备运行状态，记录异常",
-    "assigneeId": 5,
-    "status": "PENDING",
-    "scheduledDate": "2025-08-15",
-    "createdAt": "2025-07-20T10:00:00",
-    "updatedAt": "2025-07-20T10:00:00"
-  }
+	"code": 200,
+	"message": "查询成功",
+	"data": {
+		"id": 1,
+		"title": "1号泵站月度巡检",
+		"facilityType": "pumping_station",
+		"facilityId": 1,
+		"frequency": "monthly",
+		"content": "检查设备运行状态，记录异常",
+		"assigneeId": 5,
+		"status": "PENDING",
+		"scheduledDate": "2025-08-15",
+		"createdAt": "2025-07-20T10:00:00",
+		"updatedAt": "2025-07-20T10:00:00"
+	}
 }
 ```
 
 ---
 
 #### 8.1.3 创建任务
+
 - **URL**: `/api/inspection/tasks`
 - **方法**: `POST`
 - **权限**: `business:manage`
@@ -10138,40 +10143,42 @@ Content-Length: 524288
 
 **请求体 (Request Body)**
 
-| 字段 | 类型 | 必填 | 说明 |
-| --- | --- | --- | --- |
-| `title` | String | 是 | 任务标题 |
-| `facilityType` | String | 是 | 设施类型 |
-| `facilityId` | Long | 是 | 设施ID |
-| `frequency` | String | 否 | 巡检频次（字典 `inspection_frequency`） |
-| `content` | String | 否 | 巡检内容/要求 |
-| `assigneeId` | Long | 是 | 责任人ID (`personnel.id`) |
-| `scheduledDate` | String | 否 | 计划执行日期 (YYYY-MM-DD) |
+| 字段            | 类型   | 必填 | 说明                                    |
+| --------------- | ------ | ---- | --------------------------------------- |
+| `title`         | String | 是   | 任务标题                                |
+| `facilityType`  | String | 是   | 设施类型                                |
+| `facilityId`    | Long   | 是   | 设施 ID                                 |
+| `frequency`     | String | 否   | 巡检频次（字典 `inspection_frequency`） |
+| `content`       | String | 否   | 巡检内容/要求                           |
+| `assigneeId`    | Long   | 是   | 责任人 ID (`personnel.id`)              |
+| `scheduledDate` | String | 否   | 计划执行日期 (YYYY-MM-DD)               |
 
 **成功响应 (201 Created)**
+
 ```json
 {
-  "code": 200,
-  "message": "创建成功",
-  "data": {
-    "id": 2,
-    "title": "2号水厂季度巡检",
-    "facilityType": "water_plant",
-    "facilityId": 2,
-    "frequency": "quarterly",
-    "content": "检查水质处理设备",
-    "assigneeId": 6,
-    "status": "PENDING",
-    "scheduledDate": "2025-09-01",
-    "createdAt": "2025-07-20T11:00:00",
-    "updatedAt": "2025-07-20T11:00:00"
-  }
+	"code": 200,
+	"message": "创建成功",
+	"data": {
+		"id": 2,
+		"title": "2号水厂季度巡检",
+		"facilityType": "water_plant",
+		"facilityId": 2,
+		"frequency": "quarterly",
+		"content": "检查水质处理设备",
+		"assigneeId": 6,
+		"status": "PENDING",
+		"scheduledDate": "2025-09-01",
+		"createdAt": "2025-07-20T11:00:00",
+		"updatedAt": "2025-07-20T11:00:00"
+	}
 }
 ```
 
 ---
 
 #### 8.1.4 更新任务
+
 - **URL**: `/api/inspection/tasks/{id}`
 - **方法**: `PUT`
 - **权限**: `business:manage`
@@ -10179,212 +10186,224 @@ Content-Length: 524288
 
 **URL 路径参数**
 
-| 字段 | 类型 | 必填 | 描述 |
-| --- | --- | --- | --- |
-| `id` | Long | 是 | 任务ID |
+| 字段 | 类型 | 必填 | 描述    |
+| ---- | ---- | ---- | ------- |
+| `id` | Long | 是   | 任务 ID |
 
 **请求体 (与创建任务一致，所有字段均为可选)**
 
 **成功响应 (200 OK)**
+
 ```json
 {
-  "code": 200,
-  "message": "更新成功",
-  "data": {
-    "id": 2,
-    "title": "2号水厂季度巡检（已更新）",
-    "facilityType": "water_plant",
-    "facilityId": 2,
-    "frequency": "quarterly",
-    "content": "更新后的巡检内容",
-    "assigneeId": 7,
-    "status": "PENDING",
-    "scheduledDate": "2025-09-05",
-    "createdAt": "2025-07-20T11:00:00",
-    "updatedAt": "2025-07-20T12:00:00"
-  }
+	"code": 200,
+	"message": "更新成功",
+	"data": {
+		"id": 2,
+		"title": "2号水厂季度巡检（已更新）",
+		"facilityType": "water_plant",
+		"facilityId": 2,
+		"frequency": "quarterly",
+		"content": "更新后的巡检内容",
+		"assigneeId": 7,
+		"status": "PENDING",
+		"scheduledDate": "2025-09-05",
+		"createdAt": "2025-07-20T11:00:00",
+		"updatedAt": "2025-07-20T12:00:00"
+	}
 }
 ```
 
 ---
 
 #### 8.1.5 更新任务状态
+
 - **URL**: `/api/inspection/tasks/{id}/status`
 - **方法**: `PATCH`
 - **权限**: `business:manage`
 
 **URL 路径参数**
 
-| 字段 | 类型 | 必填 | 描述 |
-| --- | --- | --- | --- |
-| `id` | Long | 是 | 任务ID |
+| 字段 | 类型 | 必填 | 描述    |
+| ---- | ---- | ---- | ------- |
+| `id` | Long | 是   | 任务 ID |
 
 **请求参数 (Query Parameters)**
 
-| 字段 | 类型 | 必填 | 说明 |
-| --- | --- | --- | --- |
-| `status` | String | 是 | 新状态：PENDING/IN_PROGRESS/COMPLETED/EXCEPTION |
+| 字段     | 类型   | 必填 | 说明                                            |
+| -------- | ------ | ---- | ----------------------------------------------- |
+| `status` | String | 是   | 新状态：PENDING/IN_PROGRESS/COMPLETED/EXCEPTION |
 
 **成功响应 (200 OK)**
+
 ```json
 {
-  "code": 200,
-  "message": "状态更新成功",
-  "data": null
+	"code": 200,
+	"message": "状态更新成功",
+	"data": null
 }
 ```
 
 ---
 
 #### 8.1.6 删除任务
+
 - **URL**: `/api/inspection/tasks/{id}`
 - **方法**: `DELETE`
 - **权限**: `business:manage`
 
 **URL 路径参数**
 
-| 字段 | 类型 | 必填 | 描述 |
-| --- | --- | --- | --- |
-| `id` | Long | 是 | 任务ID |
+| 字段 | 类型 | 必填 | 描述    |
+| ---- | ---- | ---- | ------- |
+| `id` | Long | 是   | 任务 ID |
 
 **成功响应 (200 OK)**
+
 ```json
 {
-  "code": 200,
-  "message": "删除成功",
-  "data": null
+	"code": 200,
+	"message": "删除成功",
+	"data": null
 }
 ```
 
 ### 8.2 巡检记录（Records）
 
 #### 8.2.1 分页查询记录
+
 - **URL**: `/api/inspection/records`
 - **方法**: `GET`
 - **权限**: `data:view`
 
 **请求参数（Query Parameters）**
 
-| 字段 | 类型 | 必填 | 说明 |
-| --- | --- | --- | --- |
-| `page` | Integer | 否 | 页码，默认 1 |
-| `size` | Integer | 否 | 每页数量，默认 10 |
-| `facilityType` | String | 否 | 设施类型 |
-| `facilityId` | Long | 否 | 设施ID |
-| `startTime`| String | 否 | 记录时间范围（起） `YYYY-MM-DD HH:mm:ss` |
-| `endTime` | String | 否 | 记录时间范围（止） `YYYY-MM-DD HH:mm:ss` |
-| `issueFlag` | Integer | 否 | 是否发现问题 (0: 否, 1: 是) |
-| `sort` | String | 否 | 排序 (示例: `record_time,desc`) |
+| 字段           | 类型    | 必填 | 说明                                     |
+| -------------- | ------- | ---- | ---------------------------------------- |
+| `page`         | Integer | 否   | 页码，默认 1                             |
+| `size`         | Integer | 否   | 每页数量，默认 10                        |
+| `facilityType` | String  | 否   | 设施类型                                 |
+| `facilityId`   | Long    | 否   | 设施 ID                                  |
+| `startTime`    | String  | 否   | 记录时间范围（起） `YYYY-MM-DD HH:mm:ss` |
+| `endTime`      | String  | 否   | 记录时间范围（止） `YYYY-MM-DD HH:mm:ss` |
+| `issueFlag`    | Integer | 否   | 是否发现问题 (0: 否, 1: 是)              |
+| `sort`         | String  | 否   | 排序 (示例: `record_time,desc`)          |
 
 **成功响应 (200 OK)**
+
 ```json
 {
-  "code": 200,
-  "message": "查询成功",
-  "data": {
-    "total": 1,
-    "page": 1,
-    "size": 10,
-    "data": [
-      {
-        "id": 101,
-        "taskId": 1,
-        "inspectorId": 5,
-        "facilityType": "pumping_station",
-        "facilityId": 1,
-        "recordTime": "2025-08-15T14:30:00",
-        "deviceStatus": "normal",
-        "issueFlag": 1,
-        "issueDescription": "A泵机有异响",
-        "resolution": "已上报，待维修",
-        "resolvedAt": null,
-        "createdAt": "2025-08-15T14:35:00",
-        "updatedAt": "2025-08-15T14:35:00"
-      }
-    ]
-  }
+	"code": 200,
+	"message": "查询成功",
+	"data": {
+		"total": 1,
+		"page": 1,
+		"size": 10,
+		"data": [
+			{
+				"id": 101,
+				"taskId": 1,
+				"inspectorId": 5,
+				"facilityType": "pumping_station",
+				"facilityId": 1,
+				"recordTime": "2025-08-15T14:30:00",
+				"deviceStatus": "normal",
+				"issueFlag": 1,
+				"issueDescription": "A泵机有异响",
+				"resolution": "已上报，待维修",
+				"resolvedAt": null,
+				"createdAt": "2025-08-15T14:35:00",
+				"updatedAt": "2025-08-15T14:35:00"
+			}
+		]
+	}
 }
 ```
 
 ---
 
 #### 8.2.2 查询记录详情
+
 - **URL**: `/api/inspection/records/{id}`
 - **方法**: `GET`
 - **权限**: `data:view`
 
 **URL 路径参数**
 
-| 字段 | 类型 | 必填 | 描述 |
-| --- | --- | --- | --- |
-| `id` | Long | 是 | 记录ID |
+| 字段 | 类型 | 必填 | 描述    |
+| ---- | ---- | ---- | ------- |
+| `id` | Long | 是   | 记录 ID |
 
 **成功响应 (200 OK)**
+
 ```json
 {
-  "code": 200,
-  "message": "查询成功",
-  "data": {
-    "id": 101,
-    "taskId": 1,
-    "inspectorId": 5,
-    "facilityType": "pumping_station",
-    "facilityId": 1,
-    "recordTime": "2025-08-15T14:30:00",
-    "deviceStatus": "normal",
-    "issueFlag": 1,
-    "issueDescription": "A泵机有异响",
-    "resolution": "已上报，待维修",
-    "resolvedAt": null,
-    "attachments": [
-      {
-        "id": 201,
-        "recordId": 101,
-        "fileName": "pump_noise.jpg",
-        "filePath": "/uploads/inspection/2025/08/pump_noise.jpg",
-        "contentType": "image/jpeg",
-        "fileSize": 102400
-      }
-    ]
-  }
+	"code": 200,
+	"message": "查询成功",
+	"data": {
+		"id": 101,
+		"taskId": 1,
+		"inspectorId": 5,
+		"facilityType": "pumping_station",
+		"facilityId": 1,
+		"recordTime": "2025-08-15T14:30:00",
+		"deviceStatus": "normal",
+		"issueFlag": 1,
+		"issueDescription": "A泵机有异响",
+		"resolution": "已上报，待维修",
+		"resolvedAt": null,
+		"attachments": [
+			{
+				"id": 201,
+				"recordId": 101,
+				"fileName": "pump_noise.jpg",
+				"filePath": "/uploads/inspection/2025/08/pump_noise.jpg",
+				"contentType": "image/jpeg",
+				"fileSize": 102400
+			}
+		]
+	}
 }
 ```
 
 ---
 
 #### 8.2.3 查询记录附件
+
 - **URL**: `/api/inspection/records/{id}/attachments`
 - **方法**: `GET`
 - **权限**: `data:view`
 
 **URL 路径参数**
 
-| 字段 | 类型 | 必填 | 描述 |
-| --- | --- | --- | --- |
-| `id` | Long | 是 | 记录ID |
+| 字段 | 类型 | 必填 | 描述    |
+| ---- | ---- | ---- | ------- |
+| `id` | Long | 是   | 记录 ID |
 
 **成功响应 (200 OK)**
+
 ```json
 {
-  "code": 200,
-  "message": "查询成功",
-  "data": [
-    {
-      "id": 201,
-      "recordId": 101,
-      "fileName": "pump_noise.jpg",
-      "filePath": "/uploads/inspection/2025/08/pump_noise.jpg",
-      "contentType": "image/jpeg",
-      "fileSize": 102400,
-      "createdAt": "2025-08-15T14:35:00"
-    }
-  ]
+	"code": 200,
+	"message": "查询成功",
+	"data": [
+		{
+			"id": 201,
+			"recordId": 101,
+			"fileName": "pump_noise.jpg",
+			"filePath": "/uploads/inspection/2025/08/pump_noise.jpg",
+			"contentType": "image/jpeg",
+			"fileSize": 102400,
+			"createdAt": "2025-08-15T14:35:00"
+		}
+	]
 }
 ```
 
 ---
 
 #### 8.2.4 创建巡检记录（含图片上传）
+
 - **URL**: `/api/inspection/records`
 - **方法**: `POST`
 - **权限**: `business:operate`
@@ -10392,44 +10411,45 @@ Content-Length: 524288
 
 **请求体 (Form Data)**
 
-| Part Name | 类型 | 必填 | 说明 |
-| --- | --- | --- | --- |
-| `data` | JSON | 是 | 巡检记录的元数据（见下表） |
-| `files` | File[] | 否 | 巡检图片文件数组 |
+| Part Name | 类型   | 必填 | 说明                       |
+| --------- | ------ | ---- | -------------------------- |
+| `data`    | JSON   | 是   | 巡检记录的元数据（见下表） |
+| `files`   | File[] | 否   | 巡检图片文件数组           |
 
 **`data` Part (JSON 对象)**
 
-| 字段 | 类型 | 必填 | 说明 |
-| --- | --- | --- | --- |
-| `taskId` | Long | 否 | 关联的任务ID，若非计划内巡检可为空 |
-| `facilityType` | String | 是 | 设施类型 |
-| `facilityId` | Long | 是 | 设施ID |
-| `recordTime` | String | 是 | 巡检时间 (YYYY-MM-DD HH:mm:ss) |
-| `deviceStatus` | String | 否 | 设备状态 (字典 `device_status`) |
-| `issueFlag` | Integer | 是 | 是否发现问题 (0: 否, 1: 是) |
-| `issueDescription` | String | 否 | 问题描述 (当 `issueFlag` 为 1 时建议填写) |
-| `resolution` | String | 否 | 处理措施 |
-| `resolvedAt` | String | 否 | 问题解决时间 (YYYY-MM-DD HH:mm:ss) |
+| 字段               | 类型    | 必填 | 说明                                      |
+| ------------------ | ------- | ---- | ----------------------------------------- |
+| `taskId`           | Long    | 否   | 关联的任务 ID，若非计划内巡检可为空       |
+| `facilityType`     | String  | 是   | 设施类型                                  |
+| `facilityId`       | Long    | 是   | 设施 ID                                   |
+| `recordTime`       | String  | 是   | 巡检时间 (YYYY-MM-DD HH:mm:ss)            |
+| `deviceStatus`     | String  | 否   | 设备状态 (字典 `device_status`)           |
+| `issueFlag`        | Integer | 是   | 是否发现问题 (0: 否, 1: 是)               |
+| `issueDescription` | String  | 否   | 问题描述 (当 `issueFlag` 为 1 时建议填写) |
+| `resolution`       | String  | 否   | 处理措施                                  |
+| `resolvedAt`       | String  | 否   | 问题解决时间 (YYYY-MM-DD HH:mm:ss)        |
 
 **成功响应 (200 OK)**
+
 ```json
 {
-  "code": 200,
-  "message": "创建成功",
-  "data": {
-    "id": 102,
-    "taskId": null,
-    "inspectorId": 8,
-    "facilityType": "pipeline",
-    "facilityId": 10,
-    "recordTime": "2025-08-16T09:00:00",
-    "deviceStatus": "exception",
-    "issueFlag": 1,
-    "issueDescription": "管道轻微泄漏",
-    "resolution": "紧急处理中",
-    "resolvedAt": null,
-    "createdAt": "2025-08-16T09:05:00",
-    "updatedAt": "2025-08-16T09:05:00"
-  }
+	"code": 200,
+	"message": "创建成功",
+	"data": {
+		"id": 102,
+		"taskId": null,
+		"inspectorId": 8,
+		"facilityType": "pipeline",
+		"facilityId": 10,
+		"recordTime": "2025-08-16T09:00:00",
+		"deviceStatus": "exception",
+		"issueFlag": 1,
+		"issueDescription": "管道轻微泄漏",
+		"resolution": "紧急处理中",
+		"resolvedAt": null,
+		"createdAt": "2025-08-16T09:05:00",
+		"updatedAt": "2025-08-16T09:05:00"
+	}
 }
 ```

@@ -280,6 +280,22 @@ const tableColumns = [
       const value = row.residualChlorine
       return value !== null && value !== undefined ? `${Number(value).toFixed(3)}` : '-'
     }
+  },
+  {
+    prop: 'dataQualityText',
+    label: '数据质量',
+    width: 100,
+    formatter: (row) => {
+      return row.dataQualityText || '-'
+    }
+  },
+  {
+    prop: 'collectionMethodText',
+    label: '采集方式',
+    width: 100,
+    formatter: (row) => {
+      return row.collectionMethodText || '-'
+    }
   }
 ]
 

@@ -74,6 +74,39 @@
     --station-reservoir-color: #2f54eb;
     --station-reservoir-bg: #f0f5ff;
 
+    // ==================== 水质细分监测项目颜色系统 ====================
+    // 水温监测（WT）
+    --station-water-temperature-color: #FF6B6B;
+    --station-water-temperature-bg: #fff0f0;
+
+    // 浊度监测（TU）
+    --station-turbidity-color: #4ECDC4;
+    --station-turbidity-bg: #f0fffe;
+
+    // PH监测（PH）
+    --station-ph-color: #45B7D1;
+    --station-ph-bg: #f0f8ff;
+
+    // 电导率监测（EC）
+    --station-conductivity-color: #96CEB4;
+    --station-conductivity-bg: #f6fff8;
+
+    // 溶解氧监测（DO）
+    --station-dissolved-oxygen-color: #FFEAA7;
+    --station-dissolved-oxygen-bg: #fffef0;
+
+    // 氨氮监测（AN）
+    --station-ammonia-nitrogen-color: #DDA0DD;
+    --station-ammonia-nitrogen-bg: #faf5fa;
+
+    // 化学需氧量监测（COD）
+    --station-cod-color: #98D8C8;
+    --station-cod-bg: #f5fffe;
+
+    // 余氯监测（RC）
+    --station-residual-chlorine-color: #F8BBD9;
+    --station-residual-chlorine-bg: #fef8fc;
+
     // 默认监测站颜色
     --station-default-color: #52c41a;
     --station-default-bg: #f6ffed;

@@ -13,6 +13,7 @@
         <result property="dataQuality" column="data_quality"/>
         <result property="dataQualityText" column="data_quality_text"/>
         <result property="collectionMethod" column="collection_method"/>
+        <result property="collectionMethodText" column="collection_method_text"/>
         <result property="dataSource" column="data_source"/>
         <result property="remark" column="remark"/>
         <result property="createdAt" column="created_at"/>
@@ -21,49 +22,51 @@
 
     <!-- 分页查询水位监测数据（包含关联信息） -->
     <select id="selectWaterLevelMonitoringDataPage" resultMap="WaterLevelMonitoringDataResponseDTOMap">
-        SELECT 
-        water_level_monitoring_data.id, water_level_monitoring_data.station_id, water_level_monitoring_data.monitoring_time, 
-        water_level_monitoring_data.water_level, water_level_monitoring_data.data_quality, water_level_monitoring_data.collection_method, 
-        water_level_monitoring_data.data_source, water_level_monitoring_data.remark, water_level_monitoring_data.created_at, water_level_monitoring_data.updated_at, 
-        monitoring_stations.name as station_name, monitoring_stations.station_code,
-        CASE water_level_monitoring_data.data_quality 
-          WHEN 1 THEN '正常' 
-          WHEN 2 THEN '异常' 
-          WHEN 3 THEN '缺失' 
-          ELSE '未知' 
-        END as data_quality_text 
-        FROM water_level_monitoring_data 
-        LEFT JOIN monitoring_stations ON water_level_monitoring_data.station_id = monitoring_stations.id AND monitoring_stations.deleted_at IS NULL 
-        WHERE water_level_monitoring_data.deleted_at IS NULL 
-        <if test='stationId != null'> AND water_level_monitoring_data.station_id = #{stationId} </if>
-        <if test='startTime != null'> AND water_level_monitoring_data.monitoring_time &gt;= #{startTime} </if>
-        <if test='endTime != null'> AND water_level_monitoring_data.monitoring_time &lt;= #{endTime} </if>
-        <if test='dataQuality != null'> AND water_level_monitoring_data.data_quality = #{dataQuality} </if>
-        <if test='collectionMethod != null and collectionMethod != ""'> AND water_level_monitoring_data.collection_method = #{collectionMethod} </if>
-        <if test='dataSource != null and dataSource != ""'> AND water_level_monitoring_data.data_source LIKE CONCAT('%', #{dataSource}, '%') </if>
-        ORDER BY 
+        SELECT
+        w.id, w.station_id, w.monitoring_time, w.water_level,
+        w.data_quality, w.collection_method, w.data_source, w.remark,
+        w.created_at, w.updated_at,
+        ms.name as station_name, ms.station_code,
+        COALESCE(dq.data_label, '未知') as data_quality_text,
+        COALESCE(cm.data_label, '未知') as collection_method_text
+        FROM water_level_monitoring_data w
+        LEFT JOIN monitoring_stations ms ON w.station_id = ms.id AND ms.deleted_at IS NULL
+        LEFT JOIN dict_data dq ON CAST(w.data_quality AS CHAR) COLLATE utf8mb4_unicode_ci = dq.data_value COLLATE utf8mb4_unicode_ci
+            AND dq.type_id = (SELECT id FROM dict_types WHERE type_code = 'data_quality' LIMIT 1)
+            AND dq.is_active = 1 AND dq.deleted_at IS NULL
+        LEFT JOIN dict_data cm ON w.collection_method COLLATE utf8mb4_unicode_ci = cm.data_value COLLATE utf8mb4_unicode_ci
+            AND cm.type_id = (SELECT id FROM dict_types WHERE type_code = 'collection_method' LIMIT 1)
+            AND cm.is_active = 1 AND cm.deleted_at IS NULL
+        WHERE w.deleted_at IS NULL
+        <if test='stationId != null'> AND w.station_id = #{stationId} </if>
+        <if test='startTime != null'> AND w.monitoring_time &gt;= #{startTime} </if>
+        <if test='endTime != null'> AND w.monitoring_time &lt;= #{endTime} </if>
+        <if test='dataQuality != null'> AND w.data_quality = #{dataQuality} </if>
+        <if test='collectionMethod != null and collectionMethod != ""'> AND w.collection_method = #{collectionMethod} </if>
+        <if test='dataSource != null and dataSource != ""'> AND w.data_source LIKE CONCAT('%', #{dataSource}, '%') </if>
+        ORDER BY
         <choose>
-          <when test='sort != null and sort.contains("monitoring_time,asc")'> water_level_monitoring_data.monitoring_time ASC </when>
-          <when test='sort != null and sort.contains("water_level,desc")'> water_level_monitoring_data.water_level DESC </when>
-          <when test='sort != null and sort.contains("water_level,asc")'> water_level_monitoring_data.water_level ASC </when>
-          <otherwise> water_level_monitoring_data.monitoring_time DESC </otherwise>
+          <when test='sort != null and sort.contains("monitoring_time,asc")'> w.monitoring_time ASC </when>
+          <when test='sort != null and sort.contains("water_level,desc")'> w.water_level DESC </when>
+          <when test='sort != null and sort.contains("water_level,asc")'> w.water_level ASC </when>
+          <otherwise> w.monitoring_time DESC </otherwise>
         </choose>
     </select>
 
     <!-- 查询水位统计数据 -->
     <select id="selectWaterLevelStatistics" resultType="java.util.Map">
-        SELECT 
-        COUNT(DISTINCT water_level_monitoring_data.station_id) as total_stations, 
-        AVG(water_level_monitoring_data.water_level) as avg_water_level, 
-        MAX(water_level_monitoring_data.water_level) as max_water_level, 
-        MIN(water_level_monitoring_data.water_level) as min_water_level, 
-        COUNT(*) as total_data_count, 
-        SUM(CASE WHEN water_level_monitoring_data.data_quality = 1 THEN 1 ELSE 0 END) as normal_data_count, 
-        SUM(CASE WHEN water_level_monitoring_data.data_quality = 2 THEN 1 ELSE 0 END) as abnormal_data_count, 
-        SUM(CASE WHEN water_level_monitoring_data.data_quality = 3 THEN 1 ELSE 0 END) as missing_data_count, 
-        ROUND(SUM(CASE WHEN water_level_monitoring_data.data_quality = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) as data_quality_rate 
-        FROM water_level_monitoring_data 
-        WHERE water_level_monitoring_data.deleted_at IS NULL 
+        SELECT
+        COUNT(DISTINCT water_level_monitoring_data.station_id) as total_stations,
+        AVG(water_level_monitoring_data.water_level) as avg_water_level,
+        MAX(water_level_monitoring_data.water_level) as max_water_level,
+        MIN(water_level_monitoring_data.water_level) as min_water_level,
+        COUNT(*) as total_data_count,
+        SUM(CASE WHEN water_level_monitoring_data.data_quality = 1 THEN 1 ELSE 0 END) as normal_data_count,
+        SUM(CASE WHEN water_level_monitoring_data.data_quality = 2 THEN 1 ELSE 0 END) as abnormal_data_count,
+        SUM(CASE WHEN water_level_monitoring_data.data_quality = 3 THEN 1 ELSE 0 END) as missing_data_count,
+        ROUND(SUM(CASE WHEN water_level_monitoring_data.data_quality = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) as data_quality_rate
+        FROM water_level_monitoring_data
+        WHERE water_level_monitoring_data.deleted_at IS NULL
         <if test='stationId != null'> AND water_level_monitoring_data.station_id = #{stationId} </if>
         <if test='timeRange != null and timeRange == "today"'> AND DATE(water_level_monitoring_data.monitoring_time) = CURDATE() </if>
         <if test='timeRange != null and timeRange == "week"'> AND water_level_monitoring_data.monitoring_time &gt;= DATE_SUB(NOW(), INTERVAL 7 DAY) </if>

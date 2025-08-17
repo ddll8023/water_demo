@@ -50,12 +50,8 @@
     <!-- 分页查询泵站列表（包含关联信息） -->
     <select id="selectPumpingStationPage" resultMap="PumpingStationResponseDTOMap">
         SELECT pumping_stations.*,
-               station_type_dict.data_label as station_type_name,
                operation_mode_dict.data_label as operation_mode_name
         FROM pumping_stations
-        LEFT JOIN dict_data station_type_dict ON pumping_stations.station_type = station_type_dict.data_value
-        AND station_type_dict.type_id = (SELECT id FROM dict_types WHERE type_code = 'facility_type' AND deleted_at IS NULL)
-        AND station_type_dict.deleted_at IS NULL
         LEFT JOIN dict_data operation_mode_dict ON pumping_stations.operation_mode = operation_mode_dict.data_value
         AND operation_mode_dict.type_id = (SELECT id FROM dict_types WHERE type_code = 'operation_mode' AND deleted_at IS NULL)
         AND operation_mode_dict.deleted_at IS NULL
@@ -83,12 +79,8 @@
     <!-- 根据ID查询泵站详情（包含关联信息） -->
     <select id="selectPumpingStationById" resultMap="PumpingStationResponseDTOMap">
         SELECT pumping_stations.*,
-               station_type_dict.data_label as station_type_name,
                operation_mode_dict.data_label as operation_mode_name
         FROM pumping_stations
-        LEFT JOIN dict_data station_type_dict ON pumping_stations.station_type = station_type_dict.data_value
-        AND station_type_dict.type_id = (SELECT id FROM dict_types WHERE type_code = 'facility_type' AND deleted_at IS NULL)
-        AND station_type_dict.deleted_at IS NULL
         LEFT JOIN dict_data operation_mode_dict ON pumping_stations.operation_mode = operation_mode_dict.data_value
         AND operation_mode_dict.type_id = (SELECT id FROM dict_types WHERE type_code = 'operation_mode' AND deleted_at IS NULL)
         AND operation_mode_dict.deleted_at IS NULL

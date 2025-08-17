@@ -94,27 +94,37 @@ export function getDeviceLocation(item) {
  * @returns {string} 状态样式类名
  */
 export function getDeviceStatusClass(item) {
-	const status = item.status || item.stationStatus || item.operationStatus;
+	const status =
+		item.status ||
+		item.stationStatus ||
+		item.operationStatus ||
+		item.pumpingStatus;
+
+	// 基于字典数据的状态映射：normal、fault、maintenance
 	const statusMap = {
-		NORMAL: "status-normal",
+		// 字典状态值
 		normal: "status-normal",
-		ONLINE: "status-online",
-		online: "status-online",
-		OFFLINE: "status-offline",
-		offline: "status-offline",
-		MAINTENANCE: "status-maintenance",
-		maintenance: "status-maintenance",
-		FAULT: "status-fault",
 		fault: "status-fault",
-		error: "status-error",
-		warning: "status-warning",
+		maintenance: "status-maintenance",
+		// 兼容旧有状态值
+		NORMAL: "status-normal",
+		ONLINE: "status-normal",
+		online: "status-normal",
+		OFFLINE: "status-fault",
+		offline: "status-fault",
+		MAINTENANCE: "status-maintenance",
+		FAULT: "status-fault",
+		error: "status-fault",
+		warning: "status-fault",
+		// 中文状态值
+		正常: "status-normal",
 		运行正常: "status-normal",
 		正常运行: "status-normal",
 		正常蓄水: "status-normal",
 		自动运行: "status-normal",
 		维护中: "status-maintenance",
 		故障: "status-fault",
-		告警: "status-warning",
+		告警: "status-fault",
 	};
 	return statusMap[status] || "status-default";
 }
@@ -125,25 +135,34 @@ export function getDeviceStatusClass(item) {
  * @returns {string} 状态文本
  */
 export function getDeviceStatusText(item) {
-	const status = item.status || item.stationStatus || item.operationStatus;
+	const status =
+		item.status ||
+		item.stationStatus ||
+		item.operationStatus ||
+		item.pumpingStatus;
+
+	// 基于字典数据的状态映射：normal、fault、maintenance
 	const statusMap = {
-		NORMAL: "正常",
+		// 字典状态值
 		normal: "正常",
-		ONLINE: "在线",
-		online: "在线",
-		OFFLINE: "离线",
-		offline: "离线",
-		MAINTENANCE: "维护中",
-		maintenance: "维护中",
-		FAULT: "故障",
 		fault: "故障",
+		maintenance: "维护",
+		// 兼容旧有状态值
+		NORMAL: "正常",
+		ONLINE: "正常",
+		online: "正常",
+		OFFLINE: "故障",
+		offline: "故障",
+		MAINTENANCE: "维护",
+		FAULT: "故障",
 		error: "故障",
-		warning: "告警",
+		warning: "故障",
 	};
 
 	return (
 		item.statusName ||
 		item.stationStatusName ||
+		item.pumpingStatusName ||
 		statusMap[status] ||
 		status ||
 		"未知"

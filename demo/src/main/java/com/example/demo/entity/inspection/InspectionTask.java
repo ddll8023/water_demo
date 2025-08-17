@@ -18,6 +18,9 @@ public class InspectionTask {
     @TableField("title")
     private String title;
 
+    /**
+     * 设施类型（通过工程服务API获取类型选项）
+     */
     @TableField("facility_type")
     private String facilityType;
 

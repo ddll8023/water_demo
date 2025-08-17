@@ -143,6 +143,22 @@ const tableColumns = [
       if (row.cumulativeFlow === null || row.cumulativeFlow === undefined) return '-'
       return `${Number(row.cumulativeFlow).toFixed(3)} m³`
     }
+  },
+  {
+    prop: 'dataQualityText',
+    label: '数据质量',
+    width: 100,
+    formatter: (row) => {
+      return row.dataQualityText || '-'
+    }
+  },
+  {
+    prop: 'collectionMethodText',
+    label: '采集方式',
+    width: 100,
+    formatter: (row) => {
+      return row.collectionMethodText || '-'
+    }
   }
 ]
 

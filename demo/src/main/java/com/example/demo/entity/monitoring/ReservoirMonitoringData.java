@@ -59,11 +59,13 @@ public class ReservoirMonitoringData {
     /**
      * 数据质量(1:正常,2:异常,3:缺失)
      */
+    @TableField("data_quality")
     private Integer dataQuality;
 
     /**
      * 采集方式(AUTO:自动,MANUAL:手动)
      */
+    @TableField("collection_method")
     private String collectionMethod;
 
     /**

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.demo.mapper.RainfallMonitoringDataMapper">
 
-    <!-- 结果映射：雨情监测数据响应DTO -->
+    <!-- 结果映射：降雨监测数据响应DTO -->
     <resultMap id="RainfallMonitoringDataResponseDTOMap" type="com.example.demo.dto.monitoring.RainfallMonitoringDataResponseDTO">
         <id property="id" column="id"/>
         <result property="stationId" column="station_id"/>
@@ -10,8 +10,6 @@
         <result property="stationCode" column="station_code"/>
         <result property="monitoringTime" column="monitoring_time"/>
         <result property="rainfall" column="rainfall"/>
-        <result property="rainfallIntensity" column="rainfall_intensity"/>
-        <result property="cumulativeRainfall" column="cumulative_rainfall"/>
         <result property="dataQuality" column="data_quality"/>
         <result property="dataQualityText" column="data_quality_text"/>
         <result property="collectionMethod" column="collection_method"/>
@@ -22,44 +20,40 @@
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
 
-    <!-- 分页查询雨情监测数据（包含关联信息） -->
+    <!-- 分页查询降雨监测数据（包含关联信息） -->
     <select id="selectRainfallMonitoringDataPage" resultMap="RainfallMonitoringDataResponseDTOMap">
-        SELECT 
-        rainfall_monitoring_data.id, rainfall_monitoring_data.station_id, rainfall_monitoring_data.monitoring_time, 
-        rainfall_monitoring_data.rainfall, rainfall_monitoring_data.rainfall_intensity, rainfall_monitoring_data.cumulative_rainfall,
-        rainfall_monitoring_data.data_quality, rainfall_monitoring_data.collection_method, 
-        rainfall_monitoring_data.data_source, rainfall_monitoring_data.remark, rainfall_monitoring_data.created_at, rainfall_monitoring_data.updated_at, 
-        monitoring_stations.name as station_name, monitoring_stations.station_code,
-        CASE rainfall_monitoring_data.data_quality 
-          WHEN 1 THEN '正常' 
-          WHEN 2 THEN '异常' 
-          WHEN 3 THEN '缺失' 
-          ELSE '未知' 
-        END as data_quality_text,
-        CASE rainfall_monitoring_data.collection_method 
-          WHEN 'AUTO' THEN '自动' 
-          WHEN 'MANUAL' THEN '手动' 
-          ELSE '未知' 
-        END as collection_method_text
-        FROM rainfall_monitoring_data 
-        LEFT JOIN monitoring_stations ON rainfall_monitoring_data.station_id = monitoring_stations.id AND monitoring_stations.deleted_at IS NULL 
-        WHERE rainfall_monitoring_data.deleted_at IS NULL 
-        <if test='stationId != null'> AND rainfall_monitoring_data.station_id = #{stationId} </if>
-        <if test='startTime != null'> AND rainfall_monitoring_data.monitoring_time &gt;= #{startTime} </if>
-        <if test='endTime != null'> AND rainfall_monitoring_data.monitoring_time &lt;= #{endTime} </if>
-        <if test='dataQuality != null'> AND rainfall_monitoring_data.data_quality = #{dataQuality} </if>
-        <if test='collectionMethod != null and collectionMethod != ""'> AND rainfall_monitoring_data.collection_method = #{collectionMethod} </if>
-        <if test='dataSource != null and dataSource != ""'> AND rainfall_monitoring_data.data_source LIKE CONCAT('%', #{dataSource}, '%') </if>
+        SELECT
+        r.id, r.station_id, r.monitoring_time, r.rainfall,
+        r.data_quality, r.collection_method, r.data_source, r.remark,
+        r.created_at, r.updated_at,
+        ms.name as station_name, ms.station_code,
+        COALESCE(dq.data_label, '未知') as data_quality_text,
+        COALESCE(cm.data_label, '未知') as collection_method_text
+        FROM rainfall_monitoring_data r
+        LEFT JOIN monitoring_stations ms ON r.station_id = ms.id AND ms.deleted_at IS NULL
+        LEFT JOIN dict_data dq ON CAST(r.data_quality AS CHAR) COLLATE utf8mb4_unicode_ci = dq.data_value COLLATE utf8mb4_unicode_ci
+            AND dq.type_id = (SELECT id FROM dict_types WHERE type_code = 'data_quality' LIMIT 1)
+            AND dq.is_active = 1 AND dq.deleted_at IS NULL
+        LEFT JOIN dict_data cm ON r.collection_method COLLATE utf8mb4_unicode_ci = cm.data_value COLLATE utf8mb4_unicode_ci
+            AND cm.type_id = (SELECT id FROM dict_types WHERE type_code = 'collection_method' LIMIT 1)
+            AND cm.is_active = 1 AND cm.deleted_at IS NULL
+        WHERE r.deleted_at IS NULL 
+        <if test='stationId != null'> AND r.station_id = #{stationId} </if>
+        <if test='startTime != null'> AND r.monitoring_time &gt;= #{startTime} </if>
+        <if test='endTime != null'> AND r.monitoring_time &lt;= #{endTime} </if>
+        <if test='dataQuality != null'> AND r.data_quality = #{dataQuality} </if>
+        <if test='collectionMethod != null and collectionMethod != ""'> AND r.collection_method = #{collectionMethod} </if>
+        <if test='dataSource != null and dataSource != ""'> AND r.data_source LIKE CONCAT('%', #{dataSource}, '%') </if>
         ORDER BY 
         <choose>
-          <when test='sort != null and sort.contains("monitoring_time,asc")'> rainfall_monitoring_data.monitoring_time ASC </when>
-          <when test='sort != null and sort.contains("rainfall,desc")'> rainfall_monitoring_data.rainfall DESC </when>
-          <when test='sort != null and sort.contains("rainfall,asc")'> rainfall_monitoring_data.rainfall ASC </when>
-          <when test='sort != null and sort.contains("rainfall_intensity,desc")'> rainfall_monitoring_data.rainfall_intensity DESC </when>
-          <when test='sort != null and sort.contains("rainfall_intensity,asc")'> rainfall_monitoring_data.rainfall_intensity ASC </when>
-          <when test='sort != null and sort.contains("cumulative_rainfall,desc")'> rainfall_monitoring_data.cumulative_rainfall DESC </when>
-          <when test='sort != null and sort.contains("cumulative_rainfall,asc")'> rainfall_monitoring_data.cumulative_rainfall ASC </when>
-          <otherwise> rainfall_monitoring_data.monitoring_time DESC </otherwise>
+          <when test='sort != null and sort.contains("monitoring_time,asc")'> r.monitoring_time ASC </when>
+          <when test='sort != null and sort.contains("rainfall,desc")'> r.rainfall DESC </when>
+          <when test='sort != null and sort.contains("rainfall,asc")'> r.rainfall ASC </when>
+          <when test='sort != null and sort.contains("rainfall_intensity,desc")'> r.rainfall_intensity DESC </when>
+          <when test='sort != null and sort.contains("rainfall_intensity,asc")'> r.rainfall_intensity ASC </when>
+          <when test='sort != null and sort.contains("cumulative_rainfall,desc")'> r.cumulative_rainfall DESC </when>
+          <when test='sort != null and sort.contains("cumulative_rainfall,asc")'> r.cumulative_rainfall ASC </when>
+          <otherwise> r.monitoring_time DESC </otherwise>
         </choose>
     </select>
 

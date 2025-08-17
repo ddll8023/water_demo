@@ -78,6 +78,7 @@ import { ElMessage } from 'element-plus'
 import FacilityManagement from '@/components/Engineering/FacilityManagement.vue'
 import * as engineeringApi from '@/api/engineering-service'
 import { useDictionary } from '@/composables/useDictionary'
+import { useFacilityTypes } from '@/composables/useFacilityTypes'
 import PageHeader from '@/components/Common/PageHeader.vue'
 import TabSection from '@/components/Common/TabSection.vue'
 
@@ -137,8 +138,7 @@ const pumpingStationColumns = [
     prop: 'stationType',
     label: '泵站类型',
     width: 80,
-    type: 'dict',
-    dictType: 'facility_type'
+    type: 'facilityType'
   },
   { prop: 'waterProject', label: '所属供水工程', width: 140 },
   { prop: 'waterCompany', label: '所属供水公司', width: 120 },
@@ -685,11 +685,24 @@ const reservoirColumns = [
   { prop: 'location', label: '水库所在位置', minWidth: 150 },
   { prop: 'registrationNo', label: '水库注册登记号', minWidth: 140 },
   { prop: 'adminRegionCode', label: '水库注册登记行政区划', minWidth: 160 },
-  { prop: 'engineeringGrade', label: '水库工程等级', width: 120 },
-  { prop: 'engineeringScale', label: '水库工程规模', width: 120 },
+  {
+    prop: 'engineeringGrade',
+    label: '水库工程等级',
+    width: 120,
+    type: 'dict',
+    dictType: 'engineering_grade'
+  },
+  {
+    prop: 'engineeringScale',
+    label: '水库工程规模',
+    width: 120,
+    type: 'dict',
+    dictType: 'engineering_scale'
+  },
   { prop: 'totalCapacity', label: '总容量(万m³)', width: 120 },
   { prop: 'regulatingCapacity', label: '调节容量(万m³)', width: 130 },
-  { prop: 'deadCapacity', label: '死容量(万m³)', width: 120 }
+  { prop: 'deadCapacity', label: '死容量(万m³)', width: 120 },
+  { prop: 'establishmentDate', label: '建库年月', width: 120 }
 ]
 
 // 水库信息表单字段
@@ -787,6 +800,13 @@ const reservoirFormFields = [
     label: '死容量(万m³)',
     type: 'number',
     placeholder: '请输入死容量',
+    span: 12
+  },
+  {
+    prop: 'establishmentDate',
+    label: '建库年月',
+    type: 'date',
+    placeholder: '请选择建库年月',
     span: 12
   }
 ]
@@ -1165,8 +1185,8 @@ onMounted(() => {
 // 加载下拉选项数据
 const loadSelectOptions = async () => {
   try {
-    // 使用字典数据加载各种类型选项
-    const facilityTypes = await useDictionary().getDictData('facility_type')
+    // 使用工程服务API加载设施类型选项
+    const facilityTypes = await useFacilityTypes().getFacilityTypeOptions()
     const operationModes = await useDictionary().getDictData('operation_mode')
     const monitoringItems = await useDictionary().getDictData('monitoring_item')
     const pipelineTypes = await useDictionary().getDictData('pipeline_type')
