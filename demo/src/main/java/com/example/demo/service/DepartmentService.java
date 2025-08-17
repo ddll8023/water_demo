@@ -82,7 +82,7 @@ public class DepartmentService {
         BeanUtils.copyProperties(createDTO, department);
         department.setCreatedAt(LocalDateTime.now());
         department.setUpdatedAt(LocalDateTime.now());
-        department.setIsActive(true);
+        department.setIsActive("1");
 
         departmentMapper.insertDepartment(department);
         log.debug("创建部门成功，部门ID: {}, 部门名称: {}", department.getId(), department.getName());

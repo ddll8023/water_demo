@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -88,7 +87,7 @@ public class UserService {
 
         // 加密密码
         user.setPasswordHash(passwordEncoder.encode(createDTO.getPassword()));
-        user.setIsActive(true);
+        user.setIsActive("1");
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
 
@@ -116,7 +115,7 @@ public class UserService {
         BeanUtils.copyProperties(updateDTO, existingUser);
         
         // 安全检查：禁止用户禁用自己
-        if (updateDTO.getIsActive() != null && !updateDTO.getIsActive()) {
+        if (updateDTO.getIsActive() != null && "0".equals(updateDTO.getIsActive())) {
             // 检查是否是当前登录用户
             if (currentUser != null && currentUser.getId().equals(id)) {
                 throw new RuntimeException("不能禁用自己的账号");
@@ -132,7 +131,7 @@ public class UserService {
                     break;
                 }
             }
-            
+
             // 检查目标用户是否是超级管理员
             List<com.example.demo.entity.system.Role> userRoles = userMapper.selectUserRoles(id);
             for (com.example.demo.entity.system.Role role : userRoles) {
@@ -152,9 +151,9 @@ public class UserService {
                 }
             }
             
-            existingUser.setIsActive(false);
+            existingUser.setIsActive("0");
         } else if (updateDTO.getIsActive() != null) {
-            existingUser.setIsActive(true);
+            existingUser.setIsActive("1");
         }
 
         existingUser.setUpdatedAt(LocalDateTime.now());

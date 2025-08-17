@@ -61,11 +61,6 @@ public class PersonnelInfoResponseDTO {
     private String workResponsibilities;
 
     /**
-     * 人员状态 (在职/离职)
-     */
-    private String status;
-
-    /**
      * 创建时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

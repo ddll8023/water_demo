@@ -32,22 +32,29 @@ public class ManagementInfoService {
     private final ManagementInfoMapper managementInfoMapper;
 
     /**
-     * 获取人员信息列表（分页）
-     * 注意：这里返回的是业务人员信息，不是系统用户信息
+     * 分页查询人员信息
+     * @param page 页码
+     * @param size 每页大小  
+     * @param name 姓名过滤
+     * @param departmentId 部门ID过滤
+     * @param departmentName 部门名称过滤（暂未使用）
+     * @param positionId 岗位ID过滤
+     * @return 分页结果
      */
-    public PageResponseDTO<PersonnelInfoResponseDTO> getPersonnelList(int page, int size, String name,
-                                                                      Long departmentId, String departmentName, Long positionId, String status) {
+    public PageResponseDTO<PersonnelInfoResponseDTO> getPersonnelList(
+        int page, int size, String name, Long departmentId, String departmentName, Long positionId
+    ) {
         try {
             // 计算分页参数
             int offset = (page - 1) * size;
             int limit = size;
 
             // 查询总记录数
-            int total = managementInfoMapper.countPersonnel(name, departmentId, positionId, status);
+            int total = managementInfoMapper.countPersonnel(name, departmentId, positionId);
 
             // 查询数据列表
             List<Personnel> personnelList = managementInfoMapper.selectPersonnelPage(
-                offset, limit, name, departmentId, positionId, status, "created_at DESC");
+                offset, limit, name, departmentId, positionId, "created_at DESC");
 
             // 转换为PersonnelInfoResponseDTO
             List<PersonnelInfoResponseDTO> dtoList = personnelList.stream()
@@ -79,10 +86,10 @@ public class ManagementInfoService {
             personnel.setEmail(createDTO.getEmail());
             personnel.setPositionId(createDTO.getPositionId());
             personnel.setDepartmentId(createDTO.getDepartmentId());
+            personnel.setEmployeeNo(createDTO.getEmployeeNo());
             personnel.setHireDate(createDTO.getHireDate());
             personnel.setWorkResponsibilities(createDTO.getWorkResponsibilities());
-            personnel.setStatus(createDTO.getStatus());
-            
+
             // 插入数据库
             managementInfoMapper.insertPersonnel(personnel);
             
@@ -116,12 +123,7 @@ public class ManagementInfoService {
             personnel.setHireDate(updateDTO.getHireDate());
             personnel.setWorkResponsibilities(updateDTO.getWorkResponsibilities());
             
-            // 设置状态字段
-            if (updateDTO.getStatus() != null) {
-                personnel.setStatus(updateDTO.getStatus());
-            }
-            
-            // 更新数据库
+            // 执行更新
             managementInfoMapper.updatePersonnel(personnel);
             
             // 查询更新后的完整信息（包含关联数据）
@@ -192,13 +194,8 @@ public class ManagementInfoService {
             
             // 设置联系信息
             department.setContact(updateDTO.getContact());
-            
-            // 设置状态 - 转换为布尔值
-            if (updateDTO.getStatus() != null) {
-                department.setIsActive("1".equals(updateDTO.getStatus()) || "true".equals(updateDTO.getStatus()));
-            }
-            
-            // 更新数据库
+
+            // 执行更新
             managementInfoMapper.updateDepartment(department);
             
             // 查询更新后的完整信息（包含关联数据）
@@ -216,10 +213,9 @@ public class ManagementInfoService {
      */
     private PersonnelInfoResponseDTO convertToPersonnelInfoDTO(Personnel personnel) {
         PersonnelInfoResponseDTO dto = new PersonnelInfoResponseDTO();
+        
         // 复制基本属性
         BeanUtils.copyProperties(personnel, dto);
-        // 设置状态字段
-        dto.setStatus(personnel.getStatus());
 
         return dto;
     }

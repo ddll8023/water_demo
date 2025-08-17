@@ -46,33 +46,32 @@ public interface ManagementInfoMapper {
     int updateDepartment(Department department);
     
     /**
-     * 分页查询人员信息列表
-     * 
-     * @param offset 分页起始位置
-     * @param limit 每页记录数
-     * @param name 关键字(姓名)搜索
+     * 分页查询人员信息
+     * @param offset 偏移量
+     * @param limit 查询数量限制
+     * @param name 姓名关键词
      * @param departmentId 部门ID
-     * @param positionId 职位ID
-     * @param status 状态(在职/离职)
-     * @return 人员信息列表
+     * @param positionId 岗位ID
+     * @param sort 排序条件
+     * @return 人员列表
      */
-    List<Personnel> selectPersonnelPage(
-            @Param("offset") int offset,
-            @Param("limit") int limit,
-            @Param("name") String name,
-            @Param("departmentId") Long departmentId,
-            @Param("positionId") Long positionId,
-            @Param("status") String status,
-            @Param("sort") String sort);
+    List<Personnel> selectPersonnelPage(@Param("offset") int offset,
+                                       @Param("limit") int limit,
+                                       @Param("name") String name,
+                                       @Param("departmentId") Long departmentId,
+                                       @Param("positionId") Long positionId,
+                                       @Param("sort") String sort);
             
     /**
      * 查询符合条件的人员记录总数
+     * @param name 姓名关键词
+     * @param departmentId 部门ID
+     * @param positionId 岗位ID
+     * @return 记录总数
      */
-    int countPersonnel(
-            @Param("name") String name,
-            @Param("departmentId") Long departmentId,
-            @Param("positionId") Long positionId,
-            @Param("status") String status);
+    int countPersonnel(@Param("name") String name,
+                      @Param("departmentId") Long departmentId,
+                      @Param("positionId") Long positionId);
             
     /**
      * 插入人员记录

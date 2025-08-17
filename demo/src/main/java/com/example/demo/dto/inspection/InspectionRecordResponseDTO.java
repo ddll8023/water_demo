@@ -16,7 +16,15 @@ public class InspectionRecordResponseDTO {
     private Long facilityId;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime recordTime;
+    /**
+     * 设备状态
+     */
     private String deviceStatus;
+
+    /**
+     * 设备状态名称（关联字典数据）
+     */
+    private String deviceStatusName;
     private Integer issueFlag;
     private String issueDescription;
     private String resolution;

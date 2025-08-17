@@ -40,27 +40,23 @@ public class ManagementInfoController {
     /**
      * 分页查询人员信息列表
      * 
-     * @param page 页码，默认为1
+     * @param name 人员姓名过滤（可选）
+     * @param departmentId 部门ID过滤（可选）
+     * @param positionId 岗位ID过滤（可选）
+     * @param page 页码（默认为1）
      * @param size 每页大小，默认为10
-     * @param name 搜索关键词（按姓名搜索）
-     * @param departmentId 部门ID过滤
-     * @param departmentName 部门名称过滤（支持模糊搜索）
-     * @param positionId 岗位ID过滤
-     * @param status 人员状态过滤（在职/离职）
      * @return 分页的人员信息列表
      */
     @GetMapping("/personnel")
     public ResponseEntity<ApiResponse<PageResponseDTO<PersonnelInfoResponseDTO>>> getPersonnelList(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Long departmentId,
-            @RequestParam(required = false) String departmentName,
             @RequestParam(required = false) Long positionId,
-            @RequestParam(required = false) String status) {
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
         try {
             PageResponseDTO<PersonnelInfoResponseDTO> result = managementInfoService.getPersonnelList(
-                page, size, name, departmentId, departmentName, positionId, status);
+                page, size, name, departmentId, null, positionId);
             return ResponseEntity.ok(ApiResponse.success("查询成功", result));
         } catch (Exception e) {
             return ResponseEntity.badRequest()

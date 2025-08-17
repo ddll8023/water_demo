@@ -11,6 +11,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch, nextTick } from "vue";
 import AMapLoader from "@amap/amap-jsapi-loader";
+import { useDictionary } from "@/composables/useDictionary";
 import {
     FACILITY_TYPE_CONFIG,
     MONITORING_ITEM_CONFIG,
@@ -97,9 +98,14 @@ const warningMarkers = ref([]); // 预警站点标记数组
 // 动态缩放相关状态
 const currentZoom = ref(8);
 
+// 字典数据
+const { getDictData } = useDictionary();
+const deviceStatusOptions = ref([]);
+
 // 生命周期 - 挂载时初始化地图
 onMounted(async () => {
     await initMap();
+    await loadDictionaries();
 });
 
 // 生命周期 - 卸载时销毁地图
@@ -274,7 +280,8 @@ const initMap = async () => {
                                 },
                                 type,
                                 markerSize: markerSize,
-                                markerBorderWidth: markerBorderWidth
+                                markerBorderWidth: markerBorderWidth,
+                                deviceStatusOptions: deviceStatusOptions.value
                             });
 
                             // 阻止事件冒泡
@@ -302,7 +309,17 @@ const initMap = async () => {
     }
 };
 
-
+/**
+ * 加载字典数据
+ */
+const loadDictionaries = async () => {
+    try {
+        deviceStatusOptions.value = await getDictData('device_status');
+    } catch (error) {
+        console.error('加载字典数据失败:', error);
+        deviceStatusOptions.value = [];
+    }
+};
 
 /**
  * 初始化地图图层
@@ -475,7 +492,8 @@ const bindMarkerEvents = (marker, item, type) => {
             },
             markerType: type,
             markerSize: markerSize,
-            markerBorderWidth: markerBorderWidth
+            markerBorderWidth: markerBorderWidth,
+            deviceStatusOptions: deviceStatusOptions.value
         });
     };
 

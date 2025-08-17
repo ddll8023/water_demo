@@ -35,8 +35,8 @@
             </template>
 
             <template #isActive="{ row }">
-              <el-tag :type="row.isActive ? 'success' : 'danger'" size="small">
-                {{ row.isActive ? '启用' : '禁用' }}
+              <el-tag :type="row.isActive === '1' ? 'success' : 'danger'" size="small">
+                {{ getDictLabel('department_status', row.isActive) }}
               </el-tag>
             </template>
 
@@ -133,6 +133,7 @@ import {
 } from '@/api/department'
 import { getDepartmentTree } from '@/api/management-info'
 import { formatDateTime } from '@/utils/shared/common'
+import { useDictionary, DICT_TYPES } from '@/composables/useDictionary'
 
 /**
  * ==============================
@@ -142,6 +143,10 @@ import { formatDateTime } from '@/utils/shared/common'
 // 列表数据和加载状态
 const loading = ref(false)
 const departmentList = ref([])
+
+// 字典相关
+const { getDictData, getDictLabel } = useDictionary()
+const departmentStatusOptions = ref([])
 
 // 对话框状态
 const formDialogVisible = ref(false)
@@ -161,7 +166,7 @@ const form = reactive({
   duty: '',           // 部门职责
   contact: '',        // 联系方式
   regionId: 1,        // 所属行政区域ID (默认值1，regions API暂未实现)
-  isActive: true      // 启用状态
+  isActive: '1'       // 启用状态
 })
 
 // 树形选择器配置
@@ -229,11 +234,12 @@ const formItems = ref([
     prop: 'isActive',
     label: '启用状态',
     type: 'radio',
-    options: [
-      { label: '启用', value: true },
-      { label: '禁用', value: false }
-    ],
-    span: 12
+    options: departmentStatusOptions.value,
+    defaultValue: '1',
+    required: true,
+    rules: [
+      { required: true, message: '请选择部门状态', trigger: 'change' }
+    ]
   },
   {
     prop: 'contact',
@@ -243,7 +249,10 @@ const formItems = ref([
     maxlength: 255,
     showWordLimit: true,
     clearable: true,
-    span: 12
+    span: 12,
+    rules: [
+      { required: true, message: '请输入联系方式', trigger: 'blur' }
+    ]
   },
   {
     prop: 'regionId',
@@ -369,7 +378,7 @@ watch(
         duty: newData.duty || '',
         contact: newData.contact || '',
         regionId: newData.regionId || 1, // 默认值1，regions API暂未实现
-        isActive: newData.isActive !== undefined ? newData.isActive : true
+        isActive: newData.isActive !== undefined ? newData.isActive : '1'
       })
     }
   },
@@ -435,13 +444,40 @@ const getLevelTagType = (level) => {
 
 /**
  * ==============================
+ * 字典数据加载
+ * ==============================
+ */
+// 加载部门状态字典数据
+const loadDepartmentStatusOptions = async () => {
+  try {
+    const dictData = await getDictData(DICT_TYPES.DEPARTMENT_STATUS)
+    departmentStatusOptions.value = dictData.map(item => ({
+      label: item.label,
+      value: item.value
+    }))
+  } catch (error) {
+    console.error('加载部门状态字典失败:', error)
+    // 使用兜底数据
+    departmentStatusOptions.value = [
+      { label: '启用', value: '1' },
+      { label: '禁用', value: '0' }
+    ]
+  }
+}
+
+/**
+ * ==============================
  * 数据加载和处理方法                  
  * ==============================
  */
 // 生命周期钩子
-onMounted(() => {
-  loadDepartmentList()
-  loadDepartmentTree()
+onMounted(async () => {
+  console.log('部门管理页面已挂载')
+  await Promise.all([
+    loadDepartmentList(),
+    loadDepartmentTree(),
+    loadDepartmentStatusOptions() // 加载部门状态字典
+  ])
 })
 
 // 加载部门树数据
@@ -566,7 +602,7 @@ const resetForm = () => {
     duty: '',
     contact: '',
     regionId: 1,        // 默认值1，regions API暂未实现
-    isActive: true
+    isActive: '1'
   })
   formRef.value?.clearValidate()
 }

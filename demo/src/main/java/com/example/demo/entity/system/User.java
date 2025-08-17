@@ -38,7 +38,7 @@ public class User {
     /**
      * 账户是否激活
      */
-    private Boolean isActive = true;
+    private String isActive = "1";
 
     /**
      * 最后登录时间

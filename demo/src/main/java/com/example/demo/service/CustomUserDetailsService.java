@@ -40,7 +40,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("用户不存在: " + username);
         }
 
-        if (!user.getIsActive()) {
+        if (!"1".equals(user.getIsActive())) {
             log.error("用户已被禁用: {}", username);
             throw new UsernameNotFoundException("用户已被禁用: " + username);
         }
@@ -80,7 +80,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return org.springframework.security.core.userdetails.User.builder()
             .username(user.getUsername())
             .password(user.getPasswordHash())
-            .disabled(!user.getIsActive())
+            .disabled(!"1".equals(user.getIsActive()))
             .authorities(authorities)
             .build();
     }

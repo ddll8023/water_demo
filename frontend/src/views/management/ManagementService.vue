@@ -593,17 +593,6 @@ const personnelFormItems = [
     span: 12
   },
   {
-    prop: 'status',
-    label: '人员状态',
-    type: 'select',
-    placeholder: '请选择人员状态',
-    options: [
-      { label: '在职', value: '在职' },
-      { label: '离职', value: '离职' }
-    ],
-    span: 12
-  },
-  {
     prop: 'workResponsibilities',
     label: '工作职责',
     type: 'textarea',
@@ -916,9 +905,8 @@ const handleAddPersonnel = async () => {
     phone: '',
     departmentId: null,
     positionId: null,
-    hireDate: null, // 入职日期字段
-    status: '在职',
-    workResponsibilities: '' // 新增工作职责字段
+    hireDate: null,
+    workResponsibilities: ''
   }
   personnelFormVisible.value = true
 }
@@ -937,7 +925,6 @@ const handleEditPersonnel = async (row) => {
     departmentId: row.departmentId,
     positionId: row.positionId,
     hireDate: row.hireDate || null, // 入职日期字段
-    status: row.status,
     workResponsibilities: row.workResponsibilities || '' // 新增工作职责字段
   }
   personnelFormVisible.value = true
@@ -960,7 +947,6 @@ const handleSavePersonnel = async () => {
         departmentId: currentPersonnel.value.departmentId,
         positionId: currentPersonnel.value.positionId,
         hireDate: currentPersonnel.value.hireDate, // 入职日期字段
-        status: currentPersonnel.value.status,
         workResponsibilities: currentPersonnel.value.workResponsibilities // 新增工作职责字段
       })
       ElMessage.success('更新人员信息成功')
@@ -972,7 +958,6 @@ const handleSavePersonnel = async () => {
         departmentId: currentPersonnel.value.departmentId,
         positionId: currentPersonnel.value.positionId,
         hireDate: currentPersonnel.value.hireDate, // 入职日期字段
-        status: currentPersonnel.value.status,
         workResponsibilities: currentPersonnel.value.workResponsibilities // 新增工作职责字段
       })
       ElMessage.success('新增人员成功')

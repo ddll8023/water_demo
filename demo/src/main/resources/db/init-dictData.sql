@@ -12,9 +12,7 @@ INSERT INTO dict_types (type_code, type_name, description, sort_order, is_active
 SELECT 'user_status', '用户状态', '用户账户的启用禁用状态', 10, 1, NOW(), NOW()
 WHERE NOT EXISTS (SELECT 1 FROM dict_types WHERE type_code = 'user_status');
 
-INSERT INTO dict_types (type_code, type_name, description, sort_order, is_active, created_at, updated_at)
-SELECT 'yes_no', '是否选择', '通用的是否选择字典', 20, 1, NOW(), NOW()
-WHERE NOT EXISTS (SELECT 1 FROM dict_types WHERE type_code = 'yes_no');
+
 
 INSERT INTO dict_types (type_code, type_name, description, sort_order, is_active, created_at, updated_at)
 SELECT 'device_status', '设备状态', '设备运行状态分类', 30, 1, NOW(), NOW()
@@ -27,10 +25,6 @@ WHERE NOT EXISTS (SELECT 1 FROM dict_types WHERE type_code = 'warning_level');
 INSERT INTO dict_types (type_code, type_name, description, sort_order, is_active, created_at, updated_at)
 SELECT 'warning_type', '预警类型', '预警类型分类', 41, 1, NOW(), NOW()
 WHERE NOT EXISTS (SELECT 1 FROM dict_types WHERE type_code = 'warning_type');
-
-INSERT INTO dict_types (type_code, type_name, description, sort_order, is_active, created_at, updated_at)
-SELECT 'personnel_status', '人员状态', '人员在职状态分类', 50, 1, NOW(), NOW()
-WHERE NOT EXISTS (SELECT 1 FROM dict_types WHERE type_code = 'personnel_status');
 
 INSERT INTO dict_types (type_code, type_name, description, sort_order, is_active, created_at, updated_at)
 SELECT 'department_status', '部门状态', '部门启用禁用状态', 60, 1, NOW(), NOW()
@@ -111,26 +105,7 @@ WHERE NOT EXISTS (
     AND dd.data_value = '0'
 );
 
--- 插入字典数据 - 是否选择
-INSERT INTO dict_data (type_id, data_label, data_value, description, sort_order, is_active, created_at, updated_at)
-SELECT
-    (SELECT id FROM dict_types WHERE type_code = 'yes_no' LIMIT 1),
-    '是', 'Y', '肯定选择', 10, 1, NOW(), NOW()
-WHERE NOT EXISTS (
-    SELECT 1 FROM dict_data dd
-    WHERE dd.type_id = (SELECT id FROM dict_types WHERE type_code = 'yes_no' LIMIT 1)
-    AND dd.data_value = 'Y'
-);
 
-INSERT INTO dict_data (type_id, data_label, data_value, description, sort_order, is_active, created_at, updated_at)
-SELECT
-    (SELECT id FROM dict_types WHERE type_code = 'yes_no' LIMIT 1),
-    '否', 'N', '否定选择', 20, 1, NOW(), NOW()
-WHERE NOT EXISTS (
-    SELECT 1 FROM dict_data dd
-    WHERE dd.type_id = (SELECT id FROM dict_types WHERE type_code = 'yes_no' LIMIT 1)
-    AND dd.data_value = 'N'
-);
 
 -- 插入字典数据 - 设备状态
 INSERT INTO dict_data (type_id, data_label, data_value, description, sort_order, is_active, created_at, updated_at)
@@ -248,7 +223,7 @@ WHERE NOT EXISTS (
 INSERT INTO dict_data (type_id, data_label, data_value, description, sort_order, is_active, created_at, updated_at)
 SELECT
     (SELECT id FROM dict_types WHERE type_code = 'warning_type' LIMIT 1),
-    '水温预警', '水温预警', '水温预警类型', 40, 1, NOW(), NOW()
+    '水温预警', '水温', '水温预警类型', 40, 1, NOW(), NOW()
 WHERE NOT EXISTS (
     SELECT 1 FROM dict_data dd
     WHERE dd.type_id = (SELECT id FROM dict_types WHERE type_code = 'warning_type' LIMIT 1)
@@ -258,7 +233,7 @@ WHERE NOT EXISTS (
 INSERT INTO dict_data (type_id, data_label, data_value, description, sort_order, is_active, created_at, updated_at)
 SELECT
     (SELECT id FROM dict_types WHERE type_code = 'warning_type' LIMIT 1),
-    '雨情预警', '雨情预警', '雨情预警类型', 60, 1, NOW(), NOW()
+    '雨情预警', '雨情', '雨情预警类型', 60, 1, NOW(), NOW()
 WHERE NOT EXISTS (
     SELECT 1 FROM dict_data dd
     WHERE dd.type_id = (SELECT id FROM dict_types WHERE type_code = 'warning_type' LIMIT 1)
@@ -284,37 +259,6 @@ WHERE NOT EXISTS (
     SELECT 1 FROM dict_data dd
     WHERE dd.type_id = (SELECT id FROM dict_types WHERE type_code = 'warning_status' LIMIT 1)
     AND dd.data_value = '已解除'
-);
-
--- 插入字典数据 - 人员状态
-INSERT INTO dict_data (type_id, data_label, data_value, description, sort_order, is_active, created_at, updated_at)
-SELECT
-    (SELECT id FROM dict_types WHERE type_code = 'personnel_status' LIMIT 1),
-    '在职', '在职', '人员在职状态', 10, 1, NOW(), NOW()
-WHERE NOT EXISTS (
-    SELECT 1 FROM dict_data dd
-    WHERE dd.type_id = (SELECT id FROM dict_types WHERE type_code = 'personnel_status' LIMIT 1)
-    AND dd.data_value = '在职'
-);
-
-INSERT INTO dict_data (type_id, data_label, data_value, description, sort_order, is_active, created_at, updated_at)
-SELECT
-    (SELECT id FROM dict_types WHERE type_code = 'personnel_status' LIMIT 1),
-    '离职', '离职', '人员离职状态', 20, 1, NOW(), NOW()
-WHERE NOT EXISTS (
-    SELECT 1 FROM dict_data dd
-    WHERE dd.type_id = (SELECT id FROM dict_types WHERE type_code = 'personnel_status' LIMIT 1)
-    AND dd.data_value = '离职'
-);
-
-INSERT INTO dict_data (type_id, data_label, data_value, description, sort_order, is_active, created_at, updated_at)
-SELECT
-    (SELECT id FROM dict_types WHERE type_code = 'personnel_status' LIMIT 1),
-    '休假', '休假', '人员休假状态', 30, 1, NOW(), NOW()
-WHERE NOT EXISTS (
-    SELECT 1 FROM dict_data dd
-    WHERE dd.type_id = (SELECT id FROM dict_types WHERE type_code = 'personnel_status' LIMIT 1)
-    AND dd.data_value = '休假'
 );
 
 -- 插入字典数据 - 部门状态
@@ -412,6 +356,16 @@ WHERE NOT EXISTS (
     SELECT 1 FROM dict_data dd
     WHERE dd.type_id = (SELECT id FROM dict_types WHERE type_code = 'facility_type' LIMIT 1)
     AND dd.data_value = 'intake_station'
+);
+
+INSERT INTO dict_data (type_id, data_label, data_value, description, sort_order, is_active, created_at, updated_at)
+SELECT
+    (SELECT id FROM dict_types WHERE type_code = 'facility_type' LIMIT 1),
+    '监测站', 'monitoring_station', '监测站设施', 50, 1, NOW(), NOW()
+WHERE NOT EXISTS (
+    SELECT 1 FROM dict_data dd
+    WHERE dd.type_id = (SELECT id FROM dict_types WHERE type_code = 'facility_type' LIMIT 1)
+    AND dd.data_value = 'monitoring_station'
 );
 
 -- 运行方式数据

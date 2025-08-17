@@ -46,6 +46,13 @@
                                 {{ formatTime(device.updateTime) }}
                             </span>
                         </div>
+                        <div class="device-popup__row" v-if="deviceStatus">
+                            <span class="device-popup__label">状态</span>
+                            <span class="device-popup__value"
+                                :class="`device-popup__value--status-${deviceStatus?.toLowerCase()}`">
+                                {{ getDictLabel(deviceStatus) }}
+                            </span>
+                        </div>
                     </template>
 
                     <!-- 设施特有信息 -->
@@ -54,10 +61,11 @@
                             <span class="device-popup__label">容量</span>
                             <span class="device-popup__value">{{ device.capacity }}</span>
                         </div>
-                        <div class="device-popup__row" v-if="device.status">
+                        <div class="device-popup__row" v-if="deviceStatus">
                             <span class="device-popup__label">状态</span>
-                            <span class="device-popup__value" :class="`device-popup__value--status-${device.status}`">
-                                {{ getStatusText(device.status) }}
+                            <span class="device-popup__value"
+                                :class="`device-popup__value--status-${deviceStatus?.toLowerCase()}`">
+                                {{ getDictLabel(deviceStatus) }}
                             </span>
                         </div>
                     </template>
@@ -116,6 +124,11 @@ const props = defineProps({
     markerBorderWidth: {
         type: Number,
         default: 1
+    },
+    // 设备状态字典选项
+    deviceStatusOptions: {
+        type: Array,
+        default: () => []
     }
 });
 
@@ -194,7 +207,27 @@ const deviceLocation = computed(() => {
 
 // 判断是否为监测站
 const isMonitoringStation = computed(() => {
-    return !!(props.device.stationName || props.device.stationId || props.device.monitoringItem);
+    const hasStationFields = !!(props.device.stationName || props.device.stationId || props.device.monitoringItem);
+
+    // 调试信息：输出设备分类结果
+    console.log('设备分类判断:', {
+        device: props.device,
+        hasStationFields,
+        stationName: props.device.stationName,
+        stationId: props.device.stationId,
+        monitoringItem: props.device.monitoringItem,
+        type: props.device.type,
+        status: props.device.status
+    });
+
+    return hasStationFields;
+});
+
+// 获取设备状态（兼容多种字段名）
+const deviceStatus = computed(() => {
+    const device = props.device;
+    // 检查多种可能的状态字段名
+    return device.status || device.deviceStatus || device.runStatus || device.operationStatus || null;
 });
 
 // 计算设备图标配置
@@ -295,17 +328,43 @@ const formatTime = (timeStr) => {
     }
 };
 
-// 获取状态文本
-const getStatusText = (status) => {
-    const statusMap = {
-        'normal': '正常',
-        'warning': '警告',
-        'error': '故障',
-        'offline': '离线',
-        'active': '运行中',
-        'inactive': '停用'
-    };
-    return statusMap[status] || status;
+// 获取字典标签
+const getDictLabel = (value) => {
+    if (!value || !props.deviceStatusOptions.length) {
+        return value || '';
+    }
+
+    // 精确匹配
+    let dictItem = props.deviceStatusOptions.find(item =>
+        String(item.value) === String(value)
+    );
+
+    // 如果精确匹配失败，尝试忽略大小写匹配
+    if (!dictItem) {
+        dictItem = props.deviceStatusOptions.find(item =>
+            String(item.value).toLowerCase() === String(value).toLowerCase()
+        );
+    }
+
+    // 如果仍然匹配失败，尝试常见状态值映射
+    if (!dictItem) {
+        const statusMappings = {
+            'NORMAL': 'normal',
+            'FAULT': 'fault',
+            'ERROR': 'fault',
+            'MAINTENANCE': 'maintenance',
+            'REPAIR': 'maintenance'
+        };
+
+        const mappedValue = statusMappings[String(value).toUpperCase()];
+        if (mappedValue) {
+            dictItem = props.deviceStatusOptions.find(item =>
+                String(item.value) === mappedValue
+            );
+        }
+    }
+
+    return dictItem ? dictItem.label : value;
 };
 
 // 事件处理函数
@@ -463,16 +522,20 @@ const handleViewDetail = () => {
             color: var(--success-color);
         }
 
-        &--status-warning {
-            color: var(--warning-color);
+        &--status-fault {
+            color: var(--danger-color);
         }
 
         &--status-error {
             color: var(--danger-color);
         }
 
-        &--status-offline {
-            color: var(--text-tertiary);
+        &--status-maintenance {
+            color: var(--warning-color);
+        }
+
+        &--status-repair {
+            color: var(--warning-color);
         }
     }
 

@@ -65,12 +65,6 @@ public class Personnel {
     private String employeeNo;
 
     /**
-     * 人员状态 (在职/离职/调岗)
-     */
-    @TableField("status")
-    private String status = "在职";
-
-    /**
      * 入职日期
      */
     @TableField("hire_date")

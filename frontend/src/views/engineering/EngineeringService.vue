@@ -1173,9 +1173,6 @@ const loadSelectOptions = async () => {
     const engineeringGrades = await useDictionary().getDictData('engineering_grade')
     const engineeringScales = await useDictionary().getDictData('engineering_scale')
     const deviceStatuses = await useDictionary().getDictData('device_status')
-    const stockStatuses = await useDictionary().getDictData('stock_status')
-    const boatTypes = await useDictionary().getDictData('boat_type')
-    const operationStatuses = await useDictionary().getDictData('operation_status')
 
     // 为水库和水厂类型创建更完整的选项
     const reservoirTypes = [

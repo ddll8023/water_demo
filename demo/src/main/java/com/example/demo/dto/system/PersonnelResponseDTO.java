@@ -49,11 +49,6 @@ public class PersonnelResponseDTO {
     private String employeeNo;
 
     /**
-     * 人员状态 (在职/离职/调岗)
-     */
-    private String status;
-
-    /**
      * 入职日期
      */
     @JsonFormat(pattern = "yyyy-MM-dd")

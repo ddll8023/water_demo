@@ -153,7 +153,7 @@ const currentUser = ref({
   username: '',
   password: '',
   roleId: null, // 修改为单一角色ID
-  isActive: true
+  isActive: '1'
 })
 
 // 用户角色分配相关数据
@@ -228,11 +228,8 @@ const formItems = computed(() => {
     prop: 'isActive',
     label: '状态',
     type: 'radio',
-    options: [
-      { label: '启用', value: true },
-      { label: '禁用', value: false }
-    ],
-    defaultValue: true,
+    options: userStatusOptions.value,
+    defaultValue: '1',
     required: true
   })
 
@@ -411,7 +408,7 @@ const handleAdd = async () => {
     username: '',
     password: '',
     roleId: null, // 初始化为null
-    isActive: true
+    isActive: '1'
   }
 
   // 确保选项数据已加载
@@ -585,13 +582,13 @@ const loadUserStatusOptions = async () => {
     const dictData = await getDictData(DICT_TYPES.USER_STATUS)
     userStatusOptions.value = dictData.map(item => ({
       label: item.label,
-      value: item.value === '1' // 转换为布尔值以兼容现有逻辑
+      value: item.value // 直接使用字典值'1'/'0'
     }))
   } catch (error) {
     // 使用兜底数据
     userStatusOptions.value = [
-      { label: '启用', value: true },
-      { label: '禁用', value: false }
+      { label: '启用', value: '1' },
+      { label: '禁用', value: '0' }
     ]
   }
 }
@@ -603,7 +600,7 @@ const loadUserStatusOptions = async () => {
 // 获取用户状态显示标签
 const getUserStatusLabel = (isActive) => {
   const option = userStatusOptions.value.find(opt => opt.value === isActive)
-  return option ? option.label : (isActive ? '启用' : '禁用')
+  return option ? option.label : (isActive === '1' ? '启用' : '禁用')
 }
 
 /**

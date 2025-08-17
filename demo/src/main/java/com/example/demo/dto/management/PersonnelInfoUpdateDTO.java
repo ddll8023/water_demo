@@ -50,9 +50,4 @@ public class PersonnelInfoUpdateDTO {
      */
     @Size(max = 500, message = "工作职责描述不能超过500个字符")
     private String workResponsibilities;
-
-    /**
-     * 人员状态 (在职/离职)
-     */
-    private String status;
 }

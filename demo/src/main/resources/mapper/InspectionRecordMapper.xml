@@ -11,6 +11,7 @@
         <result property="facilityId" column="facility_id"/>
         <result property="recordTime" column="record_time"/>
         <result property="deviceStatus" column="device_status"/>
+        <result property="deviceStatusName" column="device_status_name"/>
         <result property="issueFlag" column="issue_flag"/>
         <result property="issueDescription" column="issue_description"/>
         <result property="resolution" column="resolution"/>
@@ -22,6 +23,7 @@
 
     <sql id="RecordBaseSelect">
         SELECT r.*, p.full_name AS inspector_name,
+               dict_data.data_label as device_status_name,
                (
                    SELECT ia.file_path
                    FROM inspection_attachments ia
@@ -31,6 +33,9 @@
                ) AS cover_image
         FROM inspection_records r
         LEFT JOIN personnel p ON r.inspector_id = p.id AND p.deleted_at IS NULL
+        LEFT JOIN dict_data ON r.device_status = dict_data.data_value
+        AND dict_data.type_id = (SELECT id FROM dict_types WHERE type_code = 'device_status' AND deleted_at IS NULL)
+        AND dict_data.deleted_at IS NULL
         WHERE r.deleted_at IS NULL
     </sql>
 

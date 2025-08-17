@@ -123,6 +123,7 @@ export function useDictionary() {
  */
 export const DICT_TYPES = {
 	USER_STATUS: "user_status", // 用户状态
+	DEPARTMENT_STATUS: "department_status", // 部门状态
 	DEVICE_STATUS: "device_status", // 设备状态
 	WARNING_LEVEL: "warning_level", // 预警级别
 	WARNING_TYPE: "warning_type", // 预警类型

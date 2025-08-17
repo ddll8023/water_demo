@@ -7,13 +7,11 @@ import request from "./request";
  * 分页查询人员信息列表
  * @param {Object} params 查询参数
  * @param {number} params.page 页码
- * @param {number} params.size 每页大小
- * @param {string} params.name 关键词搜索（姓名、工号、联系方式）（可选）
+ * @param {number} params.size 每页数量
+ * @param {string} params.name 人员姓名（可选）
  * @param {number} params.departmentId 部门ID（可选）
- * @param {string} params.departmentName 部门名称搜索（可选）
  * @param {number} params.positionId 岗位ID（可选）
- * @param {string} params.status 人员状态（在职/离职）（可选）
- * @returns {Promise} 人员信息列表响应
+ * @returns {Promise} 人员列表响应
  */
 export function getPersonnelList(params) {
 	return request({
@@ -28,13 +26,10 @@ export function getPersonnelList(params) {
  * @param {Object} data 人员信息数据
  * @param {string} data.fullName 姓名
  * @param {string} data.phone 联系电话
- * @param {string} data.email 电子邮箱
+ * @param {string} data.email 电子邮箱（可选）
  * @param {number} data.positionId 岗位ID
  * @param {number} data.departmentId 部门ID
- * @param {number} data.userId 关联用户ID（可选）
- * @param {string} data.employeeNo 工号
- * @param {string} data.status 人员状态（在职/离职）
- * @param {string} data.hireDate 入职日期（可选）
+ * @param {string} data.hireDate 入职日期
  * @param {string} data.workResponsibilities 工作职责（可选）
  * @returns {Promise} 创建结果
  */
@@ -52,12 +47,11 @@ export function createPersonnel(data) {
  * @param {Object} data 人员信息数据
  * @param {string} data.fullName 姓名
  * @param {string} data.phone 联系电话
- * @param {string} data.email 电子邮箱
+ * @param {string} data.email 电子邮箱（可选）
  * @param {number} data.positionId 岗位ID
  * @param {number} data.departmentId 部门ID
  * @param {number} data.userId 关联用户ID（可选）
  * @param {string} data.employeeNo 工号
- * @param {string} data.status 人员状态（在职/离职）
  * @param {string} data.hireDate 入职日期（可选）
  * @param {string} data.workResponsibilities 工作职责（可选）
  * @returns {Promise} 更新结果

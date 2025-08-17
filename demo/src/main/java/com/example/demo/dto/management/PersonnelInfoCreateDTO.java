@@ -7,6 +7,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * 人员信息创建DTO
@@ -47,8 +48,14 @@ public class PersonnelInfoCreateDTO {
     private String email;
 
     /**
+     * 工号
+     */
+    private String employeeNo;
+
+    /**
      * 入职日期
      */
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate hireDate;
 
     /**
@@ -56,9 +63,4 @@ public class PersonnelInfoCreateDTO {
      */
     @Size(max = 500, message = "工作职责描述不能超过500个字符")
     private String workResponsibilities;
-
-    /**
-     * 人员状态 (在职/离职)
-     */
-    private String status = "在职";
 }

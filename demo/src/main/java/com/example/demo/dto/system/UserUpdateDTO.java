@@ -21,5 +21,5 @@ public class UserUpdateDTO {
     /**
      * 账户是否激活
      */
-    private Boolean isActive;
+    private String isActive;
 }

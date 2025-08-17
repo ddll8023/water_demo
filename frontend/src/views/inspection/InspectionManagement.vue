@@ -129,10 +129,10 @@ const loadDictionaries = async () => {
 
 const loadPersonnelOptions = async () => {
     try {
-        const response = await getPersonnelList({ page: 1, size: 1000, status: '在职' })
-        personnelOptions.value = (response.items || []).map(person => ({
-            label: person.fullName,
-            value: person.id
+        const response = await getPersonnelList({ page: 1, size: 1000 })
+        personnelOptions.value = response.list.map(p => ({
+            label: p.fullName,
+            value: p.id
         }))
     } catch (error) {
         console.error('加载人员选项失败:', error)

@@ -8,8 +8,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * 用户详细信息响应DTO
- * 用于API响应，包含用户的完整信息、角色岗位详情和权限列表
+ * 用户详情响应DTO
+ * 用于返回完整的用户信息，包括角色列表和关联信息
+ * 专注于系统登录账号管理，不包含业务人员信息
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -26,76 +27,12 @@ public class UserDetailResponseDTO {
     private String username;
 
     /**
-     * 姓名
+     * 电子邮箱
      */
-    private String fullName;
+    private String email;
 
     /**
-     * 联系电话
-     */
-    private String phone;
-
-    /**
-     * 账户是否激活
-     */
-    private Boolean isActive;
-
-    /**
-     * 最后登录时间
-     */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime lastLogin;
-
-    /**
-     * 创建时间
-     */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createdAt;
-
-    /**
-     * 更新时间
-     */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updatedAt;
-
-    // ========== 部门信息 ==========
-
-    /**
-     * 所属部门 ID
-     */
-    private Long departmentId;
-
-    /**
-     * 部门名称
-     */
-    private String departmentName;
-
-    /**
-     * 部门详细信息（可选）
-     */
-    private DepartmentResponseDTO departmentDetail;
-
-    // ========== 岗位信息 ==========
-
-    /**
-     * 岗位 ID
-     */
-    private Long positionId;
-
-    /**
-     * 岗位名称
-     */
-    private String positionName;
-
-    /**
-     * 岗位详细信息
-     */
-    private PositionResponseDTO positionDetail;
-
-    // ========== 角色信息 ==========
-
-    /**
-     * 角色 ID
+     * 角色 ID（兼容保留）
      */
     private Long roleId;
 
@@ -105,97 +42,28 @@ public class UserDetailResponseDTO {
     private String roleName;
 
     /**
-     * 角色详细信息
+     * 账户是否激活
      */
-    private RoleResponseDTO roleDetail;
-
-    // ========== 权限信息 ==========
+    private String isActive;
 
     /**
-     * 用户权限代码列表
+     * 最后登录时间
      */
-    private List<String> permissions;
+    private LocalDateTime lastLogin;
 
     /**
-     * 用户权限详细信息列表
+     * 创建时间
      */
-    private List<PermissionResponseDTO> permissionDetails;
-
-    // ========== 统计信息 ==========
+    private LocalDateTime createdAt;
 
     /**
-     * 用户登录次数（可选统计字段）
+     * 更新时间
      */
-
-    private Integer loginCount;
+    private LocalDateTime updatedAt;
 
     /**
-     * 最近活跃时间（可选统计字段）
+     * 用户角色列表
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime lastActiveTime;
+    private List<RoleResponseDTO> roles;
 
-    // ========== 辅助方法 ==========
-
-    /**
-     * 是否有部门信息
-     */
-    public boolean hasDepartment() {
-        return departmentId != null;
-    }
-
-    /**
-     * 是否有岗位信息
-     */
-    public boolean hasPosition() {
-        return positionId != null;
-    }
-
-    /**
-     * 是否有角色信息
-     */
-    public boolean hasRole() {
-        return roleId != null;
-    }
-
-    /**
-     * 是否有权限信息
-     */
-    public boolean hasPermissions() {
-        return permissions != null && !permissions.isEmpty();
-    }
-
-    /**
-     * 获取权限数量
-     */
-    public int getPermissionCount() {
-        return hasPermissions() ? permissions.size() : 0;
-    }
-
-    /**
-     * 是否为激活用户
-     */
-    public boolean isActiveUser() {
-        return Boolean.TRUE.equals(isActive);
-    }
-
-    /**
-     * 是否为新用户（创建时间在7天内）
-     */
-    public boolean isNewUser() {
-        if (createdAt == null) {
-            return false;
-        }
-        return createdAt.isAfter(LocalDateTime.now().minusDays(7));
-    }
-
-    /**
-     * 是否最近登录过（最后登录时间在24小时内）
-     */
-    public boolean isRecentlyActive() {
-        if (lastLogin == null) {
-            return false;
-        }
-        return lastLogin.isAfter(LocalDateTime.now().minusHours(24));
-    }
 }

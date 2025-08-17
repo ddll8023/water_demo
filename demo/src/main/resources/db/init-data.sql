@@ -142,14 +142,14 @@ VALUES
 -- 水厂信息示例数据
 -- 首先确保有部门和人员数据
 INSERT INTO departments (name, duty, contact, region_id, is_active, created_at, updated_at)
-SELECT '测试部门', '负责水务管理工作', '027-12345678', 1, TRUE, NOW(), NOW()
+SELECT '测试部门', '负责水务管理工作', '027-12345678', 1, '1', NOW(), NOW()
 WHERE NOT EXISTS (SELECT 1 FROM departments WHERE name = '测试部门');
 
-INSERT INTO personnel (full_name, phone, email, position_id, department_id, employee_no, status, hire_date, created_at, updated_at)
+INSERT INTO personnel (full_name, phone, email, position_id, department_id, employee_no, hire_date, created_at, updated_at)
 SELECT '测试1', '13545627895', 'user1@example.com',
        (SELECT id FROM positions WHERE name = '业务管理员' LIMIT 1),
        (SELECT id FROM departments WHERE name = '测试部门' LIMIT 1),
-       'EMP002', '在职', '2020-01-01', NOW(), NOW()
+       'EMP002', '2020-01-01', NOW(), NOW()
 WHERE NOT EXISTS (SELECT 1 FROM personnel WHERE employee_no = 'EMP002');
 
 -- 插入水厂示例数据

@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 /**
  * 用户响应DTO
- * 用于API响应，包含系统用户账号的完整信息
+ * 用于返回系统用户账号信息
  * 专注于系统登录账号管理，不包含业务人员信息
  */
 @Data
@@ -26,7 +26,12 @@ public class UserResponseDTO {
     private String username;
 
     /**
-     * 角色 ID
+     * 电子邮箱
+     */
+    private String email;
+
+    /**
+     * 角色 ID（兼容保留）
      */
     private Long roleId;
 
@@ -38,23 +43,21 @@ public class UserResponseDTO {
     /**
      * 账户是否激活
      */
-    private Boolean isActive;
+    private String isActive;
 
     /**
      * 最后登录时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime lastLogin;
 
     /**
      * 创建时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
     /**
      * 更新时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
+
 }

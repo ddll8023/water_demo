@@ -71,8 +71,8 @@
                 <!-- 设备信息弹窗 -->
                 <DeviceInfoPopup :visible="popupVisible" :device="popupDevice" :position="popupPosition"
                     :container-size="mapContainerSize" :marker-size="popupMarkerSize"
-                    :marker-border-width="popupMarkerBorder" @close="handlePopupClose"
-                    @view-detail="handlePopupViewDetail" />
+                    :marker-border-width="popupMarkerBorder" :device-status-options="deviceStatusOptions"
+                    @close="handlePopupClose" @view-detail="handlePopupViewDetail" />
             </div>
         </div>
 
@@ -104,7 +104,9 @@
                         </div>
                         <div class="info-item" v-if="detailDevice.status">
                             <span class="info-label">运行状态</span>
-                            <span class="info-value">{{ detailDevice.status }}</span>
+                            <span class="info-value" :class="`status-${detailDevice.status?.toLowerCase()}`">
+                                {{ getDictLabel(detailDevice.status) }}
+                            </span>
                         </div>
                         <div class="info-item" v-if="detailDevice.capacity">
                             <span class="info-label">容量</span>
@@ -200,6 +202,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from "vue";
 import { ElMessage } from "element-plus";
+import { useDictionary } from "@/composables/useDictionary";
 import AMapContainer from "@/components/Map/AMapContainer.vue";
 import FacilityPanel from "@/components/Map/FacilityPanel.vue";
 import RightControlPanel from "@/components/Map/RightControlPanel.vue";
@@ -257,6 +260,10 @@ const popupPosition = ref({ x: 0, y: 0 }); // 弹窗位置
 const popupMarkerSize = ref(16); // 弹窗对应的marker尺寸
 const popupMarkerBorder = ref(1); // 弹窗对应的marker边框宽度
 const mapContainerSize = ref({ width: 0, height: 0 }); // 地图容器尺寸
+const deviceStatusOptions = ref([]); // 设备状态字典选项
+
+// 字典功能
+const { getDictData } = useDictionary();
 
 // 监测点详情对话框状态
 const detailDialogVisible = ref(false); // 详情对话框显示状态
@@ -455,7 +462,10 @@ const isMonitoringStation = computed(() => {
 
 // 生命周期 - 组件挂载时加载数据
 onMounted(async () => {
-    await loadMapData();
+    await Promise.all([
+        loadMapData(),
+        loadDictionaries()
+    ]);
     // 延迟初始化地图容器尺寸，确保DOM完全渲染
     setTimeout(() => {
         updateMapContainerSize();
@@ -468,6 +478,59 @@ onMounted(async () => {
 onUnmounted(() => {
     window.removeEventListener('resize', updateMapContainerSize);
 });
+
+/**
+ * 加载字典数据
+ */
+const loadDictionaries = async () => {
+    try {
+        deviceStatusOptions.value = await getDictData('device_status');
+    } catch (error) {
+        console.error('加载字典数据失败:', error);
+        deviceStatusOptions.value = [];
+    }
+};
+
+/**
+ * 获取字典标签
+ */
+const getDictLabel = (value) => {
+    if (!value || !deviceStatusOptions.value.length) {
+        return value || '';
+    }
+
+    // 精确匹配
+    let dictItem = deviceStatusOptions.value.find(item =>
+        String(item.value) === String(value)
+    );
+
+    // 如果精确匹配失败，尝试忽略大小写匹配
+    if (!dictItem) {
+        dictItem = deviceStatusOptions.value.find(item =>
+            String(item.value).toLowerCase() === String(value).toLowerCase()
+        );
+    }
+
+    // 如果仍然匹配失败，尝试常见状态值映射
+    if (!dictItem) {
+        const statusMappings = {
+            'NORMAL': 'normal',
+            'FAULT': 'fault',
+            'ERROR': 'fault',
+            'MAINTENANCE': 'maintenance',
+            'REPAIR': 'maintenance'
+        };
+
+        const mappedValue = statusMappings[String(value).toUpperCase()];
+        if (mappedValue) {
+            dictItem = deviceStatusOptions.value.find(item =>
+                String(item.value) === mappedValue
+            );
+        }
+    }
+
+    return dictItem ? dictItem.label : value;
+};
 
 /**
  * 数据预处理：去重和清洗
@@ -669,6 +732,7 @@ const handleDevicePopupShow = (data) => {
     popupPosition.value = data.position;
     popupMarkerSize.value = data.markerSize || 16; // 设置marker尺寸
     popupMarkerBorder.value = data.markerBorderWidth || 1; // 设置marker边框宽度
+    deviceStatusOptions.value = data.deviceStatusOptions || []; // 设置设备状态字典选项
     popupVisible.value = true;
 
     // 同时更新selectedFacility用于其他功能
@@ -1248,6 +1312,23 @@ const getIndicatorUnit = (key) => {
                 .trend-row .value.flat {
                     color: var(--text-secondary);
                 }
+            }
+
+            .status-normal {
+                color: var(--success-color);
+                font-weight: var(--font-weight-medium);
+            }
+
+            .status-fault,
+            .status-error {
+                color: var(--danger-color);
+                font-weight: var(--font-weight-medium);
+            }
+
+            .status-maintenance,
+            .status-repair {
+                color: var(--warning-color);
+                font-weight: var(--font-weight-medium);
             }
         }
     }

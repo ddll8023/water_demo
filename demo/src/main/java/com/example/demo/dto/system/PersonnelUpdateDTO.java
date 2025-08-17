@@ -49,12 +49,6 @@ public class PersonnelUpdateDTO {
     private String employeeNo;
 
     /**
-     * 人员状态 (在职/离职/调岗)
-     */
-    @Size(max = 50, message = "人员状态长度不能超过50个字符")
-    private String status;
-
-    /**
      * 入职日期
      */
     @JsonFormat(pattern = "yyyy-MM-dd")
