@@ -35,9 +35,10 @@ SELECT 'data_source', '数据来源', '数据采集来源分类', 70, 1, NOW(), 
 WHERE NOT EXISTS (SELECT 1 FROM dict_types WHERE type_code = 'data_source');
 
 -- 工程信息服务模块字典类型
-INSERT INTO dict_types (type_code, type_name, description, sort_order, is_active, created_at, updated_at)
-SELECT 'facility_type', '设施类型', '水利工程设施类型分类', 80, 1, NOW(), NOW()
-WHERE NOT EXISTS (SELECT 1 FROM dict_types WHERE type_code = 'facility_type');
+-- 移除设施类型字典类型，改为从工程服务模块获取
+-- INSERT INTO dict_types (type_code, type_name, description, sort_order, is_active, created_at, updated_at)
+-- SELECT 'facility_type', '设施类型', '水利工程设施类型分类', 80, 1, NOW(), NOW()
+-- WHERE NOT EXISTS (SELECT 1 FROM dict_types WHERE type_code = 'facility_type');
 
 INSERT INTO dict_types (type_code, type_name, description, sort_order, is_active, created_at, updated_at)
 SELECT 'operation_mode', '运行方式', '设备运行方式分类', 90, 1, NOW(), NOW()
@@ -317,56 +318,56 @@ WHERE NOT EXISTS (
 -- 工程信息服务模块字典数据
 -- --------------------------------------------------------------------------------
 
--- 设施类型数据
-INSERT INTO dict_data (type_id, data_label, data_value, description, sort_order, is_active, created_at, updated_at)
-SELECT
-    (SELECT id FROM dict_types WHERE type_code = 'facility_type' LIMIT 1),
-    '加压泵站', 'pumping_station', '用于加压供水的泵站', 10, 1, NOW(), NOW()
-WHERE NOT EXISTS (
-    SELECT 1 FROM dict_data dd
-    WHERE dd.type_id = (SELECT id FROM dict_types WHERE type_code = 'facility_type' LIMIT 1)
-    AND dd.data_value = 'pumping_station'
-);
+-- 移除设施类型字典数据，改为从工程服务模块获取
+-- INSERT INTO dict_data (type_id, data_label, data_value, description, sort_order, is_active, created_at, updated_at)
+-- SELECT
+--     (SELECT id FROM dict_types WHERE type_code = 'facility_type' LIMIT 1),
+--     '加压泵站', 'pumping_station', '用于加压供水的泵站', 10, 1, NOW(), NOW()
+-- WHERE NOT EXISTS (
+--     SELECT 1 FROM dict_data dd
+--     WHERE dd.type_id = (SELECT id FROM dict_types WHERE type_code = 'facility_type' LIMIT 1)
+--     AND dd.data_value = 'pumping_station'
+-- );
 
-INSERT INTO dict_data (type_id, data_label, data_value, description, sort_order, is_active, created_at, updated_at)
-SELECT
-    (SELECT id FROM dict_types WHERE type_code = 'facility_type' LIMIT 1),
-    '水厂', 'water_plant', '水处理厂', 20, 1, NOW(), NOW()
-WHERE NOT EXISTS (
-    SELECT 1 FROM dict_data dd
-    WHERE dd.type_id = (SELECT id FROM dict_types WHERE type_code = 'facility_type' LIMIT 1)
-    AND dd.data_value = 'water_plant'
-);
+-- INSERT INTO dict_data (type_id, data_label, data_value, description, sort_order, is_active, created_at, updated_at)
+-- SELECT
+--     (SELECT id FROM dict_types WHERE type_code = 'facility_type' LIMIT 1),
+--     '水厂', 'water_plant', '水处理厂', 20, 1, NOW(), NOW()
+-- WHERE NOT EXISTS (
+--     SELECT 1 FROM dict_data dd
+--     WHERE dd.type_id = (SELECT id FROM dict_types WHERE type_code = 'facility_type' LIMIT 1)
+--     AND dd.data_value = 'water_plant'
+-- );
 
-INSERT INTO dict_data (type_id, data_label, data_value, description, sort_order, is_active, created_at, updated_at)
-SELECT
-    (SELECT id FROM dict_types WHERE type_code = 'facility_type' LIMIT 1),
-    '水库', 'reservoir', '蓄水水库', 30, 1, NOW(), NOW()
-WHERE NOT EXISTS (
-    SELECT 1 FROM dict_data dd
-    WHERE dd.type_id = (SELECT id FROM dict_types WHERE type_code = 'facility_type' LIMIT 1)
-    AND dd.data_value = 'reservoir'
-);
+-- INSERT INTO dict_data (type_id, data_label, data_value, description, sort_order, is_active, created_at, updated_at)
+-- SELECT
+--     (SELECT id FROM dict_types WHERE type_code = 'facility_type' LIMIT 1),
+--     '水库', 'reservoir', '蓄水水库', 30, 1, NOW(), NOW()
+-- WHERE NOT EXISTS (
+--     SELECT 1 FROM dict_data dd
+--     WHERE dd.type_id = (SELECT id FROM dict_types WHERE type_code = 'facility_type' LIMIT 1)
+--     AND dd.data_value = 'reservoir'
+-- );
 
-INSERT INTO dict_data (type_id, data_label, data_value, description, sort_order, is_active, created_at, updated_at)
-SELECT
-    (SELECT id FROM dict_types WHERE type_code = 'facility_type' LIMIT 1),
-    '取水泵站', 'intake_station', '取水用泵站', 40, 1, NOW(), NOW()
-WHERE NOT EXISTS (
-    SELECT 1 FROM dict_data dd
-    WHERE dd.type_id = (SELECT id FROM dict_types WHERE type_code = 'facility_type' LIMIT 1)
-    AND dd.data_value = 'intake_station'
-);
+-- INSERT INTO dict_data (type_id, data_label, data_value, description, sort_order, is_active, created_at, updated_at)
+-- SELECT
+--     (SELECT id FROM dict_types WHERE type_code = 'facility_type' LIMIT 1),
+--     '取水泵站', 'intake_station', '取水用泵站', 40, 1, NOW(), NOW()
+-- WHERE NOT EXISTS (
+--     SELECT 1 FROM dict_data dd
+--     WHERE dd.type_id = (SELECT id FROM dict_types WHERE type_code = 'facility_type' LIMIT 1)
+--     AND dd.data_value = 'intake_station'
+-- );
 
-INSERT INTO dict_data (type_id, data_label, data_value, description, sort_order, is_active, created_at, updated_at)
-SELECT
-    (SELECT id FROM dict_types WHERE type_code = 'facility_type' LIMIT 1),
-    '监测站', 'monitoring_station', '监测站设施', 50, 1, NOW(), NOW()
-WHERE NOT EXISTS (
-    SELECT 1 FROM dict_data dd
-    WHERE dd.type_id = (SELECT id FROM dict_types WHERE type_code = 'facility_type' LIMIT 1)
-    AND dd.data_value = 'monitoring_station'
-);
+-- INSERT INTO dict_data (type_id, data_label, data_value, description, sort_order, is_active, created_at, updated_at)
+-- SELECT
+--     (SELECT id FROM dict_types WHERE type_code = 'facility_type' LIMIT 1),
+--     '监测站', 'monitoring_station', '监测站设施', 50, 1, NOW(), NOW()
+-- WHERE NOT EXISTS (
+--     SELECT 1 FROM dict_data dd
+--     WHERE dd.type_id = (SELECT id FROM dict_types WHERE type_code = 'facility_type' LIMIT 1)
+--     AND dd.data_value = 'monitoring_station'
+-- );
 
 -- 运行方式数据
 INSERT INTO dict_data (type_id, data_label, data_value, description, sort_order, is_active, created_at, updated_at)

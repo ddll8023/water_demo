@@ -160,9 +160,9 @@ import { ElMessage } from "element-plus";
 import CustomSelect from "@/components/Common/CustomSelect.vue";
 import CustomButton from "@/components/Common/CustomButton.vue";
 import TabSection from "@/components/Common/TabSection.vue";
+import { useFacilityTypes } from "@/composables/useFacilityTypes";
 import {
-    getDeviceIconConfig,
-    DEVICE_TYPE_OPTIONS
+    getDeviceIconConfig
 } from '@/utils/map/deviceIcon';
 import {
     getUnifiedDeviceType,
@@ -262,8 +262,11 @@ const tabOptions = [
 // 当前选中的标签页
 const activeTab = ref('facilities');
 
-// 设备类型选项（排除监测站点）
-const facilityTypeOptions = DEVICE_TYPE_OPTIONS.filter(option => option.value !== 'monitoring_station');
+// 组合函数
+const { getFacilityTypeOptions } = useFacilityTypes();
+
+// 设备类型选项
+const facilityTypeOptions = ref([]);
 
 // 当前选中的设备类型（仅在设备标签页有效）
 const selectedFacilityType = ref('all');
@@ -271,7 +274,10 @@ const selectedFacilityType = ref('all');
 
 
 // 生命周期 - 组件挂载时加载数据
-onMounted(() => {
+onMounted(async () => {
+    // 加载设施类型选项
+    await loadFacilityTypeOptions();
+
     if (props.enableFloating) {
         loadPanelState();
         updateViewportSize();
@@ -291,6 +297,28 @@ onUnmounted(() => {
         window.removeEventListener('resize', updateViewportSize);
     }
 });
+
+/**
+ * 加载设施类型选项
+ */
+const loadFacilityTypeOptions = async () => {
+    try {
+        const types = await getFacilityTypeOptions();
+        // 添加"全部设备"选项并排除监测站（监测站通过独立标签页管理）
+        const filteredTypes = types.filter(type => type.value !== 'monitoring_station');
+
+        const finalOptions = [
+            { value: 'all', label: '全部设备' },
+            ...filteredTypes
+        ];
+
+        facilityTypeOptions.value = finalOptions;
+    } catch (error) {
+        console.error('加载设施类型选项失败:', error);
+        // 提供默认选项
+        facilityTypeOptions.value = [{ value: 'all', label: '全部设备' }];
+    }
+};
 
 /**
  * 加载面板状态

@@ -12,6 +12,7 @@
 import { ref, onMounted, onUnmounted, watch, nextTick } from "vue";
 import AMapLoader from "@amap/amap-jsapi-loader";
 import { useDictionary } from "@/composables/useDictionary";
+import { useFacilityTypes } from "@/composables/useFacilityTypes";
 import {
     FACILITY_TYPE_CONFIG,
     MONITORING_ITEM_CONFIG,
@@ -100,7 +101,9 @@ const currentZoom = ref(8);
 
 // 字典数据
 const { getDictData } = useDictionary();
+const { loadFacilityTypeMap, getFacilityTypeLabelSync } = useFacilityTypes();
 const deviceStatusOptions = ref([]);
+const facilityTypeMap = ref({});
 
 // 生命周期 - 挂载时初始化地图
 onMounted(async () => {
@@ -315,9 +318,12 @@ const initMap = async () => {
 const loadDictionaries = async () => {
     try {
         deviceStatusOptions.value = await getDictData('device_status');
+        // 加载设施类型映射
+        facilityTypeMap.value = await loadFacilityTypeMap();
     } catch (error) {
         console.error('加载字典数据失败:', error);
         deviceStatusOptions.value = [];
+        facilityTypeMap.value = {};
     }
 };
 

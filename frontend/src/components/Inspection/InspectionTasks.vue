@@ -102,6 +102,10 @@ const props = defineProps({
         type: Object,
         required: true
     },
+    facilityTypeOptions: {
+        type: Array,
+        required: true
+    },
     facilityOptions: {
         type: Object,
         required: true
@@ -304,11 +308,11 @@ onMounted(() => {
 const updateSearchFieldOptions = () => {
     taskSearchFields.value.find(f => f.prop === 'status').options = props.dictMaps.inspection_status
     taskSearchFields.value.find(f => f.prop === 'frequency').options = props.dictMaps.inspection_frequency
-    taskSearchFields.value.find(f => f.prop === 'facilityType').options = props.dictMaps.facility_type
+    taskSearchFields.value.find(f => f.prop === 'facilityType').options = props.facilityTypeOptions
 }
 
 const updateFormFieldOptions = () => {
-    taskFormFields.value.find(f => f.prop === 'facilityType').options = props.dictMaps.facility_type
+    taskFormFields.value.find(f => f.prop === 'facilityType').options = props.facilityTypeOptions
     taskFormFields.value.find(f => f.prop === 'frequency').options = props.dictMaps.inspection_frequency
     taskFormFields.value.find(f => f.prop === 'assigneeId').options = props.personnelOptions
 }

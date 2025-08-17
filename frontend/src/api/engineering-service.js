@@ -771,3 +771,27 @@ export function getSelectOptions(type) {
 		method: "get",
 	});
 }
+
+// ==================== 设施类型管理 ====================
+
+/**
+ * 获取所有设施类型枚举
+ * @returns {Promise} 设施类型列表
+ */
+export function getFacilityTypes() {
+	return request({
+		url: "/engineering-service/facility-types",
+		method: "get",
+	});
+}
+
+/**
+ * 获取设施类型映射
+ * @returns {Promise} 设施类型映射
+ */
+export function getFacilityTypeMap() {
+	return request({
+		url: "/engineering-service/facility-type-map",
+		method: "get",
+	});
+}

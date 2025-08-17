@@ -12,19 +12,20 @@
         <div class="tab-content-wrapper">
             <!-- 巡检任务 Tab -->
             <div v-if="activeTab === 'tasks'" class="task-section">
-                <InspectionTasks ref="tasksRef" :dict-maps="dictMaps" :facility-options="facilityOptions"
-                    :personnel-options="personnelOptions" :load-facility-options="loadFacilityOptions"
-                    :get-dict-label-sync="getDictLabelSync" :get-facility-display="getFacilityDisplay"
-                    :exporting="exporting" @task-updated="handleTaskUpdated" @export-tasks="handleExportTasks" />
+                <InspectionTasks ref="tasksRef" :dict-maps="dictMaps" :facility-type-options="facilityTypeOptions"
+                    :facility-options="facilityOptions" :personnel-options="personnelOptions"
+                    :load-facility-options="loadFacilityOptions" :get-dict-label-sync="getDictLabelSync"
+                    :get-facility-display="getFacilityDisplay" :exporting="exporting" @task-updated="handleTaskUpdated"
+                    @export-tasks="handleExportTasks" />
             </div>
 
             <!-- 巡检记录 Tab -->
             <div v-else-if="activeTab === 'records'" class="record-section">
-                <InspectionRecords ref="recordsRef" :dict-maps="dictMaps" :facility-options="facilityOptions"
-                    :personnel-options="personnelOptions" :load-facility-options="loadFacilityOptions"
-                    :get-dict-label-sync="getDictLabelSync" :get-facility-display="getFacilityDisplay"
-                    :exporting="exporting" @record-created="handleRecordCreated"
-                    @export-records="handleExportRecords" />
+                <InspectionRecords ref="recordsRef" :dict-maps="dictMaps" :facility-type-options="facilityTypeOptions"
+                    :facility-options="facilityOptions" :personnel-options="personnelOptions"
+                    :load-facility-options="loadFacilityOptions" :get-dict-label-sync="getDictLabelSync"
+                    :get-facility-display="getFacilityDisplay" :exporting="exporting"
+                    @record-created="handleRecordCreated" @export-records="handleExportRecords" />
             </div>
         </div>
     </div>
@@ -39,6 +40,7 @@ import CustomButton from '@/components/Common/CustomButton.vue'
 import InspectionTasks from '@/components/Inspection/InspectionTasks.vue'
 import InspectionRecords from '@/components/Inspection/InspectionRecords.vue'
 import { useDictionary } from '@/composables/useDictionary'
+import { useFacilityTypes } from '@/composables/useFacilityTypes'
 import { formatDateTime, formatLocalTimeForAPI } from '@/utils/shared/common'
 import { listTasks, listRecords } from '@/api/inspection'
 import {
@@ -53,6 +55,7 @@ const recordsRef = ref(null)
 
 // ================= 组合式函数 =================
 const { getDictData } = useDictionary()
+const { getFacilityTypeOptions, getFacilityTypeLabelSync, loadFacilityTypeMap } = useFacilityTypes()
 
 // ================= 响应式数据 =================
 const activeTab = ref('tasks')
@@ -67,9 +70,11 @@ const exporting = ref(false)
 const dictMaps = reactive({
     inspection_status: [],
     inspection_frequency: [],
-    facility_type: [],
     device_status: []
 })
+
+// 设施类型数据
+const facilityTypeOptions = ref([])
 
 // 设施选项数据
 const facilityOptions = reactive({
@@ -92,6 +97,9 @@ onMounted(async () => {
 
 // ================= 计算属性/工具函数 =================
 const getDictLabelSync = (dictType, value) => {
+    if (dictType === 'facility_type') {
+        return getFacilityTypeLabelSync(value)
+    }
     const dict = dictMaps[dictType] || []
     const item = dict.find(d => String(d.value) === String(value))
     return item ? item.label : value || '-'
@@ -111,17 +119,20 @@ const getFacilityDisplay = (facilityType, facilityId) => {
 // ================= 字典与选项加载 =================
 const loadDictionaries = async () => {
     try {
-        const [inspectionStatus, inspectionFrequency, facilityType, deviceStatus] = await Promise.all([
+        const [inspectionStatus, inspectionFrequency, deviceStatus] = await Promise.all([
             getDictData('inspection_status'),
             getDictData('inspection_frequency'),
-            getDictData('facility_type'),
             getDictData('device_status')
         ])
 
         dictMaps.inspection_status = inspectionStatus
         dictMaps.inspection_frequency = inspectionFrequency
-        dictMaps.facility_type = facilityType
         dictMaps.device_status = deviceStatus
+
+        // 加载设施类型数据
+        facilityTypeOptions.value = await getFacilityTypeOptions()
+        // 预加载设施类型映射，用于同步获取标签
+        await loadFacilityTypeMap()
     } catch (error) {
         console.error('加载字典数据失败:', error)
     }

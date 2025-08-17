@@ -179,6 +179,10 @@ const props = defineProps({
         type: Object,
         required: true
     },
+    facilityTypeOptions: {
+        type: Array,
+        required: true
+    },
     facilityOptions: {
         type: Object,
         required: true
@@ -459,7 +463,7 @@ onMounted(() => {
 const updateSearchFieldOptions = () => {
     const recordFacilityTypeField = recordSearchFields.value.find(f => f.prop === 'facilityType')
     if (recordFacilityTypeField) {
-        recordFacilityTypeField.options = props.dictMaps.facility_type
+        recordFacilityTypeField.options = props.facilityTypeOptions
     }
     const inspectorField = recordSearchFields.value.find(f => f.prop === 'inspectorId')
     if (inspectorField) {
@@ -468,7 +472,7 @@ const updateSearchFieldOptions = () => {
 }
 
 const updateFormFieldOptions = () => {
-    recordFormFields.value.find(f => f.prop === 'facilityType').options = props.dictMaps.facility_type
+    recordFormFields.value.find(f => f.prop === 'facilityType').options = props.facilityTypeOptions
     recordFormFields.value.find(f => f.prop === 'inspectorId').options = props.personnelOptions
     recordFormFields.value.find(f => f.prop === 'deviceStatus').options = props.dictMaps.device_status
 }
