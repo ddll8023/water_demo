@@ -186,7 +186,8 @@ const enhancedSearchFields = computed(() => [
         label: '测点名称',
         placeholder: '请输入测点名称',
         labelWidth: 'var(--form-label-width-standard)',
-        span: 4,
+        width: '220px',
+        clearable: true
     },
     {
         type: 'select',
@@ -195,7 +196,9 @@ const enhancedSearchFields = computed(() => [
         placeholder: '请选择监测项',
         labelWidth: 'var(--form-label-width-standard)',
         options: monitoringItemOptions.value,
-        span: 4,
+        width: '220px',
+        clearable: true,
+        filterable: false
     },
 ]);
 

@@ -319,48 +319,51 @@ const enhancedSearchFields = computed(() => {
             labelWidth: 'var(--form-label-width-standard)',
             showDuration: true,
             width: '360px',
-            format: 'YYYY-MM-DD HH:mm:ss',
-            span: 8
+            format: 'YYYY-MM-DD HH:mm:ss'
         },
         {
             type: 'select',
             prop: 'warningLocation',
             label: '预警地点',
-            placeholder: '请选择',
+            placeholder: '请选择预警地点',
             labelWidth: 'var(--form-label-width-standard)',
             options: warningLocationOptions.value,
             clearable: true,
             filterable: false,
+            width: '220px'
         },
         {
             type: 'select',
             prop: 'warningType',
             label: '预警类型',
-            placeholder: '请选择',
+            placeholder: '请选择预警类型',
             labelWidth: 'var(--form-label-width-standard)',
             options: warningTypeOptions.value,
             clearable: true,
             filterable: false,
+            width: '220px'
         },
         {
             type: 'select',
             prop: 'warningLevel',
             label: '预警等级',
-            placeholder: '请选择',
+            placeholder: '请选择预警等级',
             labelWidth: 'var(--form-label-width-standard)',
             options: warningLevelOptions.value,
             clearable: true,
             filterable: false,
+            width: '220px'
         },
         {
             type: 'select',
             prop: 'warningStatus',
             label: '预警状态',
-            placeholder: '请选择',
+            placeholder: '请选择预警状态',
             labelWidth: 'var(--form-label-width-standard)',
             options: warningStatusOptions.value,
             clearable: true,
             filterable: false,
+            width: '220px'
         }
     ];
 });

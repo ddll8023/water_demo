@@ -515,14 +515,16 @@ const personnelSearchFields = [
     label: '姓名',
     type: 'input',
     placeholder: '请输入姓名',
-    labelWidth: 'var(--form-label-width-compact)'
+    labelWidth: 'var(--form-label-width-standard)',
+    width: '220px'
   },
   {
     prop: 'positionId',
     label: '职责',
     type: 'select',
     placeholder: '请选择职责',
-    labelWidth: 'var(--form-label-width-compact)',
+    labelWidth: 'var(--form-label-width-standard)',
+    width: '220px',
     options: [] // 将通过API动态加载
   }
 ]

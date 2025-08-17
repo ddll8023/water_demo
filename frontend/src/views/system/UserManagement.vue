@@ -246,7 +246,7 @@ const searchFields = computed(() => [
     label: '用户名',
     type: 'input',
     placeholder: '请输入用户名',
-    width: '200px',
+    width: '240px',
     labelWidth: 'var(--form-label-width-standard)'
   },
   {
@@ -254,12 +254,12 @@ const searchFields = computed(() => [
     label: '角色',
     type: 'select',
     placeholder: '请选择角色',
-    width: '200px',
+    width: '240px',
     options: roleOptions.value?.map(role => ({
       label: role.name,
       value: role.id
     })) || [],
-    labelWidth: 'var(--form-label-width-compact)'
+    labelWidth: 'var(--form-label-width-standard)'
   },
   {
     prop: 'isActive',
@@ -267,9 +267,9 @@ const searchFields = computed(() => [
     type: 'select',
     placeholder: '请选择状态',
     clearable: true,
-    width: '200px',
+    width: '240px',
     options: userStatusOptions.value,
-    labelWidth: 'var(--form-label-width-compact)'
+    labelWidth: 'var(--form-label-width-standard)'
   }
 ])
 

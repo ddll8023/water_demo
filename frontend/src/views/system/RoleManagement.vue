@@ -197,7 +197,8 @@ const searchFields = [
     label: '角色名称',
     type: 'input',
     placeholder: '请输入角色名称',
-    width: '200px'
+    width: '240px',
+    labelWidth: 'var(--form-label-width-standard)'
   }
 ]
 

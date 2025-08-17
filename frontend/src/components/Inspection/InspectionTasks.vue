@@ -6,7 +6,7 @@
             <template #actions>
                 <CustomButton type="primary" @click="handleAddTask" v-permission="'business:manage'">
                     <i class="fa fa-plus"></i>
-                    新增任务
+                    新增
                 </CustomButton>
             </template>
         </CommonSearch>

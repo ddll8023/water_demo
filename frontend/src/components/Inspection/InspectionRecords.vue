@@ -6,7 +6,7 @@
             <template #actions>
                 <CustomButton type="primary" @click="handleAddRecord" v-permission="'business:operate'">
                     <i class="fa fa-plus"></i>
-                    新增记录
+                    新增
                 </CustomButton>
             </template>
         </CommonSearch>
@@ -225,7 +225,7 @@ const recordSearchFields = ref([
         type: 'select',
         options: [],
         placeholder: '请选择设施类型',
-        width: '180px',
+        width: '220px',
         labelWidth: 'var(--form-label-width-standard)',
         clearable: true
     },
@@ -235,7 +235,7 @@ const recordSearchFields = ref([
         type: 'select',
         options: [],
         placeholder: '请选择巡检设施',
-        width: '180px',
+        width: '220px',
         labelWidth: 'var(--form-label-width-standard)',
         clearable: true
     },
@@ -258,7 +258,7 @@ const recordSearchFields = ref([
             { label: '异常', value: 1 }
         ],
         placeholder: '请选择',
-        width: '140px',
+        width: '220px',
         labelWidth: 'var(--form-label-width-standard)',
         clearable: true
     },
@@ -271,7 +271,7 @@ const recordSearchFields = ref([
             { label: '已处理', value: 1 }
         ],
         placeholder: '请选择',
-        width: '140px',
+        width: '220px',
         labelWidth: 'var(--form-label-width-standard)',
         clearable: true
     },
@@ -281,7 +281,7 @@ const recordSearchFields = ref([
         type: 'select',
         options: [],
         placeholder: '请选择负责人',
-        width: '160px',
+        width: '220px',
         labelWidth: 'var(--form-label-width-standard)',
         clearable: true
     }

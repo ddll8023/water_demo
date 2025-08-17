@@ -123,8 +123,8 @@ const pumpingStationSearchFields = reactive([
     label: '泵站名称',
     type: 'input',
     placeholder: '请输入泵站名称',
-    labelWidth: '80px',
-    span: 6,
+    width: '240px',
+    labelWidth: 'var(--form-label-width-standard)',
     clearable: true
   }
 ])
@@ -337,12 +337,12 @@ const pumpingStationApi = {
 const monitoringStationSearchFields = reactive([
   {
     prop: 'keyword',
-    label: '监测站名称',
+    label: '监测站',
     type: 'select',
     placeholder: '请选择监测站名称',
     options: [],
-    labelWidth: '90px',
-    span: 6,
+    width: '240px',
+    labelWidth: 'var(--form-label-width-standard)',
     clearable: true
   }
 ])
@@ -503,8 +503,8 @@ const pipelineSearchFields = reactive([
     label: '管道名称',
     type: 'input',
     placeholder: '请输入管道名称',
-    labelWidth: '80px',
-    span: 6
+    width: '240px',
+    labelWidth: 'var(--form-label-width-standard)'
   },
   {
     prop: 'pipelineType',
@@ -512,8 +512,8 @@ const pipelineSearchFields = reactive([
     type: 'select',
     placeholder: '请选择管道类型',
     options: [],
-    labelWidth: '80px',
-    span: 5
+    width: '240px',
+    labelWidth: 'var(--form-label-width-standard)'
   }
 ])
 
@@ -580,8 +580,8 @@ const villageSearchFields = [
     label: '村庄名称',
     type: 'input',
     placeholder: '请输入村庄名称',
-    labelWidth: '70px',
-    span: 6,
+    width: '240px',
+    labelWidth: 'var(--form-label-width-standard)',
     clearable: true
   }
 ]
@@ -669,8 +669,8 @@ const reservoirSearchFields = reactive([
     label: '水库名称',
     type: 'input',
     placeholder: '请输入水库名称',
-    labelWidth: '70px',
-    span: 5,
+    width: '240px',
+    labelWidth: 'var(--form-label-width-standard)',
     clearable: true
   }
 ])
@@ -813,8 +813,8 @@ const waterPlantSearchFields = reactive([
     label: '水厂名称',
     type: 'input',
     placeholder: '请输入水厂名称',
-    labelWidth: '70px',
-    span: 5
+    width: '240px',
+    labelWidth: 'var(--form-label-width-standard)'
   }
 ])
 
@@ -955,8 +955,8 @@ const floatingBoatSearchFields = reactive([
     label: '浮船名称',
     type: 'input',
     placeholder: '请输入浮船名称',
-    labelWidth: '70px',
-    span: 5,
+    width: '240px',
+    labelWidth: 'var(--form-label-width-standard)',
     clearable: true
   }
 ])
@@ -1052,8 +1052,8 @@ const disinfectionMaterialSearchFields = reactive([
     label: '药材名称',
     type: 'input',
     placeholder: '请输入名称',
-    labelWidth: '70px',
-    span: 5
+    width: '240px',
+    labelWidth: 'var(--form-label-width-standard)'
   }
 ])
 

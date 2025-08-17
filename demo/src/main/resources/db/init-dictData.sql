@@ -66,10 +66,6 @@ SELECT 'monitoring_item', '监测项目', '监测站点项目类型', 130, 1, NO
 WHERE NOT EXISTS (SELECT 1 FROM dict_types WHERE type_code = 'monitoring_item');
 
 INSERT INTO dict_types (type_code, type_name, description, sort_order, is_active, created_at, updated_at)
-SELECT 'stock_status', '库存状态', '药材库存状态分类', 140, 1, NOW(), NOW()
-WHERE NOT EXISTS (SELECT 1 FROM dict_types WHERE type_code = 'stock_status');
-
-INSERT INTO dict_types (type_code, type_name, description, sort_order, is_active, created_at, updated_at)
 SELECT 'warning_status', '预警状态', '预警信息状态分类', 150, 1, NOW(), NOW()
 WHERE NOT EXISTS (SELECT 1 FROM dict_types WHERE type_code = 'warning_status');
 
@@ -457,37 +453,6 @@ WHERE NOT EXISTS (
     SELECT 1 FROM dict_data dd
     WHERE dd.type_id = (SELECT id FROM dict_types WHERE type_code = 'operation_mode' LIMIT 1)
     AND dd.data_value = 'parallel_operation'
-);
-
--- 库存状态数据
-INSERT INTO dict_data (type_id, data_label, data_value, description, sort_order, is_active, created_at, updated_at)
-SELECT
-    (SELECT id FROM dict_types WHERE type_code = 'stock_status' LIMIT 1),
-    '充足', 'sufficient', '库存充足', 10, 1, NOW(), NOW()
-WHERE NOT EXISTS (
-    SELECT 1 FROM dict_data dd
-    WHERE dd.type_id = (SELECT id FROM dict_types WHERE type_code = 'stock_status' LIMIT 1)
-    AND dd.data_value = 'sufficient'
-);
-
-INSERT INTO dict_data (type_id, data_label, data_value, description, sort_order, is_active, created_at, updated_at)
-SELECT
-    (SELECT id FROM dict_types WHERE type_code = 'stock_status' LIMIT 1),
-    '不足', 'insufficient', '库存不足', 20, 1, NOW(), NOW()
-WHERE NOT EXISTS (
-    SELECT 1 FROM dict_data dd
-    WHERE dd.type_id = (SELECT id FROM dict_types WHERE type_code = 'stock_status' LIMIT 1)
-    AND dd.data_value = 'insufficient'
-);
-
-INSERT INTO dict_data (type_id, data_label, data_value, description, sort_order, is_active, created_at, updated_at)
-SELECT
-    (SELECT id FROM dict_types WHERE type_code = 'stock_status' LIMIT 1),
-    '缺货', 'out_of_stock', '库存缺货', 30, 1, NOW(), NOW()
-WHERE NOT EXISTS (
-    SELECT 1 FROM dict_data dd
-    WHERE dd.type_id = (SELECT id FROM dict_types WHERE type_code = 'stock_status' LIMIT 1)
-    AND dd.data_value = 'out_of_stock'
 );
 
 -- 工程等级数据

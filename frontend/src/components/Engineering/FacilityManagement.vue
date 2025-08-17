@@ -7,7 +7,7 @@
       <template #actions>
         <CustomButton type="primary" @click="handleAdd" v-permission="'business:manage'">
           <i class="fa fa-plus"></i>
-          新增{{ facilityName }}
+          新增
         </CustomButton>
       </template>
     </CommonSearch>

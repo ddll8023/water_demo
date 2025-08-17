@@ -336,7 +336,8 @@ const searchFields = [
     label: '部门名称',
     type: 'input',
     placeholder: '请输入部门名称',
-    width: '200px'
+    width: '200px',
+    labelWidth: 'var(--form-label-width-standard)'
   }
 ]
 

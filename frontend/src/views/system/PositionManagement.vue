@@ -115,7 +115,9 @@ const searchFields = [
     prop: 'keyword',
     label: '岗位名称',
     type: 'input',
-    placeholder: '请输入岗位名称'
+    placeholder: '请输入岗位名称',
+    width: '240px',
+    labelWidth: 'var(--form-label-width-standard)'
   }
 ]
 

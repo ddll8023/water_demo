@@ -75,19 +75,21 @@
               </el-checkbox-group>
             </div>
           </div>
-        </div>
 
-        <!-- 搜索按钮容器 -->
-        <div class="search-buttons">
-          <CustomButton type="primary" :loading="searchLoading" @click="handleSearch"
-            :size="singleRow ? 'default' : 'default'">
-            <i class="fa fa-search"></i>
-            {{ searchText }}
-          </CustomButton>
-          <CustomButton type="secondary" @click="handleReset" :size="singleRow ? 'default' : 'default'">
-            <i class="fa fa-refresh"></i>
-            {{ resetText }}
-          </CustomButton>
+          <!-- 搜索按钮 -->
+          <div class="search-field-item" :style="getButtonStyle()">
+            <div class="search-field-content">
+              <CustomButton type="primary" :loading="searchLoading" @click="handleSearch"
+                :size="singleRow ? 'default' : 'default'">
+                <i class="fa fa-search"></i>
+                {{ searchText }}
+              </CustomButton>
+              <CustomButton type="secondary" @click="handleReset" :size="singleRow ? 'default' : 'default'">
+                <i class="fa fa-refresh"></i>
+                {{ resetText }}
+              </CustomButton>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -289,14 +291,18 @@ const getFieldsContainerStyle = () => {
     }
   }
 
-  // 单行模式：使用flexbox布局支持不同宽度
+  // 单行模式：使用flexbox布局支持不同宽度，允许自动换行
   return {
     display: 'flex',
     alignItems: 'center',
     gap: 'var(--spacing-base)',
-    flexWrap: 'nowrap',
-    // 移除flex: '1'，让容器根据内容自适应宽度
-    width: 'auto'
+    flexWrap: 'wrap',
+    // 设置容器宽度为100%，确保有足够空间换行
+    width: '100%',
+    // 最小高度确保单行显示时的对齐
+    minHeight: 'var(--form-item-height)',
+    // 确保内容左对齐
+    justifyContent: 'flex-start'
   }
 }
 
@@ -310,15 +316,21 @@ const getFieldItemStyle = (item) => {
     }
   }
 
-  // 单行模式：设置字段项宽度，使用flex-basis确保宽度生效
+  // 单行模式：设置字段项宽度，允许换行和适当收缩
   return {
     display: 'flex',
     alignItems: 'center',
     gap: 'var(--spacing-small)',
-    flexShrink: '0',
+    // 允许在空间不足时适当收缩
+    flexShrink: '1',
+    // 不自动增长，保持设定的宽度
     flexGrow: '0',
+    // 设置基础宽度，但允许在换行时调整
     flexBasis: getDefaultWidth(item),
-    width: getDefaultWidth(item)
+    // 设置最大宽度，避免单个字段项过大
+    maxWidth: getDefaultWidth(item),
+    // 确保最小宽度，保证可用性
+    minWidth: '200px'
   }
 }
 
@@ -343,6 +355,32 @@ const getFieldLabelStyle = (item) => {
     flexShrink: '0',
     width: labelWidth,
     minWidth: labelWidth
+  }
+}
+
+// 获取按钮样式
+const getButtonStyle = () => {
+  if (!props.singleRow) {
+    return {
+      display: 'flex',
+      flexDirection: 'row',
+      gap: 'var(--spacing-small)',
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+      marginTop: 'var(--spacing-base)'
+    }
+  }
+
+  // 单行模式：设置按钮样式，使其能够正确换行
+  return {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 'var(--spacing-small)',
+    flexShrink: '0',
+    flexGrow: '0',
+    flexBasis: 'auto',
+    minWidth: 'auto',
+    maxWidth: 'auto'
   }
 }
 
@@ -447,10 +485,22 @@ defineExpose({
       padding: var(--spacing-medium) var(--spacing-base);
 
       .search-area {
-        @include flex-center-y;
+        display: flex;
+        flex-direction: column;
         gap: var(--spacing-base);
         flex: 1;
         min-width: 0;
+        width: 100%;
+
+        .search-fields-container {
+          width: 100%;
+          align-items: center;
+          align-content: center;
+          display: flex;
+          flex-wrap: wrap;
+          gap: var(--spacing-base);
+          justify-content: flex-start;
+        }
       }
 
       .custom-actions-container {
@@ -458,6 +508,8 @@ defineExpose({
         gap: var(--spacing-small);
         flex-shrink: 0;
         flex-wrap: wrap;
+        justify-content: flex-end;
+        align-self: center;
       }
 
       .search-field-content {
@@ -465,6 +517,8 @@ defineExpose({
         flex: 1;
         min-width: 0; // 防止flex子项溢出
         @include flex-center-y; // 添加垂直居中对齐
+        display: flex;
+        gap: var(--spacing-small);
 
         // 确保自定义组件能够填满可用空间
         >* {
@@ -561,11 +615,6 @@ defineExpose({
               width: 100% !important;
             }
           }
-
-          .search-buttons {
-            justify-content: center;
-            margin-top: var(--spacing-small);
-          }
         }
 
         .custom-actions-container {
@@ -591,15 +640,6 @@ defineExpose({
             width: auto !important;
             min-width: auto !important;
           }
-        }
-      }
-
-      .search-buttons {
-        flex-direction: column;
-        width: 100%;
-
-        .custom-button {
-          width: 100%;
         }
       }
 
