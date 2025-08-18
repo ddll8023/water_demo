@@ -11,8 +11,11 @@ import com.example.demo.dto.monitoring.RainfallMonitoringDataResponseDTO;
 import com.example.demo.entity.monitoring.RainfallMonitoringData;
 import com.example.demo.mapper.RainfallMonitoringDataMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.nio.charset.StandardCharsets;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -26,6 +29,7 @@ import java.util.Map;
 /**
  * 雨情监测数据服务类
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RainfallMonitoringDataService extends ServiceImpl<RainfallMonitoringDataMapper, RainfallMonitoringData> {
@@ -73,22 +77,35 @@ public class RainfallMonitoringDataService extends ServiceImpl<RainfallMonitorin
 
     /**
      * 获取雨情图表数据
-     * 
+     * 支持数据类型区分（时段雨量/累计雨量）
+     *
      * @param stationId 监测站点ID
      * @param startTime 开始时间
      * @param endTime 结束时间
      * @param interval 时间间隔（hour/day/month）
+     * @param dataType 数据类型(rainfall:时段雨量,cumulativeRainfall:累计雨量)
      * @return 图表数据
      */
-    public RainfallChartDataResponseDTO getRainfallChartData(Long stationId, LocalDateTime startTime, LocalDateTime endTime, String interval) {
+    public RainfallChartDataResponseDTO getRainfallChartData(Long stationId, LocalDateTime startTime, LocalDateTime endTime, String interval, String dataType) {
         List<Map<String, Object>> chartData = rainfallMonitoringDataMapper.selectRainfallChartData(stationId, startTime, endTime, interval);
-        
+
         RainfallChartDataResponseDTO responseDTO = new RainfallChartDataResponseDTO();
         List<String> labels = new ArrayList<>();
-        List<BigDecimal> rainfallValues = new ArrayList<>();
-        List<BigDecimal> cumulativeValues = new ArrayList<>();
-        List<BigDecimal> intensityValues = new ArrayList<>();
-        
+        List<BigDecimal> values = new ArrayList<>();
+
+        String datasetName;
+        String dataFieldName;
+
+        // 根据数据类型确定查询字段和数据集名称
+        if ("cumulativeRainfall".equals(dataType)) {
+            dataFieldName = "max_cumulative_rainfall";
+            datasetName = "累计雨量数据";
+        } else {
+            // 默认为时段雨量
+            dataFieldName = "avg_rainfall";
+            datasetName = "时段雨量数据";
+        }
+
         DateTimeFormatter formatter;
         if ("hour".equals(interval)) {
             formatter = DateTimeFormatter.ofPattern("MM-dd HH:mm");
@@ -97,19 +114,29 @@ public class RainfallMonitoringDataService extends ServiceImpl<RainfallMonitorin
         } else {
             formatter = DateTimeFormatter.ofPattern("yyyy-MM");
         }
-        
+
         for (Map<String, Object> data : chartData) {
-            LocalDateTime time = (LocalDateTime) data.get("time");
-            labels.add(formatter.format(time));
-            rainfallValues.add((BigDecimal) data.get("rainfall"));
-            cumulativeValues.add((BigDecimal) data.get("cumulativeRainfall"));
-            intensityValues.add((BigDecimal) data.get("rainfallIntensity"));
+            // 处理时间标签
+            Object timeObj = data.get("time_label");
+            String timeLabel;
+            if (timeObj instanceof String) {
+                timeLabel = (String) timeObj;
+            } else if (timeObj instanceof LocalDateTime) {
+                timeLabel = formatter.format((LocalDateTime) timeObj);
+            } else {
+                continue; // 跳过无效数据
+            }
+
+            labels.add(timeLabel);
+
+            // 根据数据类型获取对应的值
+            BigDecimal value = (BigDecimal) data.get(dataFieldName);
+            values.add(value != null ? value : BigDecimal.ZERO);
         }
-        
+
         responseDTO.setLabels(labels);
-        responseDTO.setRainfallValues(rainfallValues);
-        responseDTO.setCumulativeValues(cumulativeValues);
-        responseDTO.setIntensityValues(intensityValues);
+        responseDTO.setValues(values);
+        responseDTO.setDatasetName(datasetName);
         responseDTO.setInterval(interval);
         
         // 获取站点名称 - 这里需要在Mapper中添加方法
@@ -123,9 +150,90 @@ public class RainfallMonitoringDataService extends ServiceImpl<RainfallMonitorin
         return responseDTO;
     }
 
+
+
+    /**
+     * 导出雨情监测数据到Excel（CSV格式）
+     *
+     * @param queryDTO 查询条件DTO
+     * @return CSV格式的字节数组
+     */
+    public byte[] exportToExcel(RainfallMonitoringDataQueryDTO queryDTO) {
+        try {
+            // 设置导出专用的分页参数，避免内存溢出
+            queryDTO.setPage(1);
+            if (queryDTO.getSize() == null || queryDTO.getSize() > 10000) {
+                queryDTO.setSize(10000);
+            }
+
+            // 获取要导出的数据
+            PageResponseDTO<RainfallMonitoringDataResponseDTO> dataPage = getRainfallMonitoringDataPage(queryDTO);
+            List<RainfallMonitoringDataResponseDTO> dataList = dataPage.getItems();
+
+            // 创建CSV内容
+            StringBuilder csvContent = new StringBuilder();
+
+            // 添加BOM以支持中文显示
+            csvContent.append("\uFEFF");
+
+            // 创建标题行
+            String[] headers = {"序号", "监测站点", "站点编码", "监测时间", "时段雨量(mm)",
+                              "累计雨量(mm)", "数据质量", "采集方式", "数据来源", "备注"};
+            csvContent.append(String.join(",", headers)).append("\n");
+
+            // 处理数据行
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            int rowNumber = 1;
+
+            for (RainfallMonitoringDataResponseDTO data : dataList) {
+                String[] row = {
+                    String.valueOf(rowNumber++),
+                    escapeCsvValue(data.getStationName()),
+                    escapeCsvValue(data.getStationCode()),
+                    data.getMonitoringTime() != null ? data.getMonitoringTime().format(dateFormatter) : "",
+                    data.getRainfall() != null ? data.getRainfall().toString() : "0",
+                    data.getCumulativeRainfall() != null ? data.getCumulativeRainfall().toString() : "0",
+                    escapeCsvValue(data.getDataQualityText()),
+                    escapeCsvValue(data.getCollectionMethod()),
+                    escapeCsvValue(data.getDataSource()),
+                    escapeCsvValue(data.getRemark())
+                };
+
+                csvContent.append(String.join(",", row)).append("\n");
+            }
+
+            log.info("CSV导出完成，总记录数: {}", dataList.size());
+
+            return csvContent.toString().getBytes(StandardCharsets.UTF_8);
+
+        } catch (Exception e) {
+            log.error("导出CSV失败", e);
+            throw new RuntimeException("导出数据失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * CSV值转义处理
+     *
+     * @param value 原始值
+     * @return 转义后的值
+     */
+    private String escapeCsvValue(String value) {
+        if (value == null) {
+            return "";
+        }
+
+        // 如果包含逗号、双引号或换行符，需要用双引号包围，并转义内部的双引号
+        if (value.contains(",") || value.contains("\"") || value.contains("\n") || value.contains("\r")) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+
+        return value;
+    }
+
     /**
      * 导入雨情监测数据
-     * 
+     *
      * @param dataList 导入数据列表
      * @param stationId 监测站点ID
      * @return 导入结果

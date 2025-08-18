@@ -70,8 +70,8 @@ public class WaterQualityMonitoringDataController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) Long stationId,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime,
             @RequestParam(required = false) String monitoringItemCode,
             @RequestParam(required = false) Integer dataQuality,
             @RequestParam(required = false) String collectionMethod,
@@ -118,8 +118,8 @@ public class WaterQualityMonitoringDataController {
     public ResponseEntity<ApiResponse<WaterQualityChartDataResponseDTO>> getWaterQualityChartData(
             @RequestParam(required = false) Long stationId,
             @RequestParam String monitoringItemCode,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime,
             @RequestParam(defaultValue = "hour") String interval) {
         try {
             WaterQualityChartDataResponseDTO result = waterQualityMonitoringDataService.getWaterQualityChartData(

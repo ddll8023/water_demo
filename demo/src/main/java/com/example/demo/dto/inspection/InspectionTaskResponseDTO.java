@@ -13,11 +13,15 @@ public class InspectionTaskResponseDTO {
     private String facilityType;
     private Long facilityId;
     private String frequency;
+    // 新增：频次文本
+    private String frequencyText;
     private String content;
     private Long assigneeId;
     // 新增：指派人姓名
     private String assigneeName;
     private String status;
+    // 新增：状态文本
+    private String statusText;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate scheduledDate;
     private LocalDateTime createdAt;

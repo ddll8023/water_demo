@@ -8,10 +8,12 @@
         <result property="facilityType" column="facility_type"/>
         <result property="facilityId" column="facility_id"/>
         <result property="frequency" column="frequency"/>
+        <result property="frequencyText" column="frequency_text"/>
         <result property="content" column="content"/>
         <result property="assigneeId" column="assignee_id"/>
         <result property="assigneeName" column="assignee_name"/>
         <result property="status" column="status"/>
+        <result property="statusText" column="status_text"/>
         <result property="scheduledDate" column="scheduled_date"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
@@ -27,6 +29,8 @@
         SELECT 
             t.*, 
             p.full_name AS assignee_name,
+            COALESCE(dict_status.data_label, '未知') as status_text,
+            COALESCE(dict_frequency.data_label, '未知') as frequency_text,
             /* 统一工程名称 */
             CASE 
                 WHEN t.facility_type = 'pumping_station' THEN (SELECT name FROM pumping_stations ps WHERE ps.id = t.facility_id AND ps.deleted_at IS NULL)
@@ -42,6 +46,12 @@
             (SELECT COUNT(1) FROM inspection_records r WHERE r.task_id = t.id AND r.deleted_at IS NULL AND (r.issue_flag = 0 OR r.resolved_at IS NOT NULL)) AS completed_count
         FROM inspection_tasks t
         LEFT JOIN personnel p ON t.assignee_id = p.id AND p.deleted_at IS NULL
+        LEFT JOIN dict_data dict_status ON t.status COLLATE utf8mb4_unicode_ci = dict_status.data_value COLLATE utf8mb4_unicode_ci
+            AND dict_status.type_id = (SELECT id FROM dict_types WHERE type_code = 'inspection_status' LIMIT 1)
+            AND dict_status.is_active = 1 AND dict_status.deleted_at IS NULL
+        LEFT JOIN dict_data dict_frequency ON t.frequency COLLATE utf8mb4_unicode_ci = dict_frequency.data_value COLLATE utf8mb4_unicode_ci
+            AND dict_frequency.type_id = (SELECT id FROM dict_types WHERE type_code = 'inspection_frequency' LIMIT 1)
+            AND dict_frequency.is_active = 1 AND dict_frequency.deleted_at IS NULL
         WHERE t.deleted_at IS NULL
         <if test="status != null and status != '' and (statuses == null or statuses.size == 0)">
             AND t.status = #{status}
@@ -98,9 +108,18 @@
     </select>
 
     <select id="selectTaskById" resultMap="InspectionTaskResponseDTOMap">
-        SELECT t.*, p.full_name AS assignee_name
+        SELECT t.*, 
+               p.full_name AS assignee_name,
+               COALESCE(dict_status.data_label, '未知') as status_text,
+               COALESCE(dict_frequency.data_label, '未知') as frequency_text
         FROM inspection_tasks t
         LEFT JOIN personnel p ON t.assignee_id = p.id AND p.deleted_at IS NULL
+        LEFT JOIN dict_data dict_status ON t.status COLLATE utf8mb4_unicode_ci = dict_status.data_value COLLATE utf8mb4_unicode_ci
+            AND dict_status.type_id = (SELECT id FROM dict_types WHERE type_code = 'inspection_status' LIMIT 1)
+            AND dict_status.is_active = 1 AND dict_status.deleted_at IS NULL
+        LEFT JOIN dict_data dict_frequency ON t.frequency COLLATE utf8mb4_unicode_ci = dict_frequency.data_value COLLATE utf8mb4_unicode_ci
+            AND dict_frequency.type_id = (SELECT id FROM dict_types WHERE type_code = 'inspection_frequency' LIMIT 1)
+            AND dict_frequency.is_active = 1 AND dict_frequency.deleted_at IS NULL
         WHERE t.id = #{id} AND t.deleted_at IS NULL
     </select>
 

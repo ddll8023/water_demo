@@ -71,6 +71,11 @@ public class InspectionController {
     @PreAuthorize("hasAuthority('business:manage')")
     public ResponseEntity<ApiResponse<Void>> updateTaskStatus(@PathVariable Long id, @RequestParam String status) {
         try {
+            // 参数验证
+            if (status == null || status.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(ApiResponse.error(400, "状态参数不能为空"));
+            }
+
             inspectionService.updateTaskStatus(id, status);
             return ResponseEntity.ok(ApiResponse.success("状态更新成功"));
         } catch (Exception e) {

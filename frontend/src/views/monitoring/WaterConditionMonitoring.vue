@@ -8,19 +8,19 @@
             <CommonSearch v-model="searchForm" :items="searchFields" :single-row="true" @search="handleSearch"
                 @reset="handleReset">
                 <template #actions>
-                    <!-- 时间模式切换按钮组 -->
-                    <div class="time-mode-buttons">
-                        <CustomButton :type="activeTimeRange === 'realtime' ? 'primary' : 'secondary'" size="small"
-                            @click="handleTimeRangeChange('realtime')">
-                            实时数据
+                    <!-- 时间范围快捷选择按钮组 -->
+                    <div class="time-range-buttons">
+                        <CustomButton :type="activeTimeRange === '7days' ? 'primary' : 'secondary'" size="small"
+                            @click="handleTimeRangeChange('7days')">
+                            7天
                         </CustomButton>
-                        <CustomButton :type="activeTimeRange === 'hourly' ? 'primary' : 'secondary'" size="small"
-                            @click="handleTimeRangeChange('hourly')">
-                            整点数据
+                        <CustomButton :type="activeTimeRange === '30days' ? 'primary' : 'secondary'" size="small"
+                            @click="handleTimeRangeChange('30days')">
+                            30天
                         </CustomButton>
-                        <CustomButton :type="activeTimeRange === 'daily' ? 'primary' : 'secondary'" size="small"
-                            @click="handleTimeRangeChange('daily')">
-                            日数据
+                        <CustomButton :type="activeTimeRange === 'all' ? 'primary' : 'secondary'" size="small"
+                            @click="handleTimeRangeChange('all')">
+                            全部
                         </CustomButton>
                     </div>
                     <CustomButton type="secondary" @click="showImportDialog = true" v-permission="'business:operate'">
@@ -223,7 +223,8 @@ const searchFields = ref([
 // 搜索状态管理
 const hasSearched = ref(false) // 是否已执行过搜索
 const chartSearchTriggered = ref(false) // 是否已触发图表搜索
-const activeTimeRange = ref(null) // 当前活动的时间范围类型，默认不选中任何按钮
+const activeTimeRange = ref('7days') // 当前活动的时间范围类型，默认选中7天
+const quickSearchTimeRange = ref(null) // 快捷按钮搜索时使用的时间范围
 
 // 数据状态管理
 const tableData = ref([])
@@ -258,6 +259,16 @@ watch(() => currentChartIndex.value, (newIndex) => {
     }
 })
 
+// 监听时间选择器变化，重置快捷按钮状态
+watch(() => searchForm.value.timeRange, (newTimeRange) => {
+    // 如果时间选择器有值且不是通过快捷按钮设置的，则重置快捷按钮状态
+    if (newTimeRange && newTimeRange.length === 2 && !quickSearchTimeRange.value) {
+        activeTimeRange.value = null
+    }
+    // 清除快捷搜索标记
+    quickSearchTimeRange.value = null
+}, { deep: true })
+
 // ===================================
 // 工具函数
 // ===================================
@@ -272,6 +283,42 @@ const processTimeRangeParams = (timeRange) => {
         startTime: formatLocalTimeForAPI(timeRange[0]),
         endTime: formatLocalTimeForAPI(timeRange[1])
     }
+}
+
+// 计算快捷时间范围
+const calculateQuickTimeRange = (timeRangeType) => {
+    const now = new Date()
+    let startTime, endTime
+
+    switch (timeRangeType) {
+        case '7days':
+            // 最近7天
+            startTime = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+            endTime = now
+            break
+        case '30days':
+            // 最近30天
+            startTime = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+            endTime = now
+            break
+        case 'all':
+            // 全部数据，返回空数组
+            return []
+        default:
+            return []
+    }
+
+    return [startTime, endTime]
+}
+
+// 获取当前有效的时间范围
+const getCurrentTimeRange = () => {
+    // 如果是快捷搜索，使用快捷搜索的时间范围
+    if (quickSearchTimeRange.value) {
+        return quickSearchTimeRange.value
+    }
+    // 否则使用时间选择器的值
+    return searchForm.value.timeRange
 }
 
 // ===================================
@@ -315,14 +362,14 @@ const loadStations = async () => {
 const loadTableData = async () => {
     tableLoading.value = true
     try {
-        // 处理搜索参数
-        const { timeRange, ...otherParams } = searchForm.value
+        // 获取当前有效的时间范围
+        const currentTimeRange = getCurrentTimeRange()
         const params = {
             page: pagination.currentPage,
             size: pagination.pageSize,
-            ...otherParams,
-            // 使用通用函数处理时间范围参数
-            ...processTimeRangeParams(timeRange)
+            stationId: searchForm.value.stationId,
+            // 使用当前有效的时间范围参数
+            ...processTimeRangeParams(currentTimeRange)
         }
 
         const response = await getWaterConditionMonitoringData(params)
@@ -348,13 +395,15 @@ const loadChartData = async () => {
     chartLoading.value = true;
 
     try {
+        // 获取当前有效的时间范围
+        const currentTimeRange = getCurrentTimeRange()
         // 构建API参数
         const item = waterConditionMonitoringItems[currentChartIndex.value];
         const params = {
             stationId: searchForm.value.stationId,
             dataType: item.code.toLowerCase(),
-            // 使用通用函数处理时间范围参数
-            ...processTimeRangeParams(searchForm.value.timeRange)
+            // 使用当前有效的时间范围参数
+            ...processTimeRangeParams(currentTimeRange)
         };
 
         // 调用API获取数据
@@ -407,51 +456,44 @@ const handleReset = () => {
     // 重置搜索状态
     hasSearched.value = false
     chartSearchTriggered.value = false
-    activeTimeRange.value = null
+    // 重置时间范围状态为7天激活，但不设置时间选择器值
+    activeTimeRange.value = '7days'
+    quickSearchTimeRange.value = null
     pagination.currentPage = 1
     loadTableData()
     // 重置图表数据
     chartData.value = { labels: [], values: [] }
 }
 
+// 处理快捷按钮搜索
+const handleQuickSearch = (timeRange) => {
+    // 设置快捷搜索标记，防止监听器重置按钮状态
+    quickSearchTimeRange.value = timeRange
+
+    pagination.currentPage = 1
+    loadTableData()
+
+    // 标记已执行搜索
+    hasSearched.value = true
+
+    // 只有在选择了站点时才触发图表搜索
+    if (searchForm.value.stationId) {
+        chartSearchTriggered.value = true
+        loadChartData()
+    } else {
+        chartSearchTriggered.value = false
+    }
+}
+
 // 时间范围切换处理
 const handleTimeRangeChange = (timeRangeType) => {
     activeTimeRange.value = timeRangeType
 
-    // 根据不同的时间范围类型设置不同的时间范围
-    const now = new Date()
-    let startTime, endTime
+    // 计算时间范围但不设置到时间选择器
+    const timeRange = calculateQuickTimeRange(timeRangeType)
 
-    switch (timeRangeType) {
-        case 'realtime':
-            // 实时数据：最近1小时
-            startTime = new Date(now.getTime() - 60 * 60 * 1000)
-            endTime = now
-            break
-        case 'hourly':
-            // 整点数据：最近24小时
-            startTime = new Date(now.getTime() - 24 * 60 * 60 * 1000)
-            endTime = now
-            break
-        case 'daily':
-            // 日数据：最近7天
-            startTime = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-            endTime = now
-            break
-        default:
-            startTime = null
-            endTime = null
-    }
-
-    // 更新搜索表单的时间范围
-    if (startTime && endTime) {
-        searchForm.value.timeRange = [startTime, endTime]
-    } else {
-        searchForm.value.timeRange = []
-    }
-
-    // 自动触发搜索
-    handleSearch()
+    // 自动触发快捷搜索
+    handleQuickSearch(timeRange)
 }
 
 // 分页相关事件处理
@@ -478,11 +520,11 @@ const handleChartInitialized = () => {
 const handleExport = async () => {
     exportLoading.value = true
     try {
-        // 处理搜索参数
-        const { timeRange, ...otherParams } = searchForm.value
+        // 获取当前有效的时间范围
+        const currentTimeRange = getCurrentTimeRange()
         const params = {
-            ...otherParams,
-            ...processTimeRangeParams(timeRange),
+            stationId: searchForm.value.stationId,
+            ...processTimeRangeParams(currentTimeRange),
             format: 'excel'
         }
 
@@ -553,11 +595,11 @@ const handleImportSuccess = () => {
 // 页面初始化
 onMounted(async () => {
     try {
-        // 并行加载站点和表格数据
-        await Promise.all([
-            loadStations(),
-            loadTableData()
-        ])
+        // 加载站点数据
+        await loadStations()
+
+        // 设置默认7天时间范围并加载对应数据
+        handleTimeRangeChange('7days')
     } catch (error) {
         console.error('页面初始化失败:', error)
         ElMessage.error('页面初始化失败，请刷新重试')
@@ -611,8 +653,8 @@ onMounted(async () => {
         }
     }
 
-    // 时间模式切换按钮样式
-    .time-mode-buttons {
+    // 时间范围按钮组样式
+    .time-range-buttons {
         @include flex-center-y;
         gap: var(--spacing-small);
         margin-right: var(--spacing-medium);

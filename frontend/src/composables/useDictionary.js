@@ -127,10 +127,16 @@ export const DICT_TYPES = {
 	DEVICE_STATUS: "device_status", // 设备状态
 	WARNING_LEVEL: "warning_level", // 预警级别
 	WARNING_TYPE: "warning_type", // 预警类型
+	WARNING_STATUS: "warning_status", // 预警状态
 	MONITORING_ITEM: "monitoring_item", // 监测项目
+	DATA_QUALITY: "data_quality", // 数据质量
+	COLLECTION_METHOD: "collection_method", // 采集方式
 	// 工程信息服务模块字典类型
 	OPERATION_MODE: "operation_mode", // 运行方式
 	ENGINEERING_GRADE: "engineering_grade", // 工程等级
 	ENGINEERING_SCALE: "engineering_scale", // 工程规模
 	PIPELINE_TYPE: "pipeline_type", // 管道类型
+	// 巡检管理模块字典类型
+	INSPECTION_STATUS: "inspection_status", // 巡检状态
+	INSPECTION_FREQUENCY: "inspection_frequency", // 巡检频次
 };

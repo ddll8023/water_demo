@@ -134,6 +134,7 @@
         LEFT JOIN monitoring_stations ON rainfall_monitoring_data.station_id = monitoring_stations.id AND monitoring_stations.deleted_at IS NULL
         WHERE rainfall_monitoring_data.deleted_at IS NULL
         AND monitoring_stations.monitoring_item_code = 'R'
+        <if test='stationId != null'> AND rainfall_monitoring_data.station_id = #{stationId} </if>
         <if test='startTime != null'> AND rainfall_monitoring_data.monitoring_time &gt;= #{startTime} </if>
         <if test='endTime != null'> AND rainfall_monitoring_data.monitoring_time &lt;= #{endTime} </if>
         GROUP BY time_label

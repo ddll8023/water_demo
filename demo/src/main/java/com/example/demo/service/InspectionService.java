@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.dto.common.PageResponseDTO;
 import com.example.demo.dto.inspection.*;
+import com.example.demo.dto.system.DictDataResponseDTO;
 import com.example.demo.entity.inspection.InspectionAttachment;
 import com.example.demo.entity.inspection.InspectionRecord;
 import com.example.demo.entity.inspection.InspectionTask;
@@ -37,6 +38,7 @@ public class InspectionService {
     private final InspectionTaskMapper inspectionTaskMapper;
     private final InspectionRecordMapper inspectionRecordMapper;
     private final InspectionAttachmentMapper inspectionAttachmentMapper;
+    private final DictionaryService dictionaryService;
 
     @Value("${file.upload-dir:uploads/inspection}")
     private String uploadDir;
@@ -117,6 +119,12 @@ public class InspectionService {
         if (exist == null) {
             throw new RuntimeException("任务不存在，ID:" + id);
         }
+
+        // 验证状态值是否有效
+        if (!isValidInspectionStatus(status)) {
+            throw new RuntimeException("无效的巡检状态值：" + status);
+        }
+
         InspectionTask task = new InspectionTask();
         task.setId(id);
         task.setStatus(status);
@@ -191,7 +199,26 @@ public class InspectionService {
 
     // ========================= 辅助方法 =========================
 
+    /**
+     * 验证巡检状态值是否有效
+     */
+    private boolean isValidInspectionStatus(String status) {
+        if (status == null || status.trim().isEmpty()) {
+            return false;
+        }
 
+        try {
+            // 通过字典服务获取有效的巡检状态值
+            List<DictDataResponseDTO> validStatuses = dictionaryService.getDictDataByTypeCode("inspection_status");
+            return validStatuses.stream()
+                    .anyMatch(dictData -> status.equals(dictData.getDataValue()));
+        } catch (Exception e) {
+            log.error("验证巡检状态时发生错误: {}", e.getMessage());
+            // 如果字典服务异常，使用硬编码的有效值作为备选方案
+            return "PENDING".equals(status) || "IN_PROGRESS".equals(status) ||
+                   "COMPLETED".equals(status) || "EXCEPTION".equals(status);
+        }
+    }
 
     private List<InspectionAttachment> saveAttachments(Long recordId, MultipartFile[] files) {
         List<InspectionAttachment> list = new ArrayList<>();

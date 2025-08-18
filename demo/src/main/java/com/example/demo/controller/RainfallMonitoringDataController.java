@@ -7,6 +7,8 @@ import com.example.demo.service.RainfallMonitoringDataService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -57,8 +59,8 @@ public class RainfallMonitoringDataController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) Long stationId,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime,
             @RequestParam(required = false) Integer dataQuality,
             @RequestParam(required = false) String collectionMethod,
             @RequestParam(required = false) String dataSource,
@@ -88,29 +90,82 @@ public class RainfallMonitoringDataController {
 
     /**
      * 获取用于图表展示的雨情监测数据
+     * 支持数据类型区分（时段雨量/累计雨量）
      *
      * @param stationId 监测站点ID（可选）
      * @param startTime 开始时间（可选）
      * @param endTime 结束时间（可选）
      * @param interval 时间间隔，例如：hour, day, week, month（默认为hour）
+     * @param dataType 数据类型(rainfall:时段雨量,cumulativeRainfall:累计雨量)，默认为rainfall
      * @return 图表所需的雨情监测数据
      */
     @GetMapping("/rainfall-chart-data")
     @PreAuthorize("hasAuthority('business:operate')")
     public ResponseEntity<ApiResponse<RainfallChartDataResponseDTO>> getRainfallChartData(
             @RequestParam(required = false) Long stationId,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime,
-            @RequestParam(defaultValue = "hour") String interval) {
-        
-        log.info("获取雨情监测图表数据 - 站点ID: {}, 开始时间: {}, 结束时间: {}, 间隔: {}", 
-                stationId, startTime, endTime, interval);
-        
-        // 获取图表数据
-        RainfallChartDataResponseDTO chartData = 
-                rainfallMonitoringDataService.getRainfallChartData(stationId, startTime, endTime, interval);
-        
-        return ResponseEntity.ok(ApiResponse.success("查询成功", chartData));
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime,
+            @RequestParam(defaultValue = "hour") String interval,
+            @RequestParam(defaultValue = "rainfall") String dataType) {
+
+        log.info("获取雨情监测图表数据 - 站点ID: {}, 开始时间: {}, 结束时间: {}, 间隔: {}, 数据类型: {}",
+                stationId, startTime, endTime, interval, dataType);
+
+        try {
+            // 获取图表数据
+            RainfallChartDataResponseDTO chartData =
+                    rainfallMonitoringDataService.getRainfallChartData(stationId, startTime, endTime, interval, dataType);
+
+            return ResponseEntity.ok(ApiResponse.success("查询成功", chartData));
+        } catch (Exception e) {
+            log.error("获取雨情监测图表数据失败", e);
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error(400, "查询失败: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * 导出雨情监测数据
+     * 根据查询条件将雨情监测数据导出为Excel文件
+     *
+     * @param queryDTO 查询参数DTO，包含筛选条件
+     * @return 导出的Excel文件字节数组
+     */
+    @PostMapping("/rainfall/export")
+    @PreAuthorize("hasAuthority('business:operate')")
+    public ResponseEntity<byte[]> exportRainfallData(
+            @RequestBody RainfallMonitoringDataQueryDTO queryDTO) {
+        try {
+            log.info("导出雨情监测数据 - 站点ID: {}", queryDTO.getStationId());
+
+            // 限制导出数据量，防止内存溢出
+            if (queryDTO.getSize() == null || queryDTO.getSize() > 10000) {
+                queryDTO.setSize(10000);
+            }
+
+            // 调用服务层导出数据为Excel
+            byte[] excelData = rainfallMonitoringDataService.exportToExcel(queryDTO);
+
+            // 设置响应头信息
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDispositionFormData("attachment",
+                "rainfall_monitoring_data_" + System.currentTimeMillis() + ".csv");
+            headers.setContentLength(excelData.length);
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(excelData);
+        } catch (Exception e) {
+            log.error("导出雨情监测数据失败", e);
+            // 对于文件下载接口，返回错误时需要特殊处理
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            String errorJson = "{\"success\":false,\"message\":\"导出失败: " + e.getMessage() + "\"}";
+            return ResponseEntity.badRequest()
+                    .headers(headers)
+                    .body(errorJson.getBytes());
+        }
     }
 
     /**

@@ -49,11 +49,12 @@
                         </CustomButton>
                         <template #dropdown>
                             <el-dropdown-menu>
-                                <el-dropdown-item command="PENDING" :disabled="row.status === 'PENDING'">未开始
-                                </el-dropdown-item>
-                                <el-dropdown-item command="IN_PROGRESS" :disabled="row.status === 'IN_PROGRESS'">进行中
-                                </el-dropdown-item>
-                                <el-dropdown-item command="COMPLETED" :disabled="row.status === 'COMPLETED'">已完成
+                                <el-dropdown-item
+                                    v-for="option in props.dictMaps.inspection_status"
+                                    :key="option.value"
+                                    :command="option.value"
+                                    :disabled="row.status === option.value">
+                                    {{ option.label }}
                                 </el-dropdown-item>
                                 <el-dropdown-item command="EXCEPTION" :disabled="row.status === 'EXCEPTION'">异常
                                 </el-dropdown-item>

@@ -20,17 +20,22 @@ public class RainfallChartDataResponseDTO {
     private List<String> labels;
 
     /**
-     * 降雨量数据值列表
+     * 数据值列表（通用）
+     */
+    private List<BigDecimal> values;
+
+    /**
+     * 降雨量数据值列表（兼容性保留）
      */
     private List<BigDecimal> rainfallValues;
 
     /**
-     * 累计降雨量数据值列表
+     * 累计降雨量数据值列表（兼容性保留）
      */
     private List<BigDecimal> cumulativeValues;
 
     /**
-     * 降雨强度数据值列表
+     * 降雨强度数据值列表（兼容性保留）
      */
     private List<BigDecimal> intensityValues;
 
