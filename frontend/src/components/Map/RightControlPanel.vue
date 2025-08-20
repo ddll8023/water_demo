@@ -114,13 +114,27 @@ const legendConfig = reactive({
     warningSites: [
         {
             icon: 'fa fa-exclamation-triangle',
-            iconClass: 'icon-warning-general',
-            label: '一般预警'
+            iconClass: 'icon-warning-level-1',
+            label: '一级预警',
+            color: 'var(--warning-level-1-color)'
         },
         {
-            icon: 'fa fa-exclamation-circle',
-            iconClass: 'icon-warning-serious',
-            label: '严重预警'
+            icon: 'fa fa-exclamation-triangle',
+            iconClass: 'icon-warning-level-2',
+            label: '二级预警',
+            color: 'var(--warning-level-2-color)'
+        },
+        {
+            icon: 'fa fa-exclamation-triangle',
+            iconClass: 'icon-warning-level-3',
+            label: '三级预警',
+            color: 'var(--warning-level-3-color)'
+        },
+        {
+            icon: 'fa fa-exclamation-triangle',
+            iconClass: 'icon-warning-level-4',
+            label: '四级预警',
+            color: 'var(--warning-level-4-color)'
         }
     ],
     // 供水管线图例
@@ -497,6 +511,24 @@ defineExpose({
     color: var(--pump-status-closed-color) !important;
 }
 
+// 预警级别图标样式
+.icon-warning-level-1 {
+    color: var(--warning-level-1-color) !important;
+}
+
+.icon-warning-level-2 {
+    color: var(--warning-level-2-color) !important;
+}
+
+.icon-warning-level-3 {
+    color: var(--warning-level-3-color) !important;
+}
+
+.icon-warning-level-4 {
+    color: var(--warning-level-4-color) !important;
+}
+
+// 兼容性样式 - 保持向后兼容
 .icon-warning-general {
     color: var(--warning-level-general-color) !important;
 }

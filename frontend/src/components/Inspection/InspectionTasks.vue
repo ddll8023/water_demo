@@ -56,8 +56,6 @@
                                     :disabled="row.status === option.value">
                                     {{ option.label }}
                                 </el-dropdown-item>
-                                <el-dropdown-item command="EXCEPTION" :disabled="row.status === 'EXCEPTION'">异常
-                                </el-dropdown-item>
                             </el-dropdown-menu>
                         </template>
                     </el-dropdown>

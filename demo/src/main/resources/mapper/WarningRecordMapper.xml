@@ -7,9 +7,12 @@
         <id property="id" column="id"/>
         <result property="warningLocation" column="warning_location"/>
         <result property="warningType" column="warning_type"/>
+        <result property="warningTypeName" column="warning_type_name"/>
         <result property="warningLevel" column="warning_level"/>
+        <result property="warningLevelName" column="warning_level_name"/>
         <result property="warningContent" column="warning_content"/>
         <result property="warningStatus" column="warning_status"/>
+        <result property="warningStatusName" column="warning_status_name"/>
         <result property="projectName" column="project_name"/>
         <result property="occurredAt" column="occurred_at"/>
         <result property="resolvedAt" column="resolved_at"/>
@@ -37,49 +40,73 @@
 
     <!-- 简化后的分页查询预警记录列表 -->
     <select id="selectWarningRecordPageWithDetails" resultMap="WarningRecordResponseDTOMap">
-        SELECT 
-            id, warning_location, warning_type, warning_level, warning_content,
-            warning_status, project_name, occurred_at, resolved_at, threshold_id,
-            created_at, updated_at
-        FROM warning_records
-        WHERE deleted_at IS NULL
+        SELECT
+            wr.id, wr.warning_location, wr.warning_type, wr.warning_level, wr.warning_content,
+            wr.warning_status, wr.project_name, wr.occurred_at, wr.resolved_at, wr.threshold_id,
+            wr.created_at, wr.updated_at,
+            dict_level.data_label as warning_level_name,
+            dict_type.data_label as warning_type_name,
+            dict_status.data_label as warning_status_name
+        FROM warning_records wr
+        LEFT JOIN dict_data dict_level ON wr.warning_level = dict_level.data_value
+            AND dict_level.type_id = (SELECT id FROM dict_types WHERE type_code = 'warning_level' AND deleted_at IS NULL)
+            AND dict_level.deleted_at IS NULL
+        LEFT JOIN dict_data dict_type ON wr.warning_type = dict_type.data_value
+            AND dict_type.type_id = (SELECT id FROM dict_types WHERE type_code = 'warning_type' AND deleted_at IS NULL)
+            AND dict_type.deleted_at IS NULL
+        LEFT JOIN dict_data dict_status ON wr.warning_status = dict_status.data_value
+            AND dict_status.type_id = (SELECT id FROM dict_types WHERE type_code = 'warning_status' AND deleted_at IS NULL)
+            AND dict_status.deleted_at IS NULL
+        WHERE wr.deleted_at IS NULL
         <if test="warningLocation != null and warningLocation != ''">
-            AND warning_location = #{warningLocation}
+            AND wr.warning_location = #{warningLocation}
         </if>
         <if test="warningType != null and warningType != ''">
-            AND warning_type = #{warningType}
+            AND wr.warning_type = #{warningType}
         </if>
         <if test="warningLevel != null and warningLevel != ''">
-            AND warning_level = #{warningLevel}
+            AND wr.warning_level = #{warningLevel}
         </if>
         <if test="warningStatus != null and warningStatus != ''">
-            AND warning_status = #{warningStatus}
+            AND wr.warning_status = #{warningStatus}
         </if>
         <if test="projectName != null and projectName != ''">
-            AND project_name LIKE CONCAT('%', #{projectName}, '%')
+            AND wr.project_name LIKE CONCAT('%', #{projectName}, '%')
         </if>
         <if test="startTime != null">
-            AND occurred_at >= #{startTime}
+            AND wr.occurred_at >= #{startTime}
         </if>
         <if test="endTime != null">
-            AND occurred_at &lt;= #{endTime}
+            AND wr.occurred_at &lt;= #{endTime}
         </if>
         <if test="sortField != null and sortField != ''">
             ORDER BY ${sortField} ${sortOrder}
         </if>
         <if test="sortField == null or sortField == ''">
-            ORDER BY occurred_at DESC
+            ORDER BY wr.occurred_at DESC
         </if>
     </select>
 
     <!-- 简化后的根据ID查询预警记录详情 -->
     <select id="selectWarningRecordDetailById" resultMap="WarningRecordResponseDTOMap">
-        SELECT 
-            id, warning_location, warning_type, warning_level, warning_content,
-            warning_status, project_name, occurred_at, resolved_at, threshold_id,
-            created_at, updated_at
-        FROM warning_records
-        WHERE id = #{id} AND deleted_at IS NULL
+        SELECT
+            wr.id, wr.warning_location, wr.warning_type, wr.warning_level, wr.warning_content,
+            wr.warning_status, wr.project_name, wr.occurred_at, wr.resolved_at, wr.threshold_id,
+            wr.created_at, wr.updated_at,
+            dict_level.data_label as warning_level_name,
+            dict_type.data_label as warning_type_name,
+            dict_status.data_label as warning_status_name
+        FROM warning_records wr
+        LEFT JOIN dict_data dict_level ON wr.warning_level = dict_level.data_value
+            AND dict_level.type_id = (SELECT id FROM dict_types WHERE type_code = 'warning_level' AND deleted_at IS NULL)
+            AND dict_level.deleted_at IS NULL
+        LEFT JOIN dict_data dict_type ON wr.warning_type = dict_type.data_value
+            AND dict_type.type_id = (SELECT id FROM dict_types WHERE type_code = 'warning_type' AND deleted_at IS NULL)
+            AND dict_type.deleted_at IS NULL
+        LEFT JOIN dict_data dict_status ON wr.warning_status = dict_status.data_value
+            AND dict_status.type_id = (SELECT id FROM dict_types WHERE type_code = 'warning_status' AND deleted_at IS NULL)
+            AND dict_status.deleted_at IS NULL
+        WHERE wr.id = #{id} AND wr.deleted_at IS NULL
     </select>
 
     <!-- 解除预警 -->
@@ -171,14 +198,26 @@
 
     <!-- 获取当前活跃的预警信息（状态为"进行中"） -->
     <select id="selectActiveWarnings" resultMap="WarningRecordResponseDTOMap">
-        SELECT 
-            id, warning_location, warning_type, warning_level, warning_content,
-            warning_status, project_name, occurred_at, resolved_at, threshold_id,
-            created_at, updated_at
-        FROM warning_records
-        WHERE deleted_at IS NULL 
-        AND warning_status = '进行中'
-        ORDER BY occurred_at DESC
+        SELECT
+            wr.id, wr.warning_location, wr.warning_type, wr.warning_level, wr.warning_content,
+            wr.warning_status, wr.project_name, wr.occurred_at, wr.resolved_at, wr.threshold_id,
+            wr.created_at, wr.updated_at,
+            dict_level.data_label as warning_level_name,
+            dict_type.data_label as warning_type_name,
+            dict_status.data_label as warning_status_name
+        FROM warning_records wr
+        LEFT JOIN dict_data dict_level ON wr.warning_level = dict_level.data_value
+            AND dict_level.type_id = (SELECT id FROM dict_types WHERE type_code = 'warning_level' AND deleted_at IS NULL)
+            AND dict_level.deleted_at IS NULL
+        LEFT JOIN dict_data dict_type ON wr.warning_type = dict_type.data_value
+            AND dict_type.type_id = (SELECT id FROM dict_types WHERE type_code = 'warning_type' AND deleted_at IS NULL)
+            AND dict_type.deleted_at IS NULL
+        LEFT JOIN dict_data dict_status ON wr.warning_status = dict_status.data_value
+            AND dict_status.type_id = (SELECT id FROM dict_types WHERE type_code = 'warning_status' AND deleted_at IS NULL)
+            AND dict_status.deleted_at IS NULL
+        WHERE wr.deleted_at IS NULL
+        AND wr.warning_status = '进行中'
+        ORDER BY wr.occurred_at DESC
         LIMIT 50
     </select>
 

@@ -6,72 +6,11 @@
 import { useAuthStore } from '@/stores/modules/auth'
 
 /**
- * 权限指令 v-permission
- * 
- * 使用方式：
- * v-permission="'system:user:view'"           // 单个权限
- * v-permission="['system:user:view', 'system:user:edit']"  // 多个权限（任一）
- * v-permission.all="['system:user:view', 'system:user:edit']"  // 多个权限（全部）
- * v-permission.role="'admin'"                 // 角色权限
- * v-permission.role.all="['admin', 'manager']"  // 多个角色（全部）
- */
-export const permission = {
-  mounted(el, binding) {
-    checkPermission(el, binding)
-  },
-  
-  updated(el, binding) {
-    checkPermission(el, binding)
-  }
-}
-
-/**
- * 检查权限并控制元素显示
+ * 控制元素显示/隐藏
  * @param {HTMLElement} el DOM元素
- * @param {Object} binding 指令绑定对象
+ * @param {boolean} hasPermission 是否有权限
  */
-function checkPermission(el, binding) {
-  const { value, modifiers } = binding
-  const authStore = useAuthStore()
-  
-  if (!value) {
-    console.warn('v-permission指令需要提供权限值')
-    return
-  }
-  
-  let hasPermission = false
-  
-  // 角色权限检查
-  if (modifiers.role) {
-    if (Array.isArray(value)) {
-      if (modifiers.all) {
-        // 检查是否拥有所有角色
-        hasPermission = authStore.hasAllRoles ? authStore.hasAllRoles(value) : false
-      } else {
-        // 检查是否拥有任一角色
-        hasPermission = authStore.hasAnyRole ? authStore.hasAnyRole(value) : false
-      }
-    } else {
-      // 单个角色检查
-      hasPermission = authStore.hasRole ? authStore.hasRole(value) : false
-    }
-  } else {
-    // 权限检查
-    if (Array.isArray(value)) {
-      if (modifiers.all) {
-        // 检查是否拥有所有权限
-        hasPermission = authStore.hasAllPermissions ? authStore.hasAllPermissions(value) : false
-      } else {
-        // 检查是否拥有任一权限
-        hasPermission = authStore.hasAnyPermission ? authStore.hasAnyPermission(value) : false
-      }
-    } else {
-      // 单个权限检查
-      hasPermission = authStore.hasPermission ? authStore.hasPermission(value) : false
-    }
-  }
-  
-  // 控制元素显示/隐藏
+function toggleElementVisibility(el, hasPermission) {
   if (!hasPermission) {
     // 移除元素
     if (el.parentNode) {
@@ -86,6 +25,87 @@ function checkPermission(el, binding) {
 }
 
 /**
+ * 权限检查
+ * @param {any} value 权限值
+ * @param {Object} modifiers 修饰符
+ * @param {boolean} isRoleCheck 是否为角色检查
+ * @returns {boolean} 是否有权限
+ */
+function checkAuth(value, modifiers, isRoleCheck) {
+  const authStore = useAuthStore()
+  
+  if (!value) {
+    return false
+  }
+  
+  if (isRoleCheck) {
+    // 角色权限检查
+    if (Array.isArray(value)) {
+      if (modifiers.all) {
+        // 检查是否拥有所有角色
+        return authStore.hasAllRoles ? authStore.hasAllRoles(value) : false
+      } else {
+        // 检查是否拥有任一角色
+        return authStore.hasAnyRole ? authStore.hasAnyRole(value) : false
+      }
+    } else {
+      // 单个角色检查
+      return authStore.hasRole ? authStore.hasRole(value) : false
+    }
+  } else {
+    // 权限检查
+    if (Array.isArray(value)) {
+      if (modifiers.all) {
+        // 检查是否拥有所有权限
+        return authStore.hasAllPermissions ? authStore.hasAllPermissions(value) : false
+      } else {
+        // 检查是否拥有任一权限
+        return authStore.hasAnyPermission ? authStore.hasAnyPermission(value) : false
+      }
+    } else {
+      // 单个权限检查
+      return authStore.hasPermission ? authStore.hasPermission(value) : false
+    }
+  }
+}
+
+/**
+ * 权限指令 v-permission
+ * 
+ * 使用方式：
+ * v-permission="'system:user:view'"           // 单个权限
+ * v-permission="['system:user:view', 'system:user:edit']"  // 多个权限（任一）
+ * v-permission.all="['system:user:view', 'system:user:edit']"  // 多个权限（全部）
+ * v-permission.role="'admin'"                 // 角色权限
+ * v-permission.role.all="['admin', 'manager']"  // 多个角色（全部）
+ */
+export const permission = {
+  mounted(el, binding) {
+    const { value, modifiers } = binding
+    
+    if (!value) {
+      console.warn('v-permission指令需要提供权限值')
+      return
+    }
+    
+    const hasPermission = checkAuth(value, modifiers, modifiers.role)
+    toggleElementVisibility(el, hasPermission)
+  },
+  
+  updated(el, binding) {
+    const { value, modifiers } = binding
+    
+    if (!value) {
+      console.warn('v-permission指令需要提供权限值')
+      return
+    }
+    
+    const hasPermission = checkAuth(value, modifiers, modifiers.role)
+    toggleElementVisibility(el, hasPermission)
+  }
+}
+
+/**
  * 角色指令 v-role
  * 专门用于角色权限控制
  * 
@@ -96,52 +116,27 @@ function checkPermission(el, binding) {
  */
 export const role = {
   mounted(el, binding) {
-    checkRole(el, binding)
+    const { value, modifiers } = binding
+    
+    if (!value) {
+      console.warn('v-role指令需要提供角色值')
+      return
+    }
+    
+    const hasRole = checkAuth(value, modifiers, true)
+    toggleElementVisibility(el, hasRole)
   },
   
   updated(el, binding) {
-    checkRole(el, binding)
-  }
-}
-
-/**
- * 检查角色权限并控制元素显示
- * @param {HTMLElement} el DOM元素
- * @param {Object} binding 指令绑定对象
- */
-function checkRole(el, binding) {
-  const { value, modifiers } = binding
-  const authStore = useAuthStore()
-  
-  if (!value) {
-    console.warn('v-role指令需要提供角色值')
-    return
-  }
-  
-  let hasRole = false
-  
-  if (Array.isArray(value)) {
-    if (modifiers.all) {
-      // 检查是否拥有所有角色
-      hasRole = authStore.hasAllRoles ? authStore.hasAllRoles(value) : false
-    } else {
-      // 检查是否拥有任一角色
-      hasRole = authStore.hasAnyRole ? authStore.hasAnyRole(value) : false
+    const { value, modifiers } = binding
+    
+    if (!value) {
+      console.warn('v-role指令需要提供角色值')
+      return
     }
-  } else {
-    // 单个角色检查
-    hasRole = authStore.hasRole ? authStore.hasRole(value) : false
-  }
-  
-  // 控制元素显示/隐藏
-  if (!hasRole) {
-    if (el.parentNode) {
-      el.parentNode.removeChild(el)
-    }
-  } else {
-    if (el.style.display === 'none') {
-      el.style.display = ''
-    }
+    
+    const hasRole = checkAuth(value, modifiers, true)
+    toggleElementVisibility(el, hasRole)
   }
 }
 

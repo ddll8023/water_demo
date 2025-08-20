@@ -131,17 +131,38 @@
     --admin-area-boundary-fill-opacity: 0.08;
 
     // ==================== 预警级别颜色系统 ====================
-    // 一般预警
-    --warning-level-general-color: #faad14;
-    --warning-level-general-bg: #fffbe6;
+    // 一级预警 - 最高级别预警（红色）
+    --warning-level-1-color: #a8071a;
+    --warning-level-1-bg: #ffebe6;
+    --warning-level-1-symbol: "⚠";
 
-    // 严重预警
-    --warning-level-serious-color: #f5222d;
-    --warning-level-serious-bg: #fff1f0;
+    // 二级预警 - 高级别预警（橙色）
+    --warning-level-2-color: #f5222d;
+    --warning-level-2-bg: #fff1f0;
+    --warning-level-2-symbol: "⚠";
 
-    // 特别严重预警
-    --warning-level-critical-color: #a8071a;
-    --warning-level-critical-bg: #ffebe6;
+    // 三级预警 - 中级别预警（黄色）
+    --warning-level-3-color: #faad14;
+    --warning-level-3-bg: #fffbe6;
+    --warning-level-3-symbol: "⚠";
+
+    // 四级预警 - 低级别预警（蓝色）
+    --warning-level-4-color: #1890ff;
+    --warning-level-4-bg: #e6f7ff;
+    --warning-level-4-symbol: "⚠";
+
+    // 兼容性配置 - 保持向后兼容
+    --warning-level-general-color: var(--warning-level-4-color);
+    --warning-level-general-bg: var(--warning-level-4-bg);
+    --warning-level-general-symbol: var(--warning-level-4-symbol);
+
+    --warning-level-serious-color: var(--warning-level-2-color);
+    --warning-level-serious-bg: var(--warning-level-2-bg);
+    --warning-level-serious-symbol: var(--warning-level-2-symbol);
+
+    --warning-level-critical-color: var(--warning-level-1-color);
+    --warning-level-critical-bg: var(--warning-level-1-bg);
+    --warning-level-critical-symbol: var(--warning-level-1-symbol);
 
     // ==================== 泵站状态颜色系统 ====================
     // 泵站运行状态

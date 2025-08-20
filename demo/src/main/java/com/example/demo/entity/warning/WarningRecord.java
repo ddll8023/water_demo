@@ -104,6 +104,20 @@ public class WarningRecord {
     private String warningLevelName;
 
     /**
+     * 预警类型名称（非数据库字段）
+     * 通过关联查询dict_data表获取预警类型的显示名称
+     */
+    @TableField(exist = false)
+    private String warningTypeName;
+
+    /**
+     * 预警状态名称（非数据库字段）
+     * 通过关联查询dict_data表获取预警状态的显示名称
+     */
+    @TableField(exist = false)
+    private String warningStatusName;
+
+    /**
      * 持续时长（非数据库字段）
      * 通过计算 |resolved_at - occurred_at| 或 |当前时间 - occurred_at| 得出，格式如：2小时30分钟
      * 使用绝对值确保时长始终为正数，即使occurred_at为未来时间
@@ -114,6 +128,8 @@ public class WarningRecord {
     // 注意：MyBatis-Plus中不直接支持关联查询
     // 以下关联数据需要通过Service层或者自定义SQL来处理：
     // - 预警等级名称：通过warning_level查询dict_data表获取data_label
+    // - 预警类型名称：通过warning_type查询dict_data表获取data_label
+    // - 预警状态名称：通过warning_status查询dict_data表获取data_label
     // - 关联预警指标：通过threshold_id查询warning_thresholds表
     // - 持续时长计算：在Mapper层通过SQL的ABS函数计算绝对值，确保结果为正数
 }

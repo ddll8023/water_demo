@@ -46,7 +46,7 @@
 		"accessToken": "eyJhbGciOiJIUzUxMiJ9...",
 		"refreshToken": "eyJhbGciOiJIUzUxMiJ9...",
 		"tokenType": "Bearer",
-		"expiresIn": 3600,
+		"expiresIn": 9223372036854775807,
 		"userInfo": {
 			"id": 1,
 			"username": "admin",
@@ -57,6 +57,8 @@
 	}
 }
 ```
+
+**注意**：`expiresIn` 字段设置为 `9223372036854775807`（Long.MAX_VALUE），表示令牌永不过期。
 
 **失败响应 (400 Bad Request / 401 Unauthorized)**
 
@@ -189,10 +191,12 @@
 		"accessToken": "eyJhbGciOiJIUzUxMiJ9... (新的)",
 		"refreshToken": "eyJhbGciOiJIUzUxMiJ9... (可能也是新的)",
 		"tokenType": "Bearer",
-		"expiresIn": 3600
+		"expiresIn": 9223372036854775807
 	}
 }
 ```
+
+**注意**：`expiresIn` 字段设置为 `9223372036854775807`（Long.MAX_VALUE），表示令牌永不过期。
 
 **失败响应 (400 Bad Request)**
 
@@ -230,7 +234,9 @@
 	"code": 200,
 	"message": "Token有效",
 	"data": {
-		"isValid": true
+		"valid": true,
+		"username": "admin",
+		"expiresAt": "2024-01-01T10:00:00Z"
 	}
 }
 ```
@@ -242,7 +248,7 @@
 	"code": 401,
 	"message": "Token无效或已过期",
 	"data": {
-		"isValid": false
+		"valid": false
 	}
 }
 ```
@@ -274,12 +280,12 @@
 
 ##### 请求参数 (Query Parameters)
 
-| 字段       | 类型    | 是否必需 | 描述                                 |
-| :--------- | :------ | :------- | :----------------------------------- |
-| `page`     | Integer | 否       | 当前页码 (默认: 1)                   |
-| `size`     | Integer | 否       | 每页记录数 (默认: 10)                |
-| `keyword`  | String  | 否       | 搜索关键词 (部门名称模糊匹配)        |
-| `isActive` | Boolean | 否       | 部门状态筛选 (true:启用, false:禁用) |
+| 字段       | 类型    | 是否必需 | 描述                              |
+| :--------- | :------ | :------- | :-------------------------------- |
+| `page`     | Integer | 否       | 当前页码 (默认: 1)                |
+| `size`     | Integer | 否       | 每页记录数 (默认: 10)             |
+| `keyword`  | String  | 否       | 搜索关键词 (部门名称模糊匹配)     |
+| `isActive` | String  | 否       | 部门状态筛选 ("1":启用, "0":禁用) |
 
 ##### 响应 (Response)
 
@@ -298,7 +304,15 @@
 				"id": 1,
 				"name": "研发部",
 				"parentId": null,
-				"isActive": true
+				"parentName": null,
+				"duty": "负责产品研发工作",
+				"contact": "0710-1234567",
+				"regionId": 1,
+				"regionName": "襄阳市",
+				"isActive": "1",
+				"personnelCount": 15,
+				"createdAt": "2024-01-01T10:00:00",
+				"updatedAt": "2024-01-01T10:00:00"
 			}
 		]
 	}
@@ -349,7 +363,7 @@
 	"code": 200,
 	"message": "检查完成",
 	"data": {
-		"isAvailable": true,
+		"available": true,
 		"message": "名称可用"
 	}
 }
@@ -375,11 +389,13 @@
 
 ##### 请求体 (Request Body)
 
-| 字段       | 类型    | 是否必需 | 描述      |
-| :--------- | :------ | :------- | :-------- |
-| `name`     | String  | 是       | 部门名称  |
-| `parentId` | Long    | 否       | 父部门 ID |
-| `isActive` | Boolean | 否       | 是否启用  |
+| 字段       | 类型   | 是否必需 | 描述            |
+| :--------- | :----- | :------- | :-------------- |
+| `name`     | String | 是       | 部门名称        |
+| `parentId` | Long   | 否       | 父部门 ID       |
+| `duty`     | String | 否       | 部门职责        |
+| `contact`  | String | 否       | 联系方式        |
+| `regionId` | Long   | 否       | 所属行政区域 ID |
 
 ##### 请求示例
 
@@ -387,7 +403,9 @@
 {
 	"name": "新部门",
 	"parentId": 1,
-	"isActive": true
+	"duty": "负责新业务开发",
+	"contact": "0710-1234567",
+	"regionId": 1
 }
 ```
 
@@ -403,7 +421,15 @@
 		"id": 2,
 		"name": "新部门",
 		"parentId": 1,
-		"isActive": true
+		"parentName": "总部",
+		"duty": "负责新业务开发",
+		"contact": "0710-1234567",
+		"regionId": 1,
+		"regionName": "襄阳市",
+		"isActive": true,
+		"personnelCount": 0,
+		"createdAt": "2024-01-01T10:00:00",
+		"updatedAt": "2024-01-01T10:00:00"
 	}
 }
 ```
@@ -413,7 +439,7 @@
 ```json
 {
 	"code": 400,
-	"message": "部门名称已存在",
+	"message": "同级部门下已存在相同名称的部门",
 	"data": null
 }
 ```
@@ -444,11 +470,14 @@
 
 ##### 请求体 (Request Body)
 
-| 字段       | 类型    | 是否必需 | 描述      |
-| :--------- | :------ | :------- | :-------- |
-| `name`     | String  | 是       | 部门名称  |
-| `parentId` | Long    | 否       | 父部门 ID |
-| `isActive` | Boolean | 否       | 是否启用  |
+| 字段       | 类型   | 是否必需 | 描述                          |
+| :--------- | :----- | :------- | :---------------------------- |
+| `name`     | String | 否       | 部门名称                      |
+| `parentId` | Long   | 否       | 父部门 ID                     |
+| `duty`     | String | 否       | 部门职责                      |
+| `contact`  | String | 否       | 联系方式                      |
+| `regionId` | Long   | 否       | 所属行政区域 ID               |
+| `isActive` | String | 否       | 是否启用 ("1":启用, "0":禁用) |
 
 ##### 响应 (Response)
 
@@ -462,7 +491,15 @@
 		"id": 1,
 		"name": "更新后的部门名称",
 		"parentId": null,
-		"isActive": true
+		"parentName": null,
+		"duty": "更新后的职责",
+		"contact": "0710-7654321",
+		"regionId": 1,
+		"regionName": "襄阳市",
+		"isActive": "1",
+		"personnelCount": 15,
+		"createdAt": "2024-01-01T10:00:00",
+		"updatedAt": "2024-01-01T11:00:00"
 	}
 }
 ```
@@ -473,7 +510,7 @@
 
 **功能描述**
 
-删除指定 ID 的部门。
+删除指定 ID 的部门。如果部门下有子部门或用户则不允许删除。
 
 - **URL**: `/api/departments/{id}`
 - **HTTP 方法**: `DELETE`
@@ -890,8 +927,8 @@
 			"id": 101,
 			"typeId": 1,
 			"typeCode": "gender",
-			"dataCode": "male",
-			"dataValue": "男",
+			"dataLabel": "男",
+			"dataValue": "male",
 			"sortOrder": 1,
 			"isActive": true
 		},
@@ -899,8 +936,8 @@
 			"id": 102,
 			"typeId": 1,
 			"typeCode": "gender",
-			"dataCode": "female",
-			"dataValue": "女",
+			"dataLabel": "女",
+			"dataValue": "female",
 			"sortOrder": 2,
 			"isActive": true
 		}
@@ -944,8 +981,8 @@
 			"id": 101,
 			"typeId": 1,
 			"typeCode": "gender",
-			"dataCode": "male",
-			"dataValue": "男",
+			"dataLabel": "男",
+			"dataValue": "male",
 			"sortOrder": 1,
 			"isActive": true
 		},
@@ -953,8 +990,8 @@
 			"id": 102,
 			"typeId": 1,
 			"typeCode": "gender",
-			"dataCode": "female",
-			"dataValue": "女",
+			"dataLabel": "女",
+			"dataValue": "female",
 			"sortOrder": 2,
 			"isActive": true
 		}
@@ -985,7 +1022,7 @@
 | 字段        | 类型    | 是否必需 | 描述            |
 | :---------- | :------ | :------- | :-------------- |
 | `typeId`    | Long    | 是       | 所属字典类型 ID |
-| `dataCode`  | String  | 是       | 字典数据编码    |
+| `dataLabel` | String  | 是       | 字典数据标签    |
 | `dataValue` | String  | 是       | 字典数据值      |
 | `sortOrder` | Integer | 否       | 排序            |
 | `isActive`  | Boolean | 否       | 是否启用        |
@@ -995,8 +1032,8 @@
 ```json
 {
 	"typeId": 1,
-	"dataCode": "other",
-	"dataValue": "其他",
+	"dataLabel": "其他",
+	"dataValue": "other",
 	"sortOrder": 3,
 	"isActive": true
 }
@@ -1013,8 +1050,8 @@
 	"data": {
 		"id": 103,
 		"typeId": 1,
-		"dataCode": "other",
-		"dataValue": "其他",
+		"dataLabel": "其他",
+		"dataValue": "other",
 		"sortOrder": 3,
 		"isActive": true
 	}
@@ -1026,7 +1063,7 @@
 ```json
 {
 	"code": 400,
-	"message": "字典数据编码已存在",
+	"message": "字典数据标签已存在",
 	"data": null
 }
 ```
@@ -1060,7 +1097,7 @@
 | 字段        | 类型    | 是否必需 | 描述            |
 | :---------- | :------ | :------- | :-------------- |
 | `typeId`    | Long    | 是       | 所属字典类型 ID |
-| `dataCode`  | String  | 是       | 字典数据编码    |
+| `dataLabel` | String  | 是       | 字典数据标签    |
 | `dataValue` | String  | 是       | 字典数据值      |
 | `sortOrder` | Integer | 否       | 排序            |
 | `isActive`  | Boolean | 否       | 是否启用        |
@@ -1076,8 +1113,8 @@
 	"data": {
 		"id": 101,
 		"typeId": 1,
-		"dataCode": "male",
-		"dataValue": "男性",
+		"dataLabel": "男性",
+		"dataValue": "male",
 		"sortOrder": 1,
 		"isActive": true
 	}
@@ -1125,7 +1162,7 @@
 
 **功能描述**
 
-提供权限的增删查、树结构、类型筛选、唯一性校验等操作。
+提供权限的查询、删除、树结构、类型筛选、唯一性校验等操作。
 
 #### 2.3.1 分页查询权限列表
 
@@ -1170,8 +1207,7 @@
 				"code": "user:manage",
 				"type": "menu",
 				"parentId": null,
-				"children": [],
-				"remark": "系统菜单"
+				"children": []
 			}
 		]
 	}
@@ -1183,7 +1219,7 @@
 ```json
 {
 	"code": 400,
-	"message": "参数无效",
+	"message": "查询失败: 参数无效",
 	"data": null
 }
 ```
@@ -1225,17 +1261,16 @@
 		"code": "user:manage",
 		"type": "menu",
 		"parentId": null,
-		"children": [],
-		"remark": "系统菜单"
+		"children": []
 	}
 }
 ```
 
-**失败响应 (404 Not Found)**
+**失败响应 (400 Bad Request)**
 
 ```json
 {
-	"code": 404,
+	"code": 400,
 	"message": "权限不存在",
 	"data": null
 }
@@ -1294,7 +1329,7 @@
 
 **功能描述**
 
-获取菜单类型权限的树结构。
+获取菜单类型权限的树结构，用于前端侧边栏菜单的构建。
 
 - **URL**: `/api/permissions/menu-tree`
 - **HTTP 方法**: `GET`
@@ -1304,6 +1339,8 @@
 | 头部            | 描述                                       |
 | :-------------- | :----------------------------------------- |
 | `Authorization` | Bearer 令牌，格式为 `Bearer {accessToken}` |
+
+**注意**: 此接口需要 `data:view` 权限，而非 `system:manage` 权限。
 
 ##### 响应 (Response)
 
@@ -1419,7 +1456,7 @@
 
 **功能描述**
 
-根据 ID 删除权限。
+删除指定 ID 的权限（软删除）。如果该权限有子权限，将无法删除，需要先删除所有子权限。
 
 - **URL**: `/api/permissions/{id}`
 - **HTTP 方法**: `DELETE`
@@ -1453,7 +1490,101 @@
 ```json
 {
 	"code": 400,
-	"message": "权限下存在子权限，无法删除",
+	"message": "存在子权限，无法删除",
+	"data": null
+}
+```
+
+---
+
+#### 2.3.8 检查权限编码是否可用
+
+**功能描述**
+
+检查权限编码在系统中是否唯一，用于创建或编辑权限时的验证。
+
+- **URL**: `/api/permissions/check-code`
+- **HTTP 方法**: `GET`
+
+##### 请求头 (Request Headers)
+
+| 头部            | 描述                                       |
+| :-------------- | :----------------------------------------- |
+| `Authorization` | Bearer 令牌，格式为 `Bearer {accessToken}` |
+
+##### 请求参数 (Query Parameters)
+
+| 字段        | 类型   | 是否必需 | 描述                       |
+| :---------- | :----- | :------- | :------------------------- |
+| `code`      | String | 是       | 待检查的权限编码           |
+| `excludeId` | Long   | 否       | 排除的权限 ID (编辑时使用) |
+
+##### 响应 (Response)
+
+**成功响应 (200 OK)**
+
+```json
+{
+	"code": 200,
+	"message": "检查完成",
+	"data": {
+		"available": true
+	}
+}
+```
+
+**失败响应 (500 Internal Server Error)**
+
+```json
+{
+	"code": 500,
+	"message": "系统内部错误",
+	"data": null
+}
+```
+
+---
+
+### 2.4 岗位管理 (`/api/positions`)
+
+验证指定的权限编码是否已存在，用于新增或编辑权限时的编码唯一性检查。
+
+- **URL**: `/api/permissions/check-code`
+- **HTTP 方法**: `GET`
+
+##### 请求头 (Request Headers)
+
+| 头部            | 描述                                       |
+| :-------------- | :----------------------------------------- |
+| `Authorization` | Bearer 令牌，格式为 `Bearer {accessToken}` |
+
+##### 请求参数 (Query Parameters)
+
+| 字段        | 类型   | 是否必需 | 描述                       |
+| :---------- | :----- | :------- | :------------------------- |
+| `code`      | String | 是       | 待检查的权限编码           |
+| `excludeId` | Long   | 否       | 排除的权限 ID (编辑时使用) |
+
+##### 响应 (Response)
+
+**成功响应 (200 OK)**
+
+```json
+{
+	"code": 200,
+	"message": "检查完成",
+	"data": {
+		"available": true
+	}
+}
+```
+
+**失败响应 (500 Internal Server Error)**
+
+```json
+{
+	"code": 500,
+	"message": "系统内部错误",
 	"data": null
 }
 ```
@@ -1556,7 +1687,11 @@
 				"id": 1,
 				"name": "运维岗",
 				"description": "负责系统运维",
-				"level": "中级"
+				"responsibilities": "负责系统日常运维工作",
+				"level": "中级",
+				"personnelCount": 5,
+				"createdAt": "2024-01-01T10:00:00",
+				"updatedAt": "2024-01-01T10:00:00"
 			}
 		]
 	}
@@ -1593,11 +1728,12 @@
 
 ##### 请求体 (Request Body)
 
-| 字段          | 类型   | 是否必需 | 描述     |
-| :------------ | :----- | :------- | :------- |
-| `name`        | String | 是       | 岗位名称 |
-| `description` | String | 否       | 岗位描述 |
-| `level`       | String | 否       | 岗位级别 |
+| 字段               | 类型   | 是否必需 | 描述     |
+| :----------------- | :----- | :------- | :------- |
+| `name`             | String | 是       | 岗位名称 |
+| `description`      | String | 否       | 岗位描述 |
+| `responsibilities` | String | 否       | 岗位职责 |
+| `level`            | String | 否       | 岗位级别 |
 
 ##### 请求示例
 
@@ -1605,6 +1741,7 @@
 {
 	"name": "测试岗位",
 	"description": "这是一个测试岗位",
+	"responsibilities": "负责测试相关工作",
 	"level": "初级"
 }
 ```
@@ -1621,7 +1758,11 @@
 		"id": 2,
 		"name": "测试岗位",
 		"description": "这是一个测试岗位",
-		"level": "初级"
+		"responsibilities": "负责测试相关工作",
+		"level": "初级",
+		"personnelCount": 0,
+		"createdAt": "2024-01-01T10:00:00",
+		"updatedAt": "2024-01-01T10:00:00"
 	}
 }
 ```
@@ -1662,11 +1803,12 @@
 
 ##### 请求体 (Request Body)
 
-| 字段          | 类型   | 是否必需 | 描述     |
-| :------------ | :----- | :------- | :------- |
-| `name`        | String | 是       | 岗位名称 |
-| `description` | String | 否       | 岗位描述 |
-| `level`       | String | 否       | 岗位级别 |
+| 字段               | 类型   | 是否必需 | 描述     |
+| :----------------- | :----- | :------- | :------- |
+| `name`             | String | 是       | 岗位名称 |
+| `description`      | String | 否       | 岗位描述 |
+| `responsibilities` | String | 否       | 岗位职责 |
+| `level`            | String | 否       | 岗位级别 |
 
 ##### 响应 (Response)
 
@@ -1680,7 +1822,11 @@
 		"id": 1,
 		"name": "更新后的岗位名称",
 		"description": "更新后的描述",
-		"level": "高级"
+		"responsibilities": "更新后的职责",
+		"level": "高级",
+		"personnelCount": 3,
+		"createdAt": "2024-01-01T10:00:00",
+		"updatedAt": "2024-01-01T11:00:00"
 	}
 }
 ```
@@ -1773,7 +1919,7 @@
 	"message": "查询成功",
 	"data": [
 		{
-			"personnelId": 101,
+			"id": 101,
 			"name": "张三",
 			"department": "技术部"
 		}
@@ -1886,7 +2032,6 @@
 			{
 				"id": 1,
 				"name": "管理员",
-				"code": "admin",
 				"description": "系统管理员",
 				"isActive": true
 			}
@@ -1939,7 +2084,6 @@
 	"data": {
 		"id": 1,
 		"name": "管理员",
-		"code": "admin",
 		"description": "系统管理员",
 		"isActive": true,
 		"permissions": [
@@ -1986,7 +2130,6 @@
 | 字段          | 类型    | 是否必需 | 描述     |
 | :------------ | :------ | :------- | :------- |
 | `name`        | String  | 是       | 角色名称 |
-| `code`        | String  | 是       | 角色编码 |
 | `description` | String  | 否       | 角色描述 |
 | `isActive`    | Boolean | 否       | 是否启用 |
 
@@ -1995,7 +2138,6 @@
 ```json
 {
 	"name": "测试角色",
-	"code": "test_role",
 	"description": "这是一个测试角色",
 	"isActive": true
 }
@@ -2012,7 +2154,6 @@
 	"data": {
 		"id": 2,
 		"name": "测试角色",
-		"code": "test_role",
 		"description": "这是一个测试角色",
 		"isActive": true
 	}
@@ -2058,7 +2199,6 @@
 | 字段          | 类型    | 是否必需 | 描述     |
 | :------------ | :------ | :------- | :------- |
 | `name`        | String  | 是       | 角色名称 |
-| `code`        | String  | 是       | 角色编码 |
 | `description` | String  | 否       | 角色描述 |
 | `isActive`    | Boolean | 否       | 是否启用 |
 
@@ -2073,7 +2213,6 @@
 	"data": {
 		"id": 1,
 		"name": "更新后的角色名称",
-		"code": "updated_code",
 		"description": "更新后的描述",
 		"isActive": true
 	}
@@ -2280,14 +2419,12 @@
 		{
 			"id": 1,
 			"name": "管理员",
-			"code": "admin",
 			"description": "系统管理员",
 			"isActive": true
 		},
 		{
 			"id": 2,
 			"name": "普通用户",
-			"code": "user",
 			"description": "普通用户",
 			"isActive": true
 		}
@@ -2378,13 +2515,13 @@
 
 ##### 请求参数 (Query Parameters)
 
-| 字段       | 类型    | 是否必需 | 描述              |
-| :--------- | :------ | :------- | :---------------- |
-| `page`     | Integer | 否       | 页码，默认 1      |
-| `size`     | Integer | 否       | 每页数量，默认 10 |
-| `username` | String  | 否       | 按用户名筛选      |
-| `roleId`   | Long    | 否       | 按角色 ID 筛选    |
-| `isActive` | Boolean | 否       | 按激活状态筛选    |
+| 字段       | 类型    | 是否必需 | 描述                                |
+| :--------- | :------ | :------- | :---------------------------------- |
+| `page`     | Integer | 否       | 页码，默认 1                        |
+| `size`     | Integer | 否       | 每页数量，默认 10                   |
+| `username` | String  | 否       | 按用户名筛选                        |
+| `roleId`   | Long    | 否       | 按角色 ID 筛选                      |
+| `isActive` | String  | 否       | 按激活状态筛选 ("1":激活, "0":禁用) |
 
 ##### 响应 (Response)
 
@@ -2402,14 +2539,10 @@
 			{
 				"id": 1,
 				"username": "admin",
-				"email": "admin@example.com",
-				"phone": "13800138000",
-				"realName": "管理员",
-				"departmentId": 1,
-				"departmentName": "研发部",
 				"roleId": 1,
 				"roleName": "管理员",
-				"isActive": true,
+				"isActive": "1",
+				"lastLogin": "2024-01-01T10:00:00",
 				"createdAt": "2024-01-01T10:00:00",
 				"updatedAt": "2024-01-01T10:00:00"
 			}
@@ -2462,14 +2595,10 @@
 	"data": {
 		"id": 1,
 		"username": "admin",
-		"email": "admin@example.com",
-		"phone": "13800138000",
-		"realName": "管理员",
-		"departmentId": 1,
-		"departmentName": "研发部",
 		"roleId": 1,
 		"roleName": "管理员",
-		"isActive": true,
+		"isActive": "1",
+		"lastLogin": "2024-01-01T10:00:00",
 		"createdAt": "2024-01-01T10:00:00",
 		"updatedAt": "2024-01-01T10:00:00"
 	}
@@ -2506,16 +2635,12 @@
 
 ##### 请求体 (Request Body)
 
-| 字段           | 类型    | 是否必需 | 描述     |
-| :------------- | :------ | :------- | :------- |
-| `username`     | String  | 是       | 用户名   |
-| `password`     | String  | 是       | 密码     |
-| `email`        | String  | 否       | 邮箱     |
-| `phone`        | String  | 否       | 手机号   |
-| `realName`     | String  | 否       | 真实姓名 |
-| `departmentId` | Long    | 否       | 部门 ID  |
-| `roleId`       | Long    | 否       | 角色 ID  |
-| `isActive`     | Boolean | 否       | 是否启用 |
+| 字段       | 类型   | 是否必需 | 描述                          |
+| :--------- | :----- | :------- | :---------------------------- |
+| `username` | String | 是       | 用户名                        |
+| `password` | String | 是       | 密码                          |
+| `roleId`   | Long   | 否       | 角色 ID                       |
+| `isActive` | String | 否       | 是否启用 ("1":启用, "0":禁用) |
 
 ##### 请求示例
 
@@ -2523,12 +2648,8 @@
 {
 	"username": "newuser",
 	"password": "password123",
-	"email": "newuser@example.com",
-	"phone": "13900139000",
-	"realName": "新用户",
-	"departmentId": 1,
 	"roleId": 2,
-	"isActive": true
+	"isActive": "1"
 }
 ```
 
@@ -2543,14 +2664,9 @@
 	"data": {
 		"id": 2,
 		"username": "newuser",
-		"email": "newuser@example.com",
-		"phone": "13900139000",
-		"realName": "新用户",
-		"departmentId": 1,
-		"departmentName": "研发部",
 		"roleId": 2,
 		"roleName": "普通用户",
-		"isActive": true,
+		"isActive": "1",
 		"createdAt": "2024-01-01T10:00:00",
 		"updatedAt": "2024-01-01T10:00:00"
 	}
@@ -2593,27 +2709,19 @@
 
 ##### 请求体 (Request Body)
 
-| 字段           | 类型    | 是否必需 | 描述     |
-| :------------- | :------ | :------- | :------- |
-| `username`     | String  | 是       | 用户名   |
-| `email`        | String  | 否       | 邮箱     |
-| `phone`        | String  | 否       | 手机号   |
-| `realName`     | String  | 否       | 真实姓名 |
-| `departmentId` | Long    | 否       | 部门 ID  |
-| `roleId`       | Long    | 否       | 角色 ID  |
-| `isActive`     | Boolean | 否       | 是否启用 |
+| 字段       | 类型   | 是否必需 | 描述                          |
+| :--------- | :----- | :------- | :---------------------------- |
+| `username` | String | 是       | 用户名                        |
+| `roleId`   | Long   | 否       | 角色 ID                       |
+| `isActive` | String | 否       | 是否启用 ("1":启用, "0":禁用) |
 
 ##### 请求示例
 
 ```json
 {
 	"username": "updateduser",
-	"email": "updated@example.com",
-	"phone": "13700137000",
-	"realName": "更新后的用户",
-	"departmentId": 2,
 	"roleId": 3,
-	"isActive": true
+	"isActive": "1"
 }
 ```
 
@@ -2628,14 +2736,9 @@
 	"data": {
 		"id": 1,
 		"username": "updateduser",
-		"email": "updated@example.com",
-		"phone": "13700137000",
-		"realName": "更新后的用户",
-		"departmentId": 2,
-		"departmentName": "测试部",
 		"roleId": 3,
 		"roleName": "测试人员",
-		"isActive": true,
+		"isActive": "1",
 		"createdAt": "2024-01-01T10:00:00",
 		"updatedAt": "2024-01-01T11:00:00"
 	}
@@ -9631,6 +9734,7 @@ Content-Length: 524288
 
 - **URL**: `/api/map/management-system`
 - **HTTP 方法**: `GET`
+- **权限要求**: `business:operate`
 
 ##### 请求头 (Request Headers)
 

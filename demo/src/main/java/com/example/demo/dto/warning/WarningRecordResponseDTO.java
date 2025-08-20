@@ -40,6 +40,12 @@ public class WarningRecordResponseDTO {
     private String warningLevelName;
 
     /**
+     * 预警类型名称（显示用）
+     * 通过关联查询dict_data表获取预警类型的显示名称
+     */
+    private String warningTypeName;
+
+    /**
      * 预警内容
      */
     private String warningContent;
@@ -48,6 +54,12 @@ public class WarningRecordResponseDTO {
      * 预警状态（进行中、已解除）
      */
     private String warningStatus;
+
+    /**
+     * 预警状态名称（显示用）
+     * 通过关联查询dict_data表获取预警状态的显示名称
+     */
+    private String warningStatusName;
 
     /**
      * 所属工程

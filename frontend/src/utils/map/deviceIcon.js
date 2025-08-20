@@ -310,44 +310,101 @@ export const MONITORING_ITEM_CONFIG = {
 
 // 预警级别配置
 export const WARNING_LEVEL_CONFIG = {
-	general: {
+	// 一级预警 - 最高级别预警
+	1: {
 		get symbol() {
-			return getCSSVariable("--warning-level-general-symbol");
+			return getCSSVariable("--warning-level-1-symbol");
 		},
 		get color() {
-			return getCSSVariable("--warning-level-general-color");
+			return getCSSVariable("--warning-level-1-color");
 		},
 		get bgColor() {
-			return getCSSVariable("--warning-level-general-bg");
+			return getCSSVariable("--warning-level-1-bg");
+		},
+		name: "一级预警",
+		level: 1,
+	},
+	// 二级预警 - 高级别预警
+	2: {
+		get symbol() {
+			return getCSSVariable("--warning-level-2-symbol");
+		},
+		get color() {
+			return getCSSVariable("--warning-level-2-color");
+		},
+		get bgColor() {
+			return getCSSVariable("--warning-level-2-bg");
+		},
+		name: "二级预警",
+		level: 2,
+	},
+	// 三级预警 - 中级别预警
+	3: {
+		get symbol() {
+			return getCSSVariable("--warning-level-3-symbol");
+		},
+		get color() {
+			return getCSSVariable("--warning-level-3-color");
+		},
+		get bgColor() {
+			return getCSSVariable("--warning-level-3-bg");
+		},
+		name: "三级预警",
+		level: 3,
+	},
+	// 四级预警 - 低级别预警
+	4: {
+		get symbol() {
+			return getCSSVariable("--warning-level-4-symbol");
+		},
+		get color() {
+			return getCSSVariable("--warning-level-4-color");
+		},
+		get bgColor() {
+			return getCSSVariable("--warning-level-4-bg");
+		},
+		name: "四级预警",
+		level: 4,
+	},
+	// 兼容性配置 - 保持向后兼容
+	general: {
+		get symbol() {
+			return getCSSVariable("--warning-level-4-symbol");
+		},
+		get color() {
+			return getCSSVariable("--warning-level-4-color");
+		},
+		get bgColor() {
+			return getCSSVariable("--warning-level-4-bg");
 		},
 		name: "一般预警",
-		level: 1,
+		level: 4,
 	},
 	serious: {
 		get symbol() {
-			return getCSSVariable("--warning-level-serious-symbol");
+			return getCSSVariable("--warning-level-2-symbol");
 		},
 		get color() {
-			return getCSSVariable("--warning-level-serious-color");
+			return getCSSVariable("--warning-level-2-color");
 		},
 		get bgColor() {
-			return getCSSVariable("--warning-level-serious-bg");
+			return getCSSVariable("--warning-level-2-bg");
 		},
 		name: "严重预警",
 		level: 2,
 	},
 	critical: {
 		get symbol() {
-			return getCSSVariable("--warning-level-critical-symbol");
+			return getCSSVariable("--warning-level-1-symbol");
 		},
 		get color() {
-			return getCSSVariable("--warning-level-critical-color");
+			return getCSSVariable("--warning-level-1-color");
 		},
 		get bgColor() {
-			return getCSSVariable("--warning-level-critical-bg");
+			return getCSSVariable("--warning-level-1-bg");
 		},
 		name: "特别严重预警",
-		level: 3,
+		level: 1,
 	},
 };
 
@@ -507,10 +564,16 @@ export function getDeviceIconConfig(device, deviceType = "facility") {
  */
 export function getWarningIconConfig(warning) {
 	const level = warning.warningLevel || warning.level;
+	// 优先使用数字级别配置
+	if (level && WARNING_LEVEL_CONFIG[level.toString()]) {
+		return WARNING_LEVEL_CONFIG[level.toString()];
+	}
+	// 兼容旧的字符串级别配置
 	if (level && WARNING_LEVEL_CONFIG[level]) {
 		return WARNING_LEVEL_CONFIG[level];
 	}
-	return WARNING_LEVEL_CONFIG.general;
+	// 默认返回四级预警（最低级别）
+	return WARNING_LEVEL_CONFIG["4"];
 }
 
 /**
