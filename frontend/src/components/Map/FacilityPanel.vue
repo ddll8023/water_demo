@@ -167,7 +167,6 @@ import {
 import {
     getUnifiedDeviceType,
     generateDeviceId,
-    getDeviceName,
     getDeviceLocation,
     getDeviceStatusClass,
     getDeviceStatusText,
@@ -546,7 +545,7 @@ const getItemId = (item) => {
  * 获取设备名称
  */
 const getItemName = (item) => {
-    return getDeviceName(item);
+    return item.name || item.stationName || "未知设备";
 };
 
 /**

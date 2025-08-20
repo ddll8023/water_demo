@@ -408,49 +408,6 @@ export const WARNING_LEVEL_CONFIG = {
 	},
 };
 
-// 泵站状态配置
-export const PUMP_STATUS_CONFIG = {
-	open: {
-		get symbol() {
-			return getCSSVariable("--pump-status-open-symbol");
-		},
-		get color() {
-			return getCSSVariable("--pump-status-open-color");
-		},
-		get bgColor() {
-			return getCSSVariable("--pump-status-open-bg");
-		},
-		name: "泵打开",
-		status: "运行",
-	},
-	closed: {
-		get symbol() {
-			return getCSSVariable("--pump-status-closed-symbol");
-		},
-		get color() {
-			return getCSSVariable("--pump-status-closed-color");
-		},
-		get bgColor() {
-			return getCSSVariable("--pump-status-closed-bg");
-		},
-		name: "泵关闭",
-		status: "停止",
-	},
-	maintenance: {
-		get symbol() {
-			return getCSSVariable("--pump-status-maintenance-symbol");
-		},
-		get color() {
-			return getCSSVariable("--pump-status-maintenance-color");
-		},
-		get bgColor() {
-			return getCSSVariable("--pump-status-maintenance-bg");
-		},
-		name: "维护中",
-		status: "维护",
-	},
-};
-
 // 管线类型配置
 export const PIPELINE_TYPE_CONFIG = {
 	main: {
@@ -511,20 +468,6 @@ export const DEFAULT_DEVICE_ICON = {
 	name: "未知设备",
 };
 
-// 统一设备类型选项配置
-export const DEVICE_TYPE_OPTIONS = [
-	{ value: "all", label: "全部设备" },
-	{ value: "water_plant", label: "水厂设备" },
-	{ value: "reservoir", label: "水库设备" },
-	{ value: "pumping_station", label: "泵站设备" },
-	{ value: "pressure_station", label: "加压站设备" },
-	{ value: "pipeline", label: "管道设备" },
-	{ value: "village", label: "村庄设备" },
-	{ value: "floating_boat", label: "漂浮船只" },
-	{ value: "disinfection_material", label: "消毒材料" },
-	{ value: "monitoring_station", label: "监测站点" },
-];
-
 /**
  * 获取设备图标配置
  * @param {Object} device - 设备对象
@@ -577,19 +520,6 @@ export function getWarningIconConfig(warning) {
 }
 
 /**
- * 获取泵站状态图标配置
- * @param {Object} pump - 泵站对象
- * @returns {Object} 图标配置对象
- */
-export function getPumpStatusIconConfig(pump) {
-	const status = pump.pumpStatus || pump.status || "closed";
-	if (status && PUMP_STATUS_CONFIG[status]) {
-		return PUMP_STATUS_CONFIG[status];
-	}
-	return PUMP_STATUS_CONFIG.closed;
-}
-
-/**
  * 获取管线类型图标配置
  * @param {Object} pipeline - 管线对象
  * @returns {Object} 图标配置对象
@@ -600,26 +530,4 @@ export function getPipelineTypeConfig(pipeline) {
 		return PIPELINE_TYPE_CONFIG[type];
 	}
 	return PIPELINE_TYPE_CONFIG.branch;
-}
-
-/**
- * 获取设备图标符号
- * @param {Object} device - 设备对象
- * @param {string} deviceType - 设备类型
- * @returns {string} 图标符号
- */
-export function getDeviceIconSymbol(device, deviceType = "facility") {
-	const config = getDeviceIconConfig(device, deviceType);
-	return config.symbol;
-}
-
-/**
- * 获取设备类型名称
- * @param {Object} device - 设备对象
- * @param {string} deviceType - 设备类型
- * @returns {string} 设备类型名称
- */
-export function getDeviceTypeName(device, deviceType = "facility") {
-	const config = getDeviceIconConfig(device, deviceType);
-	return config.name;
 }

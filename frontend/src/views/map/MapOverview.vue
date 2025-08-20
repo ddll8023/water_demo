@@ -216,6 +216,7 @@ import {
     getUnifiedDeviceType
 } from "@/utils/map/deviceType";
 import { getWaterQualityMonitoringData } from "@/api/monitoring";
+import { formatDateTime } from "@/utils/shared/common";
 // 指标字段映射：按最近记录统计
 const WQ_FIELD_MAP = {
     WT: 'waterTemperature',
@@ -803,25 +804,6 @@ const handlePopupViewDetail = (device) => {
 
     // 打开详情对话框
     detailDialogVisible.value = true;
-};
-
-/**
- * 格式化日期时间
- */
-const formatDateTime = (dateString) => {
-    if (!dateString) return '';
-    try {
-        const date = new Date(dateString);
-        return date.toLocaleString('zh-CN', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    } catch (error) {
-        return dateString;
-    }
 };
 
 /**

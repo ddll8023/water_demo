@@ -18,15 +18,6 @@ export function getUnifiedDeviceType(item) {
 }
 
 /**
- * 判断是否为监测站
- * @param {Object} item - 设备对象
- * @returns {boolean} 是否为监测站
- */
-export function isMonitoringStation(item) {
-	return Boolean(item.monitoringItem || item.stationName || item.stationId);
-}
-
-/**
  * 获取设备唯一标识符
  * @param {Object} device - 设备对象
  * @returns {string} 设备唯一标识符
@@ -57,15 +48,6 @@ export function generateDeviceId(device) {
 }
 
 /**
- * 获取设备名称
- * @param {Object} item - 设备对象
- * @returns {string} 设备名称
- */
-export function getDeviceName(item) {
-	return item.name || item.stationName || "未知设备";
-}
-
-/**
  * 检查是否有有效的地理位置
  * @param {Object} item - 设备对象
  * @returns {boolean} 是否有有效位置
@@ -89,44 +71,57 @@ export function getDeviceLocation(item) {
 }
 
 /**
+ * 获取设备状态值（私有辅助函数）
+ * @param {Object} item - 设备对象
+ * @returns {string} 状态值
+ */
+function getDeviceStatusValue(item) {
+	return (
+		item.status ||
+		item.stationStatus ||
+		item.operationStatus ||
+		item.pumpingStatus
+	);
+}
+
+/**
+ * 状态映射配置（私有常量）
+ */
+const STATUS_MAPPINGS = {
+	// 字典状态值
+	normal: { class: "status-normal", text: "正常" },
+	fault: { class: "status-fault", text: "故障" },
+	maintenance: { class: "status-maintenance", text: "维护" },
+	// 兼容旧有状态值
+	NORMAL: { class: "status-normal", text: "正常" },
+	ONLINE: { class: "status-normal", text: "正常" },
+	online: { class: "status-normal", text: "正常" },
+	OFFLINE: { class: "status-fault", text: "故障" },
+	offline: { class: "status-fault", text: "故障" },
+	MAINTENANCE: { class: "status-maintenance", text: "维护" },
+	FAULT: { class: "status-fault", text: "故障" },
+	error: { class: "status-fault", text: "故障" },
+	warning: { class: "status-fault", text: "故障" },
+	// 中文状态值
+	正常: { class: "status-normal", text: "正常" },
+	运行正常: { class: "status-normal", text: "正常" },
+	正常运行: { class: "status-normal", text: "正常" },
+	正常蓄水: { class: "status-normal", text: "正常" },
+	自动运行: { class: "status-normal", text: "正常" },
+	维护中: { class: "status-maintenance", text: "维护" },
+	故障: { class: "status-fault", text: "故障" },
+	告警: { class: "status-fault", text: "故障" },
+};
+
+/**
  * 获取设备状态样式类名
  * @param {Object} item - 设备对象
  * @returns {string} 状态样式类名
  */
 export function getDeviceStatusClass(item) {
-	const status =
-		item.status ||
-		item.stationStatus ||
-		item.operationStatus ||
-		item.pumpingStatus;
-
-	// 基于字典数据的状态映射：normal、fault、maintenance
-	const statusMap = {
-		// 字典状态值
-		normal: "status-normal",
-		fault: "status-fault",
-		maintenance: "status-maintenance",
-		// 兼容旧有状态值
-		NORMAL: "status-normal",
-		ONLINE: "status-normal",
-		online: "status-normal",
-		OFFLINE: "status-fault",
-		offline: "status-fault",
-		MAINTENANCE: "status-maintenance",
-		FAULT: "status-fault",
-		error: "status-fault",
-		warning: "status-fault",
-		// 中文状态值
-		正常: "status-normal",
-		运行正常: "status-normal",
-		正常运行: "status-normal",
-		正常蓄水: "status-normal",
-		自动运行: "status-normal",
-		维护中: "status-maintenance",
-		故障: "status-fault",
-		告警: "status-fault",
-	};
-	return statusMap[status] || "status-default";
+	const status = getDeviceStatusValue(item);
+	const mapping = STATUS_MAPPINGS[status];
+	return mapping ? mapping.class : "status-default";
 }
 
 /**
@@ -135,35 +130,14 @@ export function getDeviceStatusClass(item) {
  * @returns {string} 状态文本
  */
 export function getDeviceStatusText(item) {
-	const status =
-		item.status ||
-		item.stationStatus ||
-		item.operationStatus ||
-		item.pumpingStatus;
-
-	// 基于字典数据的状态映射：normal、fault、maintenance
-	const statusMap = {
-		// 字典状态值
-		normal: "正常",
-		fault: "故障",
-		maintenance: "维护",
-		// 兼容旧有状态值
-		NORMAL: "正常",
-		ONLINE: "正常",
-		online: "正常",
-		OFFLINE: "故障",
-		offline: "故障",
-		MAINTENANCE: "维护",
-		FAULT: "故障",
-		error: "故障",
-		warning: "故障",
-	};
+	const status = getDeviceStatusValue(item);
+	const mapping = STATUS_MAPPINGS[status];
 
 	return (
 		item.statusName ||
 		item.stationStatusName ||
 		item.pumpingStatusName ||
-		statusMap[status] ||
+		(mapping && mapping.text) ||
 		status ||
 		"未知"
 	);

@@ -25,7 +25,7 @@ export function setToken(token) {
 }
 
 /**
- * 移除访问令牌
+ * 移除访问令牌和刷新令牌
  */
 export function removeToken() {
 	localStorage.removeItem(TOKEN_KEY);
@@ -46,13 +46,6 @@ export function getRefreshToken() {
  */
 export function setRefreshToken(refreshToken) {
 	localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
-}
-
-/**
- * 移除刷新令牌
- */
-export function removeRefreshToken() {
-	localStorage.removeItem(REFRESH_TOKEN_KEY);
 }
 
 // ==================== 记住密码功能 ====================
