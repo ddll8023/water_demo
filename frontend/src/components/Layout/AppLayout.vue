@@ -81,10 +81,6 @@ const toggleSidebar = () => {
 @include respond-to(lg) {
   .app-layout .main-container {
     margin-left: var(--sidebar-collapsed-width);
-
-    &.sidebar-collapsed {
-      margin-left: var(--sidebar-collapsed-width);
-    }
   }
 }
 
@@ -92,10 +88,6 @@ const toggleSidebar = () => {
 @include respond-to(sm) {
   .app-layout .main-container {
     margin-left: 0;
-
-    &.sidebar-collapsed {
-      margin-left: 0;
-    }
   }
 }
 </style>

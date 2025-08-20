@@ -22,7 +22,14 @@
               <i class="fa fa-file-excel-o"
                 style="color: var(--success-color); margin-right: var(--spacing-small);"></i>
               <span>{{ selectedFile.name }}</span>
-              <span class="file-size">({{ formatFileSize(selectedFile.size) }})</span>
+              <span class="file-size">({{(() => {
+                const bytes = selectedFile.size;
+                if (bytes === 0) return '0 B';
+                const k = 1024;
+                const sizes = ['B', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+              })()}})</span>
               <CustomButton type="danger" size="small" @click="removeFile" style="margin-left: var(--spacing-base);">
                 <i class="fa fa-times"></i>
                 移除
@@ -231,16 +238,6 @@ const props = defineProps({
     type: String,
     default: 'flow', // 'flow'、'waterQuality' 或 'waterLevel'
     validator: (value) => ['flow', 'waterQuality', 'waterLevel'].includes(value)
-  },
-  templateColumns: {
-    type: Array,
-    default: () => [
-      { prop: 'rowNumber', label: '序号', width: 80 },
-      { prop: 'monitoringTime', label: '监测时间', width: 160 },
-      { prop: 'stationCode', label: '站码', width: 120 },
-      { prop: 'instantFlow', label: '瞬时流量(m³/s)', width: 140 },
-      { prop: 'cumulativeFlow', label: '累计流量(m³)', width: 140 }
-    ]
   }
 })
 
@@ -297,7 +294,24 @@ const progressText = computed(() => {
 })
 
 const previewColumns = computed(() => [
-  ...props.templateColumns,
+  { prop: 'rowNumber', label: '序号', width: 80 },
+  { prop: 'monitoringTime', label: '监测时间', width: 160 },
+  { prop: 'stationCode', label: '站码', width: 120 },
+  ...(props.importType === 'waterQuality' ? [
+    { prop: 'waterTemperature', label: '水温(℃)', width: 100 },
+    { prop: 'turbidity', label: '浊度(NTU)', width: 100 },
+    { prop: 'phValue', label: 'PH', width: 80 },
+    { prop: 'conductivity', label: '电导率(uS/cm)', width: 120 },
+    { prop: 'dissolvedOxygen', label: '溶解氧(mg/L)', width: 120 },
+    { prop: 'ammoniaNitrogen', label: '氨氮(mg/L)', width: 120 },
+    { prop: 'codValue', label: '化学需氧量(mg/L)', width: 140 },
+    { prop: 'residualChlorine', label: '余氯(mg/L)', width: 120 }
+  ] : props.importType === 'waterLevel' ? [
+    { prop: 'waterLevel', label: '监测值(m)', width: 120 }
+  ] : [
+    { prop: 'instantFlow', label: '瞬时流量(m³/s)', width: 140 },
+    { prop: 'cumulativeFlow', label: '累计流量(m³)', width: 140 }
+  ]),
   {
     prop: 'status',
     label: '状态',
@@ -351,15 +365,6 @@ const handleClose = () => {
  * 文件处理方法
  * ----------------------------------------
  */
-// 格式化文件大小
-const formatFileSize = (bytes) => {
-  if (bytes === 0) return '0 B'
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-}
-
 // 上传前检查文件
 const beforeUpload = (file) => {
   const isXlsx = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -392,16 +397,6 @@ const removeFile = () => {
  * Excel解析方法
  * ----------------------------------------
  */
-// 读取文件为ArrayBuffer
-const readFileAsArrayBuffer = (file) => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = (e) => resolve(e.target.result)
-    reader.onerror = reject
-    reader.readAsArrayBuffer(file)
-  })
-}
-
 // Excel解析主方法
 const parseExcelFile = async () => {
   if (!selectedFile.value) {
@@ -410,8 +405,7 @@ const parseExcelFile = async () => {
   }
 
   try {
-    const fileBuffer = await readFileAsArrayBuffer(selectedFile.value)
-    const workbook = XLSX.read(fileBuffer, { type: 'array' })
+    const workbook = XLSX.read(selectedFile.value, { type: 'array' })
     const sheetName = workbook.SheetNames[0]
     const worksheet = workbook.Sheets[sheetName]
 
@@ -541,14 +535,12 @@ const validateRowData = (item, parseErrors) => {
     item.stationCode = stationCode
   }
 
+  // 根据导入类型验证数据
   if (props.importType === 'waterQuality') {
-    // 水质数据验证
     validateWaterQualityData(item, errors)
   } else if (props.importType === 'waterLevel') {
-    // 水位数据验证
     validateWaterLevelData(item, errors)
   } else {
-    // 流量数据验证
     validateFlowData(item, errors)
   }
 
@@ -612,31 +604,30 @@ const validateWaterQualityData = (item, errors) => {
   }
 
   // 验证各个监测项目的数值范围
-  validateWaterQualityField(item, 'waterTemperature', '水温', -10, 100, errors)
-  validateWaterQualityField(item, 'turbidity', '浊度', 0, 1000, errors)
-  validateWaterQualityField(item, 'phValue', 'PH值', 0, 14, errors)
-  validateWaterQualityField(item, 'conductivity', '电导率', 0, 10000, errors)
-  validateWaterQualityField(item, 'dissolvedOxygen', '溶解氧', 0, 50, errors)
-  validateWaterQualityField(item, 'ammoniaNitrogen', '氨氮', 0, 100, errors)
-  validateWaterQualityField(item, 'codValue', '化学需氧量', 0, 1000, errors)
-  validateWaterQualityField(item, 'residualChlorine', '余氯', 0, 10, errors)
-}
-
-// 验证水质监测项目字段
-const validateWaterQualityField = (item, fieldName, fieldLabel, min, max, errors) => {
-  const value = item[fieldName]
-  if (value !== null && value !== undefined && value !== '') {
-    const numValue = Number(value)
-    if (isNaN(numValue)) {
-      errors.push(`${fieldLabel}必须是数值`)
-    } else if (numValue < min || numValue > max) {
-      errors.push(`${fieldLabel}超出有效范围(${min}~${max})`)
+  const validateField = (fieldName, fieldLabel, min, max) => {
+    const value = item[fieldName]
+    if (value !== null && value !== undefined && value !== '') {
+      const numValue = Number(value)
+      if (isNaN(numValue)) {
+        errors.push(`${fieldLabel}必须是数值`)
+      } else if (numValue < min || numValue > max) {
+        errors.push(`${fieldLabel}超出有效范围(${min}~${max})`)
+      } else {
+        item[fieldName] = numValue
+      }
     } else {
-      item[fieldName] = numValue
+      item[fieldName] = null
     }
-  } else {
-    item[fieldName] = null
   }
+
+  validateField('waterTemperature', '水温', -10, 100)
+  validateField('turbidity', '浊度', 0, 1000)
+  validateField('phValue', 'PH值', 0, 14)
+  validateField('conductivity', '电导率', 0, 10000)
+  validateField('dissolvedOxygen', '溶解氧', 0, 50)
+  validateField('ammoniaNitrogen', '氨氮', 0, 100)
+  validateField('codValue', '化学需氧量', 0, 1000)
+  validateField('residualChlorine', '余氯', 0, 10)
 }
 
 // 验证水位数据

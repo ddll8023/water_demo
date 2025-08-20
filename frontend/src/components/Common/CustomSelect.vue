@@ -61,14 +61,8 @@
             <i v-if="multiple && isSelected(option)" class="fa fa-check option-check"></i>
           </div>
 
-          <!-- 加载状态 -->
-          <div v-if="loading" class="loading-option">
-            <i class="fa fa-spinner fa-spin"></i>
-            <span>加载中...</span>
-          </div>
-
           <!-- 空数据 -->
-          <div v-else-if="filteredOptions.length === 0" class="empty-option">
+          <div v-if="filteredOptions.length === 0" class="empty-option">
             <slot name="empty">
               <i class="fa fa-inbox"></i>
               <span>{{ emptyText }}</span>
@@ -130,16 +124,6 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  // 是否远程搜索
-  remote: {
-    type: Boolean,
-    default: false
-  },
-  // 远程搜索方法
-  remoteMethod: {
-    type: Function,
-    default: null
-  },
   // 是否可清除
   clearable: {
     type: Boolean,
@@ -150,21 +134,10 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  // 加载状态
-  loading: {
-    type: Boolean,
-    default: false
-  },
   // 空数据文本
   emptyText: {
     type: String,
     default: '暂无数据'
-  },
-  // 尺寸
-  size: {
-    type: String,
-    default: 'default',
-    validator: (value) => ['large', 'default', 'small'].includes(value)
   }
 })
 
@@ -206,22 +179,15 @@ const hasValue = computed(() => {
 
 // 选择器样式类
 const selectClasses = computed(() => {
-  return [
-    `custom-select--${props.size}`,
-    {
-      'is-multiple': props.multiple,
-      'is-disabled': props.disabled,
-      'is-focused': dropdownVisible.value
-    }
-  ]
+  return {
+    'is-multiple': props.multiple,
+    'is-disabled': props.disabled,
+    'is-focused': dropdownVisible.value
+  }
 })
 
 // 过滤后的选项列表
 const filteredOptions = computed(() => {
-  if (props.remote) {
-    return props.options
-  }
-
   if (!props.filterable || !searchKeyword.value) {
     return props.options
   }
@@ -270,6 +236,14 @@ const handleClickOutside = (event) => {
 
 // ===== 选项操作 =====
 /**
+ * 更新选中值
+ */
+const updateSelectedValues = (newValues) => {
+  emit('update:modelValue', newValues)
+  emit('change', newValues)
+}
+
+/**
  * 选择选项
  */
 const selectOption = (option) => {
@@ -285,11 +259,9 @@ const selectOption = (option) => {
       values.push(option[props.valueKey])
     }
 
-    emit('update:modelValue', values)
-    emit('change', values, option)
+    updateSelectedValues(values)
   } else {
-    emit('update:modelValue', option[props.valueKey])
-    emit('change', option[props.valueKey], option)
+    updateSelectedValues(option[props.valueKey])
     closeDropdown()
   }
 }
@@ -304,8 +276,7 @@ const removeOption = (option) => {
 
     if (index > -1) {
       values.splice(index, 1)
-      emit('update:modelValue', values)
-      emit('change', values, option)
+      updateSelectedValues(values)
       emit('remove-tag', option[props.valueKey])
     }
   }
@@ -327,8 +298,7 @@ const isSelected = (option) => {
  */
 const handleClear = () => {
   const newValue = props.multiple ? [] : null
-  emit('update:modelValue', newValue)
-  emit('change', newValue)
+  updateSelectedValues(newValue)
   emit('clear')
 }
 
@@ -337,9 +307,7 @@ const handleClear = () => {
  * 处理搜索输入
  */
 const handleSearch = () => {
-  if (props.remote && props.remoteMethod) {
-    props.remoteMethod(searchKeyword.value)
-  }
+  // 本地搜索，无需额外处理
 }
 
 /**
@@ -385,12 +353,12 @@ defineExpose({
 /* ===== 基础样式 ===== */
 .custom-select {
   position: relative;
-  width: inherit; // 继承父容器宽度
+  width: inherit;
 
   /* ===== 输入框样式 ===== */
   .select-input-wrapper {
     @include flex-start;
-    min-height: var(--form-item-height);
+    min-height: 40px;
     background: var(--bg-primary);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-base);
@@ -403,13 +371,13 @@ defineExpose({
 
     &:focus-within {
       border-color: var(--primary-color);
-      box-shadow: var(--focus-shadow-offset) var(--primary-transparent-light);
+      box-shadow: 0 0 0 2px var(--primary-transparent-light);
     }
 
     .select-input {
       flex: 1;
       padding: var(--spacing-xs) 0 var(--spacing-xs) var(--spacing-medium);
-      min-height: calc(var(--form-item-height) - 2px);
+      min-height: 38px;
       @include flex-start;
       flex-wrap: wrap;
       gap: var(--spacing-mini);
@@ -456,7 +424,7 @@ defineExpose({
 
           .tag-close {
             cursor: pointer;
-            font-size: var(--icon-size-xs);
+            font-size: 12px;
             flex-shrink: 0;
             transition: var(--transition-fast);
 
@@ -539,7 +507,6 @@ defineExpose({
     .options-list {
       max-height: 200px;
       overflow-y: auto;
-      @include custom-scrollbar;
 
       .select-option {
         @include flex-between;
@@ -573,7 +540,6 @@ defineExpose({
         }
       }
 
-      .loading-option,
       .empty-option {
         @include flex-center;
         gap: var(--spacing-small);
@@ -582,7 +548,7 @@ defineExpose({
         font-size: var(--font-size-base);
 
         i {
-          font-size: var(--icon-size-md);
+          font-size: 16px;
         }
       }
     }
@@ -607,33 +573,6 @@ defineExpose({
           color: var(--text-disabled);
           cursor: not-allowed;
         }
-      }
-    }
-  }
-
-  /* ===== 尺寸变体 ===== */
-  // 大尺寸
-  &.custom-select--large {
-    font-size: var(--font-size-medium);
-
-    .select-input-wrapper {
-      min-height: calc(var(--form-item-height) + var(--spacing-small));
-
-      .select-input {
-        padding: var(--spacing-sm) var(--spacing-base);
-      }
-    }
-  }
-
-  // 小尺寸
-  &.custom-select--small {
-    font-size: var(--font-size-extra-small);
-
-    .select-input-wrapper {
-      min-height: calc(var(--form-item-height) - var(--spacing-base));
-
-      .select-input {
-        padding: var(--spacing-mini) var(--spacing-small);
       }
     }
   }

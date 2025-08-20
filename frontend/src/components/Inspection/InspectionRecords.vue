@@ -202,15 +202,11 @@ const props = defineProps({
     getFacilityDisplay: {
         type: Function,
         required: true
-    },
-    exporting: {
-        type: Boolean,
-        default: false
     }
 })
 
 // ================= Emits =================
-const emit = defineEmits(['record-created', 'export-records'])
+const emit = defineEmits(['record-created'])
 
 // ================= 记录相关 =================
 const recordSearchForm = ref({
@@ -230,7 +226,7 @@ const recordSearchFields = ref([
         options: [],
         placeholder: '请选择设施类型',
         width: '220px',
-        labelWidth: 'var(--form-label-width-standard)',
+        labelWidth: '120px',
         clearable: true
     },
     {
@@ -240,7 +236,7 @@ const recordSearchFields = ref([
         options: [],
         placeholder: '请选择巡检设施',
         width: '220px',
-        labelWidth: 'var(--form-label-width-standard)',
+        labelWidth: '120px',
         clearable: true
     },
     {
@@ -251,7 +247,7 @@ const recordSearchFields = ref([
         endPlaceholder: '请选择结束时间',
         showDuration: true,
         width: '405px',
-        labelWidth: 'var(--form-label-width-standard)'
+        labelWidth: '120px'
     },
     {
         prop: 'issueFlag',
@@ -263,7 +259,7 @@ const recordSearchFields = ref([
         ],
         placeholder: '请选择',
         width: '220px',
-        labelWidth: 'var(--form-label-width-standard)',
+        labelWidth: '120px',
         clearable: true
     },
     {
@@ -276,7 +272,7 @@ const recordSearchFields = ref([
         ],
         placeholder: '请选择',
         width: '220px',
-        labelWidth: 'var(--form-label-width-standard)',
+        labelWidth: '120px',
         clearable: true
     },
     {
@@ -286,7 +282,7 @@ const recordSearchFields = ref([
         options: [],
         placeholder: '请选择负责人',
         width: '220px',
-        labelWidth: 'var(--form-label-width-standard)',
+        labelWidth: '120px',
         clearable: true
     }
 ])
@@ -562,11 +558,29 @@ const loadRecordData = async () => {
     try {
         const { recordTime, ...otherParams } = recordSearchForm.value
 
+        // 过滤有效参数
+        const filteredParams = {}
+        Object.keys(otherParams).forEach(key => {
+            const value = otherParams[key]
+            if (value !== null && value !== '' && value !== undefined) {
+                filteredParams[key] = value
+            }
+        })
+
+        // 处理时间范围参数
+        let timeParams = {}
+        if (recordTime && Array.isArray(recordTime) && recordTime.length === 2) {
+            timeParams = {
+                startTime: formatLocalTimeForAPI(recordTime[0]),
+                endTime: formatLocalTimeForAPI(recordTime[1])
+            }
+        }
+
         const params = {
             page: recordPagination.currentPage,
             size: recordPagination.pageSize,
-            ...filterValidParams(otherParams),
-            ...processTimeRangeParams(recordTime)
+            ...filteredParams,
+            ...timeParams
         }
 
         const response = await listRecords(params)
@@ -700,16 +714,6 @@ const handleResolveSubmit = async () => {
     }
 }
 
-const handleExport = () => {
-    const { recordTime, ...otherParams } = recordSearchForm.value;
-    const params = {
-        ...filterValidParams(otherParams),
-        ...processTimeRangeParams(recordTime),
-    };
-    emit('export-records', params);
-};
-
-
 // ================= 文件上传 =================
 const handleFileChange = (file, fileList) => {
     uploadFileList.value = fileList
@@ -730,32 +734,8 @@ const handleAttachmentPreview = (attachment) => {
     imagePreviewVisible.value = true
 }
 
-// ================= 工具函数 =================
-const filterValidParams = (params) => {
-    const filtered = {}
-    Object.keys(params).forEach(key => {
-        const value = params[key]
-        if (value !== null && value !== '' && value !== undefined) {
-            filtered[key] = value
-        }
-    })
-    return filtered
-}
-
-const processTimeRangeParams = (timeRange) => {
-    if (!timeRange || !Array.isArray(timeRange) || timeRange.length !== 2) {
-        return {}
-    }
-
-    return {
-        startTime: formatLocalTimeForAPI(timeRange[0]),
-        endTime: formatLocalTimeForAPI(timeRange[1])
-    }
-}
-
 // Expose methods to parent
 defineExpose({
-    handleExport,
     loadRecordData
 });
 </script>
@@ -772,8 +752,8 @@ defineExpose({
 
     // 封面图片样式
     .cover-image {
-        width: var(--thumbnail-width);
-        height: var(--thumbnail-height);
+        width: 60px;
+        height: 60px;
         object-fit: cover;
     }
 
@@ -800,7 +780,7 @@ defineExpose({
                     font-weight: 500;
                     color: var(--text-primary);
                     white-space: nowrap;
-                    min-width: var(--button-min-width);
+                    min-width: 80px;
                 }
 
                 span {
@@ -814,7 +794,7 @@ defineExpose({
             h4 {
                 margin: 0 0 var(--spacing-medium) 0;
                 color: var(--text-primary);
-                font-size: 16px;
+                font-size: var(--font-size-base);
                 font-weight: 500;
             }
 

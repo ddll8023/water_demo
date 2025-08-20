@@ -1,6 +1,7 @@
 <template>
     <div class="tab-section">
-        <el-tabs :model-value="modelValue" class="custom-tabs" @update:model-value="handleTabChange">
+        <el-tabs :model-value="modelValue" class="custom-tabs"
+            @update:model-value="(tabName) => emit('update:modelValue', tabName)">
             <el-tab-pane v-for="tab in tabs" :key="tab.name" :name="tab.name">
                 <template #label>
                     <span class="tab-label">
@@ -41,16 +42,7 @@ const props = defineProps({
     }
 })
 
-const emit = defineEmits(['update:modelValue', 'tab-change'])
-
-/**
- * 标签页切换事件处理
- * @param {String} tabName - 被选中的标签页名称
- */
-const handleTabChange = (tabName) => {
-    emit('update:modelValue', tabName)
-    emit('tab-change', tabName)
-}
+const emit = defineEmits(['update:modelValue'])
 </script>
 
 <style scoped lang="scss">

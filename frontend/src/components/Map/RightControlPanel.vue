@@ -1,6 +1,6 @@
 <template>
     <div class="right-control-panel" :class="{ collapsed: !panelVisible }">
-        <div class="panel-header" @click="togglePanel">
+        <div class="panel-header" @click="panelVisible = !panelVisible; emit('panel-toggle', panelVisible)">
             <!-- 展开状态显示 -->
             <template v-if="panelVisible">
                 <i class="fa fa-list-ul header-icon"></i>
@@ -18,7 +18,15 @@
             <div class="control-group">
                 <div class="group-title">工程站点</div>
                 <div class="legend-options">
-                    <div class="legend-item" v-for="item in legendConfig.engineeringSites" :key="item.label">
+                    <div class="legend-item" v-for="item in [
+                        { icon: 'fa fa-tint', iconClass: 'icon-reservoir', label: '两河口水库' },
+                        { icon: 'fa fa-tachometer', iconClass: 'icon-monitoring-station', label: '流量站' },
+                        { icon: 'fa fa-building', iconClass: 'icon-water-plant', label: '水厂' },
+                        { icon: 'fa fa-ship', iconClass: 'icon-floating-boat', label: '浮舟' },
+                        { icon: 'fa fa-compress', iconClass: 'icon-pumping-station', label: '加压站' },
+                        { icon: 'fa fa-play-circle', iconClass: 'icon-pump-open', label: '泵打开' },
+                        { icon: 'fa fa-stop-circle', iconClass: 'icon-pump-closed', label: '泵关闭' }
+                    ]" :key="item.label">
                         <i class="legend-icon" :class="[item.icon, item.iconClass]"></i>
                         <span>{{ item.label }}</span>
                     </div>
@@ -29,7 +37,12 @@
             <div class="control-group">
                 <div class="group-title">预警站点</div>
                 <div class="legend-options">
-                    <div class="legend-item" v-for="item in legendConfig.warningSites" :key="item.label">
+                    <div class="legend-item" v-for="item in [
+                        { icon: 'fa fa-exclamation-triangle', iconClass: 'icon-warning-level-1', label: '一级预警' },
+                        { icon: 'fa fa-exclamation-triangle', iconClass: 'icon-warning-level-2', label: '二级预警' },
+                        { icon: 'fa fa-exclamation-triangle', iconClass: 'icon-warning-level-3', label: '三级预警' },
+                        { icon: 'fa fa-exclamation-triangle', iconClass: 'icon-warning-level-4', label: '四级预警' }
+                    ]" :key="item.label">
                         <i class="legend-icon" :class="[item.icon, item.iconClass]"></i>
                         <span>{{ item.label }}</span>
                     </div>
@@ -40,7 +53,10 @@
             <div class="control-group">
                 <div class="group-title">供水管线</div>
                 <div class="legend-options">
-                    <div class="legend-item" v-for="item in legendConfig.waterPipelines" :key="item.label">
+                    <div class="legend-item" v-for="item in [
+                        { class: 'pipeline-legend main-pipeline', label: '供水干管' },
+                        { class: 'pipeline-legend branch-pipeline', label: '供水支管' }
+                    ]" :key="item.label">
                         <span :class="item.class"></span>
                         <span>{{ item.label }}</span>
                     </div>
@@ -51,7 +67,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref } from 'vue';
 
 // Props定义
 const props = defineProps({
@@ -70,97 +86,12 @@ const emit = defineEmits([
 // 面板显示状态
 const panelVisible = ref(props.initialVisible);
 
-// 图例配置数据
-const legendConfig = reactive({
-    // 工程站点图例
-    engineeringSites: [
-        {
-            icon: 'fa fa-tint',
-            iconClass: 'icon-reservoir',
-            label: '两河口水库'
-        },
-        {
-            icon: 'fa fa-tachometer',
-            iconClass: 'icon-monitoring-station',
-            label: '流量站'
-        },
-        {
-            icon: 'fa fa-building',
-            iconClass: 'icon-water-plant',
-            label: '水厂'
-        },
-        {
-            icon: 'fa fa-ship',
-            iconClass: 'icon-floating-boat',
-            label: '浮舟'
-        },
-        {
-            icon: 'fa fa-compress',
-            iconClass: 'icon-pumping-station',
-            label: '加压站'
-        },
-        {
-            icon: 'fa fa-play-circle',
-            iconClass: 'icon-pump-open',
-            label: '泵打开'
-        },
-        {
-            icon: 'fa fa-stop-circle',
-            iconClass: 'icon-pump-closed',
-            label: '泵关闭'
-        }
-    ],
-    // 预警站点图例
-    warningSites: [
-        {
-            icon: 'fa fa-exclamation-triangle',
-            iconClass: 'icon-warning-level-1',
-            label: '一级预警',
-            color: 'var(--warning-level-1-color)'
-        },
-        {
-            icon: 'fa fa-exclamation-triangle',
-            iconClass: 'icon-warning-level-2',
-            label: '二级预警',
-            color: 'var(--warning-level-2-color)'
-        },
-        {
-            icon: 'fa fa-exclamation-triangle',
-            iconClass: 'icon-warning-level-3',
-            label: '三级预警',
-            color: 'var(--warning-level-3-color)'
-        },
-        {
-            icon: 'fa fa-exclamation-triangle',
-            iconClass: 'icon-warning-level-4',
-            label: '四级预警',
-            color: 'var(--warning-level-4-color)'
-        }
-    ],
-    // 供水管线图例
-    waterPipelines: [
-        {
-            class: 'pipeline-legend main-pipeline',
-            label: '供水干管'
-        },
-        {
-            class: 'pipeline-legend branch-pipeline',
-            label: '供水支管'
-        }
-    ]
-});
-
-/**
- * 切换面板显示状态
- */
-const togglePanel = () => {
-    panelVisible.value = !panelVisible.value;
-    emit('panel-toggle', panelVisible.value);
-};
-
 // 暴露给父组件的方法
 defineExpose({
-    togglePanel
+    togglePanel: () => {
+        panelVisible.value = !panelVisible.value;
+        emit('panel-toggle', panelVisible.value);
+    }
 });
 </script>
 
@@ -177,11 +108,11 @@ defineExpose({
     box-shadow: 0 8px 32px var(--black-transparent-medium);
     border: var(--border-width-thin) solid var(--white-transparent-base);
     z-index: var(--z-index-dropdown);
-    min-width: var(--panel-width-default);
+    min-width: 320px;
     max-width: 400px;
     overflow: hidden;
-    transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
-    animation: glassPanelFadeIn var(--map-panel-transition-duration) var(--map-panel-transition-ease);
+    transition: all var(--transition-base) var(--transition-ease);
+    animation: glassPanelFadeIn var(--transition-base) var(--transition-ease);
     will-change: transform, opacity, box-shadow;
     transform-origin: top right;
 
@@ -192,11 +123,11 @@ defineExpose({
 
     &.collapsed {
         min-width: auto;
-        width: var(--map-panel-collapsed-height);
-        height: var(--map-panel-collapsed-height);
+        width: 48px;
+        height: 48px;
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
         backdrop-filter: blur(8px);
-        transform: scale(var(--map-panel-hidden-scale));
+        transform: scale(0.9);
 
         .panel-header {
             background: rgba(248, 249, 250, 0.95);
@@ -207,7 +138,7 @@ defineExpose({
                 margin: 0;
                 font-size: 24px;
                 color: var(--primary-color);
-                transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
+                transition: all var(--transition-base) var(--transition-ease);
 
                 &:hover {
                     color: var(--primary-light);
@@ -218,7 +149,7 @@ defineExpose({
 
         .panel-content {
             opacity: 0;
-            transform: translateY(var(--map-panel-hidden-translate-y)) scale(var(--map-panel-hidden-scale));
+            transform: translateY(-20px) scale(0.9);
             pointer-events: none;
             max-height: 0;
         }
@@ -227,13 +158,13 @@ defineExpose({
     .panel-header {
         display: flex;
         align-items: center;
-        padding: var(--padding-panel-header);
-        background: var(--map-panel-stats-bg);
+        padding: var(--spacing-base);
+        background: rgba(248, 250, 252, 0.95);
         backdrop-filter: blur(8px);
         border-bottom: var(--border-width-thin) solid rgba(222, 226, 230, 0.6);
         cursor: pointer;
         position: relative;
-        transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
+        transition: all var(--transition-base) var(--transition-ease);
 
         &:hover {
             background: rgba(240, 242, 245, 0.9);
@@ -248,7 +179,7 @@ defineExpose({
             color: var(--primary-color);
             font-size: var(--font-size-medium);
             margin-right: var(--spacing-sm);
-            transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
+            transition: all var(--transition-base) var(--transition-ease);
             transform-origin: center;
         }
 
@@ -257,20 +188,14 @@ defineExpose({
             font-weight: 600;
             color: var(--text-primary);
             font-size: var(--font-size-base);
-            transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
-
-            &.collapsed-title {
-                opacity: 0;
-                transform: translateX(-10px);
-                transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease) 0.1s;
-            }
+            transition: all var(--transition-base) var(--transition-ease);
         }
 
         .toggle-icon {
             color: var(--text-secondary);
             font-size: var(--font-size-base);
             margin-left: 8px;
-            transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
+            transition: all var(--transition-base) var(--transition-ease);
             transform-origin: center;
 
             &.expanded {
@@ -287,15 +212,15 @@ defineExpose({
 
     .panel-content {
         padding: var(--spacing-base);
-        transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
-        max-height: var(--map-panel-max-height);
+        transition: all var(--transition-base) var(--transition-ease);
+        max-height: 600px;
         opacity: 1;
         transform: translateY(0) scale(1);
         transform-origin: top center;
 
         &.content-hidden {
             opacity: 0;
-            transform: translateY(var(--map-panel-hidden-translate-y)) scale(var(--map-panel-hidden-scale));
+            transform: translateY(-20px) scale(0.9);
             pointer-events: none;
             max-height: 0;
             padding: 0 16px;
@@ -352,14 +277,14 @@ defineExpose({
                 .legend-item {
                     display: flex;
                     align-items: center;
-                    padding: var(--padding-legend-item);
+                    padding: var(--spacing-sm);
                     background: var(--white-transparent-strong-90);
                     backdrop-filter: blur(8px);
                     border: var(--border-width-thin) solid var(--white-transparent-medium);
                     border-radius: var(--border-radius-large);
                     box-shadow: var(--shadow-card);
                     font-size: var(--font-size-extra-small);
-                    transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
+                    transition: all var(--transition-base) var(--transition-ease);
                     cursor: pointer;
                     position: relative;
                     overflow: hidden;
@@ -372,7 +297,7 @@ defineExpose({
                         width: 100%;
                         height: 100%;
                         background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-                        transition: left var(--map-panel-transition-duration) var(--map-panel-transition-ease);
+                        transition: left var(--transition-base) var(--transition-ease);
                     }
 
                     &:hover {
@@ -391,7 +316,7 @@ defineExpose({
                         margin-right: var(--spacing-sm);
                         width: 18px;
                         text-align: center;
-                        transition: transform var(--map-panel-transition-duration) var(--map-panel-transition-ease);
+                        transition: transform var(--transition-base) var(--transition-ease);
 
                         &.fa {
                             font-family: FontAwesome;
@@ -407,7 +332,7 @@ defineExpose({
                         font-weight: 500;
                         font-size: var(--font-size-extra-small);
                         line-height: 1.3;
-                        transition: color var(--map-panel-transition-duration) var(--map-panel-transition-ease);
+                        transition: color var(--transition-base) var(--transition-ease);
                     }
 
                     &:hover span:last-child {
@@ -421,7 +346,7 @@ defineExpose({
                     height: 3px;
                     border-radius: var(--border-radius-small);
                     margin-right: var(--spacing-small);
-                    transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
+                    transition: all var(--transition-base) var(--transition-ease);
 
                     &.main-pipeline {
                         background: linear-gradient(90deg, #1890ff, #40a9ff);
@@ -436,7 +361,7 @@ defineExpose({
 
                 .legend-item:hover .pipeline-legend {
                     transform: scaleX(1.2);
-                    box-shadow: var(--shadow-card-hover);
+                    box-shadow: var(--shadow-card);
                 }
             }
         }
@@ -459,7 +384,7 @@ defineExpose({
 @media (max-width: 768px) {
     .right-control-panel {
         min-width: 280px;
-        max-width: var(--panel-width-default);
+        max-width: 320px;
         right: 8px;
 
         &.collapsed {
@@ -474,7 +399,7 @@ defineExpose({
                 gap: var(--spacing-small);
 
                 .legend-item {
-                    padding: var(--padding-legend-item-mobile);
+                    padding: var(--spacing-xs);
                     font-size: var(--font-size-mini);
                 }
             }
@@ -482,59 +407,50 @@ defineExpose({
     }
 }
 
-// 图例图标颜色定义（使用业务变量）
+// 图例图标颜色定义（使用通用颜色变量）
 .icon-reservoir {
-    color: var(--facility-reservoir-color) !important;
+    color: var(--primary-color) !important;
 }
 
 .icon-monitoring-station {
-    color: var(--facility-monitoring-station-color) !important;
+    color: var(--success-color) !important;
 }
 
 .icon-pump-open {
-    color: var(--pump-status-open-color) !important;
+    color: var(--success-color) !important;
 }
 
 .icon-water-plant {
-    color: var(--facility-water-plant-color) !important;
+    color: var(--info-color) !important;
 }
 
 .icon-floating-boat {
-    color: var(--facility-village-color) !important;
+    color: var(--warning-color) !important;
 }
 
 .icon-pumping-station {
-    color: var(--facility-pumping-station-color) !important;
+    color: var(--primary-light) !important;
 }
 
 .icon-pump-closed {
-    color: var(--pump-status-closed-color) !important;
+    color: var(--danger-color) !important;
 }
 
-// 预警级别图标样式
+// 预警级别图标样式（使用通用颜色变量）
 .icon-warning-level-1 {
-    color: var(--warning-level-1-color) !important;
+    color: var(--warning-color) !important;
 }
 
 .icon-warning-level-2 {
-    color: var(--warning-level-2-color) !important;
+    color: var(--warning-color) !important;
 }
 
 .icon-warning-level-3 {
-    color: var(--warning-level-3-color) !important;
+    color: var(--danger-color) !important;
 }
 
 .icon-warning-level-4 {
-    color: var(--warning-level-4-color) !important;
-}
-
-// 兼容性样式 - 保持向后兼容
-.icon-warning-general {
-    color: var(--warning-level-general-color) !important;
-}
-
-.icon-warning-serious {
-    color: var(--warning-level-serious-color) !important;
+    color: var(--danger-color) !important;
 }
 
 // 性能优化

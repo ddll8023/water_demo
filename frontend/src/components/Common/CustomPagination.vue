@@ -195,7 +195,7 @@ const handleJumper = (event) => {
     }
 
     .size-selector {
-        padding: var(--input-padding-compact);
+        padding: 6px 12px;
         border: 1px solid var(--border-color);
         border-radius: var(--border-radius-base);
         cursor: pointer;
@@ -223,8 +223,8 @@ const handleJumper = (event) => {
 
         .page-item {
             &.ellipsis {
-                min-width: var(--button-standard-size);
-                height: var(--button-standard-size);
+                min-width: 32px;
+                height: 32px;
                 padding: 0 var(--spacing-xs);
                 display: flex;
                 align-items: center;
@@ -246,7 +246,7 @@ const handleJumper = (event) => {
 
         .jumper-input {
             width: 50px;
-            padding: var(--input-padding-compact);
+            padding: 6px 12px;
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius-base);
             text-align: center;
@@ -290,8 +290,8 @@ const handleJumper = (event) => {
             }
 
             .page-item.ellipsis {
-                min-width: var(--button-size-small);
-                height: var(--button-size-small);
+                min-width: 28px;
+                height: 28px;
             }
         }
 

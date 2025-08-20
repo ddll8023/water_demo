@@ -17,7 +17,8 @@
           'table-striped': stripe,
           'table-bordered': border,
           [`table-${size}`]: size !== 'default'
-        }" :style="tableStyles">
+        }"
+          :style="actionsWidth ? { '--actions-width': typeof actionsWidth === 'number' ? `${actionsWidth}px` : actionsWidth } : {}">
           <!-- 表头 -->
           <thead>
             <tr>
@@ -70,7 +71,7 @@
 
               <!-- 序号列 -->
               <td v-if="showIndex" class="index-col">
-                {{ getIndex(index) }}
+                {{ ((props.currentPage || 1) - 1) * (props.pageSize || 10) + index + 1 }}
               </td>
 
               <!-- 数据列 -->
@@ -124,7 +125,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { ElMessageBox } from 'element-plus'
 import CustomButton from './CustomButton.vue'
 // 使用Font Awesome图标，无需导入
@@ -308,9 +309,6 @@ const sortState = ref({
   order: null
 })
 
-// 设备检测状态
-const isMobile = ref(false)
-
 /**
  * ----------------------------------------
  * 计算属性
@@ -349,38 +347,14 @@ const totalColumns = computed(() => {
 
 
 
-const tableStyles = computed(() => {
-  const styles = {}
-  if (props.actionsWidth) {
-    styles['--actions-width'] = typeof props.actionsWidth === 'number'
-      ? `${props.actionsWidth}px`
-      : props.actionsWidth
-  }
-  return styles
-})
 
-/**
- * ----------------------------------------
- * 设备检测和响应式处理
- * ----------------------------------------
- */
-// 检查是否为移动端
-const checkMobile = () => {
-  isMobile.value = window.innerWidth <= 768
-}
+
 
 /**
  * ----------------------------------------
  * 工具方法
  * ----------------------------------------
  */
-// 获取序号
-const getIndex = (index) => {
-  // 确保即使在没有分页的情况下也能正确计算序号
-  const currentPage = props.currentPage || 1
-  const pageSize = props.pageSize || 10
-  return (currentPage - 1) * pageSize + index + 1
-}
 
 // 获取行的唯一标识
 const getRowKey = (row, index) => {
@@ -600,19 +574,9 @@ const toggleAllSelection = () => {
  * 生命周期钩子
  * ----------------------------------------
  */
-onMounted(() => {
-  checkMobile()
-  window.addEventListener('resize', handleResize)
-})
+// 根据需要可添加生命周期钩子
 
-onUnmounted(() => {
-  window.removeEventListener('resize', handleResize)
-})
 
-// 窗口大小变化监听
-const handleResize = () => {
-  checkMobile()
-}
 
 /**
  * ----------------------------------------

@@ -59,42 +59,42 @@
         <!-- 年份选择 -->
         <div v-if="type === 'year'" class="year-section">
           <h4 class="section-title">选择年份</h4>
-          <el-date-picker v-model="tempSingleValue" type="year" placeholder="选择年份" style="width: 100%"
+          <el-date-picker v-model="tempValue" type="year" placeholder="选择年份" style="width: 100%"
             @change="handleTempChange" />
         </div>
 
         <!-- 月份选择 -->
         <div v-else-if="type === 'month'" class="month-section">
           <h4 class="section-title">选择月份</h4>
-          <el-date-picker v-model="tempSingleValue" type="month" placeholder="选择月份" style="width: 100%"
+          <el-date-picker v-model="tempValue" type="month" placeholder="选择月份" style="width: 100%"
             @change="handleTempChange" />
         </div>
 
         <!-- 周选择 -->
         <div v-else-if="type === 'week'" class="week-section">
           <h4 class="section-title">选择周</h4>
-          <el-date-picker v-model="tempSingleValue" type="week" placeholder="选择周" style="width: 100%"
-            format="YYYY 第 ww 周" @change="handleTempChange" />
+          <el-date-picker v-model="tempValue" type="week" placeholder="选择周" style="width: 100%" format="YYYY 第 ww 周"
+            @change="handleTempChange" />
         </div>
 
         <!-- 时间选择 -->
         <div v-else-if="type === 'time'" class="time-section">
           <h4 class="section-title">选择时间</h4>
-          <el-time-picker v-model="tempSingleValue" placeholder="选择时间" style="width: 100%"
-            :format="format || 'HH:mm:ss'" @change="handleTempChange" />
+          <el-time-picker v-model="tempValue" placeholder="选择时间" style="width: 100%" :format="format || 'HH:mm:ss'"
+            @change="handleTempChange" />
         </div>
 
         <!-- 多日期选择 -->
         <div v-else-if="type === 'dates'" class="dates-section">
           <h4 class="section-title">选择多个日期</h4>
-          <el-date-picker v-model="tempMultipleValue" type="dates" placeholder="选择多个日期" style="width: 100%"
+          <el-date-picker v-model="tempValue" type="dates" placeholder="选择多个日期" style="width: 100%"
             @change="handleTempChange" />
         </div>
 
         <!-- 日期选择 -->
         <div v-else class="date-section">
           <h4 class="section-title">选择日期</h4>
-          <el-date-picker v-model="tempDate" type="date" placeholder="选择日期" style="width: 100%"
+          <el-date-picker v-model="tempValue" type="date" placeholder="选择日期" style="width: 100%"
             @change="handleDateChange" />
         </div>
 
@@ -212,27 +212,11 @@ const props = defineProps({
     type: String,
     default: 'YYYY-MM-DD'
   },
-
-  // 是否只读
-  readonly: {
-    type: Boolean,
-    default: false
-  },
-
-
-
-
-
   // 快捷选项
   shortcuts: {
     type: Array,
     default: () => []
   },
-
-
-
-
-
   // 是否显示时间间隔（自定义属性）
   showDuration: {
     type: Boolean,
@@ -264,12 +248,10 @@ const pickerVisible = ref(false)
 const currentPickerType = ref('single') // 'single' | 'start' | 'end'
 
 // 临时选择状态
-const tempDate = ref(null)
+const tempValue = ref(null)
 const tempHour = ref('00')
 const tempMinute = ref('00')
 const tempSecond = ref('00')
-const tempSingleValue = ref(null)
-const tempMultipleValue = ref([])
 
 // 内部值状态
 const internalValue = ref(null)
@@ -325,27 +307,23 @@ const hasValue = computed(() => {
   }
 })
 
-// 单值显示
-const singleValueDisplay = computed(() => {
-  if (!hasValue.value || isRangeType.value) return ''
+// 值显示
+const valueDisplay = computed(() => {
+  if (!hasValue.value) return ''
 
-  if (props.type === 'dates' && Array.isArray(internalValue.value)) {
-    return internalValue.value.map(date => formatValueByType(date)).join(', ')
+  if (isRangeType.value) {
+    const start = Array.isArray(internalValue.value) && internalValue.value[0] ?
+      formatValue(internalValue.value[0], 'display') : ''
+    const end = Array.isArray(internalValue.value) && internalValue.value[1] ?
+      formatValue(internalValue.value[1], 'display') : ''
+    return { start, end }
   }
 
-  return formatValueByType(internalValue.value)
-})
+  if (props.type === 'dates' && Array.isArray(internalValue.value)) {
+    return internalValue.value.map(date => formatValue(date, 'display')).join(', ')
+  }
 
-// 开始值显示
-const startValueDisplay = computed(() => {
-  if (!isRangeType.value || !Array.isArray(internalValue.value) || !internalValue.value[0]) return ''
-  return formatValueByType(internalValue.value[0])
-})
-
-// 结束值显示
-const endValueDisplay = computed(() => {
-  if (!isRangeType.value || !Array.isArray(internalValue.value) || !internalValue.value[1]) return ''
-  return formatValueByType(internalValue.value[1])
+  return formatValue(internalValue.value, 'display')
 })
 
 // 时间选项
@@ -382,17 +360,17 @@ const durationText = computed(() => {
 
 // CustomInput专用的computed属性（只读）
 const singleInputValue = computed({
-  get: () => singleValueDisplay.value,
+  get: () => isRangeType.value ? '' : valueDisplay.value,
   set: () => { } // 只读，不处理set
 })
 
 const startInputValue = computed({
-  get: () => startValueDisplay.value,
+  get: () => isRangeType.value && valueDisplay.value.start ? valueDisplay.value.start : '',
   set: () => { } // 只读，不处理set
 })
 
 const endInputValue = computed({
-  get: () => endValueDisplay.value,
+  get: () => isRangeType.value && valueDisplay.value.end ? valueDisplay.value.end : '',
   set: () => { } // 只读，不处理set
 })
 
@@ -401,8 +379,8 @@ const endInputValue = computed({
  * 工具方法
  * ===========================
  */
-// 根据类型格式化值
-const formatValueByType = (value) => {
+// 统一的格式化方法
+const formatValue = (value, type = 'output') => {
   if (!value) return ''
 
   // time 类型直接返回时间字符串，不需要转换为Date对象
@@ -414,45 +392,18 @@ const formatValueByType = (value) => {
   if (isNaN(date.getTime())) return ''
 
   const formatMap = {
-    'date': props.format || 'YYYY-MM-DD',
-    'datetime': props.format || 'YYYY-MM-DD HH:mm:ss',
-    'daterange': props.format || 'YYYY-MM-DD',
-    'datetimerange': props.format || 'YYYY-MM-DD HH:mm:ss',
+    'date': type === 'display' ? (props.format || 'YYYY-MM-DD') : (props.valueFormat || 'YYYY-MM-DD'),
+    'datetime': type === 'display' ? (props.format || 'YYYY-MM-DD HH:mm:ss') : (props.valueFormat || 'YYYY-MM-DDTHH:mm:ss'),
+    'daterange': type === 'display' ? (props.format || 'YYYY-MM-DD') : (props.valueFormat || 'YYYY-MM-DD'),
+    'datetimerange': type === 'display' ? (props.format || 'YYYY-MM-DD HH:mm:ss') : (props.valueFormat || 'YYYY-MM-DDTHH:mm:ss'),
     'month': 'YYYY-MM',
     'year': 'YYYY',
     'week': 'YYYY 第 ww 周',
-    'dates': props.format || 'YYYY-MM-DD',
-    'time': props.format || 'HH:mm:ss'
+    'dates': type === 'display' ? (props.format || 'YYYY-MM-DD') : (props.valueFormat || 'YYYY-MM-DD'),
+    'time': type === 'display' ? (props.format || 'HH:mm:ss') : (props.valueFormat || 'HH:mm:ss')
   }
 
   return formatDateTime(date, formatMap[props.type] || props.format)
-}
-
-// 根据类型格式化输出值
-const formatOutputValue = (value) => {
-  if (!value) return value
-
-  // time 类型直接处理时间字符串
-  if (props.type === 'time') {
-    return typeof value === 'string' ? value : value.toString()
-  }
-
-  const date = new Date(value)
-  if (isNaN(date.getTime())) return value
-
-  const formatMap = {
-    'date': props.valueFormat || 'YYYY-MM-DD',
-    'datetime': props.valueFormat || 'YYYY-MM-DDTHH:mm:ss',
-    'daterange': props.valueFormat || 'YYYY-MM-DD',
-    'datetimerange': props.valueFormat || 'YYYY-MM-DDTHH:mm:ss',
-    'month': 'YYYY-MM',
-    'year': 'YYYY',
-    'week': 'YYYY-MM-DD',
-    'dates': props.valueFormat || 'YYYY-MM-DD',
-    'time': props.valueFormat || 'HH:mm:ss'
-  }
-
-  return formatDateTime(date, formatMap[props.type] || props.valueFormat)
 }
 
 /**
@@ -472,7 +423,7 @@ watch(() => props.modelValue, (newValue) => {
  */
 // 打开选择器
 const openPicker = (type = 'single') => {
-  if (props.disabled || props.readonly) return
+  if (props.disabled) return
 
   currentPickerType.value = type
 
@@ -481,7 +432,7 @@ const openPicker = (type = 'single') => {
       (type === 'start' ? internalValue.value[0] : internalValue.value[1]) : null
 
     if (targetValue) {
-      tempDate.value = new Date(targetValue)
+      tempValue.value = new Date(targetValue)
       if (needTimeSelection.value) {
         const date = new Date(targetValue)
         tempHour.value = date.getHours().toString().padStart(2, '0')
@@ -489,7 +440,7 @@ const openPicker = (type = 'single') => {
         tempSecond.value = date.getSeconds().toString().padStart(2, '0')
       }
     } else {
-      tempDate.value = new Date()
+      tempValue.value = new Date()
       if (needTimeSelection.value) {
         tempHour.value = type === 'start' ? '00' : '23'
         tempMinute.value = type === 'start' ? '00' : '59'
@@ -500,10 +451,9 @@ const openPicker = (type = 'single') => {
     // 单值类型
     if (hasValue.value) {
       if (props.type === 'dates') {
-        tempMultipleValue.value = Array.isArray(internalValue.value) ? [...internalValue.value] : []
+        tempValue.value = Array.isArray(internalValue.value) ? [...internalValue.value] : []
       } else {
-        tempSingleValue.value = new Date(internalValue.value)
-        tempDate.value = new Date(internalValue.value)
+        tempValue.value = new Date(internalValue.value)
 
         if (needTimeSelection.value) {
           const date = new Date(internalValue.value)
@@ -513,9 +463,7 @@ const openPicker = (type = 'single') => {
         }
       }
     } else {
-      tempSingleValue.value = new Date()
-      tempMultipleValue.value = []
-      tempDate.value = new Date()
+      tempValue.value = props.type === 'dates' ? [] : new Date()
 
       if (needTimeSelection.value) {
         tempHour.value = '00'
@@ -537,16 +485,12 @@ const closePicker = () => {
 
 // 处理临时值变化
 const handleTempChange = (value) => {
-  if (props.type === 'dates') {
-    tempMultipleValue.value = value || []
-  } else {
-    tempSingleValue.value = value
-  }
+  tempValue.value = value
 }
 
 // 日期变化处理
 const handleDateChange = (value) => {
-  tempDate.value = value
+  tempValue.value = value
   emit('calendar-change', value)
 }
 
@@ -556,18 +500,18 @@ const confirmSelection = () => {
 
   if (props.type === 'dates') {
     // 多日期选择
-    newValue = tempMultipleValue.value.map(date => formatOutputValue(date))
+    newValue = tempValue.value.map(date => formatValue(date, 'output'))
   } else if (['year', 'month', 'week', 'time'].includes(props.type)) {
     // 特殊类型直接使用临时值
-    newValue = tempSingleValue.value ? formatOutputValue(tempSingleValue.value) : null
+    newValue = tempValue.value ? formatValue(tempValue.value, 'output') : null
   } else if (isRangeType.value) {
     // 范围类型
-    if (!tempDate.value) {
+    if (!tempValue.value) {
       ElMessage.warning('请选择日期')
       return
     }
 
-    const selectedDateTime = new Date(tempDate.value)
+    const selectedDateTime = new Date(tempValue.value)
     if (needTimeSelection.value) {
       selectedDateTime.setHours(parseInt(tempHour.value))
       selectedDateTime.setMinutes(parseInt(tempMinute.value))
@@ -577,13 +521,13 @@ const confirmSelection = () => {
     const currentValue = Array.isArray(internalValue.value) ? [...internalValue.value] : [null, null]
 
     if (currentPickerType.value === 'start') {
-      currentValue[0] = formatOutputValue(selectedDateTime)
+      currentValue[0] = formatValue(selectedDateTime, 'output')
       if (currentValue[1] && selectedDateTime > new Date(currentValue[1])) {
         ElMessage.warning('开始时间不能晚于结束时间')
         return
       }
     } else {
-      currentValue[1] = formatOutputValue(selectedDateTime)
+      currentValue[1] = formatValue(selectedDateTime, 'output')
       if (currentValue[0] && selectedDateTime < new Date(currentValue[0])) {
         ElMessage.warning('结束时间不能早于开始时间')
         return
@@ -593,19 +537,19 @@ const confirmSelection = () => {
     newValue = currentValue
   } else {
     // 单值类型
-    if (!tempDate.value) {
+    if (!tempValue.value) {
       ElMessage.warning('请选择日期')
       return
     }
 
-    const selectedDateTime = new Date(tempDate.value)
+    const selectedDateTime = new Date(tempValue.value)
     if (needTimeSelection.value) {
       selectedDateTime.setHours(parseInt(tempHour.value))
       selectedDateTime.setMinutes(parseInt(tempMinute.value))
       selectedDateTime.setSeconds(parseInt(tempSecond.value))
     }
 
-    newValue = formatOutputValue(selectedDateTime)
+    newValue = formatValue(selectedDateTime, 'output')
   }
 
   updateModelValue(newValue)
@@ -630,8 +574,8 @@ const selectShortcut = (shortcut) => {
     const result = shortcut.value()
     if (Array.isArray(result) && result.length === 2) {
       const newValue = [
-        formatOutputValue(result[0]),
-        formatOutputValue(result[1])
+        formatValue(result[0], 'output'),
+        formatValue(result[1], 'output')
       ]
       updateModelValue(newValue)
       closePicker()
@@ -710,10 +654,6 @@ defineExpose({
 
   /* CustomInput组件样式由组件本身处理，这里只需要基本布局 */
 }
-
-
-
-
 
 .clear-icon {
   position: absolute;

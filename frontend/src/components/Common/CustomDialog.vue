@@ -7,7 +7,7 @@
     <el-dialog v-model="dialogVisible" :title="title" :width="width" :top="top" :modal="modal"
         :append-to-body="appendToBody" :lock-scroll="lockScroll" :custom-class="customClass"
         :close-on-click-modal="closeOnClickModal" :close-on-press-escape="closeOnPressEscape" :show-close="showClose"
-        :before-close="handleBeforeClose" :draggable="draggable" @close="handleClose" destroy-on-close>
+        :before-close="handleBeforeClose" @close="handleClose" destroy-on-close>
         <!-- 默认内容插槽 -->
         <slot></slot>
 
@@ -97,11 +97,6 @@ const props = defineProps({
         type: Function,
         default: null
     },
-    // 是否可拖拽
-    draggable: {
-        type: Boolean,
-        default: false
-    },
     // 是否显示取消按钮
     showCancelButton: {
         type: Boolean,
@@ -136,7 +131,6 @@ const props = defineProps({
  */
 const emit = defineEmits([
     'update:visible',
-    'close',
     'cancel',
     'confirm'
 ]);
@@ -157,11 +151,6 @@ const dialogVisible = computed({
  * 事件处理方法
  * ----------------------------------------
  */
-// 对话框关闭前触发
-const handleClose = () => {
-    emit('close');
-};
-
 // 处理beforeClose钩子
 const handleBeforeClose = (done) => {
     if (props.beforeClose) {
@@ -180,11 +169,6 @@ const handleCancel = () => {
 // 处理确认按钮点击事件
 const handleConfirm = () => {
     emit('confirm');
-    // 由父组件控制对话框的关闭，不再自动关闭
-    // 注释掉原代码，让父组件完全控制关闭行为
-    // if (!props.loading) {
-    //     emit('update:visible', false);
-    // }
 };
 </script>
 

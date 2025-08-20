@@ -14,15 +14,15 @@
 
     <!-- 表格区域 -->
     <div class="table-section">
-      <CommonTable :data="tableData" :columns="enhancedColumns" :loading="loading" :total="pagination.total"
+      <CommonTable :data="tableData" :columns="tableColumns" :loading="loading" :total="pagination.total"
         :current-page="pagination.currentPage" :page-size="pagination.pageSize" :show-index="true" :show-actions="true"
         :actions-width="120" :actions-fixed="false" @size-change="handleSizeChange"
         @current-change="handleCurrentChange" @row-click="handleRowClick">
         <!-- 自定义列渲染 -->
         <template v-for="column in tableColumns" :key="column.prop" #[column.prop]="{ row }">
           <span v-if="column.type === 'tag'">
-            <el-tag :type="getTagType(row[column.prop], column.tagMap)" size="small">
-              {{ getTagText(row[column.prop], column.tagMap) }}
+            <el-tag :type="column.tagMap?.find(item => item.value === row[column.prop])?.type || 'info'" size="small">
+              {{column.tagMap?.find(item => item.value === row[column.prop])?.label || row[column.prop]}}
             </el-tag>
           </span>
           <span v-else-if="column.type === 'date' || column.type === 'datetime'">
@@ -65,7 +65,7 @@
 
 <script setup>
 import { ref, reactive, computed, watch, onMounted, nextTick } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessageBox } from 'element-plus'
 import CommonSearch from '@/components/Common/CommonSearch.vue'
 import CommonTable from '@/components/Common/CommonTable.vue'
 import CommonForm from '@/components/Common/CommonForm.vue'
@@ -115,7 +115,6 @@ const emit = defineEmits(['refresh'])
 
 // 字典功能
 const { getDictData } = useDictionary()
-const dictMaps = ref({}) // 存储字典映射
 
 // 响应式数据
 const loading = ref(false)
@@ -138,8 +137,27 @@ const editId = ref(null)
 
 // 生命周期钩子
 onMounted(async () => {
-  await loadDictMaps() // 先加载字典数据
-  loadData() // 再加载表格数据
+  // 加载字典数据
+  try {
+    const dictTypes = new Set()
+    props.tableColumns.forEach(column => {
+      if (column.type === 'dict' && column.dictType) {
+        dictTypes.add(column.dictType)
+      }
+    })
+
+    for (const dictType of dictTypes) {
+      try {
+        await getDictData(dictType)
+      } catch (error) {
+        console.error(`加载字典失败: ${dictType}`, error)
+      }
+    }
+  } catch (error) {
+    console.error('加载字典数据失败:', error)
+  }
+
+  loadData() // 加载表格数据
 })
 
 // 监听搜索字段变化
@@ -150,29 +168,14 @@ watch(() => props.searchFields, () => {
 // ===========================
 // 计算属性
 // ===========================
-const enhancedColumns = computed(() => {
-  return props.tableColumns.map(column => {
-    if (column.prop === 'actions') {
-      return {
-        ...column,
-        type: 'actions'
-      }
-    }
-    return column
-  })
-})
-
 // 表单验证规则
 const formRules = computed(() => {
   const rules = {}
-
-  // 获取验证规则配置
   const validationRules = props.validationRules || {}
 
   props.formFields.forEach(field => {
     const fieldRules = []
 
-    // 必填验证
     if (field.required) {
       fieldRules.push({
         required: true,
@@ -181,12 +184,10 @@ const formRules = computed(() => {
       })
     }
 
-    // 添加自定义验证规则
     if (field.rules && validationRules[field.rules]) {
       fieldRules.push(...validationRules[field.rules])
     }
 
-    // 如果有验证规则，添加到rules对象
     if (fieldRules.length > 0) {
       rules[field.prop] = fieldRules
     }
@@ -445,62 +446,19 @@ const handleSubmit = async () => {
 // 辅助工具模块
 // ===========================
 /**
- * 获取标签类型
- */
-const getTagType = (value, tagMap) => {
-  if (!tagMap) return 'info'
-  const item = tagMap.find(item => item.value === value)
-  return item ? item.type : 'info'
-}
-
-/**
- * 获取标签文本
- */
-const getTagText = (value, tagMap) => {
-  if (!tagMap) return value
-  const item = tagMap.find(item => item.value === value)
-  return item ? item.label : value
-}
-
-/**
  * 获取字典标签
  */
 const getDictLabelSync = (dictType, value) => {
-  if (!value || !dictType || !dictMaps.value[dictType]) {
+  if (!value || !dictType) {
     return value || ''
   }
 
-  const dictMap = dictMaps.value[dictType]
-  const item = dictMap.find(item => String(item.value) === String(value))
+  // 直接从字典组合函数获取数据
+  const dictData = getDictData(dictType)
+  if (!dictData) return value
+
+  const item = dictData.find(item => String(item.value) === String(value))
   return item ? item.label : value
-}
-
-/**
- * 加载字典映射
- */
-const loadDictMaps = async () => {
-  try {
-    // 收集所有需要的字典类型
-    const dictTypes = new Set()
-    props.tableColumns.forEach(column => {
-      if (column.type === 'dict' && column.dictType) {
-        dictTypes.add(column.dictType)
-      }
-    })
-
-    // 加载字典数据
-    for (const dictType of dictTypes) {
-      try {
-        const dictData = await getDictData(dictType)
-        dictMaps.value[dictType] = dictData
-      } catch (error) {
-        console.error(`加载字典失败: ${dictType}`, error)
-        dictMaps.value[dictType] = []
-      }
-    }
-  } catch (error) {
-    console.error('加载字典数据失败:', error)
-  }
 }
 </script>
 

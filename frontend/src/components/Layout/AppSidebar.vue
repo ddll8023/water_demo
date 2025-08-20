@@ -363,8 +363,8 @@ const handleMenuSelect = (index) => {
     border-bottom: 1px solid var(--border-dark);
 
     .logo-img {
-      width: 32px;
-      height: 32px;
+      width: var(--spacing-large);
+      height: var(--spacing-large);
       border-radius: var(--border-radius-base);
     }
 
@@ -396,9 +396,10 @@ const handleMenuSelect = (index) => {
     height: 100%;
     width: 100% !important;
 
-    .el-menu-item {
-      height: 50px;
-      line-height: 50px;
+    .el-menu-item,
+    .el-sub-menu .el-sub-menu__title {
+      height: var(--table-row-height);
+      line-height: var(--table-row-height);
 
       // Font Awesome 图标样式
       .fa {
@@ -416,7 +417,9 @@ const handleMenuSelect = (index) => {
           color: var(--text-on-dark);
         }
       }
+    }
 
+    .el-menu-item {
       &.is-active {
         background-color: var(--primary-color) !important;
         color: var(--text-on-dark) !important;
@@ -428,28 +431,6 @@ const handleMenuSelect = (index) => {
     }
 
     .el-sub-menu {
-      .el-sub-menu__title {
-        height: 50px;
-        line-height: 50px;
-
-        // Font Awesome 图标样式
-        .fa {
-          width: var(--icon-size-lg);
-          text-align: center;
-          margin-right: var(--spacing-small);
-          font-size: var(--font-size-medium);
-          color: var(--icon-color-on-dark);
-        }
-
-        &:hover {
-          background-color: var(--white-transparent-light);
-
-          .fa {
-            color: var(--text-on-dark);
-          }
-        }
-      }
-
       &.is-active>.el-sub-menu__title {
         .fa {
           color: var(--text-on-dark);

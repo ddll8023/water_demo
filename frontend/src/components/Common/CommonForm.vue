@@ -12,8 +12,8 @@
           <div class="group-content">
             <el-row :gutter="item.gutter || gutter">
               <el-col v-for="subItem in item.children" :key="subItem.prop"
-                :span="subItem.span || getDefaultSpan(subItem)" :xs="subItem.xs" :sm="subItem.sm" :md="subItem.md"
-                :lg="subItem.lg" :xl="subItem.xl">
+                :span="subItem.span || (subItem.fullWidth ? 24 : Math.floor(24 / columns))" :xs="subItem.xs"
+                :sm="subItem.sm" :md="subItem.md" :lg="subItem.lg" :xl="subItem.xl">
                 <FormItem :item="subItem" :form-data="formData" :disabled="disabled || subItem.disabled"
                   @change="handleItemChange" />
               </el-col>
@@ -23,8 +23,8 @@
 
         <!-- 普通表单项 -->
         <el-row v-else :gutter="gutter">
-          <el-col :span="item.span || getDefaultSpan(item)" :xs="item.xs" :sm="item.sm" :md="item.md" :lg="item.lg"
-            :xl="item.xl">
+          <el-col :span="item.span || (item.fullWidth ? 24 : Math.floor(24 / columns))" :xs="item.xs" :sm="item.sm"
+            :md="item.md" :lg="item.lg" :xl="item.xl">
             <!-- 自定义插槽表单项 -->
             <el-form-item v-if="item.type === 'slot'" :label="item.label" :prop="item.prop" :required="item.required"
               :label-width="item.labelWidth" :error="item.error" :show-message="item.showMessage !== false"
@@ -45,10 +45,10 @@
             <CustomButton type="primary" :loading="submitLoading" @click="handleSubmit">
               {{ submitText }}
             </CustomButton>
-            <CustomButton type="secondary" @click="handleReset">
+            <CustomButton type="secondary" @click="resetForm">
               {{ resetText }}
             </CustomButton>
-            <CustomButton v-if="showCancel" type="secondary" @click="handleCancel">
+            <CustomButton v-if="showCancel" type="secondary" @click="emit('cancel')">
               {{ cancelText }}
             </CustomButton>
           </el-form-item>
@@ -272,11 +272,7 @@ const initFormData = () => {
   initData(formItems.value)
 }
 
-// 获取表单项默认宽度
-const getDefaultSpan = (item) => {
-  if (item.fullWidth) return 24
-  return Math.floor(24 / props.columns)
-}
+
 
 /**
  * =========================================================
@@ -418,15 +414,7 @@ const handleSubmit = async () => {
   }
 }
 
-// 重置表单处理
-const handleReset = () => {
-  resetForm()
-}
 
-// 取消操作处理
-const handleCancel = () => {
-  emit('cancel')
-}
 
 /**
  * =========================================================

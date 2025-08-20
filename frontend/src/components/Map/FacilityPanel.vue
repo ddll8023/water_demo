@@ -35,7 +35,6 @@
                                 <CustomSelect v-model="selectedFacilityType" :options="facilityTypeOptions"
                                     placeholder="请选择设备类型" @update:modelValue="handleFacilityTypeChange" />
                             </div>
-
                         </div>
                     </div>
 
@@ -56,7 +55,7 @@
                             }" @click="handleListItemClick(item)">
                                 <div class="device-icon" :style="{
                                     backgroundColor: getItemIconConfig(item).bgColor,
-                                    border: `var(--border-width-normal) solid ${getItemIconConfig(item).color}`
+                                    border: `var(--border-width-thin) solid ${getItemIconConfig(item).color}`
                                 }">
                                     <span class="icon-symbol" :style="{ color: getItemIconConfig(item).color }">
                                         {{ getItemIconSymbol(item) }}
@@ -105,7 +104,6 @@
                         <CustomSelect v-model="selectedFacilityType" :options="facilityTypeOptions"
                             placeholder="请选择设备类型" @update:modelValue="handleFacilityTypeChange" />
                     </div>
-
                 </div>
             </div>
 
@@ -126,7 +124,7 @@
                     }" @click="handleListItemClick(item)">
                         <div class="device-icon" :style="{
                             backgroundColor: getItemIconConfig(item).bgColor,
-                            border: `var(--border-width-normal) solid ${getItemIconConfig(item).color}`
+                            border: `var(--border-width-thin) solid ${getItemIconConfig(item).color}`
                         }">
                             <span class="icon-symbol" :style="{ color: getItemIconConfig(item).color }">
                                 {{ getItemIconSymbol(item) }}
@@ -269,8 +267,6 @@ const facilityTypeOptions = ref([]);
 
 // 当前选中的设备类型（仅在设备标签页有效）
 const selectedFacilityType = ref('all');
-
-
 
 // 生命周期 - 组件挂载时加载数据
 onMounted(async () => {
@@ -463,8 +459,6 @@ const cleanupDragListeners = () => {
     document.removeEventListener('mouseup', endDrag);
 };
 
-// 设备类型识别已移至统一工具文件 @/utils/deviceTypeUtils.js
-
 // 计算属性 - 当前显示的列表数据（基于标签页和设备类型筛选）
 const currentDisplayList = computed(() => {
     // 如果是监测站点标签页，显示所有监测站数据
@@ -488,13 +482,6 @@ const currentDisplayList = computed(() => {
 
     return [];
 });
-
-/**
- * 获取当前有效坐标数量
- */
-const getCurrentValidCount = () => {
-    return currentDisplayList.value.filter(item => hasValidLocation(item)).length;
-};
 
 /**
  * 处理标签页切换
@@ -600,7 +587,7 @@ const getItemLocation = (item) => {
 // 悬浮面板样式
 .floating-panel {
     position: fixed;
-    width: var(--panel-width-default);
+    width: 320px;
     background: var(--white-transparent-full);
     backdrop-filter: blur(12px);
     border-radius: var(--border-radius-xl);
@@ -608,26 +595,26 @@ const getItemLocation = (item) => {
     border: var(--border-width-thin) solid var(--white-transparent-base);
     overflow: hidden;
     @include user-select(none);
-    transition: box-shadow var(--map-panel-transition-duration) var(--map-panel-transition-ease),
-        backdrop-filter var(--map-panel-transition-duration) var(--map-panel-transition-ease),
-        transform var(--map-panel-transition-duration) var(--map-panel-transition-ease),
-        width var(--map-panel-transition-duration) var(--map-panel-transition-ease),
-        height var(--map-panel-transition-duration) var(--map-panel-transition-ease);
+    transition: box-shadow var(--transition-base) var(--transition-timing-function),
+        backdrop-filter var(--transition-base) var(--transition-timing-function),
+        transform var(--transition-base) var(--transition-timing-function),
+        width var(--transition-base) var(--transition-timing-function),
+        height var(--transition-base) var(--transition-timing-function);
     transform-origin: top left;
 
     &.dragging {
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        transition: box-shadow var(--map-panel-transition-duration) var(--map-panel-transition-ease),
-            backdrop-filter var(--map-panel-transition-duration) var(--map-panel-transition-ease);
+        transition: box-shadow var(--transition-base) var(--transition-timing-function),
+            backdrop-filter var(--transition-base) var(--transition-timing-function);
     }
 
     &.collapsed {
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         backdrop-filter: blur(8px);
         min-width: auto;
-        width: var(--map-panel-collapsed-height);
-        height: var(--map-panel-collapsed-height);
-        transform: scale(var(--map-panel-hidden-scale));
+        width: 48px;
+        height: 48px;
+        transform: scale(0.95);
     }
 
     .floating-panel-header {
@@ -636,7 +623,7 @@ const getItemLocation = (item) => {
         padding: 0;
         cursor: move;
         border-bottom: var(--border-width-thin) solid var(--white-transparent-light);
-        transition: background var(--map-panel-transition-duration) var(--map-panel-transition-ease);
+        transition: background var(--transition-base) var(--transition-timing-function);
 
         &:hover {
             background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-light) 100%);
@@ -652,7 +639,7 @@ const getItemLocation = (item) => {
                 font-size: var(--font-size-base);
                 opacity: 0.8;
                 cursor: grab;
-                transition: opacity var(--map-panel-transition-duration) var(--map-panel-transition-ease);
+                transition: opacity var(--transition-base) var(--transition-timing-function);
 
                 &:hover {
                     opacity: 1;
@@ -680,10 +667,10 @@ const getItemLocation = (item) => {
                     background: var(--white-transparent-base) !important;
                     border: none !important;
                     color: white !important;
-                    width: var(--button-size-small) !important;
-                    height: var(--button-size-small) !important;
-                    min-width: var(--button-size-small) !important;
-                    transition: background-color var(--map-panel-transition-duration) var(--map-panel-transition-ease);
+                    width: 32px !important;
+                    height: 32px !important;
+                    min-width: 32px !important;
+                    transition: background-color var(--transition-base) var(--transition-timing-function);
 
                     &:hover:not(.custom-button--disabled):not(.custom-button--loading) {
                         background: var(--white-transparent-medium) !important;
@@ -704,17 +691,17 @@ const getItemLocation = (item) => {
     }
 
     .floating-panel-content {
-        height: calc(100% - var(--map-panel-collapsed-height));
+        height: calc(100% - 48px);
         overflow: hidden;
-        transition: all var(--map-panel-transition-duration) var(--map-panel-transition-ease);
-        max-height: var(--map-panel-max-height);
+        transition: all var(--transition-base) var(--transition-timing-function);
+        max-height: 552px;
         opacity: 1;
         transform: translateY(0) scale(1);
         transform-origin: top center;
 
         &.content-hidden {
             opacity: 0;
-            transform: translateY(var(--map-panel-hidden-translate-y)) scale(var(--map-panel-hidden-scale));
+            transform: translateY(-10px) scale(0.95);
             pointer-events: none;
             max-height: 0;
         }
@@ -769,7 +756,7 @@ const getItemLocation = (item) => {
     .panel-content {
         flex: 1;
         overflow: hidden;
-        min-height: var(--panel-content-min-height);
+        min-height: 400px;
         padding: var(--spacing-base);
         display: flex;
         flex-direction: column;
@@ -783,7 +770,7 @@ const getItemLocation = (item) => {
             color: var(--text-secondary);
 
             .empty-icon {
-                font-size: var(--icon-size-xxl);
+                font-size: 48px;
                 margin-bottom: var(--spacing-base);
                 color: var(--text-disabled);
             }
@@ -880,7 +867,7 @@ const getItemLocation = (item) => {
         }
 
         &.no-location {
-            opacity: var(--disabled-opacity);
+            opacity: 0.6;
 
             .device-location.invalid {
                 color: var(--warning-color);
@@ -932,7 +919,7 @@ const getItemLocation = (item) => {
 
                 &.status-normal,
                 &.status-online {
-                    background: var(--status-normal-bg);
+                    background: var(--success-bg-color);
                     color: var(--primary-color);
                 }
 
@@ -947,7 +934,7 @@ const getItemLocation = (item) => {
                 }
 
                 &.status-fault {
-                    background: var(--danger-bg-light);
+                    background: var(--danger-bg-color);
                     color: var(--danger-color);
                 }
 
@@ -1005,7 +992,7 @@ const getItemLocation = (item) => {
         }
 
         .selector-stats {
-            background: var(--map-panel-stats-bg);
+            background: var(--white-transparent-medium);
             backdrop-filter: blur(8px);
             padding: var(--spacing-small);
             border-radius: var(--border-radius-base);

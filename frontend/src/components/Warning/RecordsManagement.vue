@@ -34,7 +34,7 @@
                     <el-tooltip v-if="row.warningContent && row.warningContent.length > 50"
                         :content="row.warningContent" placement="top" class="record-management__tooltip-wrapper">
                         <span class="record-management__content-text">{{ row.warningContent.substring(0, 50)
-                        }}...</span>
+                            }}...</span>
                     </el-tooltip>
                     <span v-else class="record-management__content-text">{{ row.warningContent || '-' }}</span>
                 </template>
@@ -73,7 +73,7 @@
         <!-- 解除对话框 -->
         <CustomDialog :visible="resolveDialogVisible" @update:visible="resolveDialogVisible = $event" title="解除预警"
             width="550px" :loading="resolveLoading" confirm-button-text="确认解除" @confirm="handleResolveSubmit"
-            @cancel="handleCloseResolveDialog" custom-class="resolve-dialog">
+            @cancel="resolveDialogVisible = false" custom-class="resolve-dialog">
             <!-- 预警信息概览 -->
             <div class="resolve-dialog__overview" v-if="currentRecord && Object.keys(currentRecord).length > 0">
                 <div class="overview-grid">
@@ -111,7 +111,7 @@
                         <span class="overview-label"><i class="fa fa-hourglass-half"></i> 持续时长</span>
                         <span class="overview-value">{{ formatDurationUtil(currentRecord.occurredAt,
                             currentRecord.resolvedAt)
-                            }}</span>
+                        }}</span>
                     </div>
                 </div>
             </div>
@@ -149,10 +149,9 @@
         </CustomDialog>
 
         <!-- 新增/编辑对话框 -->
-        <!-- RecordDialog组件内联 -->
         <CustomDialog :visible="dialogVisible" @update:visible="dialogVisible = $event" title="新增预警记录"
             width="var(--panel-height-default)" :loading="submitLoading" confirmButtonText="创建" @confirm="handleSubmit"
-            @cancel="handleCloseRecordDialog">
+            @cancel="dialogVisible = false">
             <CommonForm ref="recordFormRef" v-model="formData" :items="recordFormItems" :rules="recordFormRules"
                 label-width="var(--form-label-width-detail)" :show-actions="false">
                 <!-- 预警类型选择器插槽 -->
@@ -202,41 +201,28 @@ import { formatDateTime as formatDateTimeUtil, formatLocalTimeForAPI, formatDura
 const { getDictData } = useDictionary();
 
 // 响应式状态管理
-// 页面加载状态
 const loading = ref(false);
-
-// 数据列表
 const dataList = ref([]);
-
-// 解除预警对话框状态 - 来自ResolveDialog组件
 const resolveDialogVisible = ref(false);
 const currentRecord = ref({});
 const resolveLoading = ref(false);
-const resolveTimeInterval = ref(null); // 用于存储定时器
-
-// 新增/编辑对话框状态 - 来自RecordDialog组件
 const dialogVisible = ref(false);
 const submitLoading = ref(false);
-
-// RecordDialog表单引用
 const recordFormRef = ref(null);
-
-// ResolveDialog表单引用和数据
 const resolveFormRef = ref(null);
+
 const resolveFormData = reactive({
     resolveTime: '',
     resolveRemark: '',
     confirmed: false,
 });
 
-// 分页配置
 const pagination = reactive({
     currentPage: 1,
     pageSize: 10,
     total: 0,
 });
 
-// 搜索表单数据
 const searchForm = reactive({
     occurredTimeRange: [],
     warningLocation: "",
@@ -245,7 +231,6 @@ const searchForm = reactive({
     warningStatus: "",
 });
 
-// 新增/编辑表单数据
 const formData = reactive({
     id: null,
     warningLocation: "",
@@ -257,119 +242,81 @@ const formData = reactive({
     thresholdId: null,
 });
 
-
-
-// 下拉选项数据
 const warningLocationOptions = ref([]);
 const warningTypeOptions = ref([]);
 const warningLevelOptions = ref([]);
 const warningStatusOptions = ref([]);
 
-// 计算属性配置
-const enhancedTableColumns = computed(() => [
+const enhancedTableColumns = [
     { prop: 'warningLocation', label: '预警地点', minWidth: 120 },
     { prop: 'warningType', label: '预警类型', width: 100, align: 'center' },
+    { prop: 'warningLevel', label: '预警等级', width: 100, align: 'center', slot: 'warningLevel' },
+    { prop: 'warningContent', label: '预警内容', minWidth: 200, align: 'center', slot: 'warningContent' },
+    { prop: 'warningStatus', label: '预警状态', width: 100, align: 'center', slot: 'warningStatus' },
+    { prop: 'projectName', label: '所属工程', width: 150 },
+    { prop: 'occurredAt', label: '发生时间', width: 160, align: 'center', slot: 'occurredAt' },
+    { prop: 'duration', label: '持续时长', width: 120, align: 'center', slot: 'duration' },
+];
+
+const enhancedSearchFields = computed(() => [
     {
+        type: 'datetimerange',
+        prop: 'occurredTimeRange',
+        label: '发生时间',
+        startPlaceholder: '开始时间',
+        endPlaceholder: '结束时间',
+        labelWidth: 'var(--form-label-width-standard)',
+        showDuration: true,
+        width: '360px',
+        format: 'YYYY-MM-DD HH:mm:ss'
+    },
+    {
+        type: 'select',
+        prop: 'warningLocation',
+        label: '预警地点',
+        placeholder: '请选择预警地点',
+        labelWidth: 'var(--form-label-width-standard)',
+        options: warningLocationOptions.value,
+        clearable: true,
+        filterable: false,
+        width: '220px'
+    },
+    {
+        type: 'select',
+        prop: 'warningType',
+        label: '预警类型',
+        placeholder: '请选择预警类型',
+        labelWidth: 'var(--form-label-width-standard)',
+        options: warningTypeOptions.value,
+        clearable: true,
+        filterable: false,
+        width: '220px'
+    },
+    {
+        type: 'select',
         prop: 'warningLevel',
         label: '预警等级',
-        width: 100,
-        align: 'center',
-        slot: 'warningLevel',
+        placeholder: '请选择预警等级',
+        labelWidth: 'var(--form-label-width-standard)',
+        options: warningLevelOptions.value,
+        clearable: true,
+        filterable: false,
+        width: '220px'
     },
     {
-        prop: 'warningContent',
-        label: '预警内容',
-        minWidth: 200,
-        align: 'center',
-        slot: 'warningContent',
-    },
-    {
+        type: 'select',
         prop: 'warningStatus',
         label: '预警状态',
-        width: 100,
-        align: 'center',
-        slot: 'warningStatus',
-    },
-    { prop: 'projectName', label: '所属工程', width: 150 },
-    {
-        prop: 'occurredAt',
-        label: '发生时间',
-        width: 160,
-        align: 'center',
-        slot: 'occurredAt',
-    },
-    {
-        prop: 'duration',
-        label: '持续时长',
-        width: 120,
-        align: 'center',
-        slot: 'duration',
-    },
+        placeholder: '请选择预警状态',
+        labelWidth: 'var(--form-label-width-standard)',
+        options: warningStatusOptions.value,
+        clearable: true,
+        filterable: false,
+        width: '220px'
+    }
 ]);
 
-// 搜索字段配置
-const enhancedSearchFields = computed(() => {
-    return [
-        {
-            type: 'datetimerange',
-            prop: 'occurredTimeRange',
-            label: '发生时间',
-            startPlaceholder: '开始时间',
-            endPlaceholder: '结束时间',
-            labelWidth: 'var(--form-label-width-standard)',
-            showDuration: true,
-            width: '360px',
-            format: 'YYYY-MM-DD HH:mm:ss'
-        },
-        {
-            type: 'select',
-            prop: 'warningLocation',
-            label: '预警地点',
-            placeholder: '请选择预警地点',
-            labelWidth: 'var(--form-label-width-standard)',
-            options: warningLocationOptions.value,
-            clearable: true,
-            filterable: false,
-            width: '220px'
-        },
-        {
-            type: 'select',
-            prop: 'warningType',
-            label: '预警类型',
-            placeholder: '请选择预警类型',
-            labelWidth: 'var(--form-label-width-standard)',
-            options: warningTypeOptions.value,
-            clearable: true,
-            filterable: false,
-            width: '220px'
-        },
-        {
-            type: 'select',
-            prop: 'warningLevel',
-            label: '预警等级',
-            placeholder: '请选择预警等级',
-            labelWidth: 'var(--form-label-width-standard)',
-            options: warningLevelOptions.value,
-            clearable: true,
-            filterable: false,
-            width: '220px'
-        },
-        {
-            type: 'select',
-            prop: 'warningStatus',
-            label: '预警状态',
-            placeholder: '请选择预警状态',
-            labelWidth: 'var(--form-label-width-standard)',
-            options: warningStatusOptions.value,
-            clearable: true,
-            filterable: false,
-            width: '220px'
-        }
-    ];
-});
-
-// 新增表单配置
-const recordFormItems = computed(() => [
+const recordFormItems = [
     {
         type: 'input',
         prop: 'warningLocation',
@@ -432,10 +379,9 @@ const recordFormItems = computed(() => [
         controlsPosition: 'right',
         span: 24
     }
-]);
+];
 
-// 表单验证规则
-const recordFormRules = computed(() => ({
+const recordFormRules = {
     warningLocation: [
         { required: true, message: '请输入预警地点', trigger: 'blur' },
         { max: 255, message: '预警地点长度不能超过255个字符', trigger: 'blur' },
@@ -464,7 +410,6 @@ const recordFormRules = computed(() => ({
                 } else if (typeof value === 'string' && value.trim() === '') {
                     callback(new Error('请选择发生时间'));
                 } else {
-                    // 验证通过
                     callback();
                 }
             }
@@ -473,14 +418,13 @@ const recordFormRules = computed(() => ({
     thresholdId: [
         { type: 'number', message: '关联预警指标ID必须为数字', trigger: 'blur' },
     ],
-}));
+};
 
-// 解除表单配置
-const resolveFormItems = computed(() => [
+const resolveFormItems = [
     {
         type: 'slot',
         prop: 'resolveTime',
-        label: '', // 标签由插槽内部管理
+        label: '',
         span: 24,
     },
     {
@@ -497,13 +441,12 @@ const resolveFormItems = computed(() => [
     {
         type: 'slot',
         prop: 'confirmation',
-        label: '', // 标签由插槽内部管理
+        label: '',
         span: 24,
     },
-]);
+];
 
-// 解除表单验证规则
-const resolveFormRules = computed(() => ({
+const resolveFormRules = {
     resolveRemark: [
         { max: 500, message: '解除备注长度不能超过500个字符', trigger: 'blur' },
     ],
@@ -521,13 +464,11 @@ const resolveFormRules = computed(() => ({
             },
         },
     ],
-}));
+};
 
-// 数据获取方法
 const fetchData = async () => {
     loading.value = true;
     try {
-        // 处理搜索参数，将时间范围转换为startTime和endTime
         const { occurredTimeRange, ...otherParams } = searchForm;
         const params = {
             page: pagination.currentPage,
@@ -535,9 +476,7 @@ const fetchData = async () => {
             ...otherParams,
         };
 
-        // 如果选择了时间范围，转换为startTime和endTime
         if (occurredTimeRange && occurredTimeRange.length === 2) {
-            // 使用formatLocalTimeForAPI保持本地时区
             params.startTime = formatLocalTimeForAPI(occurredTimeRange[0]);
             params.endTime = formatLocalTimeForAPI(occurredTimeRange[1]);
         }
@@ -545,7 +484,6 @@ const fetchData = async () => {
         const response = await getRecordList(params);
 
         if (response) {
-            // 兼容不同的响应格式
             dataList.value = response.items || response.records || response || [];
             pagination.total = response.total || 0;
         }
@@ -556,12 +494,8 @@ const fetchData = async () => {
     }
 };
 
-/**
- * 初始化所有选项数据
- */
 const initOptions = async () => {
     const fetchTasks = [
-        // 获取预警地点选项
         getWarningLocationOptions().then(response => {
             if (response && Array.isArray(response)) {
                 warningLocationOptions.value = response.map(item => ({
@@ -574,7 +508,6 @@ const initOptions = async () => {
             warningLocationOptions.value = [];
         }),
 
-        // 获取预警类型选项
         getDictData("warning_type").then(data => {
             warningTypeOptions.value = data || [];
         }).catch(err => {
@@ -582,7 +515,6 @@ const initOptions = async () => {
             warningTypeOptions.value = [];
         }),
 
-        // 获取预警等级选项
         getDictData("warning_level").then(data => {
             warningLevelOptions.value = data || [];
         }).catch(err => {
@@ -590,7 +522,6 @@ const initOptions = async () => {
             warningLevelOptions.value = [];
         }),
 
-        // 获取预警状态选项
         getDictData("warning_status").then(data => {
             warningStatusOptions.value = data || [];
         }).catch(err => {
@@ -602,9 +533,7 @@ const initOptions = async () => {
     await Promise.allSettled(fetchTasks);
 };
 
-// 搜索处理
 const handleSearch = async (searchData) => {
-    // 如果有传入搜索数据，则更新 searchForm
     if (searchData) {
         Object.keys(searchData).forEach(key => {
             if (searchForm.hasOwnProperty(key)) {
@@ -617,7 +546,6 @@ const handleSearch = async (searchData) => {
     await fetchData();
 };
 
-// 重置搜索
 const handleResetSearch = async () => {
     Object.keys(searchForm).forEach((key) => {
         if (key === "occurredTimeRange") {
@@ -629,27 +557,29 @@ const handleResetSearch = async () => {
     await handleSearch();
 };
 
-// 新增操作
 const handleAdd = () => {
-    // 重置表单数据，确保新增时表单是干净的
-    resetFormData();
-    // 打开对话框
+    Object.assign(formData, {
+        id: null,
+        warningLocation: "",
+        warningType: "",
+        warningLevel: "",
+        warningContent: "",
+        projectName: "",
+        occurredAt: "",
+        thresholdId: null,
+    });
     dialogVisible.value = true;
 };
 
-// 表单提交处理
 const handleSubmit = async () => {
-    // 检查表单引用是否存在
     if (!recordFormRef.value) {
         ElMessage.error('表单未初始化，请稍后重试');
         return;
     }
 
-    // 执行表单验证
     try {
         const isValid = await recordFormRef.value.validate();
         if (!isValid) {
-            // 验证失败时，错误信息已由表单组件显示，无需重复提示
             return;
         }
     } catch (validationError) {
@@ -657,7 +587,6 @@ const handleSubmit = async () => {
         return;
     }
 
-    // 获取表单数据并提交
     const currentFormData = recordFormRef.value.formData;
     const submitData = { ...currentFormData };
 
@@ -679,23 +608,6 @@ const handleSubmit = async () => {
     }
 };
 
-/**
- * 通用表单重置方法
- */
-const resetFormData = () => {
-    Object.assign(formData, {
-        id: null,
-        warningLocation: "",
-        warningType: "",
-        warningLevel: "",
-        warningContent: "",
-        projectName: "",
-        occurredAt: "",
-        thresholdId: null,
-    });
-};
-
-// 预警解除操作
 const handleResolve = (row) => {
     if (row.warningStatus === "已解除") {
         ElMessage.warning("该预警已解除");
@@ -706,23 +618,6 @@ const handleResolve = (row) => {
     resolveDialogVisible.value = true;
 };
 
-// 关闭解除对话框
-const handleCloseResolveDialog = () => {
-    resolveDialogVisible.value = false;
-};
-
-/**
- * 重置解除表单数据
- */
-const resetResolveFormData = () => {
-    Object.assign(resolveFormData, {
-        resolveTime: formatDateTimeUtil(new Date(), 'YYYY-MM-DD HH:mm:ss'),
-        resolveRemark: "",
-        confirmed: false,
-    });
-};
-
-// 解除表单提交处理
 const handleResolveSubmit = async () => {
     if (!resolveFormRef.value) return;
 
@@ -734,7 +629,6 @@ const handleResolveSubmit = async () => {
             return;
         }
 
-        // 验证ID是否存在
         if (!currentRecord.value.id) {
             ElMessage.error('预警记录ID不存在，无法解除预警');
             return;
@@ -758,102 +652,72 @@ const handleResolveSubmit = async () => {
     }
 };
 
-// 获取预警等级名称
 const getWarningLevelName = (level) => {
     if (!level) return '-';
     const levelItem = warningLevelOptions.value.find(item => item.value === level.toString());
     return levelItem ? levelItem.label : `${level}级预警`;
 };
 
-// 获取预警等级类型
 const getWarningLevelType = (level) => {
     if (!level) return '';
     const levelItem = warningLevelOptions.value.find(item => item.value === level.toString());
-    // 根据预警等级值返回对应的Element Plus标签类型
     const typeMap = { '1': 'danger', '2': 'warning', '3': 'info', '4': 'success' };
     return typeMap[level] || '';
 };
 
-// 分页处理
 const handleSizeChange = (size) => {
     pagination.pageSize = size;
     pagination.currentPage = 1;
     fetchData();
 };
 
-// 当前页变化处理
 const handleCurrentChange = (page) => {
     pagination.currentPage = page;
     fetchData();
 };
 
-// 工具方法
 const disabledDate = (time) => {
-    return time.getTime() < Date.now() - 8.64e7; // 禁用当前时间之前的日期
+    return time.getTime() < Date.now() - 8.64e7;
 };
 
-// 生命周期
 onMounted(async () => {
     await initOptions();
     await fetchData();
 });
 
-// 监听器
 watch(
     () => resolveDialogVisible.value,
     (visible) => {
         if (visible) {
-            resetResolveFormData();
-            // 启动实时时间更新
-            resolveTimeInterval.value = setInterval(() => {
-                resolveFormData.resolveTime = formatDateTimeUtil(new Date(), 'YYYY-MM-DD HH:mm:ss');
-            }, 1000);
+            Object.assign(resolveFormData, {
+                resolveTime: formatDateTimeUtil(new Date(), 'YYYY-MM-DD HH:mm:ss'),
+                resolveRemark: "",
+                confirmed: false,
+            });
             nextTick(() => resolveFormRef.value?.clearValidate());
-        } else {
-            // 清理定时器
-            if (resolveTimeInterval.value) {
-                clearInterval(resolveTimeInterval.value);
-                resolveTimeInterval.value = null;
-            }
         }
     }
 );
 
-// 监听新增对话框状态
 watch(
     () => dialogVisible.value,
     (visible) => {
         if (visible) {
             nextTick(() => {
-                initializeDefaultTime();
+                if (!formData.occurredAt) {
+                    const now = new Date();
+                    formData.occurredAt = formatDateTimeUtil(now, 'YYYY-MM-DD HH:mm:ss');
+                }
                 recordFormRef.value?.clearValidate();
             });
-        } else if (!submitLoading.value) {
-            resetFormData();
         }
     }
 );
-
-// 初始化默认时间
-const initializeDefaultTime = () => {
-    if (!formData.occurredAt) {
-        const now = new Date();
-        // 使用formatDateTime确保格式一致性，避免时区问题
-        formData.occurredAt = formatDateTimeUtil(now, 'YYYY-MM-DD HH:mm:ss');
-    }
-};
-
-// 关闭新增对话框
-const handleCloseRecordDialog = () => {
-    dialogVisible.value = false;
-    // 表单重置由对话框监听器处理，无需重复调用
-};
 </script>
 
 <style scoped lang="scss">
 @use "../../assets/styles/index.scss" as *;
 
-/* 预警记录管理组件样式 */
 .record-management {
     padding: var(--spacing-large);
 
@@ -861,14 +725,7 @@ const handleCloseRecordDialog = () => {
         margin-bottom: var(--spacing-large);
     }
 
-    // ==================== 表格容器样式 ====================
-    /**
-     * 表格容器 - 简化样式设计
-     * 包含表格内容和分页组件
-     */
     &__table {
-
-        // 表格加载状态修饰符
         &--loading {
             position: relative;
 
@@ -879,13 +736,12 @@ const handleCloseRecordDialog = () => {
                 left: 0;
                 right: 0;
                 bottom: 0;
-                background: rgba(255, 255, 255, 0.7);
+                background: var(--white-transparent-70);
                 z-index: var(--z-index-dropdown);
             }
         }
     }
 
-    /* 内容显示样式 */
     &__tooltip-wrapper,
     &__content-text {
         @include flex-center;
@@ -903,12 +759,10 @@ const handleCloseRecordDialog = () => {
     }
 }
 
-/* 解除对话框样式 */
 :deep(.resolve-dialog .el-dialog__body) {
     padding: var(--spacing-large) var(--spacing-extra-large) !important;
 }
 
-/* 预警概览区域 */
 .resolve-dialog__overview {
     margin-bottom: var(--spacing-large);
     background: var(--bg-secondary);
@@ -965,48 +819,6 @@ const handleCloseRecordDialog = () => {
     }
 }
 
-/* 响应式样式 */
-@include respond-to(lg) {
-    .record-management {
-        &__search-section {
-            padding: var(--spacing-medium);
-        }
-
-        &__table {
-            margin: 0 -#{var(--spacing-small)};
-        }
-    }
-}
-
-@include respond-to(md) {
-    .record-management {
-        padding: var(--spacing-medium);
-
-        &__table {
-            border-radius: var(--border-radius-base);
-        }
-    }
-}
-
-@include respond-to(sm) {
-    .record-management {
-        padding: var(--spacing-base);
-
-        &__search-section {
-            padding: var(--spacing-medium);
-        }
-
-        &__table {
-            border-radius: var(--border-radius-base);
-        }
-    }
-
-    .resolve-dialog__overview .overview-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* 解除表单相关样式 */
 .record-management__resolve-form {
     :deep(.el-form-item) {
         margin-bottom: var(--spacing-base);
@@ -1089,6 +901,46 @@ const handleCloseRecordDialog = () => {
 .resolve-form__note-icon {
     margin-right: var(--spacing-small);
     color: var(--info-color);
+}
+
+@include respond-to(lg) {
+    .record-management {
+        &__search-section {
+            padding: var(--spacing-medium);
+        }
+
+        &__table {
+            margin: 0 calc(-1 * var(--spacing-small));
+        }
+    }
+}
+
+@include respond-to(md) {
+    .record-management {
+        padding: var(--spacing-medium);
+
+        &__table {
+            border-radius: var(--border-radius-base);
+        }
+    }
+}
+
+@include respond-to(sm) {
+    .record-management {
+        padding: var(--spacing-base);
+
+        &__search-section {
+            padding: var(--spacing-medium);
+        }
+
+        &__table {
+            border-radius: var(--border-radius-base);
+        }
+    }
+
+    .resolve-dialog__overview .overview-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 @include respond-to(xs) {

@@ -10,9 +10,9 @@
 
       <!-- 数字输入框 -->
       <div class="input-number-input">
-        <input ref="inputRef" v-model="displayValue" type="text" :placeholder="placeholder" :disabled="disabled"
-          :readonly="readonly" :name="name" :id="inputId" class="input-inner" @change="handleChange"
-          @input="handleInput" @keydown="handleKeydown" />
+        <input v-model="displayValue" type="text" :placeholder="placeholder" :disabled="disabled" :readonly="readonly"
+          :name="name" :id="id" class="input-inner" @change="handleChange" @input="handleInput"
+          @keydown="handleKeydown" />
       </div>
 
       <!-- 增加按钮 -->
@@ -25,7 +25,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { computed } from 'vue'
 
 // ===============================
 // 属性和事件定义
@@ -118,15 +118,6 @@ const emit = defineEmits([
 ])
 
 // ===============================
-// 响应式数据定义
-// ===============================
-
-/**
- * 基础响应式数据
- */
-const inputRef = ref()         // 输入框引用
-
-// ===============================
 // 计算属性
 // ===============================
 
@@ -161,14 +152,9 @@ const displayValue = computed({
 /**
  * 样式与状态计算
  */
-const inputId = computed(() => {
-  return props.id || `custom-input-number-${Math.random().toString(36).substr(2, 9)}`
-})
-
 const inputClasses = computed(() => {
   return [
     `custom-input-number--${props.size}`,
-    `custom-input-number--${props.controlsPosition}`,
     {
       'is-disabled': props.disabled,
       'is-readonly': props.readonly,
@@ -219,11 +205,26 @@ const formatValue = (value) => {
   return num
 }
 
+const updateValue = (value) => {
+  const formattedValue = formatValue(value)
+  emit('update:modelValue', formattedValue)
+}
+
 /**
- * 过滤输入内容，只保留数字、小数点和负号
+ * 事件处理方法
  */
-const filterNumericInput = (value) => {
-  if (!value) return ''
+const handleChange = (event) => {
+  const value = event.target.value
+  updateValue(value)
+}
+
+/**
+ * 输入事件处理 - 实时验证输入内容
+ */
+const handleInput = (event) => {
+  const value = event.target.value
+
+  if (!value) return
 
   // 如果最小值大于等于0，移除负号
   const allowNegative = props.min < 0
@@ -245,33 +246,10 @@ const filterNumericInput = (value) => {
     filtered = negativeSign + filtered.replace(/-/g, '')
   }
 
-  return filtered
-}
-
-const updateValue = (value) => {
-  const formattedValue = formatValue(value)
-  emit('update:modelValue', formattedValue)
-}
-
-/**
- * 事件处理方法
- */
-const handleChange = (event) => {
-  const value = event.target.value
-  updateValue(value)
-}
-
-/**
- * 输入事件处理 - 实时验证输入内容
- */
-const handleInput = (event) => {
-  const value = event.target.value
-  const filteredValue = filterNumericInput(value)
-
   // 如果输入内容被过滤，更新输入框显示值
-  if (filteredValue !== value) {
-    event.target.value = filteredValue
-    displayValue.value = filteredValue
+  if (filtered !== value) {
+    event.target.value = filtered
+    displayValue.value = filtered
   }
 }
 
@@ -350,17 +328,6 @@ const decrease = () => {
   const newValue = currentValue - props.step
   updateValue(newValue)
 }
-
-// ===============================
-// 监听器
-// ===============================
-
-/**
- * 外部值变化监听
- */
-watch(() => props.modelValue, () => {
-  // 监听外部值变化以更新显示
-})
 </script>
 
 <style scoped lang="scss">

@@ -79,12 +79,11 @@
           <!-- 搜索按钮 -->
           <div class="search-field-item" :style="getButtonStyle()">
             <div class="search-field-content">
-              <CustomButton type="primary" :loading="searchLoading" @click="handleSearch"
-                :size="singleRow ? 'default' : 'default'">
+              <CustomButton type="primary" :loading="searchLoading" @click="handleSearch" :size="size">
                 <i class="fa fa-search"></i>
                 {{ searchText }}
               </CustomButton>
-              <CustomButton type="secondary" @click="handleReset" :size="singleRow ? 'default' : 'default'">
+              <CustomButton type="secondary" @click="handleReset" :size="size">
                 <i class="fa fa-refresh"></i>
                 {{ resetText }}
               </CustomButton>
@@ -133,11 +132,6 @@ const props = defineProps({
     type: Object,
     default: () => ({})
   },
-  // 是否行内显示
-  inline: {
-    type: Boolean,
-    default: true
-  },
   // 是否单行显示（符合设计规范）
   singleRow: {
     type: Boolean,
@@ -183,7 +177,6 @@ const emit = defineEmits([
  * -----------------------------
  * 组件内部的响应式数据
  */
-const searchFormRef = ref()
 const searchData = reactive({})
 
 /**
@@ -210,18 +203,6 @@ const getDefaultValue = (type) => {
 
 // 根据字段类型获取默认宽度
 const getDefaultWidth = (item) => {
-  // 定义各类型的最小宽度要求
-  const minWidthMap = {
-    'input': 120,
-    'select': 120,
-    'date': 160,
-    'datetime': 200,
-    'daterange': 280,
-    'datetimerange': 320,
-    'number': 100,
-    'switch': 80
-  }
-
   // 获取类型默认宽度
   const getTypeDefaultWidth = (type) => {
     switch (type) {
@@ -243,19 +224,9 @@ const getDefaultWidth = (item) => {
     }
   }
 
-  let finalWidth = null
-
-  // 如果有自定义宽度，检查是否满足最小要求
+  // 如果有自定义宽度，直接使用
   if (item.width) {
-    const customWidthNum = parseInt(item.width)
-    const minRequired = minWidthMap[item.type] || 120
-
-    if (customWidthNum < minRequired) {
-      console.warn(`字段 ${item.prop} 的配置宽度 ${item.width} 小于最小要求 ${minRequired}px，将使用类型默认宽度`)
-      finalWidth = getTypeDefaultWidth(item.type)
-    } else {
-      finalWidth = item.width
-    }
+    return item.width
   }
   // 如果有span配置，转换为宽度（向后兼容）
   else if (item.span) {
@@ -270,14 +241,12 @@ const getDefaultWidth = (item) => {
       18: '520px',
       24: '100%'
     }
-    finalWidth = spanToWidth[item.span] || '200px'
+    return spanToWidth[item.span] || '200px'
   }
   // 使用类型默认宽度
   else {
-    finalWidth = getTypeDefaultWidth(item.type)
+    return getTypeDefaultWidth(item.type)
   }
-
-  return finalWidth
 }
 
 // 获取字段容器样式
@@ -433,13 +402,9 @@ const handleReset = () => {
     }
   })
 
-  // 重置表单验证
-  searchFormRef.value?.resetFields()
-
   // 先发出重置事件，然后才是搜索事件
   emit('reset')
-  // 修改：不要在重置时自动触发搜索事件
-  // emit('search', { ...searchData })
+  emit('search', { ...searchData })
 }
 
 // 处理清除事件
@@ -548,12 +513,6 @@ defineExpose({
       .search-field-content {
         width: 100%;
       }
-    }
-
-    .search-buttons {
-      @include flex-center-y;
-      gap: var(--spacing-small);
-      flex-shrink: 0;
     }
 
     // 统一表单控件样式 - 只对Element Plus原生组件设置100%宽度

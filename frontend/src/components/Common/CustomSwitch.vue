@@ -2,7 +2,7 @@
 <template>
   <div class="custom-switch" :class="switchClasses">
     <input :id="switchId" ref="inputRef" v-model="switchValue" type="checkbox" class="switch-input" :disabled="disabled"
-      :name="name" @change="handleChange" @focus="handleFocus" @blur="handleBlur" />
+      :name="name" @change="handleChange" />
     <label :for="switchId" class="switch-label">
       <span class="switch-track">
         <span class="switch-thumb"></span>
@@ -68,7 +68,6 @@ const props = defineProps({
     type: String,
     default: ''
   },
-
   // 是否显示内联文字提示
   inlinePrompt: {
     type: Boolean,
@@ -95,11 +94,6 @@ const props = defineProps({
     type: String,
     default: '',
     validator: (value) => ['', 'success', 'warning', 'error'].includes(value)
-  },
-  // 是否在切换前进行确认
-  beforeChange: {
-    type: Function,
-    default: null
   }
 })
 
@@ -108,16 +102,13 @@ const props = defineProps({
  */
 const emit = defineEmits([
   'update:modelValue',
-  'change',
-  'focus',
-  'blur'
+  'change'
 ])
 
 /**
  * 响应式数据
  */
 const inputRef = ref()
-const focused = ref(false)
 
 // ===========================
 // 计算属性
@@ -155,7 +146,6 @@ const switchClasses = computed(() => {
     {
       'is-disabled': props.disabled,
       'is-checked': switchValue.value,
-      'is-focused': focused.value,
       'has-text': props.activeText || props.inactiveText,
       'is-inline-prompt': props.inlinePrompt,
       [`is-${props.validateState}`]: props.validateState
@@ -163,79 +153,18 @@ const switchClasses = computed(() => {
   ]
 })
 
-
-
 // ===========================
 // 事件处理方法
 // ===========================
 
 /**
  * 处理开关状态变化
- * 支持beforeChange钩子进行变更确认
  */
-const handleChange = async (event) => {
+const handleChange = (event) => {
   const newValue = event.target.checked ? props.activeValue : props.inactiveValue
-
-  // 如果有beforeChange函数，先执行确认
-  if (props.beforeChange) {
-    try {
-      const result = await props.beforeChange()
-      if (result === false) {
-        // 阻止切换，恢复原状态
-        event.target.checked = switchValue.value
-        return
-      }
-    } catch (error) {
-      // 如果beforeChange抛出异常，阻止切换
-      event.target.checked = switchValue.value
-      return
-    }
-  }
-
   emit('update:modelValue', newValue)
   emit('change', newValue)
 }
-
-/**
- * 处理获取焦点事件
- */
-const handleFocus = (event) => {
-  focused.value = true
-  emit('focus', event)
-}
-
-/**
- * 处理失去焦点事件
- */
-const handleBlur = (event) => {
-  focused.value = false
-  emit('blur', event)
-}
-
-// ===========================
-// 公开方法
-// ===========================
-
-/**
- * 聚焦方法
- */
-const focus = () => {
-  inputRef.value?.focus()
-}
-
-/**
- * 失焦方法
- */
-const blur = () => {
-  inputRef.value?.blur()
-}
-
-// 暴露方法给父组件
-defineExpose({
-  focus,
-  blur,
-  inputRef
-})
 
 // ===========================
 // 监听与生命周期
@@ -286,7 +215,7 @@ watch(() => props.modelValue, (newValue) => {
     .switch-track {
       position: relative;
       display: inline-block;
-      width: var(--form-item-height);
+      width: 40px;
       height: var(--spacing-large);
       background-color: var(--border-color);
       border-radius: var(--border-radius-round);
@@ -296,8 +225,8 @@ watch(() => props.modelValue, (newValue) => {
         position: absolute;
         top: var(--spacing-micro);
         left: var(--spacing-micro);
-        width: var(--icon-size-md);
-        height: var(--icon-size-md);
+        width: 16px;
+        height: 16px;
         background-color: var(--bg-primary);
         border-radius: var(--border-radius-round);
         transition: var(--transition-base);
@@ -363,7 +292,7 @@ watch(() => props.modelValue, (newValue) => {
       background-color: var(--primary-color);
 
       .switch-thumb {
-        transform: translateX(calc(var(--form-item-height) - var(--icon-size-md) - var(--spacing-micro) * 2));
+        transform: translateX(20px);
       }
     }
 
@@ -384,18 +313,11 @@ watch(() => props.modelValue, (newValue) => {
 
   // 禁用状态
   &.is-disabled {
-    opacity: var(--disabled-opacity);
+    opacity: 0.6;
     cursor: not-allowed;
 
     .switch-label {
       cursor: not-allowed;
-    }
-  }
-
-  // 聚焦状态
-  &.is-focused {
-    .switch-track {
-      box-shadow: 0 0 0 var(--spacing-micro) var(--primary-transparent-light);
     }
   }
 
@@ -406,17 +328,17 @@ watch(() => props.modelValue, (newValue) => {
     font-size: var(--font-size-medium);
 
     .switch-track {
-      width: calc(var(--form-item-height) + var(--spacing-sm));
-      height: var(--icon-size-xl);
+      width: 48px;
+      height: 24px;
 
       .switch-thumb {
-        width: var(--icon-size-lg);
-        height: var(--icon-size-lg);
+        width: 20px;
+        height: 20px;
       }
     }
 
     &.is-checked .switch-track .switch-thumb {
-      transform: translateX(calc(var(--form-item-height) + var(--spacing-sm) - var(--icon-size-lg) - var(--spacing-micro) * 2));
+      transform: translateX(24px);
     }
   }
 
@@ -424,39 +346,33 @@ watch(() => props.modelValue, (newValue) => {
     font-size: var(--font-size-extra-small);
 
     .switch-track {
-      width: calc(var(--form-item-height) - var(--spacing-sm));
-      height: var(--icon-size-md);
+      width: 32px;
+      height: 16px;
 
       .switch-thumb {
-        width: var(--icon-size-xs);
-        height: var(--icon-size-xs);
+        width: 12px;
+        height: 12px;
       }
     }
 
     &.is-checked .switch-track .switch-thumb {
-      transform: translateX(calc(var(--form-item-height) - var(--spacing-sm) - var(--icon-size-xs) - var(--spacing-micro) * 2));
+      transform: translateX(16px);
     }
   }
 
   /* ===========================
    * 验证状态样式
    * =========================== */
-  &.is-error {
-    .switch-track {
-      border: var(--border-width-base) solid var(--danger-color);
-    }
+  &.is-error .switch-track {
+    border: 1px solid var(--danger-color);
   }
 
-  &.is-warning {
-    .switch-track {
-      border: var(--border-width-base) solid var(--warning-color);
-    }
+  &.is-warning .switch-track {
+    border: 1px solid var(--warning-color);
   }
 
-  &.is-success {
-    .switch-track {
-      border: var(--border-width-base) solid var(--success-color);
-    }
+  &.is-success .switch-track {
+    border: 1px solid var(--success-color);
   }
 }
 

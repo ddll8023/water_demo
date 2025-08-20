@@ -101,9 +101,8 @@ const currentZoom = ref(8);
 
 // 字典数据
 const { getDictData } = useDictionary();
-const { loadFacilityTypeMap, getFacilityTypeLabelSync } = useFacilityTypes();
+const { loadFacilityTypeMap } = useFacilityTypes();
 const deviceStatusOptions = ref([]);
-const facilityTypeMap = ref({});
 
 // 生命周期 - 挂载时初始化地图
 onMounted(async () => {
@@ -123,7 +122,7 @@ watch(
     () => props.facilities,
     (newFacilities) => {
         if (map.value && newFacilities && Array.isArray(newFacilities)) {
-            updateFacilityMarkers(newFacilities);
+            updateMarkers(newFacilities, 'facility');
         }
     },
     { deep: true }
@@ -134,7 +133,7 @@ watch(
     () => props.monitoringStations,
     (newStations) => {
         if (map.value && newStations && Array.isArray(newStations)) {
-            updateStationMarkers(newStations);
+            updateMarkers(newStations, 'station');
         }
     },
     { deep: true }
@@ -175,7 +174,36 @@ watch(
     () => props.pipelines,
     (newPipelines) => {
         if (map.value && newPipelines) {
-            createPipelinePolylines(newPipelines);
+            // 清除现有管线
+            if (pipelinePolylines.value.length > 0) {
+                map.value.remove(pipelinePolylines.value);
+                pipelinePolylines.value = [];
+            }
+
+            newPipelines.forEach((pipeline) => {
+                if (!pipeline.coordinates || !Array.isArray(pipeline.coordinates)) return;
+
+                const config = getPipelineTypeConfig(pipeline);
+
+                // 创建多段线
+                const polyline = new AMap.Polyline({
+                    path: pipeline.coordinates.map(coord => [coord.lng, coord.lat]),
+                    strokeColor: config.color,
+                    strokeWeight: config.width,
+                    strokeStyle: config.style,
+                    strokeOpacity: 0.8,
+                    zIndex: 50,
+                    extData: {
+                        type: 'pipeline',
+                        data: pipeline,
+                        pipelineType: pipeline.type
+                    }
+                });
+
+                // 添加到地图
+                map.value.add(polyline);
+                pipelinePolylines.value.push(polyline);
+            });
         }
     },
     { deep: true }
@@ -186,7 +214,38 @@ watch(
     () => props.warningStations,
     (newWarnings) => {
         if (map.value && newWarnings) {
-            createWarningMarkers(newWarnings);
+            // 清除现有预警标记
+            if (warningMarkers.value.length > 0) {
+                map.value.remove(warningMarkers.value);
+                warningMarkers.value = [];
+            }
+
+            newWarnings.forEach((warning) => {
+                if (!warning.longitude || !warning.latitude) return;
+
+                const config = getWarningIconConfig(warning);
+
+                const iconSize = calculateIconSize(currentZoom.value, 'warning');
+                const markerId = `warning_${warning.id || Math.random()}`;
+
+                const iconHtml = createWarningIconHtml(config, iconSize, warning.name || '预警点', markerId);
+
+                const marker = new AMap.Marker({
+                    position: [warning.longitude, warning.latitude],
+                    content: iconHtml,
+                    offset: new AMap.Size(-iconSize / 2, -iconSize / 2),
+                    zIndex: 150,
+                    extData: {
+                        type: 'warning',
+                        data: warning,
+                        markerId: markerId,
+                        level: warning.level
+                    }
+                });
+
+                map.value.add(marker);
+                warningMarkers.value.push(marker);
+            });
         }
     },
     { deep: true }
@@ -318,12 +377,9 @@ const initMap = async () => {
 const loadDictionaries = async () => {
     try {
         deviceStatusOptions.value = await getDictData('device_status');
-        // 加载设施类型映射
-        facilityTypeMap.value = await loadFacilityTypeMap();
     } catch (error) {
         console.error('加载字典数据失败:', error);
         deviceStatusOptions.value = [];
-        facilityTypeMap.value = {};
     }
 };
 
@@ -335,11 +391,11 @@ const initMapLayers = async () => {
 
     // 渲染初始数据
     if (props.facilities.length > 0) {
-        updateFacilityMarkers(props.facilities);
+        updateMarkers(props.facilities, 'facility');
     }
 
     if (props.monitoringStations.length > 0) {
-        updateStationMarkers(props.monitoringStations);
+        updateMarkers(props.monitoringStations, 'station');
     }
 };
 
@@ -527,19 +583,7 @@ const bindMarkerEvents = (marker, item, type) => {
     }
 };
 
-/**
- * 更新设施标记点 - 使用通用函数
- */
-const updateFacilityMarkers = (facilities) => {
-    updateMarkers(facilities, 'facility');
-};
 
-/**
- * 更新监测站点标记 - 使用通用函数
- */
-const updateStationMarkers = (stations) => {
-    updateMarkers(stations, 'station');
-};
 
 /**
  * 统一的图标配置获取函数（精确分类版本）
@@ -633,19 +677,7 @@ const clearMarkers = (type) => {
     markersArray.value = [];
 };
 
-/**
- * 清除设施标记 - 使用通用函数
- */
-const clearFacilityMarkers = () => {
-    clearMarkers('facility');
-};
 
-/**
- * 清除监测站点标记 - 使用通用函数
- */
-const clearStationMarkers = () => {
-    clearMarkers('station');
-};
 
 /**
  * 地图点击事件处理
@@ -671,10 +703,10 @@ const handleMapComplete = () => {
     if (facilityCount === 0 && stationCount === 0) {
         setTimeout(() => {
             if (props.facilities.length > 0) {
-                updateFacilityMarkers(props.facilities);
+                updateMarkers(props.facilities, 'facility');
             }
             if (props.monitoringStations.length > 0) {
-                updateStationMarkers(props.monitoringStations);
+                updateMarkers(props.monitoringStations, 'station');
             }
         }, 500);
     }
@@ -765,135 +797,11 @@ const updateMarkersSize = (type) => {
     });
 };
 
-/**
- * 更新设施标记尺寸 - 使用通用函数
- */
-const updateFacilityMarkersSize = () => {
-    updateMarkersSize('facility');
-};
 
-/**
- * 创建管线多段线
- */
-const createPipelinePolylines = (pipelines) => {
-    if (!map.value || !Array.isArray(pipelines)) return;
 
-    // 清除现有管线
-    clearPipelinePolylines();
 
-    pipelines.forEach((pipeline) => {
-        if (!pipeline.coordinates || !Array.isArray(pipeline.coordinates)) return;
 
-        const config = getPipelineTypeConfig(pipeline);
 
-        // 创建多段线
-        const polyline = new AMap.Polyline({
-            path: pipeline.coordinates.map(coord => [coord.lng, coord.lat]),
-            strokeColor: config.color,
-            strokeWeight: config.width,
-            strokeStyle: config.style,
-            strokeOpacity: 0.8,
-            zIndex: 50,
-            extData: {
-                type: 'pipeline',
-                data: pipeline,
-                pipelineType: pipeline.type
-            }
-        });
-
-        // 添加点击事件
-        polyline.on('click', (e) => {
-            handlePipelineClick(pipeline, e.lnglat);
-        });
-
-        // 添加到地图
-        map.value.add(polyline);
-        pipelinePolylines.value.push(polyline);
-    });
-};
-
-/**
- * 清除管线多段线
- */
-const clearPipelinePolylines = () => {
-    if (pipelinePolylines.value.length > 0) {
-        map.value.remove(pipelinePolylines.value);
-        pipelinePolylines.value = [];
-    }
-};
-
-/**
- * 处理管线点击事件
- */
-const handlePipelineClick = (pipeline, lnglat) => {
-    console.log('Pipeline clicked:', pipeline);
-    // 这里可以添加管线点击的具体处理逻辑
-    // 比如显示管线信息弹窗等
-};
-
-/**
- * 创建预警站点标记
- */
-const createWarningMarkers = (warnings) => {
-    if (!map.value || !Array.isArray(warnings)) return;
-
-    // 清除现有预警标记
-    clearWarningMarkers();
-
-    warnings.forEach((warning) => {
-        if (!warning.longitude || !warning.latitude) return;
-
-        const config = getWarningIconConfig(warning);
-
-        const iconSize = calculateIconSize(currentZoom.value, 'warning');
-        const markerId = `warning_${warning.id || Math.random()}`;
-
-        const iconHtml = createWarningIconHtml(config, iconSize, warning.name || '预警点', markerId);
-
-        const marker = new AMap.Marker({
-            position: [warning.longitude, warning.latitude],
-            content: iconHtml,
-            offset: new AMap.Size(-iconSize / 2, -iconSize / 2),
-            zIndex: 150,
-            extData: {
-                type: 'warning',
-                data: warning,
-                markerId: markerId,
-                level: warning.level
-            }
-        });
-
-        // 添加点击事件
-        marker.on('click', (e) => {
-            handleWarningClick(warning, e.target.getPosition());
-        });
-
-        map.value.add(marker);
-        warningMarkers.value.push(marker);
-    });
-};
-
-/**
- * 清除预警站点标记
- */
-const clearWarningMarkers = () => {
-    if (warningMarkers.value.length > 0) {
-        map.value.remove(warningMarkers.value);
-        warningMarkers.value = [];
-    }
-};
-
-/**
- * 处理预警站点点击事件
- */
-const handleWarningClick = (warning, position) => {
-    console.log('Warning station clicked:', warning);
-    // 发送预警点击事件给父组件
-    emit('station-click', warning, {
-        x: position.lng,
-        y: position.lat
-    });
-};
 
 /**
  * 创建预警图标HTML - 使用内联样式确保尺寸正确应用
@@ -933,12 +841,7 @@ const createWarningIconHtml = (iconConfig, size, name, markerId) => {
     `;
 };
 
-/**
- * 更新监测站标记尺寸 - 使用通用函数
- */
-const updateStationMarkersSize = () => {
-    updateMarkersSize('station');
-};
+
 
 /**
  * 更新地图样式
@@ -1011,12 +914,7 @@ defineExpose({
     toggleRoadNet: (show) => toggleRoadNetLayer(show),
     // 切换路况图层
     toggleTraffic: (show) => toggleTrafficLayer(show),
-    // 管线相关方法
-    createPipelinePolylines: createPipelinePolylines,
-    clearPipelinePolylines: clearPipelinePolylines,
-    // 预警站点相关方法
-    createWarningMarkers: createWarningMarkers,
-    clearWarningMarkers: clearWarningMarkers,
+
     // 坐标转换方法
     lngLatToContainer: (lnglat) => {
         if (map.value) {

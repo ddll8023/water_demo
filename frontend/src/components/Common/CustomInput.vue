@@ -1,6 +1,6 @@
 <!-- 自定义输入框组件 - 替换Element UI的el-input -->
 <template>
-  <div class="custom-input" :class="inputClasses">
+  <div class="custom-input">
     <div class="input-wrapper">
       <!-- 前置内容 -->
       <div v-if="$slots.prefix || prefixIcon" class="input-prefix">
@@ -13,7 +13,7 @@
       <input ref="inputRef" v-model="inputValue" :type="actualType" :placeholder="placeholder" :disabled="disabled"
         :readonly="readonly" :maxlength="maxlength" :minlength="minlength" :autocomplete="autocomplete" :name="name"
         :id="inputId" class="input-inner" @input="handleInput" @change="handleChange" @focus="handleFocus"
-        @blur="handleBlur" @keyup="handleKeyup" @keydown="handleKeydown" @keypress="handleKeypress" />
+        @blur="handleBlur" />
 
       <!-- 密码显示切换按钮 -->
       <div v-if="showPassword && type === 'password'" class="password-toggle" @click="togglePasswordVisibility">
@@ -46,7 +46,7 @@
  * 导入模块
  * ===============================
  */
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 
 /**
  * ===============================
@@ -155,10 +155,7 @@ const emit = defineEmits([
   'change',
   'focus',
   'blur',
-  'clear',
-  'keyup',
-  'keydown',
-  'keypress'
+  'clear'
 ])
 
 /**
@@ -168,7 +165,6 @@ const emit = defineEmits([
  */
 const inputRef = ref()
 const passwordVisible = ref(false)
-const focused = ref(false)
 
 /**
  * ===============================
@@ -198,21 +194,6 @@ const inputId = computed(() => {
   return props.id || `custom-input-${Math.random().toString(36).substr(2, 9)}`
 })
 
-// 输入框样式类
-const inputClasses = computed(() => {
-  return [
-    `custom-input--${props.size}`,
-    {
-      'is-disabled': props.disabled,
-      'is-readonly': props.readonly,
-      'is-focused': focused.value,
-      'has-prefix': props.prefixIcon || !!props.$slots?.prefix,
-      'has-suffix': props.suffixIcon || !!props.$slots?.suffix || props.clearable || (props.showPassword && props.type === 'password'),
-      [`is-${props.validateState}`]: props.validateState
-    }
-  ]
-})
-
 /**
  * ===============================
  * 输入事件处理
@@ -237,34 +218,12 @@ const handleChange = (event) => {
  */
 // 处理获取焦点事件
 const handleFocus = (event) => {
-  focused.value = true
   emit('focus', event)
 }
 
 // 处理失去焦点事件
 const handleBlur = (event) => {
-  focused.value = false
   emit('blur', event)
-}
-
-/**
- * ===============================
- * 键盘事件处理
- * ===============================
- */
-// 处理键盘按键释放
-const handleKeyup = (event) => {
-  emit('keyup', event)
-}
-
-// 处理键盘按键按下
-const handleKeydown = (event) => {
-  emit('keydown', event)
-}
-
-// 处理键盘按键按下并释放
-const handleKeypress = (event) => {
-  emit('keypress', event)
 }
 
 /**
@@ -456,7 +415,7 @@ defineExpose({
    * ===============================
    */
   // 聚焦状态
-  &.is-focused .input-wrapper {
+  &:focus-within .input-wrapper {
     border-color: var(--primary-color);
     box-shadow: var(--focus-shadow-offset) var(--primary-bg-light);
   }

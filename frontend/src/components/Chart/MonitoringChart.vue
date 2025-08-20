@@ -306,7 +306,7 @@ const goToSlide = async (index) => {
 
     // 只有选择了站点才加载图表数据
     if (chartInstances.value[index] && props.hasStation && props.hasSearched && !props.loading) {
-        await loadChartDataSafely(index)
+        await loadChartData(index);
     }
 }
 
@@ -364,18 +364,19 @@ const initSingleChart = async (index) => {
             pointBorderWidth: 2,
             pointHoverBackgroundColor: item.color,
             pointHoverBorderColor: '#fff',
-            pointHoverBorderWidth: 2
+            pointHoverBorderWidth: 2,
+            borderWidth: defaultPointConfig.borderWidth,
+            tension: defaultPointConfig.tension,
+            pointRadius: defaultPointConfig.pointRadius,
+            pointHoverRadius: defaultPointConfig.pointHoverRadius
         };
-
-        // 应用点显示配置
-        const configuredDataset = configureChartDataset(baseDataset, defaultPointConfig, `${item.name} (${item.unit})`);
 
         // 创建图表实例
         const chart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: [],
-                datasets: [configuredDataset]
+                datasets: [baseDataset]
             },
             options: {
                 responsive: true,
@@ -571,7 +572,7 @@ const initAllCharts = async () => {
  * 图表数据加载功能
  * ----------------------------------------
  */
-// 安全的图表数据加载函数
+// 图表数据加载函数
 const loadChartData = async (chartIndex) => {
     try {
         const chart = chartInstances.value[chartIndex];
@@ -582,7 +583,7 @@ const loadChartData = async (chartIndex) => {
                 chart.data.labels = [];
                 chart.data.datasets[0].data = [];
                 const item = props.chartItems[chartIndex];
-                configureChartDataset(chart.data.datasets[0], {}, `${item.name} (${item.unit}) - 请选择监测站点`);
+                chart.data.datasets[0].label = `${item.name} (${item.unit}) - 请选择监测站点`;
                 chart.update('none');
             }
             return;
@@ -602,18 +603,24 @@ const loadChartData = async (chartIndex) => {
         chart.data.labels = labels;
         chart.data.datasets[0].data = values;
 
-        // 使用辅助函数更新数据集配置
+        // 直接更新数据集配置
         const item = props.chartItems[chartIndex];
-        configureChartDataset(
-            chart.data.datasets[0],
-            pointConfig,
-            `${item.name} (${item.unit})`
-        );
+        chart.data.datasets[0].label = `${item.name} (${item.unit})`;
+        chart.data.datasets[0].borderWidth = pointConfig.borderWidth;
+        chart.data.datasets[0].tension = pointConfig.tension;
+        chart.data.datasets[0].pointRadius = pointConfig.pointRadius;
+        chart.data.datasets[0].pointHoverRadius = pointConfig.pointHoverRadius;
 
-        // 使用辅助函数更新X轴配置
-        updateChartXAxisConfig(chart, containerWidth);
+        // 直接更新X轴配置
+        if (chart.options && chart.options.scales && chart.options.scales.x && chart.options.scales.x.ticks) {
+            chart.options.scales.x.ticks.maxTicksLimit = getMaxTicksLimit(containerWidth, 'hour');
+            chart.options.scales.x.ticks.callback = function (value) {
+                const label = this.getLabelForValue(value);
+                return formatDateTime(label);
+            }
+        }
 
-        // 设置合适的缩放级别，显示最左侧的15个数据点（内部会调用chart.update）
+        // 设置合适的缩放级别，显示最左侧的15个数据点
         setChartOptimalZoom(chart, labels.length, chartIndex);
 
         // 初始化滑块位置
@@ -625,86 +632,6 @@ const loadChartData = async (chartIndex) => {
         console.error('加载图表数据失败:', error);
         ElMessage.error('加载图表数据失败');
     }
-}
-
-// 安全的图表数据加载函数
-const loadChartDataSafely = async (chartIndex) => {
-    try {
-        await loadChartData(chartIndex);
-    } catch (error) {
-        console.error(`加载图表 ${chartIndex} 数据失败:`, error);
-        ElMessage.error('加载图表数据失败');
-    }
-}
-
-/**
- * ----------------------------------------
- * 图表配置辅助功能
- * ----------------------------------------
- */
-// 统一的图表配置辅助函数
-const configureChartDataset = (dataset, pointConfig, customLabel = null) => {
-    // 基础配置
-    if (pointConfig) {
-        dataset.borderWidth = pointConfig.borderWidth;
-        dataset.tension = pointConfig.tension;
-        dataset.pointRadius = pointConfig.pointRadius;
-        dataset.pointHoverRadius = pointConfig.pointHoverRadius;
-    }
-
-    // 如果提供了自定义标签，则更新标签
-    if (customLabel !== null) {
-        dataset.label = customLabel;
-    }
-
-    return dataset;
-}
-
-// 更新图表X轴配置的辅助函数
-const updateChartXAxisConfig = (chart, containerWidth, interval = 'hour') => {
-    if (chart.options && chart.options.scales && chart.options.scales.x && chart.options.scales.x.ticks) {
-        chart.options.scales.x.ticks.maxTicksLimit = getMaxTicksLimit(containerWidth, interval);
-        chart.options.scales.x.ticks.callback = function (value) {
-            const label = this.getLabelForValue(value);
-            return formatDateTime(label);
-        }
-    }
-}
-
-// 设置图表最佳缩放级别的辅助函数
-const setChartOptimalZoom = (chart, dataCount, chartIndex) => {
-    if (!chart || !chart.options || !chart.options.scales || !chart.options.scales.x) {
-        return 1.0;
-    }
-
-    // 重置任何现有的缩放状态
-    if (chart.resetZoom) {
-        chart.resetZoom('none');
-    }
-
-    if (dataCount <= 15) {
-        // 如果数据点少于等于15个，显示全部数据
-        chart.options.scales.x.min = 0;
-        chart.options.scales.x.max = dataCount;
-
-        // 更新缩放级别状态
-        chartZoomLevels.value[chartIndex] = 1.0;
-    } else {
-        // 如果数据点多于15个，只显示前15个
-        chart.options.scales.x.min = 0;
-        chart.options.scales.x.max = 15;
-
-        // 计算并更新缩放级别状态
-        // 缩放级别 = 总数据点 / 可见数据点
-        chartZoomLevels.value[chartIndex] = dataCount / 15;
-
-        // 手动同步滑块位置，确保与可见范围一致
-        setTimeout(() => syncViewportSliderWithChart(chartIndex), 50);
-    }
-
-    // 统一更新图表但不触发动画
-    chart.update('none');
-    return chartZoomLevels.value[chartIndex];
 }
 
 /**
@@ -720,12 +647,6 @@ const getLineStyleConfig = () => {
         borderWidth: 1.5,      // 固定线宽
         tension: 0.1           // 轻微平滑
     }
-}
-
-// 计算基于数据点数量的最大缩放级别
-const calculateMaxZoomLevel = (dataCount) => {
-    if (!dataCount || dataCount <= 15) return 1.0;
-    return dataCount / 15; // 最多显示15个数据点
 }
 
 // 计算图表最大显示标签数量
@@ -1104,7 +1025,7 @@ const updateChartZoom = (zoomFactor, mode = 'set', chartIndex) => {
 
     // 计算基于数据点的最大缩放级别
     const totalDataPoints = chart.data?.labels?.length || 0
-    const maxZoomLevel = calculateMaxZoomLevel(totalDataPoints)
+    const maxZoomLevel = totalDataPoints <= 15 ? 1.0 : totalDataPoints / 15
 
     // 限制缩放范围在合理区间 (下限保持0.2，上限基于数据点)
     newZoomLevel = Math.max(0.2, Math.min(maxZoomLevel, newZoomLevel))

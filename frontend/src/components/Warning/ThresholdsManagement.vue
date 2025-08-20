@@ -2,7 +2,7 @@
     <div class="threshold-management" :class="{ 'threshold-management--loading': loading }">
         <!-- 搜索区域 -->
         <div class="threshold-management__search">
-            <CommonSearch v-model="searchForm" :items="enhancedSearchFields" :single-row="true" @search="handleSearch"
+            <CommonSearch v-model="searchForm" :items="searchFields" :single-row="true" @search="handleSearch"
                 @reset="handleResetSearch">
                 <template #actions>
                     <CustomButton type="primary" @click="handleAdd" v-permission="'business:operate'">
@@ -15,7 +15,7 @@
 
         <!-- 表格区域 -->
         <div class="threshold-management__table" :class="{ 'threshold-management__table--loading': loading }">
-            <CommonTable :data="dataList" :columns="enhancedTableColumns" :loading="loading" :show-index="true"
+            <CommonTable :data="dataList" :columns="tableColumns" :loading="loading" :show-index="true"
                 :show-actions="false" :show-pagination="false" :show-toolbar="false">
 
                 <!-- 监测项列 -->
@@ -154,14 +154,12 @@ const monitoringItemOptions = ref([]);
 
 /**
  * ----------------------------------------
- * 计算属性配置
+ * 静态配置
  * ----------------------------------------
  */
 
-/**
- * 增强的表格列配置
- */
-const enhancedTableColumns = computed(() => [
+// 表格列配置
+const tableColumns = [
     { prop: 'stationName', label: '测点名称', minWidth: 120 },
     {
         prop: 'monitoringItem',
@@ -176,12 +174,10 @@ const enhancedTableColumns = computed(() => [
     { prop: 'lowerLowerLimit', label: '下下限', width: 80, align: 'center' },
     { prop: 'unit', label: '单位', width: 80, align: 'center' },
     { prop: 'actions', label: '操作', width: 160, align: 'center', slot: 'actions' },
-]);
+];
 
-/**
- * 增强的搜索字段配置 - 测点名称输入框搜索和监测项下拉选择搜索
- */
-const enhancedSearchFields = computed(() => [
+// 搜索字段配置
+const searchFields = [
     {
         type: 'input',
         prop: 'stationName',
@@ -202,86 +198,10 @@ const enhancedSearchFields = computed(() => [
         clearable: true,
         filterable: false
     },
-]);
+];
 
-/**
- * 表单验证规则
- */
-const formRules = computed(() => ({
-    stationName: [
-        { required: true, message: '请输入测点名称', trigger: 'blur' },
-        { max: 255, message: '测点名称长度不能超过255个字符', trigger: 'blur' },
-    ],
-    monitoringItem: [
-        { required: true, message: '请选择监测项', trigger: 'change' },
-    ],
-    upperUpperLimit: [
-        {
-            validator: (_, value, callback) => {
-                if (value !== null && value !== undefined) {
-                    if (dialogFormData.upperLimit !== null && value < dialogFormData.upperLimit) {
-                        callback(new Error('上上限不能小于上限'))
-                    }
-                }
-                callback()
-            },
-            trigger: 'blur',
-        },
-    ],
-    upperLimit: [
-        {
-            validator: (_, value, callback) => {
-                if (value !== null && value !== undefined) {
-                    if (dialogFormData.upperUpperLimit !== null && value > dialogFormData.upperUpperLimit) {
-                        callback(new Error('上限不能大于上上限'))
-                    }
-                    if (dialogFormData.lowerLimit !== null && value < dialogFormData.lowerLimit) {
-                        callback(new Error('上限不能小于下限'))
-                    }
-                }
-                callback()
-            },
-            trigger: 'blur',
-        },
-    ],
-    lowerLimit: [
-        {
-            validator: (_, value, callback) => {
-                if (value !== null && value !== undefined) {
-                    if (dialogFormData.upperLimit !== null && value > dialogFormData.upperLimit) {
-                        callback(new Error('下限不能大于上限'))
-                    }
-                    if (dialogFormData.lowerLowerLimit !== null && value < dialogFormData.lowerLowerLimit) {
-                        callback(new Error('下限不能小于下下限'))
-                    }
-                }
-                callback()
-            },
-            trigger: 'blur',
-        },
-    ],
-    lowerLowerLimit: [
-        {
-            validator: (_, value, callback) => {
-                if (value !== null && value !== undefined) {
-                    if (dialogFormData.lowerLimit !== null && value > dialogFormData.lowerLimit) {
-                        callback(new Error('下下限不能大于下限'))
-                    }
-                }
-                callback()
-            },
-            trigger: 'blur',
-        },
-    ],
-    unit: [
-        { max: 20, message: '单位长度不能超过20个字符', trigger: 'blur' },
-    ],
-}))
-
-/**
- * 表单项配置
- */
-const formItems = computed(() => [
+// 表单项配置
+const formItems = [
     {
         type: 'input',
         prop: 'stationName',
@@ -354,7 +274,47 @@ const formItems = computed(() => [
         span: 12,
         defaultValue: null
     }
-]);
+];
+
+/**
+ * 阈值验证规则生成器
+ */
+const createThresholdValidator = (fieldName, minField, maxField) => {
+    return {
+        validator: (_, value, callback) => {
+            if (value !== null && value !== undefined) {
+                if (minField && dialogFormData[minField] !== null && value < dialogFormData[minField]) {
+                    callback(new Error(`${fieldName}不能小于${minField === 'lowerLimit' ? '下限' : '上限'}`));
+                }
+                if (maxField && dialogFormData[maxField] !== null && value > dialogFormData[maxField]) {
+                    callback(new Error(`${fieldName}不能大于${maxField === 'upperLimit' ? '上限' : '上上限'}`));
+                }
+            }
+            callback();
+        },
+        trigger: 'blur',
+    };
+};
+
+/**
+ * 表单验证规则
+ */
+const formRules = {
+    stationName: [
+        { required: true, message: '请输入测点名称', trigger: 'blur' },
+        { max: 255, message: '测点名称长度不能超过255个字符', trigger: 'blur' },
+    ],
+    monitoringItem: [
+        { required: true, message: '请选择监测项', trigger: 'change' },
+    ],
+    upperUpperLimit: [createThresholdValidator('上上限', 'upperLimit')],
+    upperLimit: [createThresholdValidator('上限', 'lowerLimit', 'upperUpperLimit')],
+    lowerLimit: [createThresholdValidator('下限', 'lowerLowerLimit', 'upperLimit')],
+    lowerLowerLimit: [createThresholdValidator('下下限', null, 'lowerLimit')],
+    unit: [
+        { max: 20, message: '单位长度不能超过20个字符', trigger: 'blur' },
+    ],
+};
 
 /**
  * ----------------------------------------
@@ -795,7 +755,7 @@ onMounted(async () => {
         }
     }
 
-    // 表单组件定制
+    // 深度选择器合并优化
     :deep(.el-form-item__label) {
         font-weight: var(--font-weight-medium);
     }
@@ -804,7 +764,6 @@ onMounted(async () => {
         width: 100%;
     }
 
-    // 警告提示组件定制
     :deep(.el-alert__content) {
         padding-right: 0;
     }
@@ -835,7 +794,7 @@ onMounted(async () => {
 
     // 小屏幕适配
     @include respond-to(sm) {
-        padding: var(--spacing-base);
+        padding: var(--spacing-sm);
 
         &__actions {
             flex-direction: column;
@@ -845,11 +804,6 @@ onMounted(async () => {
         &__tips-content {
             line-height: var(--line-height-base);
         }
-    }
-
-    // 小屏幕适配
-    @include respond-to(sm) {
-        padding: var(--spacing-sm);
     }
 }
 </style>

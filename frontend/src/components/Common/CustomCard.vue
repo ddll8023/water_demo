@@ -246,44 +246,45 @@ const hasContent = computed(() => {
      * 内边距变体
      */
     &.padding-none {
-        .custom-card-header {
-            padding: 0;
-        }
 
+        .custom-card-header,
         .custom-card-content {
             padding: 0;
         }
     }
 
     &.padding-small {
-        .custom-card-header {
+
+        .custom-card-header,
+        .custom-card-content {
             padding: var(--spacing-small);
         }
 
         .custom-card-content {
-            padding: var(--spacing-small);
             gap: var(--spacing-xs);
         }
     }
 
     &.padding-normal {
-        .custom-card-header {
+
+        .custom-card-header,
+        .custom-card-content {
             padding: var(--padding-responsive-header);
         }
 
         .custom-card-content {
-            padding: var(--padding-responsive-content);
             gap: var(--spacing-small);
         }
     }
 
     &.padding-large {
-        .custom-card-header {
+
+        .custom-card-header,
+        .custom-card-content {
             padding: var(--spacing-large);
         }
 
         .custom-card-content {
-            padding: var(--spacing-large);
             gap: var(--spacing-medium);
         }
     }
@@ -328,10 +329,7 @@ const hasContent = computed(() => {
             :deep(.el-table) {
                 font-size: var(--font-size-sm);
 
-                .el-table__header th {
-                    padding: var(--spacing-xs);
-                }
-
+                .el-table__header th,
                 .el-table__body td {
                     padding: var(--spacing-xs);
                 }
@@ -342,7 +340,7 @@ const hasContent = computed(() => {
 
             .custom-card-header,
             .custom-card-content {
-                padding: var(--spacing-small);
+                padding: var(--spacing-xs);
             }
         }
 

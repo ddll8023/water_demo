@@ -138,38 +138,16 @@ const emit = defineEmits([
     'view-detail'
 ]);
 
-// 获取CSS变量值的工具函数
-const getCSSVariableValue = (variableName) => {
-    if (typeof window === 'undefined') return 0;
-    const value = getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
-    return parseFloat(value) || 0;
-};
-
-// 弹窗尺寸常量
-const getPopupDimensions = () => ({
-    POPUP_WIDTH: 280,
-    POPUP_HEIGHT: 200,
-    MARGIN: getCSSVariableValue('--spacing-base'),
-    GAP: getCSSVariableValue('--spacing-small'),
-    BORDER_WIDTH: getCSSVariableValue('--border-width-base'),
-    OFFSET: getCSSVariableValue('--spacing-15')
-});
-
 // 计算设备名称
 const deviceName = computed(() => {
     if (!props.device) return '未知设备';
     return props.device.stationName || props.device.name || '未知设备';
 });
 
-// 计算设备类型
-const deviceType = computed(() => {
-    if (!props.device) return '';
-    return props.device.type || '';
-});
-
 // 计算设备类型文本
 const deviceTypeText = computed(() => {
-    const type = deviceType.value;
+    if (!props.device) return '';
+    const type = props.device.type || '';
     if (!type) return '';
 
     // 监测站类型映射
@@ -251,8 +229,14 @@ const deviceIcon = computed(() => {
 const popupStyle = computed(() => {
     const { x, y } = props.position;
     const { width: containerWidth, height: containerHeight } = props.containerSize;
-    const dimensions = getPopupDimensions();
-    const { POPUP_WIDTH, POPUP_HEIGHT, MARGIN, GAP, BORDER_WIDTH, OFFSET } = dimensions;
+
+    // 弹窗尺寸常量
+    const POPUP_WIDTH = 280;
+    const POPUP_HEIGHT = 200;
+    const MARGIN = typeof window !== 'undefined' ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--spacing-base').trim()) || 16 : 16;
+    const GAP = typeof window !== 'undefined' ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--spacing-small').trim()) || 8 : 8;
+    const BORDER_WIDTH = typeof window !== 'undefined' ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--border-width-base').trim()) || 1 : 1;
+    const OFFSET = typeof window !== 'undefined' ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--spacing-15').trim()) || 15 : 15;
 
     // 如果容器尺寸无效，使用默认位置
     if (!containerWidth || !containerHeight || containerWidth <= 0 || containerHeight <= 0) {
@@ -299,8 +283,12 @@ const popupDirection = computed(() => {
         return 'right';
     }
 
-    const dimensions = getPopupDimensions();
-    const { POPUP_WIDTH, MARGIN, GAP, BORDER_WIDTH, OFFSET } = dimensions;
+    // 弹窗尺寸常量
+    const POPUP_WIDTH = 280;
+    const MARGIN = typeof window !== 'undefined' ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--spacing-base').trim()) || 16 : 16;
+    const GAP = typeof window !== 'undefined' ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--spacing-small').trim()) || 8 : 8;
+    const BORDER_WIDTH = typeof window !== 'undefined' ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--border-width-base').trim()) || 1 : 1;
+    const OFFSET = typeof window !== 'undefined' ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--spacing-15').trim()) || 15 : 15;
 
     const markerRadius = props.markerSize / 2;
     const effectiveRadius = markerRadius + (props.markerBorderWidth || 1);
@@ -382,8 +370,8 @@ const handleViewDetail = () => {
 
 .device-popup {
     position: absolute;
-    width: 280px;
-    min-height: 160px;
+    width: var(--popup-width, 280px);
+    min-height: var(--popup-min-height, 160px);
     background: var(--glass-panel-bg);
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
@@ -467,8 +455,6 @@ const handleViewDetail = () => {
         white-space: nowrap;
     }
 
-
-
     &__body {
         flex: 1;
         padding: var(--spacing-base);
@@ -549,8 +535,8 @@ const handleViewDetail = () => {
 // 响应式适配
 @include respond-to(md) {
     .device-popup {
-        width: 260px;
-        min-height: 140px;
+        width: var(--popup-width-md, 260px);
+        min-height: var(--popup-min-height-md, 140px);
 
         &__header {
             padding: var(--spacing-medium);
@@ -572,8 +558,8 @@ const handleViewDetail = () => {
 
 @include respond-to(sm) {
     .device-popup {
-        width: 240px;
-        min-height: 120px;
+        width: var(--popup-width-sm, 240px);
+        min-height: var(--popup-min-height-sm, 120px);
 
         &__header {
             padding: var(--spacing-small);

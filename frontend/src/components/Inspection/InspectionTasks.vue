@@ -14,7 +14,7 @@
         <!-- 任务表格区域 -->
         <div class="table-section">
             <CommonTable :data="taskTableData" :columns="taskColumns" :loading="taskLoading" :show-selection="false"
-                :show-index="true" :show-actions="true" :actions-width="180" @row-click="handleTaskRowClick">
+                :show-index="true" :show-actions="true" :actions-width="180">
                 <!-- 自定义列渲染 -->
                 <template #facility="{ row }">
                     {{ getFacilityDisplay(row.facilityType, row.facilityId) }}
@@ -49,11 +49,8 @@
                         </CustomButton>
                         <template #dropdown>
                             <el-dropdown-menu>
-                                <el-dropdown-item
-                                    v-for="option in props.dictMaps.inspection_status"
-                                    :key="option.value"
-                                    :command="option.value"
-                                    :disabled="row.status === option.value">
+                                <el-dropdown-item v-for="option in props.dictMaps.inspection_status" :key="option.value"
+                                    :command="option.value" :disabled="row.status === option.value">
                                     {{ option.label }}
                                 </el-dropdown-item>
                             </el-dropdown-menu>
@@ -124,15 +121,11 @@ const props = defineProps({
     getFacilityDisplay: {
         type: Function,
         required: true
-    },
-    exporting: {
-        type: Boolean,
-        default: false
     }
 })
 
 // ================= Emits =================
-const emit = defineEmits(['task-updated', 'export-tasks'])
+const emit = defineEmits(['task-updated'])
 
 // ================= 任务相关 =================
 const taskSearchForm = ref({
@@ -148,7 +141,7 @@ const taskSearchFields = ref([
         label: '工程/人员名称',
         type: 'input',
         placeholder: '请输入工程名称或人员姓名',
-        width: '285px',
+        width: 'var(--spacing-extra-large)',
         labelWidth: '90px',
         clearable: true
     },
@@ -158,8 +151,8 @@ const taskSearchFields = ref([
         type: 'select',
         options: [],
         placeholder: '请选择计划状态',
-        width: '220px',
-        labelWidth: 'var(--form-label-width-standard)',
+        width: 'var(--spacing-extra-large)',
+        labelWidth: '90px',
         clearable: true
     },
     {
@@ -168,8 +161,8 @@ const taskSearchFields = ref([
         type: 'select',
         options: [],
         placeholder: '请选择巡检频率',
-        width: '220px',
-        labelWidth: 'var(--form-label-width-standard)',
+        width: 'var(--spacing-extra-large)',
+        labelWidth: '90px',
         clearable: true
     },
     {
@@ -178,8 +171,8 @@ const taskSearchFields = ref([
         type: 'select',
         options: [],
         placeholder: '请选择巡检类型',
-        width: '220px',
-        labelWidth: 'var(--form-label-width-standard)',
+        width: 'var(--spacing-extra-large)',
+        labelWidth: '90px',
         clearable: true
     }
 ])
@@ -298,23 +291,18 @@ const getStatusTagType = (status) => {
 
 // ================= 生命周期 =================
 onMounted(() => {
-    updateSearchFieldOptions()
-    updateFormFieldOptions()
-    loadTaskData()
-})
-
-// ================= 选项更新 =================
-const updateSearchFieldOptions = () => {
+    // 更新搜索字段选项
     taskSearchFields.value.find(f => f.prop === 'status').options = props.dictMaps.inspection_status
     taskSearchFields.value.find(f => f.prop === 'frequency').options = props.dictMaps.inspection_frequency
     taskSearchFields.value.find(f => f.prop === 'facilityType').options = props.facilityTypeOptions
-}
 
-const updateFormFieldOptions = () => {
+    // 更新表单字段选项
     taskFormFields.value.find(f => f.prop === 'facilityType').options = props.facilityTypeOptions
     taskFormFields.value.find(f => f.prop === 'frequency').options = props.dictMaps.inspection_frequency
     taskFormFields.value.find(f => f.prop === 'assigneeId').options = props.personnelOptions
-}
+
+    loadTaskData()
+})
 
 // ================= 监听器 =================
 watch(() => taskFormData.value.facilityType, async (newType, oldType) => {
@@ -381,10 +369,6 @@ const handleTaskSizeChange = (size) => {
 const handleTaskCurrentChange = (page) => {
     taskPagination.currentPage = page
     loadTaskData()
-}
-
-const handleTaskRowClick = (row) => {
-    // 可以在这里添加行点击逻辑
 }
 
 const handleAddTask = () => {
@@ -486,14 +470,8 @@ const handleDeleteTask = async (row) => {
     }
 }
 
-// 导出
-const handleExport = () => {
-    emit('export-tasks', taskSearchForm.value);
-}
-
 // Expose methods to parent
 defineExpose({
-    handleExport,
     loadTaskData
 });
 

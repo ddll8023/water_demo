@@ -188,7 +188,7 @@ const handleClick = (event) => {
   &:active:not(.custom-button--disabled):not(.custom-button--loading) {
     background-color: var(--primary-dark);
     border-color: var(--primary-dark);
-    transform: translateY(1px);
+    transform: translateY(var(--hover-transform-y-small));
   }
 }
 
@@ -205,7 +205,7 @@ const handleClick = (event) => {
 
   &:active:not(.custom-button--disabled):not(.custom-button--loading) {
     background-color: var(--bg-secondary);
-    transform: translateY(1px);
+    transform: translateY(var(--hover-transform-y-small));
   }
 }
 
@@ -223,7 +223,7 @@ const handleClick = (event) => {
   &:active:not(.custom-button--disabled):not(.custom-button--loading) {
     background-color: var(--danger-dark);
     border-color: var(--danger-dark);
-    transform: translateY(1px);
+    transform: translateY(var(--hover-transform-y-small));
   }
 }
 
@@ -250,7 +250,7 @@ const handleClick = (event) => {
   }
 
   &:active:not(.custom-button--disabled):not(.custom-button--loading) {
-    transform: translateY(1px);
+    transform: translateY(var(--hover-transform-y-small));
   }
 }
 
@@ -261,7 +261,7 @@ const handleClick = (event) => {
  */
 // 大尺寸按钮
 .custom-button--large {
-  padding: 12px 20px;
+  padding: var(--spacing-medium) var(--spacing-large);
   font-size: var(--font-size-medium-button);
   min-height: var(--button-height-large);
 
@@ -283,7 +283,7 @@ const handleClick = (event) => {
 
 // 小尺寸按钮
 .custom-button--small {
-  padding: 5px var(--spacing-medium);
+  padding: var(--spacing-mini) var(--spacing-medium);
   font-size: var(--font-size-sm);
   min-height: var(--button-size-small);
 
@@ -375,20 +375,20 @@ const handleClick = (event) => {
  */
 @include respond-to(sm) {
   .custom-button--large {
-    padding: 10px 16px;
-    font-size: 15px;
-    min-height: 40px;
+    padding: var(--spacing-sm) var(--spacing-base);
+    font-size: var(--font-size-medium);
+    min-height: var(--button-height-large);
   }
 
   .custom-button--default {
-    padding: 7px 14px;
-    font-size: 13px;
+    padding: 7px var(--spacing-small);
+    font-size: var(--font-size-sm);
     min-height: 34px;
   }
 
   .custom-button--small {
-    padding: 4px 10px;
-    font-size: var(--font-size-small);
+    padding: var(--spacing-mini) var(--spacing-sm);
+    font-size: var(--font-size-sm);
     min-height: 26px;
   }
 }
