@@ -87,6 +87,10 @@ import TabSection from '@/components/Common/TabSection.vue'
  * 组件状态和引用
  * ----------------------------------------
  */
+// 组合式函数
+const { getDictData } = useDictionary()
+const { getFacilityTypeOptions } = useFacilityTypes()
+
 // 当前激活的标签页
 const activeTab = ref('monitoring-stations')
 
@@ -1186,13 +1190,13 @@ onMounted(() => {
 const loadSelectOptions = async () => {
   try {
     // 使用工程服务API加载设施类型选项
-    const facilityTypes = await useFacilityTypes().getFacilityTypeOptions()
-    const operationModes = await useDictionary().getDictData('operation_mode')
-    const monitoringItems = await useDictionary().getDictData('monitoring_item')
-    const pipelineTypes = await useDictionary().getDictData('pipeline_type')
-    const engineeringGrades = await useDictionary().getDictData('engineering_grade')
-    const engineeringScales = await useDictionary().getDictData('engineering_scale')
-    const deviceStatuses = await useDictionary().getDictData('device_status')
+    const facilityTypes = await getFacilityTypeOptions()
+    const operationModes = await getDictData('operation_mode')
+    const monitoringItems = await getDictData('monitoring_item')
+    const pipelineTypes = await getDictData('pipeline_type')
+    const engineeringGrades = await getDictData('engineering_grade')
+    const engineeringScales = await getDictData('engineering_scale')
+    const deviceStatuses = await getDictData('device_status')
 
     // 为水库和水厂类型创建更完整的选项
     const reservoirTypes = [
