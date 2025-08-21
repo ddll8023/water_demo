@@ -10,8 +10,8 @@
         <div class="video-section">
           <CustomCard :title="videoInfo.title" :padding="'normal'" :bordered="true" shadow="never">
             <div class="video-container">
-              <video ref="videoPlayer" :src="videoInfo.url" :poster="videoInfo.poster" controls preload="metadata"
-                class="video-player" @loadstart="onVideoLoadStart" @loadeddata="onVideoLoaded" @error="onVideoError">
+              <video :src="videoInfo.url" :poster="videoInfo.poster" controls preload="metadata" class="video-player"
+                @error="onVideoError">
                 您的浏览器不支持视频播放
               </video>
             </div>
@@ -65,13 +65,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { reactive } from 'vue'
 import { ElMessage } from 'element-plus'
 import CustomCard from '@/components/Common/CustomCard.vue'
 import PageHeader from '@/components/Common/PageHeader.vue'
-
-// 响应式数据
-const videoPlayer = ref(null)
 
 // 视频信息
 const videoInfo = reactive({
@@ -109,15 +106,7 @@ const projectFeatures = reactive([
   { key: 'feature4', icon: '🔧', text: '智能化管理' }
 ])
 
-// 视频事件处理 - 简化版本
-const onVideoLoadStart = () => {
-  // 视频开始加载
-}
-
-const onVideoLoaded = () => {
-  // 视频加载完成
-}
-
+// 视频错误处理
 const onVideoError = () => {
   ElMessage.error('视频加载失败，请检查网络连接')
 }

@@ -167,3 +167,13 @@
   -ms-user-select: $value;
   user-select: $value;
 }
+
+// ==================== 6. 业务专用混入 ====================
+// 使用频率：中等 (业务组件专用)
+
+// 时间范围按钮组样式 - 监测页面通用
+@mixin time-range-buttons {
+  display: flex;
+  gap: var(--spacing-small);
+  margin-right: var(--spacing-medium);
+}

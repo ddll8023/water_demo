@@ -7,8 +7,8 @@
                 <AMapContainer ref="mapContainer" :facilities="filteredFacilities"
                     :monitoring-stations="filteredMonitoringStations" :center="mapCenter" :zoom="mapZoom"
                     :map-style="mapStyle" :show-road-net="showRoadNet" :show-traffic="showTraffic"
-                    :pipelines="mockPipelineData" :warning-stations="mockWarningData" @map-click="handleMapClick"
-                    @device-popup-show="handleDevicePopupShow" @device-popup-hide="handleDevicePopupHide" />
+                    @map-click="selectedFacility = null" @device-popup-show="handleDevicePopupShow"
+                    @device-popup-hide="handleDevicePopupHide" />
 
                 <!-- 图层控制面板 -->
                 <div class="layer-control-panel" :class="{ collapsed: !layerPanelVisible }">
@@ -72,7 +72,7 @@
                 <DeviceInfoPopup :visible="popupVisible" :device="popupDevice" :position="popupPosition"
                     :container-size="mapContainerSize" :marker-size="popupMarkerSize"
                     :marker-border-width="popupMarkerBorder" :device-status-options="deviceStatusOptions"
-                    @close="handlePopupClose" @view-detail="handlePopupViewDetail" />
+                    @close="handleDevicePopupHide" @view-detail="handlePopupViewDetail" />
             </div>
         </div>
 
@@ -289,15 +289,15 @@ const trendItems = ref([
 ]);
 const trendSummaries = ref({});
 
-const formatNumber = (val) => {
-    if (val === null || val === undefined || isNaN(val)) return '-';
-    const num = Number(val);
-    if (Math.abs(num) >= 100) return num.toFixed(1);
-    if (Math.abs(num) >= 10) return num.toFixed(2);
-    return num.toFixed(3);
-};
-
 const buildSummary = (labels = [], values = [], unit = '') => {
+    const formatNumber = (val) => {
+        if (val === null || val === undefined || isNaN(val)) return '-';
+        const num = Number(val);
+        if (Math.abs(num) >= 100) return num.toFixed(1);
+        if (Math.abs(num) >= 10) return num.toFixed(2);
+        return num.toFixed(3);
+    };
+
     if (!Array.isArray(values) || values.length === 0) return null;
     const numeric = values.map(v => (v === null || v === undefined) ? null : Number(v)).filter(v => v !== null && !isNaN(v));
     if (numeric.length === 0) return null;
@@ -357,70 +357,7 @@ const loadTrendSummaries = async () => {
     }
 };
 
-// 模拟管线数据 (临时用于测试)
-const mockPipelineData = ref([
-    {
-        id: 1,
-        name: '主供水干管-1',
-        type: 'main',
-        coordinates: [
-            { lng: 114.25, lat: 30.55 },
-            { lng: 114.30, lat: 30.60 },
-            { lng: 114.35, lat: 30.62 }
-        ]
-    },
-    {
-        id: 2,
-        name: '支管线-1',
-        type: 'branch',
-        coordinates: [
-            { lng: 114.30, lat: 30.60 },
-            { lng: 114.32, lat: 30.58 },
-            { lng: 114.34, lat: 30.56 }
-        ]
-    },
-    {
-        id: 3,
-        name: '主供水干管-2',
-        type: 'main',
-        coordinates: [
-            { lng: 114.20, lat: 30.65 },
-            { lng: 114.25, lat: 30.68 },
-            { lng: 114.30, lat: 30.70 }
-        ]
-    }
-]);
 
-// 模拟预警数据 (临时用于测试)
-const mockWarningData = ref([
-    {
-        id: 1,
-        name: '水位预警点-1',
-        level: 'general',
-        longitude: 114.28,
-        latitude: 30.57,
-        warningType: '水位',
-        warningContent: '水位超过预警线'
-    },
-    {
-        id: 2,
-        name: '流量预警点-1',
-        level: 'serious',
-        longitude: 114.32,
-        latitude: 30.65,
-        warningType: '流量',
-        warningContent: '流量异常偏低'
-    },
-    {
-        id: 3,
-        name: '水质预警点-1',
-        level: 'general',
-        longitude: 114.35,
-        latitude: 30.58,
-        warningType: '水质',
-        warningContent: '水质指标异常'
-    }
-]);
 
 // 筛选后的设施数据（根据选择的设备类型）
 const filteredFacilities = computed(() => {
@@ -656,13 +593,7 @@ const handleDeviceTypeChange = (type) => {
     }
 };
 
-/**
- * 处理地图点击
- */
-const handleMapClick = (location) => {
-    selectedFacility.value = null;
-    // 地图点击时隐藏弹窗（由AMapContainer的handleMapClick已处理）
-};
+
 
 /**
  * 切换图层面板显示状态
@@ -748,12 +679,7 @@ const handleDevicePopupHide = () => {
     popupDevice.value = null;
 };
 
-/**
- * 处理弹窗关闭
- */
-const handlePopupClose = () => {
-    handleDevicePopupHide();
-};
+
 
 /**
  * 处理弹窗查看详情

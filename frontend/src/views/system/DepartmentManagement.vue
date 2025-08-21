@@ -24,7 +24,8 @@
             :show-index="true" :show-actions="true" :show-toolbar="false" :actions-width="150" :actions-fixed="false"
             @row-click="handleRowClick">
             <template #level="{ row }">
-              <el-tag :type="getLevelTagType(calculateLevel(row))" size="small">
+              <el-tag :type="({ 1: 'danger', 2: 'warning', 3: 'success', 4: 'info' }[calculateLevel(row)] || 'info')"
+                size="small">
                 第{{ calculateLevel(row) }}级
               </el-tag>
             </template>
@@ -36,7 +37,7 @@
 
             <template #isActive="{ row }">
               <el-tag :type="row.isActive === '1' ? 'success' : 'danger'" size="small">
-                {{ getDictLabel('department_status', row.isActive) }}
+                {{ getDictLabelSync('department_status', row.isActive) }}
               </el-tag>
             </template>
 
@@ -70,7 +71,7 @@
     </div>
 
     <!-- 部门表单对话框 -->
-    <CustomDialog :visible="formDialogVisible" :title="isEdit ? '编辑部门' : '新增部门'" width="700px"
+    <CustomDialog :visible="formDialogVisible" :title="isEdit ? '编辑部门' : '新增部门'" :width="'var(--dialog-width-large)'"
       :close-on-click-modal="false" @update:visible="handleFormDialogClose">
       <CommonForm ref="formRef" v-model="form" :items="formItems" :rules="formRules"
         :label-width="'var(--form-label-width-detail)'" label-position="right" :show-actions="false"
@@ -145,8 +146,16 @@ const loading = ref(false)
 const departmentList = ref([])
 
 // 字典相关
-const { getDictData, getDictLabel } = useDictionary()
+const { getDictData } = useDictionary()
 const departmentStatusOptions = ref([])
+
+// 字典数据缓存
+const dictMaps = reactive({
+  department_status: []
+})
+
+// 字典加载状态
+const dictLoading = ref(true)
 
 // 对话框状态
 const formDialogVisible = ref(false)
@@ -188,25 +197,7 @@ const pagination = reactive({
   total: 0
 })
 
-// 部门名称输入框失去焦点事件处理
-const handleNameBlur = async () => {
-  if (!form.name) return
 
-  try {
-    const excludeId = isEdit.value ? currentDepartment.value.id : null
-    const parentId = form.parentId || (parentDepartment.value && parentDepartment.value.id)
-    const result = await checkDepartmentNameAvailable(form.name, parentId, excludeId)
-
-    if (!result.available) {
-      // 如果使用CommonForm，通过表单验证方法触发验证
-      if (formRef.value) {
-        formRef.value.validateField('name')
-      }
-    }
-  } catch (error) {
-    console.error('验证部门名称失败', error)
-  }
-}
 
 // 表单配置项
 const formItems = ref([
@@ -219,10 +210,7 @@ const formItems = ref([
     showWordLimit: true,
     clearable: true,
     required: true,
-    span: 12,
-    events: {
-      blur: handleNameBlur
-    }
+    span: 12
   },
   {
     prop: 'parentId',
@@ -236,10 +224,7 @@ const formItems = ref([
     type: 'radio',
     options: departmentStatusOptions.value,
     defaultValue: '1',
-    required: true,
-    rules: [
-      { required: true, message: '请选择部门状态', trigger: 'change' }
-    ]
+    required: true
   },
   {
     prop: 'contact',
@@ -249,10 +234,7 @@ const formItems = ref([
     maxlength: 255,
     showWordLimit: true,
     clearable: true,
-    span: 12,
-    rules: [
-      { required: true, message: '请输入联系方式', trigger: 'blur' }
-    ]
+    span: 12
   },
   {
     prop: 'regionId',
@@ -329,6 +311,7 @@ const formRules = {
     { max: 500, message: '部门职责不能超过500个字符', trigger: 'blur' }
   ],
   contact: [
+    { required: true, message: '请输入联系方式', trigger: 'blur' },
     { max: 255, message: '联系方式不能超过255个字符', trigger: 'blur' }
   ]
 }
@@ -364,6 +347,21 @@ const tableColumns = [
 
 /**
  * ==============================
+ * 表单操作函数
+ * ==============================
+ */
+// 重置表单 - 按照后端标准字段
+const resetForm = () => {
+  form.name = ''
+  form.parentId = null
+  form.duty = ''
+  form.contact = ''
+  form.regionId = 1
+  form.isActive = '1'
+}
+
+/**
+ * ==============================
  * 监听器和生命周期                    
  * ==============================
  */
@@ -372,14 +370,14 @@ watch(
   () => currentDepartment.value,
   (newData) => {
     if (newData && Object.keys(newData).length > 0) {
-      Object.assign(form, {
-        name: newData.name || '',
-        parentId: newData.parentId || null,
-        duty: newData.duty || '',
-        contact: newData.contact || '',
-        regionId: newData.regionId || 1, // 默认值1，regions API暂未实现
-        isActive: newData.isActive !== undefined ? newData.isActive : '1'
-      })
+      form.name = newData.name || ''
+      form.parentId = newData.parentId || null
+      form.duty = newData.duty || ''
+      form.contact = newData.contact || ''
+      form.regionId = newData.regionId || 1
+      form.isActive = newData.isActive !== undefined ? newData.isActive : '1'
+    } else {
+      resetForm()
     }
   },
   { immediate: true, deep: true }
@@ -414,6 +412,64 @@ watch(
 
 /**
  * ==============================
+ * 字典数据处理函数
+ * ==============================
+ */
+// 字典预加载函数
+const loadDictionaries = async () => {
+  try {
+    dictLoading.value = true
+    const departmentStatus = await getDictData('department_status')
+    dictMaps.department_status = departmentStatus
+
+    // 同时更新表单选项
+    departmentStatusOptions.value = departmentStatus.map(item => ({
+      label: item.label,
+      value: item.value
+    }))
+  } catch (error) {
+    console.error('加载字典数据失败:', error)
+    // 使用兜底数据
+    const fallbackData = [
+      { label: '启用', value: '1' },
+      { label: '禁用', value: '0' }
+    ]
+    dictMaps.department_status = fallbackData
+    departmentStatusOptions.value = fallbackData
+  } finally {
+    dictLoading.value = false
+  }
+}
+
+// 同步获取字典标签
+const getDictLabelSync = (dictType, value, defaultLabel = '') => {
+  if (!dictType || value === undefined || value === null) {
+    return defaultLabel || '-'
+  }
+
+  // 如果字典数据正在加载中，根据字典类型提供兜底显示
+  if (dictLoading.value && dictType === 'department_status') {
+    return value === '1' ? '启用' : value === '0' ? '禁用' : (defaultLabel || String(value) || '-')
+  }
+
+  const dict = dictMaps[dictType] || []
+  const item = dict.find(d => String(d.value) === String(value))
+
+  // 如果找到匹配项，返回标签
+  if (item) {
+    return item.label
+  }
+
+  // 如果字典数据未加载或未找到匹配项，根据具体字典类型提供兜底显示
+  if (dictType === 'department_status') {
+    return value === '1' ? '启用' : value === '0' ? '禁用' : (defaultLabel || String(value) || '-')
+  }
+
+  return defaultLabel || String(value) || '-'
+}
+
+/**
+ * ==============================
  * 辅助计算函数
  * ==============================
  */
@@ -436,34 +492,9 @@ const calculateLevel = (department) => {
   return parentLevel > 0 ? parentLevel + 1 : 1
 }
 
-// 获取级别标签类型
-const getLevelTagType = (level) => {
-  const types = { 1: 'danger', 2: 'warning', 3: 'success', 4: 'info' }
-  return types[level] || 'info'
-}
 
-/**
- * ==============================
- * 字典数据加载
- * ==============================
- */
-// 加载部门状态字典数据
-const loadDepartmentStatusOptions = async () => {
-  try {
-    const dictData = await getDictData(DICT_TYPES.DEPARTMENT_STATUS)
-    departmentStatusOptions.value = dictData.map(item => ({
-      label: item.label,
-      value: item.value
-    }))
-  } catch (error) {
-    console.error('加载部门状态字典失败:', error)
-    // 使用兜底数据
-    departmentStatusOptions.value = [
-      { label: '启用', value: '1' },
-      { label: '禁用', value: '0' }
-    ]
-  }
-}
+
+
 
 /**
  * ==============================
@@ -472,12 +503,18 @@ const loadDepartmentStatusOptions = async () => {
  */
 // 生命周期钩子
 onMounted(async () => {
-  console.log('部门管理页面已挂载')
-  await Promise.all([
-    loadDepartmentList(),
-    loadDepartmentTree(),
-    loadDepartmentStatusOptions() // 加载部门状态字典
-  ])
+  try {
+    // 先加载字典数据，确保状态显示正确
+    await loadDictionaries()
+
+    // 再并行加载其他数据
+    await Promise.all([
+      loadDepartmentList(),
+      loadDepartmentTree()
+    ])
+  } catch (error) {
+    console.error('页面初始化失败:', error)
+  }
 })
 
 // 加载部门树数据
@@ -487,7 +524,17 @@ const loadDepartmentTree = async () => {
     if (response && Array.isArray(response)) {
       // 如果是编辑模式，需要过滤掉当前部门及其子部门，防止循环引用
       if (isEdit.value && currentDepartment.value && currentDepartment.value.id) {
-        departmentTreeOptions.value = filterDepartmentTree(response, currentDepartment.value.id)
+        const currentId = currentDepartment.value.id
+        const filterTree = (tree) => tree.filter(node => {
+          if (node.id === currentId) {
+            return false
+          }
+          if (node.children && node.children.length > 0) {
+            node.children = filterTree(node.children)
+          }
+          return true
+        })
+        departmentTreeOptions.value = filterTree(response)
       } else {
         departmentTreeOptions.value = response
       }
@@ -498,18 +545,7 @@ const loadDepartmentTree = async () => {
   }
 }
 
-// 过滤部门树，移除当前部门及其子部门
-const filterDepartmentTree = (tree, currentId) => {
-  return tree.filter(node => {
-    if (node.id === currentId) {
-      return false
-    }
-    if (node.children && node.children.length > 0) {
-      node.children = filterDepartmentTree(node.children, currentId)
-    }
-    return true
-  })
-}
+
 
 // 加载部门列表数据
 const loadDepartmentList = async () => {
@@ -589,23 +625,7 @@ const handleDelete = async (row) => {
   }
 }
 
-// 查看部门人员 - 未实现的功能，暂时仅显示消息
-const handleViewPersonnel = (row) => {
-  ElMessage.info(`查看部门"${row.name}"的人员功能尚未实现`)
-}
 
-// 重置表单 - 按照后端标准字段
-const resetForm = () => {
-  Object.assign(form, {
-    name: '',
-    parentId: null,
-    duty: '',
-    contact: '',
-    regionId: 1,        // 默认值1，regions API暂未实现
-    isActive: '1'
-  })
-  formRef.value?.clearValidate()
-}
 
 // 关闭表单对话框
 const handleFormDialogClose = () => {
@@ -684,7 +704,6 @@ const handleRowClick = (row, column, event) => {
   }
 
   // 行点击不执行额外操作
-  // console.log('Row clicked:', row)
 }
 
 // 表单提交成功
@@ -746,9 +765,26 @@ const handleFormSuccess = () => {
  * 响应式适配
  * ==============================
  */
+@include respond-to(md) {
+  .department-management {
+    .content-wrapper {
+      margin: var(--spacing-medium);
+    }
+
+    .department-section {
+      padding: var(--spacing-medium);
+    }
+  }
+}
+
 @include respond-to(sm) {
   .department-management {
     padding: var(--spacing-sm);
+
+    .content-wrapper {
+      margin: var(--spacing-sm);
+      border-radius: var(--border-radius-base);
+    }
 
     .department-section {
       padding: var(--spacing-sm);

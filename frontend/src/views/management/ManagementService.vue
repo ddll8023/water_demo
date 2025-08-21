@@ -274,7 +274,8 @@ import CustomCard from '@/components/Common/CustomCard.vue'
 import {
   getDepartmentList,
   deleteDepartment,
-  createDepartment
+  createDepartment,
+  updateDepartment
 } from '@/api/department'
 import {
   getPersonnelList,
@@ -282,8 +283,7 @@ import {
   updatePersonnel,
   deletePersonnel,
   batchDeletePersonnel,
-  getDepartmentTree,
-  updateDepartment
+  getDepartmentTree
 } from '@/api/management-info'
 import { getPositionList } from '@/api/position'
 import { formatDateTime, formatLocalTimeForAPI } from '@/utils/shared/common'
@@ -366,10 +366,16 @@ const departmentFormItems = computed(() => [
       // 如果是编辑状态，过滤掉自身和其子部门，防止循环引用
       if (isEditDepartment.value && currentDepartmentForm.value.id) {
         // 获取当前部门及其所有子部门的ID
-        const excludeIds = getDepartmentAndChildrenIds(
-          currentDepartmentForm.value.id,
-          departmentOptions.value
-        )
+        const excludeIds = [currentDepartmentForm.value.id]
+        const findChildren = (parentId) => {
+          departmentOptions.value.forEach(dept => {
+            if (dept.parentId === parentId) {
+              excludeIds.push(dept.id)
+              findChildren(dept.id)
+            }
+          })
+        }
+        findChildren(currentDepartmentForm.value.id)
 
         // 过滤掉不能选择的部门
         options = options.filter(option => !excludeIds.includes(option.value))
@@ -686,42 +692,32 @@ const handleDepartmentSearch = () => {
 }
 
 // 切换展开/折叠状态
-const isAllExpanded = ref(false)
-
 const handleToggleAll = () => {
-  if (isAllExpanded.value) {
-    // 当前是展开状态，执行折叠
-    expandedKeys.value = []
-    nextTick(() => {
-      const tree = document.querySelector('.department-tree')
-      if (tree) {
-        const allKeys = getAllNodeKeys(filteredDepartmentTree.value)
-        allKeys.forEach(key => {
-          const node = tree.__vueParentInstance?.exposed?.getNode(key)
-          if (node) {
-            node.expanded = false
+  // 当前是展开状态，执行折叠
+  expandedKeys.value = []
+  nextTick(() => {
+    const tree = document.querySelector('.department-tree')
+    if (tree) {
+      // 获取所有节点ID
+      const allKeys = []
+      const getAllKeys = (nodes) => {
+        nodes.forEach(node => {
+          allKeys.push(node.id)
+          if (node.children && node.children.length > 0) {
+            getAllKeys(node.children)
           }
         })
       }
-    })
-    isAllExpanded.value = false
-  } else {
-    // 当前是折叠状态，执行展开
-    const allKeys = getAllNodeKeys(filteredDepartmentTree.value)
-    expandedKeys.value = allKeys
-    nextTick(() => {
-      const tree = document.querySelector('.department-tree')
-      if (tree) {
-        allKeys.forEach(key => {
-          const node = tree.__vueParentInstance?.exposed?.getNode(key)
-          if (node) {
-            node.expanded = true
-          }
-        })
-      }
-    })
-    isAllExpanded.value = true
-  }
+      getAllKeys(filteredDepartmentTree.value)
+
+      allKeys.forEach(key => {
+        const node = tree.__vueParentInstance?.exposed?.getNode(key)
+        if (node) {
+          node.expanded = false
+        }
+      })
+    }
+  })
 
   // 树形组件会自动更新
 }
@@ -787,15 +783,10 @@ const handleEditSubDepartment = async (data) => {
 // 部门删除处理
 const handleDeleteDepartment = async (data) => {
   try {
-    await ElMessageBox.confirm(
-      `确定要删除部门"${data.name}"吗？删除后该部门下的所有人员将需要重新分配。`,
-      '删除确认',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
+    const confirmed = await showDeleteConfirm(
+      `确定要删除部门"${data.name}"吗？删除后该部门下的所有人员将需要重新分配。`
     )
+    if (!confirmed) return
 
     await deleteDepartment(data.id)
     ElMessage.success('删除成功')
@@ -810,10 +801,8 @@ const handleDeleteDepartment = async (data) => {
       subDepartments.value = []
     }
   } catch (error) {
-    if (error.message !== 'cancel') {
-      console.error('删除部门失败:', error)
-      ElMessage.error('删除部门失败')
-    }
+    console.error('删除部门失败:', error)
+    ElMessage.error('删除部门失败')
   }
 }
 
@@ -859,15 +848,8 @@ const handleDepartmentFormSuccess = async () => {
 // 下级部门管理处理
 const handleDeleteSubDepartment = async (data) => {
   try {
-    await ElMessageBox.confirm(
-      `确定要删除下级部门"${data.name}"吗？`,
-      '删除确认',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
+    const confirmed = await showDeleteConfirm(`确定要删除下级部门"${data.name}"吗？`)
+    if (!confirmed) return
 
     await deleteDepartment(data.id)
     ElMessage.success('删除成功')
@@ -878,10 +860,8 @@ const handleDeleteSubDepartment = async (data) => {
       loadDepartmentTree()
     ])
   } catch (error) {
-    if (error.message !== 'cancel') {
-      console.error('删除下级部门失败:', error)
-      ElMessage.error('删除失败')
-    }
+    console.error('删除下级部门失败:', error)
+    ElMessage.error('删除失败')
   }
 }
 
@@ -982,47 +962,54 @@ const handleSavePersonnel = async () => {
   }
 }
 
+// 通用删除确认函数
+const showDeleteConfirm = async (message, title = '删除确认') => {
+  try {
+    await ElMessageBox.confirm(message, title, {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+    return true
+  } catch (error) {
+    if (error.message !== 'cancel') {
+      throw error
+    }
+    return false
+  }
+}
+
+// 通用删除后刷新函数
+const refreshAfterDelete = async () => {
+  if (activeTab.value === 'organization' && selectedDepartment.value.id) {
+    await loadDepartmentPersonnel(selectedDepartment.value.id)
+  } else if (activeTab.value === 'personnel') {
+    await loadAllPersonnelList()
+  }
+}
+
 // 人员删除处理
 const handleDeletePersonnel = async (row) => {
   try {
-    await ElMessageBox.confirm(
-      `确定要删除人员"${row.fullName}"吗？`,
-      '删除确认',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
+    const confirmed = await showDeleteConfirm(`确定要删除人员"${row.fullName}"吗？`)
+    if (!confirmed) return
 
     await deletePersonnel(row.id)
     ElMessage.success('删除成功')
-
-    // 重新加载当前部门人员列表或全局人员列表
-    if (activeTab.value === 'organization' && selectedDepartment.value.id) {
-      await loadDepartmentPersonnel(selectedDepartment.value.id)
-    } else if (activeTab.value === 'personnel') {
-      await loadAllPersonnelList()
-    }
+    await refreshAfterDelete()
   } catch (error) {
-    if (error.message !== 'cancel') {
-      console.error('删除人员失败:', error)
-      ElMessage.error('删除人员失败')
-    }
+    console.error('删除人员失败:', error)
+    ElMessage.error('删除人员失败')
   }
 }
 
 const handleBatchDeletePersonnel = async () => {
   try {
-    await ElMessageBox.confirm(
+    const confirmed = await showDeleteConfirm(
       `确定要删除选中的 ${selectedPersonnel.value.length} 个人员吗？`,
-      '批量删除确认',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
+      '批量删除确认'
     )
+    if (!confirmed) return
 
     const userIds = selectedPersonnel.value.map(user => user.id)
     await batchDeletePersonnel(userIds)
@@ -1030,18 +1017,10 @@ const handleBatchDeletePersonnel = async () => {
 
     // 清空选中状态
     selectedPersonnel.value = []
-
-    // 重新加载当前部门人员列表或全局人员列表
-    if (activeTab.value === 'organization' && selectedDepartment.value.id) {
-      await loadDepartmentPersonnel(selectedDepartment.value.id)
-    } else if (activeTab.value === 'personnel') {
-      await loadAllPersonnelList()
-    }
+    await refreshAfterDelete()
   } catch (error) {
-    if (error.message !== 'cancel') {
-      console.error('批量删除人员失败:', error)
-      ElMessage.error('批量删除人员失败')
-    }
+    console.error('批量删除人员失败:', error)
+    ElMessage.error('批量删除人员失败')
   }
 }
 
@@ -1050,16 +1029,38 @@ const handlePersonnelSelectionChange = (selection) => {
   selectedPersonnel.value = selection
 }
 
+// 通用分页处理函数
+const handlePaginationChange = async (type, value, loadFunction) => {
+  if (type === 'size') {
+    // 改变每页条数时重置到第一页
+    if (type === 'size' && loadFunction === loadDepartmentPersonnel) {
+      departmentPersonnelSize.value = value
+      departmentPersonnelPage.value = 1
+      await loadFunction(selectedDepartment.value.id)
+    } else if (type === 'size' && loadFunction === loadAllPersonnelList) {
+      personnelPageSize.value = value
+      personnelCurrentPage.value = 1
+      await loadFunction()
+    }
+  } else if (type === 'page') {
+    // 改变页码
+    if (loadFunction === loadDepartmentPersonnel) {
+      departmentPersonnelPage.value = value
+      await loadFunction(selectedDepartment.value.id)
+    } else if (loadFunction === loadAllPersonnelList) {
+      personnelCurrentPage.value = value
+      await loadFunction()
+    }
+  }
+}
+
 // 部门人员分页处理
 const handleDepartmentPersonnelSizeChange = async (size) => {
-  departmentPersonnelSize.value = size
-  departmentPersonnelPage.value = 1 // 改变每页条数时重置到第一页
-  await loadDepartmentPersonnel(selectedDepartment.value.id)
+  await handlePaginationChange('size', size, loadDepartmentPersonnel)
 }
 
 const handleDepartmentPersonnelCurrentChange = async (page) => {
-  departmentPersonnelPage.value = page
-  await loadDepartmentPersonnel(selectedDepartment.value.id)
+  await handlePaginationChange('page', page, loadDepartmentPersonnel)
 }
 
 // 全局人员列表搜索和分页处理
@@ -1080,14 +1081,11 @@ const handlePersonnelResetSearch = async () => {
 }
 
 const handlePersonnelSizeChange = async (size) => {
-  personnelPageSize.value = size
-  personnelCurrentPage.value = 1 // 改变页大小时重置到第一页
-  await loadAllPersonnelList()
+  await handlePaginationChange('size', size, loadAllPersonnelList)
 }
 
 const handlePersonnelCurrentChange = async (page) => {
-  personnelCurrentPage.value = page
-  await loadAllPersonnelList()
+  await handlePaginationChange('page', page, loadAllPersonnelList)
 }
 
 /**
@@ -1095,29 +1093,28 @@ const handlePersonnelCurrentChange = async (page) => {
  * 数据加载函数
  * ----------------------------------------
  */
-// 获取所有节点的ID（递归）
-const getAllNodeKeys = (nodes) => {
-  let keys = []
-  nodes.forEach(node => {
-    keys.push(node.id)
-    if (node.children && node.children.length > 0) {
-      keys = keys.concat(getAllNodeKeys(node.children))
-    }
-  })
-  return keys
-}
+
 
 // 部门树数据加载
 const loadDepartmentTree = async () => {
   try {
-    // loading.value = true // 移除未使用的loading变量
     const data = await getDepartmentTree()
     departmentTree.value = data || []
     filteredDepartmentTree.value = data || []
 
     // 设置默认展开所有节点
     if (data && data.length > 0) {
-      const allKeys = getAllNodeKeys(data)
+      // 获取所有节点ID
+      const allKeys = []
+      const getAllKeys = (nodes) => {
+        nodes.forEach(node => {
+          allKeys.push(node.id)
+          if (node.children && node.children.length > 0) {
+            getAllKeys(node.children)
+          }
+        })
+      }
+      getAllKeys(data)
       expandedKeys.value = allKeys
     }
   } catch (error) {
@@ -1125,8 +1122,6 @@ const loadDepartmentTree = async () => {
     ElMessage.error('加载部门树失败')
     departmentTree.value = []
     filteredDepartmentTree.value = []
-  } finally {
-    // loading.value = false // 移除未使用的loading变量
   }
 }
 
@@ -1304,20 +1299,7 @@ const loadAllPersonnelList = async () => {
  * 工具方法
  * ----------------------------------------
  */
-// 获取指定部门的所有子部门ID（包含自身）
-const getDepartmentAndChildrenIds = (departmentId, departments) => {
-  const ids = [departmentId]
-  const findChildren = (parentId) => {
-    departments.forEach(dept => {
-      if (dept.parentId === parentId) {
-        ids.push(dept.id)
-        findChildren(dept.id)
-      }
-    })
-  }
-  findChildren(departmentId)
-  return ids
-}
+
 
 // 监听选项卡变化
 watch(activeTab, async (newTab) => {

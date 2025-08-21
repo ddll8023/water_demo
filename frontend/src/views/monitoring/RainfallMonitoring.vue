@@ -78,7 +78,13 @@ import {
     getRainfallChartData,
     exportRainfallData
 } from '@/api/monitoring'
-import { formatLocalTimeForAPI, formatDateTime } from '@/utils/shared/common'
+import { formatDateTime } from '@/utils/shared/common'
+import {
+    processTimeRangeParams,
+    getCurrentTimeRange,
+    calculateQuickTimeRange,
+    handleQuickSearch as handleQuickSearchUtil
+} from '@/utils/monitoring/timeRange'
 
 // ===================================
 // 基础配置与常量定义
@@ -222,98 +228,15 @@ const pagination = reactive({
 })
 
 // ===================================
-// 辅助工具函数
-// ===================================
-
-// 通用的时间范围参数处理函数
-const processTimeRangeParams = (timeRange) => {
-    const params = {};
-
-    if (timeRange && timeRange.length === 2) {
-        params.startTime = formatLocalTimeForAPI(timeRange[0]);
-        params.endTime = formatLocalTimeForAPI(timeRange[1]);
-    }
-
-    return params;
-};
-
-// 计算快捷时间范围
-const calculateQuickTimeRange = (timeRangeType) => {
-    const now = new Date()
-    let startTime, endTime
-
-    switch (timeRangeType) {
-        case '7days':
-            // 最近7天
-            startTime = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-            endTime = now
-            break
-        case '30days':
-            // 最近30天
-            startTime = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
-            endTime = now
-            break
-        case 'all':
-            // 全部数据，返回空数组
-            return []
-        default:
-            return []
-    }
-
-    return [startTime, endTime]
-}
-
-// 获取当前有效的时间范围
-const getCurrentTimeRange = () => {
-    // 如果是快捷搜索，使用快捷搜索的时间范围
-    if (quickSearchTimeRange.value) {
-        return quickSearchTimeRange.value
-    }
-    // 否则使用时间选择器的值
-    return searchForm.value.timeRange
-}
-
-// ===================================
 // 数据加载函数
 // ===================================
-
-// 加载监测站点
-const loadStations = async () => {
-    try {
-        // 只获取雨情监测站点（R类型）
-        const response = await getAvailableMonitoringStations({ monitoringItemCode: 'R' })
-
-        if (response && Array.isArray(response)) {
-            stationOptions.value = response.map(station => ({
-                label: station.name,
-                value: station.id
-            }))
-
-            // 更新搜索字段的选项
-            const stationField = searchFields.value.find(field => field.prop === 'stationId')
-            if (stationField) {
-                stationField.options = stationOptions.value
-            }
-
-            // 不自动选择站点，让用户手动选择
-            if (stationOptions.value.length === 0) {
-                ElMessage.warning('没有找到可用的雨情监测站点')
-            }
-        } else {
-            ElMessage.warning('监测站点数据格式不正确')
-        }
-    } catch (error) {
-        console.error('降雨监测页面：加载监测站点失败:', error)
-        ElMessage.error(`加载监测站点失败: ${error.message || '未知错误'}`)
-    }
-}
 
 // 加载表格数据
 const loadTableData = async () => {
     tableLoading.value = true
     try {
         // 获取当前有效的时间范围
-        const currentTimeRange = getCurrentTimeRange()
+        const currentTimeRange = getCurrentTimeRange({ searchForm, quickSearchTimeRange })
         const params = {
             page: pagination.currentPage,
             size: pagination.pageSize,
@@ -347,7 +270,7 @@ const loadChartData = async () => {
     try {
         // 构建API参数
         const item = rainfallMonitoringItems[currentChartIndex.value];
-        const currentTimeRange = getCurrentTimeRange()
+        const currentTimeRange = getCurrentTimeRange({ searchForm, quickSearchTimeRange })
         const params = {
             stationId: searchForm.value.stationId,
             dataType: item.code === 'RAINFALL' ? 'rainfall' : 'cumulativeRainfall',
@@ -398,25 +321,7 @@ const handleSearch = () => {
     }
 }
 
-// 处理快捷按钮搜索
-const handleQuickSearch = (timeRange) => {
-    // 设置快捷搜索标记，防止监听器重置按钮状态
-    quickSearchTimeRange.value = timeRange
 
-    pagination.currentPage = 1
-    loadTableData()
-
-    // 标记已执行搜索
-    hasSearched.value = true
-
-    // 只有在选择了站点时才触发图表搜索
-    if (searchForm.value.stationId) {
-        chartSearchTriggered.value = true
-        loadChartData()
-    } else {
-        chartSearchTriggered.value = false
-    }
-}
 
 // 处理重置
 const handleReset = () => {
@@ -468,7 +373,7 @@ const handleExport = async () => {
     exportLoading.value = true
     try {
         // 获取当前有效的时间范围
-        const currentTimeRange = getCurrentTimeRange()
+        const currentTimeRange = getCurrentTimeRange({ searchForm, quickSearchTimeRange })
         const params = {
             stationId: searchForm.value.stationId,
             // 使用当前有效的时间范围参数
@@ -506,7 +411,16 @@ const handleTimeRangeChange = (timeRangeType) => {
     const timeRange = calculateQuickTimeRange(timeRangeType)
 
     // 自动触发快捷搜索
-    handleQuickSearch(timeRange)
+    handleQuickSearchUtil({
+        timeRange,
+        quickSearchTimeRange,
+        pagination,
+        loadTableData,
+        hasSearched,
+        searchForm,
+        chartSearchTriggered,
+        loadChartData
+    })
 }
 
 // ===================================
@@ -517,7 +431,33 @@ const handleTimeRangeChange = (timeRangeType) => {
 onMounted(async () => {
     try {
         // 加载站点数据
-        await loadStations()
+        try {
+            // 只获取雨情监测站点（R类型）
+            const response = await getAvailableMonitoringStations({ monitoringItemCode: 'R' })
+
+            if (response && Array.isArray(response)) {
+                stationOptions.value = response.map(station => ({
+                    label: station.name,
+                    value: station.id
+                }))
+
+                // 更新搜索字段的选项
+                const stationField = searchFields.value.find(field => field.prop === 'stationId')
+                if (stationField) {
+                    stationField.options = stationOptions.value
+                }
+
+                // 不自动选择站点，让用户手动选择
+                if (stationOptions.value.length === 0) {
+                    ElMessage.warning('没有找到可用的雨情监测站点')
+                }
+            } else {
+                ElMessage.warning('监测站点数据格式不正确')
+            }
+        } catch (error) {
+            console.error('降雨监测页面：加载监测站点失败:', error)
+            ElMessage.error(`加载监测站点失败: ${error.message || '未知错误'}`)
+        }
 
         // 设置默认7天时间范围并加载对应数据
         handleTimeRangeChange('7days')
@@ -555,31 +495,21 @@ onMounted(async () => {
         .table-content {
             padding: var(--spacing-md);
             padding-bottom: 20px;
-        }
 
-
-
-        // 响应式适配
-        @include respond-to(md) {
-            .table-content {
+            // 响应式适配
+            @include respond-to(md) {
                 padding: var(--spacing-md);
-                padding-bottom: 20px;
             }
-        }
 
-        @include respond-to(sm) {
-            .table-content {
+            @include respond-to(sm) {
                 padding: var(--spacing-sm);
-                padding-bottom: 20px;
             }
         }
     }
 
     // 时间范围按钮组样式
     .time-range-buttons {
-        display: flex;
-        gap: var(--spacing-small);
-        margin-right: var(--spacing-medium);
+        @include time-range-buttons;
 
         .custom-button {
             min-width: var(--button-min-width);

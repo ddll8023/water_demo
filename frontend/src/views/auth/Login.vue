@@ -184,10 +184,8 @@ const handleLogin = async () => {
  * 生命周期钩子和初始化
  * ----------------------------------------
  */
-/**
- * 初始化页面
- */
-const initializePage = () => {
+// 组件挂载后执行
+onMounted(() => {
   // 如果已经登录，直接跳转
   if (authStore.isAuthenticated) {
     const redirect = route.query.redirect || '/'
@@ -196,28 +194,14 @@ const initializePage = () => {
   }
 
   // 加载记住的凭据
-  loadRememberedCredentials()
-
-  // 聚焦到用户名输入框
-  focusUsernameInput()
-}
-
-/**
- * 加载记住的凭据
- */
-const loadRememberedCredentials = () => {
   const credentials = getRememberedCredentials()
   if (credentials) {
     loginForm.username = credentials.username
     loginForm.password = credentials.password
     rememberMe.value = true
   }
-}
 
-/**
- * 聚焦到用户名输入框
- */
-const focusUsernameInput = () => {
+  // 聚焦到用户名输入框
   nextTick(() => {
     if (loginFormRef.value) {
       const usernameInput = loginFormRef.value.$el.querySelector('input[type="text"]')
@@ -226,11 +210,6 @@ const focusUsernameInput = () => {
       }
     }
   })
-}
-
-// 组件挂载后执行
-onMounted(() => {
-  initializePage()
 })
 </script>
 

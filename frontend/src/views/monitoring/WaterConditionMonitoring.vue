@@ -78,7 +78,13 @@ import {
     getWaterConditionChartData,
     exportWaterConditionData
 } from '@/api/monitoring'
-import { formatLocalTimeForAPI, formatDateTime } from '@/utils/shared/common'
+import { formatDateTime } from '@/utils/shared/common'
+import {
+    processTimeRangeParams,
+    getCurrentTimeRange,
+    calculateQuickTimeRange,
+    handleQuickSearch as handleQuickSearchUtil
+} from '@/utils/monitoring/timeRange'
 
 // ===================================
 // 常量定义
@@ -120,6 +126,11 @@ const waterConditionMonitoringItems = [
     }
 ]
 
+// 数值格式化工具函数
+const formatNumber = (value, decimal = 3) => {
+    return value !== null && value !== undefined ? `${Number(value).toFixed(decimal)}` : '-'
+}
+
 // 水情导入列配置
 const waterConditionImportColumns = [
     { prop: 'rowNumber', label: '序号', width: 80 },
@@ -144,46 +155,31 @@ const tableColumns = [
         prop: 'waterLevel',
         label: '水位',
         width: 120,
-        formatter: (row) => {
-            const value = row.waterLevel
-            return value !== null && value !== undefined ? `${Number(value).toFixed(3)}` : '-'
-        }
+        formatter: (row) => formatNumber(row.waterLevel, 3)
     },
     {
         prop: 'storageCapacity',
         label: '蓄水量',
         width: 140,
-        formatter: (row) => {
-            const value = row.storageCapacity
-            return value !== null && value !== undefined ? `${Number(value).toFixed(2)}` : '-'
-        }
+        formatter: (row) => formatNumber(row.storageCapacity, 2)
     },
     {
         prop: 'floodLimitDiff',
         label: '超汛限',
         width: 120,
-        formatter: (row) => {
-            const value = row.floodLimitDiff
-            return value !== null && value !== undefined ? `${Number(value).toFixed(3)}` : '-'
-        }
+        formatter: (row) => formatNumber(row.floodLimitDiff, 3)
     },
     {
         prop: 'inflow',
         label: '入库流量',
         width: 140,
-        formatter: (row) => {
-            const value = row.inflow
-            return value !== null && value !== undefined ? `${Number(value).toFixed(3)}` : '-'
-        }
+        formatter: (row) => formatNumber(row.inflow, 3)
     },
     {
         prop: 'outflow',
         label: '出库流量',
         width: 140,
-        formatter: (row) => {
-            const value = row.outflow
-            return value !== null && value !== undefined ? `${Number(value).toFixed(3)}` : '-'
-        }
+        formatter: (row) => formatNumber(row.outflow, 3)
     }
 ]
 
@@ -247,10 +243,6 @@ const pagination = reactive({
     total: 0
 })
 
-// ===================================
-// 监听器
-// ===================================
-
 // 监听图表类型变化
 watch(() => currentChartIndex.value, (newIndex) => {
     // 如果已经搜索并选择了站点，切换图表类型时重新加载数据
@@ -268,58 +260,6 @@ watch(() => searchForm.value.timeRange, (newTimeRange) => {
     // 清除快捷搜索标记
     quickSearchTimeRange.value = null
 }, { deep: true })
-
-// ===================================
-// 工具函数
-// ===================================
-
-// 通用的时间范围参数处理函数
-const processTimeRangeParams = (timeRange) => {
-    if (!timeRange || !Array.isArray(timeRange) || timeRange.length !== 2) {
-        return {}
-    }
-
-    return {
-        startTime: formatLocalTimeForAPI(timeRange[0]),
-        endTime: formatLocalTimeForAPI(timeRange[1])
-    }
-}
-
-// 计算快捷时间范围
-const calculateQuickTimeRange = (timeRangeType) => {
-    const now = new Date()
-    let startTime, endTime
-
-    switch (timeRangeType) {
-        case '7days':
-            // 最近7天
-            startTime = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-            endTime = now
-            break
-        case '30days':
-            // 最近30天
-            startTime = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
-            endTime = now
-            break
-        case 'all':
-            // 全部数据，返回空数组
-            return []
-        default:
-            return []
-    }
-
-    return [startTime, endTime]
-}
-
-// 获取当前有效的时间范围
-const getCurrentTimeRange = () => {
-    // 如果是快捷搜索，使用快捷搜索的时间范围
-    if (quickSearchTimeRange.value) {
-        return quickSearchTimeRange.value
-    }
-    // 否则使用时间选择器的值
-    return searchForm.value.timeRange
-}
 
 // ===================================
 // 数据加载函数
@@ -363,7 +303,7 @@ const loadTableData = async () => {
     tableLoading.value = true
     try {
         // 获取当前有效的时间范围
-        const currentTimeRange = getCurrentTimeRange()
+        const currentTimeRange = getCurrentTimeRange({ searchForm, quickSearchTimeRange })
         const params = {
             page: pagination.currentPage,
             size: pagination.pageSize,
@@ -396,7 +336,7 @@ const loadChartData = async () => {
 
     try {
         // 获取当前有效的时间范围
-        const currentTimeRange = getCurrentTimeRange()
+        const currentTimeRange = getCurrentTimeRange({ searchForm, quickSearchTimeRange })
         // 构建API参数
         const item = waterConditionMonitoringItems[currentChartIndex.value];
         const params = {
@@ -465,26 +405,6 @@ const handleReset = () => {
     chartData.value = { labels: [], values: [] }
 }
 
-// 处理快捷按钮搜索
-const handleQuickSearch = (timeRange) => {
-    // 设置快捷搜索标记，防止监听器重置按钮状态
-    quickSearchTimeRange.value = timeRange
-
-    pagination.currentPage = 1
-    loadTableData()
-
-    // 标记已执行搜索
-    hasSearched.value = true
-
-    // 只有在选择了站点时才触发图表搜索
-    if (searchForm.value.stationId) {
-        chartSearchTriggered.value = true
-        loadChartData()
-    } else {
-        chartSearchTriggered.value = false
-    }
-}
-
 // 时间范围切换处理
 const handleTimeRangeChange = (timeRangeType) => {
     activeTimeRange.value = timeRangeType
@@ -493,7 +413,16 @@ const handleTimeRangeChange = (timeRangeType) => {
     const timeRange = calculateQuickTimeRange(timeRangeType)
 
     // 自动触发快捷搜索
-    handleQuickSearch(timeRange)
+    handleQuickSearchUtil({
+        timeRange,
+        quickSearchTimeRange,
+        pagination,
+        loadTableData,
+        hasSearched,
+        searchForm,
+        chartSearchTriggered,
+        loadChartData
+    })
 }
 
 // 分页相关事件处理
@@ -521,7 +450,7 @@ const handleExport = async () => {
     exportLoading.value = true
     try {
         // 获取当前有效的时间范围
-        const currentTimeRange = getCurrentTimeRange()
+        const currentTimeRange = getCurrentTimeRange({ searchForm, quickSearchTimeRange })
         const params = {
             stationId: searchForm.value.stationId,
             ...processTimeRangeParams(currentTimeRange),
@@ -610,14 +539,11 @@ onMounted(async () => {
 <style scoped lang="scss">
 @use "@/assets/styles/index.scss" as *;
 
-// ============================================
-// 页面布局样式
-// ============================================
+// ===================================
+// 页面样式
+// ===================================
 .water-condition-monitoring {
 
-    // ============================================
-    // 页面内容区域样式
-    // ============================================
     .filter-section,
     .chart-carousel-section,
     .table-section {
@@ -655,9 +581,7 @@ onMounted(async () => {
 
     // 时间范围按钮组样式
     .time-range-buttons {
-        @include flex-center-y;
-        gap: var(--spacing-small);
-        margin-right: var(--spacing-medium);
+        @include time-range-buttons;
 
         .custom-button {
             min-width: var(--button-min-width);

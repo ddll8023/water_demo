@@ -40,8 +40,7 @@
       <MonitoringChart :chart-data="chartData" :chart-items="waterLevelMonitoringItems"
         :active-index="currentChartIndex" :loading="chartLoading" :has-searched="hasSearched"
         :has-station="!!searchForm.stationId && chartSearchTriggered" title="水位监测数据"
-        @update:active-index="currentChartIndex = $event" @chart-initialized="handleChartInitialized"
-        @chart-zoom="handleChartZoom" @chart-pan="handleChartPan" @chart-reset="handleChartReset" />
+        @update:active-index="currentChartIndex = $event" @chart-initialized="handleChartInitialized" />
     </div>
 
     <!-- 数据表格区域 -->
@@ -65,24 +64,28 @@
 <script setup>
 import { ref, reactive, onMounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
+// 组件导入
 import CommonSearch from '@/components/Common/CommonSearch.vue'
 import CommonTable from '@/components/Common/CommonTable.vue'
 import CustomButton from '@/components/Common/CustomButton.vue'
+import CustomPagination from '@/components/Common/CustomPagination.vue'
 import ExcelImporter from '@/components/Common/ExcelImporter.vue'
 import MonitoringChart from '@/components/Chart/MonitoringChart.vue'
 import PageHeader from '@/components/Common/PageHeader.vue'
-import CustomPagination from '@/components/Common/CustomPagination.vue'
+// API和工具函数导入
 import {
   getWaterLevelMonitoringData,
   getAvailableMonitoringStations,
   getWaterLevelChartData,
   exportWaterLevelData
 } from '@/api/monitoring'
-import { formatLocalTimeForAPI, formatDateTime } from '@/utils/shared/common'
-
-// ===================================
-// 基础配置与常量定义
-// ===================================
+import { formatDateTime } from '@/utils/shared/common'
+import {
+  processTimeRangeParams,
+  getCurrentTimeRange,
+  calculateQuickTimeRange,
+  handleQuickSearch as handleQuickSearchUtil
+} from '@/utils/monitoring/timeRange'
 
 // 水位监测项目配置
 const waterLevelMonitoringItems = [
@@ -163,37 +166,29 @@ const tableColumns = [
   }
 ]
 
-// ===================================
 // 响应式数据与状态管理
-// ===================================
-
-// 搜索表单状态
 const searchForm = ref({
   stationId: null,
   timeRange: []
 })
 
-// 搜索状态管理
+// 状态管理
 const hasSearched = ref(false) // 是否已执行过搜索
 const chartSearchTriggered = ref(false) // 是否已触发图表搜索（通过搜索按钮）
-
-// 时间范围状态管理
 const activeTimeRange = ref('7days') // 当前激活的时间范围
 const quickSearchTimeRange = ref(null) // 快捷按钮搜索时使用的时间范围
 
-// 数据状态管理
+// 数据状态
 const tableData = ref([])
 const stationOptions = ref([])
 const chartData = ref({ labels: [], values: [] })
+const currentChartIndex = ref(0)
 
-// 加载状态管理
+// 加载状态
 const tableLoading = ref(false)
 const chartLoading = ref(false)
 const exportLoading = ref(false)
 const showImportDialog = ref(false)
-
-// 图表状态管理
-const currentChartIndex = ref(0)
 
 // 分页配置
 const pagination = reactive({
@@ -212,74 +207,11 @@ watch(() => searchForm.value.timeRange, (newTimeRange) => {
   quickSearchTimeRange.value = null
 }, { deep: true })
 
-// ===================================
-// 辅助工具函数
-// ===================================
 
-// 使用统一的时间格式化函数（从 common.js 导入）
 
-// 通用的时间范围参数处理函数
-const processTimeRangeParams = (timeRange) => {
-  const params = {};
 
-  if (timeRange && timeRange.length === 2) {
-    params.startTime = formatLocalTimeForAPI(timeRange[0]);
-    params.endTime = formatLocalTimeForAPI(timeRange[1]);
-  }
 
-  return params;
-};
-
-// 防抖版本的图表加载函数
-const debouncedLoadChart = (() => {
-  let timer;
-  return () => {
-    clearTimeout(timer);
-    timer = setTimeout(() => loadChartData(), 300);
-  };
-})();
-
-// 计算快捷时间范围
-const calculateQuickTimeRange = (timeRangeType) => {
-  const now = new Date()
-  let startTime, endTime
-
-  switch (timeRangeType) {
-    case '7days':
-      // 最近7天
-      startTime = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-      endTime = now
-      break
-    case '30days':
-      // 最近30天
-      startTime = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
-      endTime = now
-      break
-    case 'all':
-      // 全部数据，返回空数组
-      return []
-    default:
-      return []
-  }
-
-  return [startTime, endTime]
-}
-
-// 获取当前有效的时间范围
-const getCurrentTimeRange = () => {
-  // 如果是快捷搜索，使用快捷搜索的时间范围
-  if (quickSearchTimeRange.value) {
-    return quickSearchTimeRange.value
-  }
-  // 否则使用时间选择器的值
-  return searchForm.value.timeRange
-}
-
-// ===================================
 // 数据加载函数
-// ===================================
-
-// 加载监测站点
 const loadStations = async () => {
   try {
     // 只获取水位监测站点（H类型）
@@ -310,7 +242,7 @@ const loadTableData = async () => {
   tableLoading.value = true
   try {
     // 获取当前有效的时间范围
-    const currentTimeRange = getCurrentTimeRange()
+    const currentTimeRange = getCurrentTimeRange({ searchForm, quickSearchTimeRange })
     const params = {
       page: pagination.currentPage,
       size: pagination.pageSize,
@@ -341,7 +273,7 @@ const loadChartData = async () => {
 
   try {
     // 获取当前有效的时间范围
-    const currentTimeRange = getCurrentTimeRange()
+    const currentTimeRange = getCurrentTimeRange({ searchForm, quickSearchTimeRange })
     // 构建API参数
     const params = {
       stationId: searchForm.value.stationId,
@@ -370,11 +302,7 @@ const loadChartData = async () => {
   }
 }
 
-// ===================================
 // 事件处理函数
-// ===================================
-
-// 搜索相关事件处理
 const handleSearch = () => {
   pagination.currentPage = 1
   loadTableData()
@@ -391,26 +319,6 @@ const handleSearch = () => {
   }
 }
 
-// 处理快捷按钮搜索
-const handleQuickSearch = (timeRange) => {
-  // 设置快捷搜索标记，防止监听器重置按钮状态
-  quickSearchTimeRange.value = timeRange
-
-  pagination.currentPage = 1
-  loadTableData()
-
-  // 标记已执行搜索
-  hasSearched.value = true
-
-  // 只有在选择了站点时才触发图表搜索
-  if (searchForm.value.stationId) {
-    chartSearchTriggered.value = true
-    loadChartData()
-  } else {
-    chartSearchTriggered.value = false
-  }
-}
-
 // 时间范围切换处理
 const handleTimeRangeChange = (timeRangeType) => {
   activeTimeRange.value = timeRangeType
@@ -419,7 +327,16 @@ const handleTimeRangeChange = (timeRangeType) => {
   const timeRange = calculateQuickTimeRange(timeRangeType)
 
   // 自动触发快捷搜索
-  handleQuickSearch(timeRange)
+  handleQuickSearchUtil({
+    timeRange,
+    quickSearchTimeRange,
+    pagination,
+    loadTableData,
+    hasSearched,
+    searchForm,
+    chartSearchTriggered,
+    loadChartData
+  })
 }
 
 const handleReset = () => {
@@ -459,17 +376,7 @@ const handleChartInitialized = () => {
   }
 }
 
-const handleChartZoom = (event) => {
-  // 这里可以添加额外的缩放处理逻辑
-}
 
-const handleChartPan = (event) => {
-  // 这里可以添加额外的平移处理逻辑
-}
-
-const handleChartReset = (event) => {
-  // 这里可以添加额外的重置处理逻辑
-}
 
 // 导出相关事件处理
 const handleExport = async () => {
@@ -511,15 +418,12 @@ const handleImportSuccess = () => {
   loadTableData()
   // 刷新图表数据
   if (searchForm.value.stationId && hasSearched.value && chartSearchTriggered.value) {
-    debouncedLoadChart()
+    // 防抖加载图表数据
+    setTimeout(() => loadChartData(), 300)
   }
 }
 
-// ===================================
 // 生命周期钩子
-// ===================================
-
-// 页面初始化
 onMounted(async () => {
   try {
     // 加载站点数据
@@ -537,14 +441,9 @@ onMounted(async () => {
 <style scoped lang="scss">
 @use "@/assets/styles/index.scss" as *;
 
-// ============================================
 // 页面布局样式
-// ============================================
 .water-level-monitoring {
 
-  // ============================================
-  // 页面内容区域样式
-  // ============================================
   .filter-section,
   .chart-carousel-section,
   .table-section {
@@ -553,9 +452,7 @@ onMounted(async () => {
 
   // 时间范围按钮组样式
   .time-range-buttons {
-    display: flex;
-    gap: var(--spacing-small);
-    margin-right: var(--spacing-medium);
+    @include time-range-buttons;
   }
 
   // 表格区域样式

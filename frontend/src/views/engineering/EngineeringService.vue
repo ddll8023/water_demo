@@ -5,7 +5,7 @@
     <PageHeader title="工程信息服务" icon="fa-wrench" description="水利工程设施和设备档案管理平台" />
 
     <!-- 功能选项卡 -->
-    <TabSection v-model="activeTab" :tabs="tabOptions" @tab-change="handleTabChange" />
+    <TabSection v-model="activeTab" :tabs="tabOptions" />
 
     <!-- Tab内容容器 -->
     <div class="tab-content-wrapper">
@@ -73,7 +73,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import FacilityManagement from '@/components/Engineering/FacilityManagement.vue'
 import * as engineeringApi from '@/api/engineering-service'
@@ -1143,40 +1143,6 @@ const disinfectionMaterialApi = {
 
 /**
  * ----------------------------------------
- * 工具方法
- * ----------------------------------------
- */
-// 标签页切换处理
-const handleTabChange = (tabName) => {
-  // 标签页切换处理
-}
-
-// 刷新当前标签页数据
-const refreshData = () => {
-  // 刷新当前标签页的数据
-  const currentRef = getCurrentRef()
-  if (currentRef && currentRef.value) {
-    currentRef.value.refreshData()
-  }
-}
-
-// 获取当前激活标签页的引用
-const getCurrentRef = () => {
-  const refMap = {
-    'pumping-stations': pumpingStationRef,
-    'monitoring-stations': monitoringStationRef,
-    'pipelines': pipelineRef,
-    'villages': villageRef,
-    'reservoirs': reservoirRef,
-    'water-plants': waterPlantRef,
-    'floating-boats': floatingBoatRef,
-    'disinfection-materials': disinfectionMaterialRef
-  }
-  return refMap[activeTab.value]
-}
-
-/**
- * ----------------------------------------
  * 生命周期钩子和初始化
  * ----------------------------------------
  */
@@ -1197,29 +1163,6 @@ const loadSelectOptions = async () => {
     const engineeringGrades = await getDictData('engineering_grade')
     const engineeringScales = await getDictData('engineering_scale')
     const deviceStatuses = await getDictData('device_status')
-
-    // 为水库和水厂类型创建更完整的选项
-    const reservoirTypes = [
-      { label: '大型水库', value: 'large_reservoir' },
-      { label: '中型水库', value: 'medium_reservoir' },
-      { label: '小型水库', value: 'small_reservoir' },
-      { label: '调节水库', value: 'regulating_reservoir' }
-    ]
-
-    const waterPlantTypes = [
-      { label: '地表水厂', value: 'surface_water_plant' },
-      { label: '地下水厂', value: 'groundwater_plant' },
-      { label: '净水厂', value: 'purification_plant' },
-      { label: '污水处理厂', value: 'wastewater_plant' }
-    ]
-
-    // 创建药材类型的临时数据（因为数据库中暂无专门的药材类型字典）
-    const materialTypes = [
-      { label: '混凝剂', value: 'coagulant' },
-      { label: '消毒剂', value: 'disinfectant' },
-      { label: '吸附剂', value: 'adsorbent' },
-      { label: 'pH调节剂', value: 'ph_adjuster' }
-    ]
 
     // 更新泵站配置中的options（只更新真正存在的字段）
     // 泵站搜索字段只有泵站名称，无需更新选项
@@ -1254,14 +1197,8 @@ const loadSelectOptions = async () => {
     updateFieldOptions(reservoirFormFields, 'engineeringGrade', engineeringGrades)
     updateFieldOptions(reservoirFormFields, 'engineeringScale', engineeringScales)
 
-    // 移除不存在字段的更新
-    // updateFieldOptions(waterPlantSearchFields, 'plantType', waterPlantTypes)
-
     // 更新浮船配置中的options（只更新存在的字段）
     updateFieldOptions(floatingBoatFormFields, 'pumpingStatus', deviceStatuses)
-
-    // 移除不存在字段的更新
-    // updateFieldOptions(disinfectionMaterialSearchFields, 'materialType', materialTypes)
 
     // 所有下拉选项数据加载完成
 
@@ -1275,14 +1212,32 @@ const loadSelectOptions = async () => {
 const updateFieldOptions = (fields, fieldProp, options) => {
   const field = fields.find(f => f.prop === fieldProp)
   if (field) {
-    // 使用 nextTick 确保在下一个更新周期中更新，避免递归更新
-    nextTick(() => {
-      if (field.options !== options) {
-        field.options = [...options]
-      }
-    })
+    field.options = [...options]
   } else {
     console.warn(`❌ 未找到字段 ${fieldProp}`)
+  }
+}
+
+/**
+ * ----------------------------------------
+ * 工具方法
+ * ----------------------------------------
+ */
+// 刷新当前标签页数据
+const refreshData = () => {
+  const refMap = {
+    'pumping-stations': pumpingStationRef,
+    'monitoring-stations': monitoringStationRef,
+    'pipelines': pipelineRef,
+    'villages': villageRef,
+    'reservoirs': reservoirRef,
+    'water-plants': waterPlantRef,
+    'floating-boats': floatingBoatRef,
+    'disinfection-materials': disinfectionMaterialRef
+  }
+  const currentRef = refMap[activeTab.value]
+  if (currentRef && currentRef.value) {
+    currentRef.value.refreshData()
   }
 }
 

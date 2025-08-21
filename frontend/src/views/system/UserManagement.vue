@@ -21,10 +21,10 @@
         <!-- 表格区域 -->
         <div class="table-section">
           <CommonTable :data="userList" :columns="tableColumns" :loading="loading" :show-index="true"
-            :show-toolbar="false" :actions-width="240" :actions-fixed="false">
+            :show-toolbar="false" :actions-width="240" :actions-fixed="false" @pagination-change="handlePaginationChange">
             <template #isActive="{ row }">
               <el-tag :type="row.isActive ? 'success' : 'danger'" size="small">
-                {{ getUserStatusLabel(row.isActive) }}
+                {{ userStatusOptions.find(opt => opt.value === row.isActive)?.label || (row.isActive === '1' ? '启用' : '禁用') }}
               </el-tag>
             </template>
 
@@ -66,17 +66,16 @@
             <div class="assignment-header">
               <div class="user-info">
                 <el-tag type="primary" size="large">{{ currentUserName }}</el-tag>
-                <span class="user-desc">{{ currentUserDepartment }}</span>
               </div>
               <div class="role-stats">
-                <span>{{ selectedRoles.length ? '已选择角色' : '请选择角色' }}</span>
+                <span>{{ selectedRoleId !== null ? '已选择角色' : '请选择角色' }}</span>
               </div>
             </div>
 
             <div class="assignment-content">
               <CommonTable :data="roleList" :columns="roleTableColumns" :show-toolbar="false" :show-selection="true"
                 :show-index="false" :show-actions="false" :show-pagination="false"
-                :selectable-function="isRoleSelectable" :select-mode="'radio'"
+                :selectable-function="(row) => row.isActive !== false" :select-mode="'radio'"
                 @selection-change="handleRoleSelectionChange">
                 <template #name="{ row }">
                   <div class="role-name">
@@ -158,9 +157,8 @@ const currentUser = ref({
 
 // 用户角色分配相关数据
 const roleList = ref([])
-const selectedRoles = ref([])
+const selectedRoleId = ref(null)
 const currentUserName = ref('')
-const currentUserDepartment = ref('')
 
 // 搜索表单
 const searchForm = reactive({
@@ -378,20 +376,8 @@ const handleResetSearch = (searchData = null) => {
   }
 }
 
-/**
- * 分页控制方法
- * -------------------------------------------------------
- */
-// 切换每页显示数量
-const handleSizeChange = (size) => {
-  pagination.pageSize = size
-  pagination.currentPage = 1
-  handleSearch()
-}
-
-// 切换当前页码
-const handleCurrentChange = (page) => {
-  pagination.currentPage = page
+// 处理分页变更
+const handlePaginationChange = () => {
   handleSearch()
 }
 
@@ -514,14 +500,11 @@ const handleDelete = async (row) => {
  */
 // 角色选择变更处理
 const handleRoleSelectionChange = (selection) => {
-  selectedRoles.value = selection
+  // 只获取第一个选中的角色ID，如果没有则设为null
+  selectedRoleId.value = selection.length > 0 ? selection[0].id : null
 }
 
-// 角色是否可选
-const isRoleSelectable = (row) => {
-  // 只有启用状态的角色才能被选择
-  return row.isActive !== false
-}
+
 
 // 角色分配确认
 const handleAssignRoleConfirm = async () => {
@@ -529,7 +512,7 @@ const handleAssignRoleConfirm = async () => {
     assignRoleLoading.value = true
 
     // 只获取第一个选中的角色ID，如果没有则设为null
-    const roleId = selectedRoles.value.length > 0 ? selectedRoles.value[0].id : null
+    const roleId = selectedRoleId.value
 
     if (!roleId) {
       ElMessage.warning('请选择一个角色')
@@ -554,10 +537,9 @@ const handleAssignRoleConfirm = async () => {
 const handleRoleDialogClose = () => {
   roleDialogVisible.value = false
   // 重置数据
-  selectedRoles.value = []
+  selectedRoleId.value = null
   roleList.value = []
   currentUserName.value = ''
-  currentUserDepartment.value = ''
 }
 
 /**
@@ -597,11 +579,7 @@ const loadUserStatusOptions = async () => {
  * 辅助与格式化方法
  * -------------------------------------------------------
  */
-// 获取用户状态显示标签
-const getUserStatusLabel = (isActive) => {
-  const option = userStatusOptions.value.find(opt => opt.value === isActive)
-  return option ? option.label : (isActive === '1' ? '启用' : '禁用')
-}
+
 
 /**
  * 生命周期钩子

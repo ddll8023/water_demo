@@ -51,77 +51,46 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
-
 import CustomButton from '@/components/Common/CustomButton.vue'
-// 使用Font Awesome图标，无需导入
 
-/**
- * ----------------------------------------
- * 组件状态和引用
- * ----------------------------------------
- */
-// 路由实例
 const router = useRouter()
-
-// 当前时间显示
 const currentTime = ref('')
+let timeInterval = null
 
-/**
- * ----------------------------------------
- * 页面导航方法
- * ----------------------------------------
- */
-// 返回首页
 const goHome = () => {
   router.push('/')
-  ElMessage.success('正在返回首页...')
 }
 
-// 返回上一页
 const goBack = () => {
   if (window.history.length > 1) {
     router.go(-1)
   } else {
     router.push('/')
   }
-  ElMessage.info('正在返回上一页...')
 }
 
-/**
- * ----------------------------------------
- * 工具方法
- * ----------------------------------------
- */
-// 更新当前时间显示
-const updateTime = () => {
-  currentTime.value = new Date().toLocaleString('zh-CN')
-}
-
-/**
- * ----------------------------------------
- * 生命周期钩子
- * ----------------------------------------
- */
-// 组件挂载后执行
 onMounted(() => {
-  // 初始化时间显示
+  const updateTime = () => {
+    currentTime.value = new Date().toLocaleString('zh-CN')
+  }
+
   updateTime()
-  // 每秒更新时间
-  setInterval(updateTime, 1000)
+  timeInterval = setInterval(updateTime, 1000)
+})
+
+onUnmounted(() => {
+  if (timeInterval) {
+    clearInterval(timeInterval)
+    timeInterval = null
+  }
 })
 </script>
 
 <style scoped lang="scss">
 @use "@/assets/styles/index.scss" as *;
 
-/**
- * ----------------------------------------
- * 404错误页面基础样式
- * ----------------------------------------
- */
 .error-page {
   min-height: 100vh;
   background: var(--bg-secondary);
@@ -133,9 +102,6 @@ onMounted(() => {
   position: relative;
   overflow: hidden;
 
-  /**
-   * 错误信息容器样式
-   */
   .error-container {
     max-width: 800px;
     width: 100%;
@@ -147,14 +113,10 @@ onMounted(() => {
     position: relative;
     z-index: 2;
 
-    /**
-     * 错误视觉元素样式
-     */
     .error-visual {
       margin-bottom: 40px;
       position: relative;
 
-      // 404错误代码样式
       .error-code {
         font-size: 120px;
         font-weight: 900;
@@ -168,20 +130,14 @@ onMounted(() => {
         background-clip: text;
       }
 
-      // 错误图标样式
       .error-icon {
         font-size: 80px;
         color: var(--primary-lighter);
-        opacity: var(--opacity-high);
+        opacity: 0.8;
       }
     }
 
-    /**
-     * 错误内容区域样式
-     */
     .error-content {
-
-      // 错误标题样式
       .error-title {
         font-size: 32px;
         color: var(--text-primary);
@@ -189,7 +145,6 @@ onMounted(() => {
         font-weight: var(--font-weight-semibold);
       }
 
-      // 错误描述样式
       .error-description {
         font-size: var(--font-size-medium);
         color: var(--text-secondary);
@@ -197,11 +152,10 @@ onMounted(() => {
         line-height: var(--line-height-large);
       }
 
-      // 可能原因区域样式
       .error-reasons {
         text-align: left;
         margin-bottom: 32px;
-        padding: var(--card-padding);
+        padding: var(--spacing-large);
         background: var(--bg-tertiary);
         border-radius: var(--border-radius-large);
 
@@ -224,7 +178,6 @@ onMounted(() => {
         }
       }
 
-      // 操作按钮区域样式
       .error-actions {
         margin-bottom: var(--spacing-large);
         @include flex-center;
@@ -234,11 +187,8 @@ onMounted(() => {
     }
   }
 
-  /**
-   * 页脚信息样式
-   */
   .error-footer {
-    margin-top: var(--spacing-40);
+    margin-top: var(--spacing-large);
     text-align: center;
     color: var(--text-secondary);
     font-size: var(--font-size-extra-small);
@@ -250,12 +200,6 @@ onMounted(() => {
   }
 }
 
-/**
- * ----------------------------------------
- * 响应式设计
- * ----------------------------------------
- */
-// 移动端适配
 @include respond-to(md) {
   .error-page {
     padding: 10px;

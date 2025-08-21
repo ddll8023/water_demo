@@ -82,7 +82,12 @@ import {
   getFlowChartData,
   exportFlowData
 } from '@/api/monitoring'
-import { formatLocalTimeForAPI, formatDateTime } from '@/utils/shared/common'
+import { formatDateTime } from '@/utils/shared/common'
+import {
+  processTimeRangeParams,
+  getCurrentTimeRange,
+  calculateQuickTimeRange
+} from '@/utils/monitoring/timeRange'
 
 // ============================================
 // 常量定义
@@ -309,7 +314,7 @@ const loadTableData = async () => {
   tableLoading.value = true
   try {
     // 获取当前有效的时间范围
-    const currentTimeRange = getCurrentTimeRange()
+    const currentTimeRange = getCurrentTimeRange({ searchForm, quickSearchTimeRange })
     const params = {
       page: pagination.currentPage,
       size: pagination.pageSize,
@@ -342,7 +347,7 @@ const loadChartData = async () => {
 
   try {
     // 获取当前有效的时间范围
-    const currentTimeRange = getCurrentTimeRange()
+    const currentTimeRange = getCurrentTimeRange({ searchForm, quickSearchTimeRange })
 
     // 构建API参数
     const item = flowMonitoringItems[currentChartIndex.value];
@@ -394,25 +399,7 @@ const handleSearch = () => {
   }
 }
 
-// 处理快捷按钮搜索
-const handleQuickSearch = (timeRange) => {
-  // 设置快捷搜索标记，防止监听器重置按钮状态
-  quickSearchTimeRange.value = timeRange
 
-  pagination.currentPage = 1
-  loadTableData()
-
-  // 标记已执行搜索
-  hasSearched.value = true
-
-  // 只有在选择了站点时才触发图表搜索
-  if (searchForm.value.stationId) {
-    chartSearchTriggered.value = true
-    loadChartData()
-  } else {
-    chartSearchTriggered.value = false
-  }
-}
 
 // 处理重置
 const handleReset = () => {
@@ -535,53 +522,9 @@ const handleImportSuccess = () => {
 // ============================================
 // 工具函数
 // ============================================
-// 处理时间范围参数
-const processTimeRangeParams = (timeRange) => {
-  if (!timeRange || !Array.isArray(timeRange) || timeRange.length !== 2) {
-    return {}
-  }
 
-  return {
-    startTime: formatLocalTimeForAPI(timeRange[0]),
-    endTime: formatLocalTimeForAPI(timeRange[1])
-  }
-}
 
-// 获取当前有效的时间范围
-const getCurrentTimeRange = () => {
-  // 如果是快捷搜索，使用快捷搜索的时间范围
-  if (quickSearchTimeRange.value) {
-    return quickSearchTimeRange.value
-  }
-  // 否则使用时间选择器的值
-  return searchForm.value.timeRange
-}
 
-// 计算快捷时间范围
-const calculateQuickTimeRange = (timeRangeType) => {
-  const now = new Date()
-  let startTime, endTime
-
-  switch (timeRangeType) {
-    case '7days':
-      // 最近7天
-      startTime = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-      endTime = now
-      break
-    case '30days':
-      // 最近30天
-      startTime = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
-      endTime = now
-      break
-    case 'all':
-      // 全部数据，返回空数组
-      return []
-    default:
-      return []
-  }
-
-  return [startTime, endTime]
-}
 
 // 时间范围切换处理
 const handleTimeRangeChange = (timeRangeType) => {
@@ -590,8 +533,22 @@ const handleTimeRangeChange = (timeRangeType) => {
   // 计算时间范围但不设置到时间选择器
   const timeRange = calculateQuickTimeRange(timeRangeType)
 
-  // 自动触发快捷搜索
-  handleQuickSearch(timeRange)
+  // 内联的快捷搜索逻辑
+  // 设置快捷搜索标记，防止监听器重置按钮状态
+  quickSearchTimeRange.value = timeRange
+  pagination.currentPage = 1
+  loadTableData()
+
+  // 标记已执行搜索
+  hasSearched.value = true
+
+  // 只有在选择了站点时才触发图表搜索
+  if (searchForm.value.stationId) {
+    chartSearchTriggered.value = true
+    loadChartData()
+  } else {
+    chartSearchTriggered.value = false
+  }
 }
 </script>
 
@@ -616,9 +573,7 @@ const handleTimeRangeChange = (timeRangeType) => {
   // 时间范围按钮组样式
   // ============================================
   .time-range-buttons {
-    display: flex;
-    gap: var(--spacing-small);
-    margin-right: var(--spacing-medium);
+    @include time-range-buttons;
   }
 
   // ============================================

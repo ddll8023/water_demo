@@ -54,7 +54,8 @@
       width="var(--panel-height-default)" :close-on-click-modal="false" @cancel="handleFormDialogClose"
       @confirm="handlePositionSubmit" :loading="submitLoading">
       <CommonForm ref="positionFormRef" v-model="positionForm" :items="formItems" :rules="positionFormRules"
-        label-width="100px" label-position="right" :show-actions="false" @update:modelValue="handleFormUpdate" />
+        label-width="100px" label-position="right" :show-actions="false"
+        @update:modelValue="(value) => Object.assign(positionForm, value)" />
     </CustomDialog>
 
   </div>
@@ -66,7 +67,6 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import CommonSearch from '@/components/Common/CommonSearch.vue'
 import CommonTable from '@/components/Common/CommonTable.vue'
 import CustomButton from '@/components/Common/CustomButton.vue'
-import CustomInput from '@/components/Common/CustomInput.vue'
 import CustomDialog from '@/components/Common/CustomDialog.vue'
 import CommonForm from '@/components/Common/CommonForm.vue'
 import CustomPagination from '@/components/Common/CustomPagination.vue'
@@ -90,8 +90,6 @@ const positionList = ref([])
 const formDialogVisible = ref(false)
 const currentPosition = ref({})
 const isEdit = ref(false)
-// 岗位级别选项 - 删除这一行
-// const levelOptions = ref([])
 
 // 搜索表单 - 符合设计规范
 const searchForm = reactive({
@@ -172,24 +170,7 @@ const loadPositionList = async () => {
   }
 }
 
-// 删除整个加载岗位级别字典数据函数
-// const loadLevelOptions = async () => {
-//   try {
-//     const response = await getDictDataByTypeCode('position_level')
-//     levelOptions.value = response.map(item => ({
-//       label: item.dataLabel,
-//       value: item.dataValue
-//     }))
-//   } catch (error) {
-//     console.error('加载岗位级别选项失败', error)
-//     // 设置默认选项，以防字典数据加载失败
-//     levelOptions.value = [
-//       { label: '初级', value: '初级' },
-//       { label: '中级', value: '中级' },
-//       { label: '高级', value: '高级' }
-//     ]
-//   }
-// }
+
 
 // 表单配置项
 const formItems = ref([
@@ -243,8 +224,6 @@ const formItems = ref([
 
 onMounted(() => {
   loadPositionList()
-  // 删除对loadLevelOptions的调用
-  // loadLevelOptions() // 加载岗位级别选项
 })
 
 // =============================================
@@ -340,16 +319,7 @@ const positionForm = reactive({
   level: ''
 })
 
-// 自定义验证规则
-const validateName = async (rule, value, callback) => {
-  if (!value) {
-    callback(new Error('请输入岗位名称'))
-    return
-  }
 
-  // 不再进行重复性检查，因为已在blur事件中处理
-  callback()
-}
 
 // 表单验证规则
 const positionFormRules = {
@@ -396,7 +366,17 @@ watch(
         positionFormRef.value?.clearValidate()
       })
     } else {
-      resetPositionForm()
+      // 重置表单
+      Object.assign(positionForm, {
+        name: '',
+        description: '',
+        responsibilities: '',
+        level: ''
+      })
+      // 确保清除验证状态
+      nextTick(() => {
+        positionFormRef.value?.clearValidate()
+      })
     }
   }
 )
@@ -405,39 +385,21 @@ watch(
 // 表单相关函数
 // =============================================
 
-// 重置表单
-const resetPositionForm = () => {
-  // 使用明确的空值重置所有表单字段
-  Object.assign(positionForm, {
-    name: '',
-    description: '',
-    responsibilities: '',
-    level: ''
-  })
 
-  // 确保清除验证状态
-  nextTick(() => {
-    positionFormRef.value?.clearValidate()
-  })
-}
 
-// 监听表单数据变化
-watch(
-  positionForm,
-  (newData) => {
-    // 表单数据变化监听
-  },
-  { deep: true }
-)
+
 
 // 关闭表单对话框
 const handleFormDialogClose = () => {
   formDialogVisible.value = false
 }
 
-// 获取最新表单数据并提交到API
-const submitFormToAPI = async () => {
+// 提交表单
+const handlePositionSubmit = async () => {
   try {
+    const valid = await positionFormRef.value.validate();
+    if (!valid) return;
+
     submitLoading.value = true;
 
     // 构建一个新的数据对象，避免引用问题
@@ -456,30 +418,12 @@ const submitFormToAPI = async () => {
       ElMessage.success('创建岗位成功');
     }
 
-    return true;
+    handleFormSuccess();
   } catch (error) {
     console.error('API提交错误:', error);
     ElMessage.error(isEdit.value ? '更新岗位失败' : '创建岗位失败');
-    return false;
   } finally {
     submitLoading.value = false;
-  }
-};
-
-// 提交表单
-const handlePositionSubmit = async () => {
-  try {
-    const valid = await positionFormRef.value.validate();
-    if (!valid) return;
-
-    // 调用独立的API提交方法
-    const success = await submitFormToAPI();
-    if (success) {
-      handleFormSuccess();
-    }
-  } catch (error) {
-    console.error('表单验证错误:', error);
-    ElMessage.error('表单验证失败，请检查表单填写是否正确');
   }
 };
 
@@ -489,11 +433,7 @@ const handleFormSuccess = () => {
   loadPositionList()
 }
 
-// 增强CommonForm组件的表单数据绑定
-const handleFormUpdate = (value) => {
-  // 当CommonForm的modelValue更新时，更新positionForm
-  Object.assign(positionForm, value)
-}
+
 
 
 

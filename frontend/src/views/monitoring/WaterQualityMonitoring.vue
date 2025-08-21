@@ -40,8 +40,7 @@
       <MonitoringChart :chart-data="chartData" :chart-items="waterQualityParameters" :active-index="currentChartIndex"
         :loading="chartLoading" :has-searched="hasSearched"
         :has-station="!!searchForm.stationId && chartSearchTriggered" title="水质监测数据"
-        @update:active-index="currentChartIndex = $event" @chart-initialized="handleChartInitialized"
-        @chart-zoom="handleChartZoom" @chart-pan="handleChartPan" @chart-reset="handleChartReset" />
+        @update:active-index="currentChartIndex = $event" @chart-initialized="handleChartInitialized" />
     </div>
 
     <!-- 数据表格区域 -->
@@ -79,7 +78,13 @@ import {
   getWaterQualityChartData,
   exportWaterQualityData
 } from '@/api/monitoring'
-import { formatLocalTimeForAPI, formatDateTime } from '@/utils/shared/common'
+import { formatDateTime } from '@/utils/shared/common'
+import {
+  processTimeRangeParams,
+  getCurrentTimeRange,
+  calculateQuickTimeRange,
+  handleQuickSearch as handleQuickSearchUtil
+} from '@/utils/monitoring/timeRange'
 
 // ======================================================
 // 基础数据与配置
@@ -238,73 +243,49 @@ const tableColumns = [
     prop: 'waterTemperature',
     label: '水温(℃)',
     width: 100,
-    formatter: (row) => {
-      const value = row.waterTemperature
-      return value !== null && value !== undefined ? `${Number(value).toFixed(3)}` : '-'
-    }
+    formatter: (row) => formatNumberValue(row.waterTemperature)
   },
   {
     prop: 'turbidity',
     label: '浊度(NTU)',
     width: 110,
-    formatter: (row) => {
-      const value = row.turbidity
-      return value !== null && value !== undefined ? `${Number(value).toFixed(3)}` : '-'
-    }
+    formatter: (row) => formatNumberValue(row.turbidity)
   },
   {
     prop: 'phValue',
     label: 'PH值',
     width: 100,
-    formatter: (row) => {
-      const value = row.phValue
-      return value !== null && value !== undefined ? `${Number(value).toFixed(3)}` : '-'
-    }
+    formatter: (row) => formatNumberValue(row.phValue)
   },
   {
     prop: 'conductivity',
     label: '电导率(uS/cm)',
     width: 130,
-    formatter: (row) => {
-      const value = row.conductivity
-      return value !== null && value !== undefined ? `${Number(value).toFixed(3)}` : '-'
-    }
+    formatter: (row) => formatNumberValue(row.conductivity)
   },
   {
     prop: 'dissolvedOxygen',
     label: '溶解氧(mg/L)',
     width: 130,
-    formatter: (row) => {
-      const value = row.dissolvedOxygen
-      return value !== null && value !== undefined ? `${Number(value).toFixed(3)}` : '-'
-    }
+    formatter: (row) => formatNumberValue(row.dissolvedOxygen)
   },
   {
     prop: 'ammoniaNitrogen',
     label: '氨氮(mg/L)',
     width: 120,
-    formatter: (row) => {
-      const value = row.ammoniaNitrogen
-      return value !== null && value !== undefined ? `${Number(value).toFixed(3)}` : '-'
-    }
+    formatter: (row) => formatNumberValue(row.ammoniaNitrogen)
   },
   {
     prop: 'codValue',
     label: '化学需氧量(mg/L)',
     width: 150,
-    formatter: (row) => {
-      const value = row.codValue
-      return value !== null && value !== undefined ? `${Number(value).toFixed(3)}` : '-'
-    }
+    formatter: (row) => formatNumberValue(row.codValue)
   },
   {
     prop: 'residualChlorine',
     label: '余氯(mg/L)',
     width: 120,
-    formatter: (row) => {
-      const value = row.residualChlorine
-      return value !== null && value !== undefined ? `${Number(value).toFixed(3)}` : '-'
-    }
+    formatter: (row) => formatNumberValue(row.residualChlorine)
   },
   {
     prop: 'dataQualityText',
@@ -381,64 +362,19 @@ const pagination = reactive({
 // 工具函数
 // ======================================================
 
+/**
+ * 数值格式化函数 - 统一处理表格中的数值显示
+ * @param {*} value - 要格式化的数值
+ * @param {number} digits - 保留小数位数，默认3位
+ * @returns {string} 格式化后的字符串
+ */
+const formatNumberValue = (value, digits = 3) => {
+  return value !== null && value !== undefined ? `${Number(value).toFixed(digits)}` : '-'
+}
+
 // 使用统一的时间格式化函数（从 common.js 导入）
 
-/**
- * 通用的时间范围参数处理函数
- * @param {Array} timeRange - 时间范围数组
- * @param {Object} options - 配置选项
- * @returns {Object} 处理后的参数对象
- */
-const processTimeRangeParams = (timeRange, options = {}) => {
-  const params = {};
 
-  if (timeRange && timeRange.length === 2) {
-    params.startTime = formatLocalTimeForAPI(timeRange[0]);
-    params.endTime = formatLocalTimeForAPI(timeRange[1]);
-  }
-
-  return params;
-};
-
-/**
- * 获取当前有效的时间范围
- */
-const getCurrentTimeRange = () => {
-  // 如果是快捷搜索，使用快捷搜索的时间范围
-  if (quickSearchTimeRange.value) {
-    return quickSearchTimeRange.value
-  }
-  // 否则使用时间选择器的值
-  return searchForm.value.timeRange
-}
-
-/**
- * 计算快捷时间范围
- */
-const calculateQuickTimeRange = (timeRangeType) => {
-  const now = new Date()
-  let startTime, endTime
-
-  switch (timeRangeType) {
-    case '7days':
-      // 最近7天
-      startTime = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-      endTime = now
-      break
-    case '30days':
-      // 最近30天
-      startTime = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
-      endTime = now
-      break
-    case 'all':
-      // 全部数据，返回空数组
-      return []
-    default:
-      return []
-  }
-
-  return [startTime, endTime]
-}
 
 // ======================================================
 // 数据加载函数
@@ -479,7 +415,7 @@ const loadTableData = async () => {
   tableLoading.value = true
   try {
     // 获取当前有效的时间范围
-    const currentTimeRange = getCurrentTimeRange()
+    const currentTimeRange = getCurrentTimeRange({ searchForm, quickSearchTimeRange })
     const params = {
       page: pagination.currentPage,
       size: pagination.pageSize,
@@ -513,7 +449,7 @@ const loadChartData = async () => {
   try {
     // 构建API参数
     const item = waterQualityParameters[currentChartIndex.value];
-    const currentTimeRange = getCurrentTimeRange()
+    const currentTimeRange = getCurrentTimeRange({ searchForm, quickSearchTimeRange })
     const params = {
       stationId: searchForm.value.stationId,
       monitoringItemCode: item.code,
@@ -574,12 +510,7 @@ const handleChartInitialized = () => {
   }
 }
 
-/**
- * 图表事件处理函数（简化版）
- */
-const handleChartZoom = () => { }
-const handleChartPan = () => { }
-const handleChartReset = () => { }
+
 
 // ======================================================
 // 用户交互事件处理函数
@@ -604,27 +535,7 @@ const handleSearch = () => {
   }
 }
 
-/**
- * 处理快捷按钮搜索
- */
-const handleQuickSearch = (timeRange) => {
-  // 设置快捷搜索标记，防止监听器重置按钮状态
-  quickSearchTimeRange.value = timeRange
 
-  pagination.currentPage = 1
-  loadTableData()
-
-  // 标记已执行搜索
-  hasSearched.value = true
-
-  // 只有在选择了站点时才触发图表搜索
-  if (searchForm.value.stationId) {
-    chartSearchTriggered.value = true
-    loadChartData()
-  } else {
-    chartSearchTriggered.value = false
-  }
-}
 
 /**
  * 时间范围切换处理
@@ -636,7 +547,16 @@ const handleTimeRangeChange = (timeRangeType) => {
   const timeRange = calculateQuickTimeRange(timeRangeType)
 
   // 自动触发快捷搜索
-  handleQuickSearch(timeRange)
+  handleQuickSearchUtil({
+    timeRange,
+    quickSearchTimeRange,
+    pagination,
+    loadTableData,
+    hasSearched,
+    searchForm,
+    chartSearchTriggered,
+    loadChartData
+  })
 }
 
 /**
@@ -776,21 +696,14 @@ onMounted(async () => {
 
     .table-content {
       padding: var(--spacing-md);
-      padding-bottom: 20px;
+      padding-bottom: var(--spacing-base);
     }
 
     // 响应式适配
-    @include respond-to(md) {
-      .table-content {
-        padding: var(--spacing-md);
-        padding-bottom: 20px;
-      }
-    }
-
     @include respond-to(sm) {
       .table-content {
         padding: var(--spacing-sm);
-        padding-bottom: 20px;
+        padding-bottom: var(--spacing-base);
       }
     }
   }
@@ -799,9 +712,7 @@ onMounted(async () => {
   // 时间范围按钮组样式
   // ============================================
   .time-range-buttons {
-    display: flex;
-    gap: var(--spacing-small);
-    margin-right: var(--spacing-medium);
+    @include time-range-buttons;
   }
 }
 </style>

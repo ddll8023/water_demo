@@ -100,7 +100,13 @@
 
     <!-- 字典类型编辑对话框 -->
     <CustomDialog v-model:visible="typeDialogVisible" :title="typeDialogTitle" width="500px" :loading="typeLoading"
-      @confirm="handleTypeSubmit" @cancel="handleTypeDialogClose" @close="handleTypeDialogClose">
+      @confirm="handleTypeSubmit" @cancel="() => {
+        Object.assign(typeForm, { id: null, typeName: '', typeCode: '', description: '', sortOrder: 0, isActive: true });
+        typeFormRef?.clearValidate();
+      }" @close="() => {
+        Object.assign(typeForm, { id: null, typeName: '', typeCode: '', description: '', sortOrder: 0, isActive: true });
+        typeFormRef?.clearValidate();
+      }">
       <el-form ref="typeFormRef" :model="typeForm" :rules="typeRules" label-width="100px">
         <el-form-item label="类型名称" prop="typeName">
           <CustomInput v-model="typeForm.typeName" placeholder="请输入类型名称" />
@@ -122,7 +128,13 @@
 
     <!-- 字典项编辑对话框 -->
     <CustomDialog v-model:visible="itemDialogVisible" :title="itemDialogTitle" width="500px" :loading="itemLoading"
-      @confirm="handleItemSubmit" @cancel="handleItemDialogClose" @close="handleItemDialogClose">
+      @confirm="handleItemSubmit" @cancel="() => {
+        Object.assign(itemForm, { id: null, typeId: null, dataLabel: '', dataValue: '', sortOrder: 0, isActive: true, description: '' });
+        itemFormRef?.clearValidate();
+      }" @close="() => {
+        Object.assign(itemForm, { id: null, typeId: null, dataLabel: '', dataValue: '', sortOrder: 0, isActive: true, description: '' });
+        itemFormRef?.clearValidate();
+      }">
       <el-form ref="itemFormRef" :model="itemForm" :rules="itemRules" label-width="100px">
         <el-form-item label="字典标签" prop="dataLabel">
           <CustomInput v-model="itemForm.dataLabel" placeholder="请输入字典标签" />
@@ -387,7 +399,15 @@ const handleTypeClick = (type) => {
  */
 const handleAddType = () => {
   typeDialogTitle.value = '新增字典类型'
-  resetTypeForm()
+  Object.assign(typeForm, {
+    id: null,
+    typeName: '',
+    typeCode: '',
+    description: '',
+    sortOrder: 0,
+    isActive: true
+  })
+  typeFormRef.value?.clearValidate()
   typeDialogVisible.value = true
 }
 
@@ -432,12 +452,7 @@ const handleDeleteType = async (type) => {
   }
 }
 
-/**
- * 处理类型对话框关闭事件
- */
-const handleTypeDialogClose = () => {
-  resetTypeForm()
-}
+
 
 /**
  * 处理类型表单提交事件
@@ -473,20 +488,7 @@ const handleTypeSubmit = async () => {
   }
 }
 
-/**
- * 重置类型表单
- */
-const resetTypeForm = () => {
-  Object.assign(typeForm, {
-    id: null,
-    typeName: '',
-    typeCode: '',
-    description: '',
-    sortOrder: 0,
-    isActive: true
-  })
-  typeFormRef.value?.clearValidate()
-}
+
 
 // ==============================================
 // 字典项处理方法
@@ -502,7 +504,16 @@ const handleAddItem = () => {
   }
 
   itemDialogTitle.value = '新增字典项'
-  resetItemForm()
+  Object.assign(itemForm, {
+    id: null,
+    typeId: null,
+    dataLabel: '',
+    dataValue: '',
+    sortOrder: 0,
+    isActive: true,
+    description: ''
+  })
+  itemFormRef.value?.clearValidate()
   itemForm.typeId = selectedType.value.id
   itemDialogVisible.value = true
 }
@@ -542,12 +553,7 @@ const handleDeleteItem = async (item) => {
   }
 }
 
-/**
- * 处理字典项对话框关闭事件
- */
-const handleItemDialogClose = () => {
-  resetItemForm()
-}
+
 
 /**
  * 处理字典项表单提交事件
@@ -583,21 +589,7 @@ const handleItemSubmit = async () => {
   }
 }
 
-/**
- * 重置字典项表单
- */
-const resetItemForm = () => {
-  Object.assign(itemForm, {
-    id: null,
-    typeId: null,
-    dataLabel: '',
-    dataValue: '',
-    sortOrder: 0,
-    isActive: true,
-    description: ''
-  })
-  itemFormRef.value?.clearValidate()
-}
+
 
 // ==============================================
 // 其他功能方法
@@ -662,8 +654,8 @@ const handleCurrentChange = (page) => {
     /* 字典类型列表样式 */
     .type-list {
       // 计算可用高度：总高度 - 卡片头部 - 内边距
-      max-height: calc(100vh - var(--page-min-height-offset) - 80px);
-      min-height: calc(var(--panel-height-default) - 80px);
+      max-height: calc(100vh - var(--page-min-height-offset) - var(--card-header-height) - var(--spacing-base));
+      min-height: calc(var(--panel-height-default) - var(--card-header-height) - var(--spacing-base));
       overflow-y: auto;
       @include custom-scrollbar();
 
@@ -683,7 +675,7 @@ const handleCurrentChange = (page) => {
 
         &.active {
           border-color: var(--primary-color);
-          background-color: #e6f7ff;
+          background-color: var(--primary-bg-light);
         }
 
         .type-info {

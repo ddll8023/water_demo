@@ -43,5 +43,5 @@ public class DepartmentUpdateDTO {
     /**
      * 部门是否启用
      */
-    private Boolean isActive;
+    private String isActive;
 }

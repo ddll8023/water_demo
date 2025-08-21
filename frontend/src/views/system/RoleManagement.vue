@@ -56,8 +56,7 @@
           <div class="permission-section">
             <div class="permission-tree">
               <el-tree ref="permissionTreeRef" :data="permissionTree" :props="treeProps" show-checkbox node-key="id"
-                :default-checked-keys="selectedPermissions" :default-expand-all="isExpandAll"
-                @check="handlePermissionCheck">
+                :default-checked-keys="selectedPermissions" @check="handlePermissionCheck">
                 <template #default="{ node, data }">
                   <div class="tree-node">
                     <i :class="getPermissionIcon(data.type)"></i>
@@ -101,7 +100,6 @@ const loading = ref(false)
 const saving = ref(false)
 const formDialogVisible = ref(false)
 const isEdit = ref(false)
-const isExpandAll = ref(true) // 控制是否展开全部节点
 
 // 数据存储
 const roleList = ref([])
@@ -345,7 +343,6 @@ const expandAll = () => {
   for (let nodeId in allNodes) {
     allNodes[nodeId].expanded = true
   }
-  isExpandAll.value = true
 }
 
 const getPermissionTypeColor = (type) => {
@@ -411,8 +408,6 @@ const handleAdd = async () => {
   await loadPermissionTree()
   // 清空已选择的权限
   selectedPermissions.value = []
-  // 设置为默认展开
-  isExpandAll.value = true
 }
 
 // 编辑角色
@@ -427,8 +422,6 @@ const handleEdit = async (row) => {
     await loadPermissionTree()
     // 加载角色权限
     await loadRolePermissions(currentRole.value.id)
-    // 设置为默认展开
-    isExpandAll.value = true
   } catch (error) {
     ElMessage.error('获取角色详情失败')
   }
@@ -615,7 +608,7 @@ onMounted(() => {
     background-color: var(--bg-tertiary);
 
     .permission-tree {
-      max-height: 400px;
+      max-height: var(--panel-content-min-height);
       overflow-y: auto;
       border: var(--border-width-thin) solid var(--border-color-light);
       border-radius: var(--border-radius-base);

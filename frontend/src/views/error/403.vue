@@ -64,14 +64,13 @@ const goBack = () => {
   }
 }
 
-// 时间处理模块
-const updateTime = () => {
-  const now = new Date()
-  currentTime.value = now.toLocaleString('zh-CN')
-}
-
 // 生命周期处理
 onMounted(() => {
+  const updateTime = () => {
+    const now = new Date()
+    currentTime.value = now.toLocaleString('zh-CN')
+  }
+
   updateTime()
   timeInterval = setInterval(updateTime, 1000)
 })
@@ -95,7 +94,7 @@ onUnmounted(() => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: var(--card-padding);
+  padding: var(--spacing-large);
   position: relative;
   overflow: hidden;
 
@@ -127,7 +126,7 @@ onUnmounted(() => {
       .error-icon {
         font-size: 80px;
         color: var(--danger-color);
-        opacity: var(--opacity-high);
+        opacity: 0.8;
       }
     }
 
