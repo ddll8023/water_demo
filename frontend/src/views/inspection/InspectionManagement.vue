@@ -135,7 +135,7 @@ const loadDictionaries = async () => {
 const loadPersonnelOptions = async () => {
     try {
         const response = await getPersonnelList({ page: 1, size: 1000 })
-        personnelOptions.value = response.list.map(p => ({
+        personnelOptions.value = response.items.map(p => ({
             label: p.fullName,
             value: p.id
         }))

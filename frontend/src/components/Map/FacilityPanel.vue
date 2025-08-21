@@ -13,7 +13,7 @@
                     <div :title="panelCollapsed ? '展开' : '折叠'">
                         <CustomButton type="secondary" size="small" shape="circle" :icon-only="true"
                             @click="togglePanelCollapse">
-                            <i class="fa" :class="panelCollapsed ? 'fa-chevron-down' : 'fa-chevron-up'"></i>
+                            <i class="fa fa-chevron-down collapse-icon" :class="{ 'collapsed': panelCollapsed }"></i>
                         </CustomButton>
                     </div>
                 </div>
@@ -595,17 +595,18 @@ const getItemLocation = (item) => {
     border: var(--border-width-thin) solid var(--white-transparent-base);
     overflow: hidden;
     @include user-select(none);
-    transition: box-shadow var(--transition-base) var(--transition-timing-function),
-        backdrop-filter var(--transition-base) var(--transition-timing-function),
-        transform var(--transition-base) var(--transition-timing-function),
-        width var(--transition-base) var(--transition-timing-function),
-        height var(--transition-base) var(--transition-timing-function);
+    transition: box-shadow var(--transition-base),
+        backdrop-filter var(--transition-base),
+        transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        height 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        border-radius var(--transition-fast);
     transform-origin: top left;
 
     &.dragging {
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        transition: box-shadow var(--transition-base) var(--transition-timing-function),
-            backdrop-filter var(--transition-base) var(--transition-timing-function);
+        transition: box-shadow var(--transition-fast),
+            backdrop-filter var(--transition-fast);
     }
 
     &.collapsed {
@@ -614,7 +615,7 @@ const getItemLocation = (item) => {
         min-width: auto;
         width: 48px;
         height: 48px;
-        transform: scale(0.95);
+        transform: scale(0.98);
     }
 
     .floating-panel-header {
@@ -623,7 +624,8 @@ const getItemLocation = (item) => {
         padding: 0;
         cursor: move;
         border-bottom: var(--border-width-thin) solid var(--white-transparent-light);
-        transition: background var(--transition-base) var(--transition-timing-function);
+        transition: background var(--transition-fast),
+            border-radius var(--transition-fast);
 
         &:hover {
             background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-light) 100%);
@@ -639,7 +641,7 @@ const getItemLocation = (item) => {
                 font-size: var(--font-size-base);
                 opacity: 0.8;
                 cursor: grab;
-                transition: opacity var(--transition-base) var(--transition-timing-function);
+                transition: var(--transition-opacity);
 
                 &:hover {
                     opacity: 1;
@@ -670,7 +672,7 @@ const getItemLocation = (item) => {
                     width: 32px !important;
                     height: 32px !important;
                     min-width: 32px !important;
-                    transition: background-color var(--transition-base) var(--transition-timing-function);
+                    transition: background-color var(--transition-fast);
 
                     &:hover:not(.custom-button--disabled):not(.custom-button--loading) {
                         background: var(--white-transparent-medium) !important;
@@ -684,6 +686,15 @@ const getItemLocation = (item) => {
                     i {
                         color: white !important;
                         font-size: var(--font-size-extra-small);
+                        transition: var(--transition-transform);
+
+                        &.collapse-icon {
+                            transform: rotate(0deg);
+
+                            &.collapsed {
+                                transform: rotate(180deg);
+                            }
+                        }
                     }
                 }
             }
@@ -693,7 +704,9 @@ const getItemLocation = (item) => {
     .floating-panel-content {
         height: calc(100% - 48px);
         overflow: hidden;
-        transition: all var(--transition-base) var(--transition-timing-function);
+        transition: opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+            transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+            max-height 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         max-height: 552px;
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -701,7 +714,7 @@ const getItemLocation = (item) => {
 
         &.content-hidden {
             opacity: 0;
-            transform: translateY(-10px) scale(0.95);
+            transform: translateY(-8px) scale(0.98);
             pointer-events: none;
             max-height: 0;
         }

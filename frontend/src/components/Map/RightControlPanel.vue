@@ -5,7 +5,7 @@
             <template v-if="panelVisible">
                 <i class="fa fa-list-ul header-icon"></i>
                 <span class="header-title">图例说明</span>
-                <i class="fa fa-angle-down toggle-icon" :class="{ expanded: panelVisible }"></i>
+                <i class="fa fa-angle-down toggle-icon" :class="{ 'collapsed': !panelVisible }"></i>
             </template>
             <!-- 收缩状态显示 -->
             <template v-else>
@@ -108,10 +108,14 @@ defineExpose({
     box-shadow: 0 8px 32px var(--black-transparent-medium);
     border: var(--border-width-thin) solid var(--white-transparent-base);
     z-index: var(--z-index-dropdown);
-    min-width: 320px;
-    max-width: 400px;
+    width: 320px;
     overflow: hidden;
-    transition: all var(--transition-base) var(--transition-ease);
+    transition: box-shadow var(--transition-base),
+        backdrop-filter var(--transition-base),
+        transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        height 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        border-radius 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     animation: glassPanelFadeIn var(--transition-base) var(--transition-ease);
     will-change: transform, opacity, box-shadow;
     transform-origin: top right;
@@ -119,37 +123,45 @@ defineExpose({
     &:hover {
         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
         backdrop-filter: blur(16px);
+        transform: translateY(-2px);
+    }
+
+    &.collapsed:hover {
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+        transform: scale(0.98) translateY(-2px);
     }
 
     &.collapsed {
-        min-width: auto;
         width: 48px;
         height: 48px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-        backdrop-filter: blur(8px);
-        transform: scale(0.9);
+        border-radius: var(--border-radius-xl);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+        backdrop-filter: blur(10px);
+        transform: scale(0.95);
 
         .panel-header {
-            background: rgba(248, 249, 250, 0.95);
-            backdrop-filter: blur(12px);
+            background: linear-gradient(135deg, rgba(248, 249, 250, 0.98), rgba(240, 242, 245, 0.95));
+            backdrop-filter: blur(16px);
             justify-content: center;
+            border-radius: var(--border-radius-xl);
+            border-bottom: none;
 
             .collapsed-icon {
                 margin: 0;
-                font-size: 24px;
+                font-size: 20px;
                 color: var(--primary-color);
-                transition: all var(--transition-base) var(--transition-ease);
+                transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
                 &:hover {
                     color: var(--primary-light);
-                    transform: scale(1.15) rotate(5deg);
+                    transform: scale(1.2) rotate(8deg);
                 }
             }
         }
 
         .panel-content {
             opacity: 0;
-            transform: translateY(-20px) scale(0.9);
+            transform: translateY(-12px) scale(0.9);
             pointer-events: none;
             max-height: 0;
         }
@@ -164,7 +176,11 @@ defineExpose({
         border-bottom: var(--border-width-thin) solid rgba(222, 226, 230, 0.6);
         cursor: pointer;
         position: relative;
-        transition: all var(--transition-base) var(--transition-ease);
+        transition: background 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+            backdrop-filter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+            transform var(--transition-fast),
+            border-radius 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+            border-bottom 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
         &:hover {
             background: rgba(240, 242, 245, 0.9);
@@ -179,7 +195,7 @@ defineExpose({
             color: var(--primary-color);
             font-size: var(--font-size-medium);
             margin-right: var(--spacing-sm);
-            transition: all var(--transition-base) var(--transition-ease);
+            transition: color var(--transition-fast), transform var(--transition-fast);
             transform-origin: center;
         }
 
@@ -188,31 +204,39 @@ defineExpose({
             font-weight: 600;
             color: var(--text-primary);
             font-size: var(--font-size-base);
-            transition: all var(--transition-base) var(--transition-ease);
+            transition: color var(--transition-fast);
         }
 
         .toggle-icon {
             color: var(--text-secondary);
             font-size: var(--font-size-base);
             margin-left: 8px;
-            transition: all var(--transition-base) var(--transition-ease);
+            transition: var(--transition-transform), color var(--transition-fast);
             transform-origin: center;
+            transform: rotate(0deg);
 
-            &.expanded {
+            &.collapsed {
                 transform: rotate(180deg);
                 color: var(--primary-color);
             }
 
             &:hover {
                 color: var(--primary-color);
-                transform: scale(1.1);
+                transform: scale(1.1) rotate(0deg);
+            }
+
+            &:hover.collapsed {
+                transform: scale(1.1) rotate(180deg);
             }
         }
     }
 
     .panel-content {
         padding: var(--spacing-base);
-        transition: all var(--transition-base) var(--transition-ease);
+        transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+            transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+            max-height 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+            padding 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         max-height: 600px;
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -220,10 +244,10 @@ defineExpose({
 
         &.content-hidden {
             opacity: 0;
-            transform: translateY(-20px) scale(0.9);
+            transform: translateY(-12px) scale(0.92);
             pointer-events: none;
             max-height: 0;
-            padding: 0 16px;
+            padding: 0 var(--spacing-base);
         }
 
         .control-group {
@@ -247,7 +271,7 @@ defineExpose({
             }
 
             .group-title {
-                font-size: var(--font-size-small);
+                font-size: var(--font-size-base);
                 color: var(--text-secondary);
                 font-weight: 600;
                 margin-bottom: var(--spacing-medium);
@@ -283,7 +307,7 @@ defineExpose({
                     border: var(--border-width-thin) solid var(--white-transparent-medium);
                     border-radius: var(--border-radius-large);
                     box-shadow: var(--shadow-card);
-                    font-size: var(--font-size-extra-small);
+                    font-size: var(--font-size-small);
                     transition: all var(--transition-base) var(--transition-ease);
                     cursor: pointer;
                     position: relative;
@@ -330,7 +354,7 @@ defineExpose({
                     span:last-child {
                         color: var(--text-primary);
                         font-weight: 500;
-                        font-size: var(--font-size-extra-small);
+                        font-size: var(--font-size-small);
                         line-height: 1.3;
                         transition: color var(--transition-base) var(--transition-ease);
                     }
@@ -383,12 +407,11 @@ defineExpose({
 // 响应式设计优化
 @media (max-width: 768px) {
     .right-control-panel {
-        min-width: 280px;
-        max-width: 320px;
+        width: 280px;
         right: 8px;
 
         &.collapsed {
-            min-width: 160px;
+            width: 48px;
         }
 
         .panel-content {
