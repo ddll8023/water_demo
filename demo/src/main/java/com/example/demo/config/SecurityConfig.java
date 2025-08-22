@@ -115,7 +115,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/auth/**").permitAll()
                 
                 // Knife4j API文档相关路径允许公开访问（方便开发和调试）
-                .antMatchers("/doc.html", "/webjars/**", "/swagger-resources/**", "/v2/api-docs").permitAll()
+                .antMatchers("/doc.html", "/webjars/**", "/swagger-resources/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
                 
                 // 静态资源允许公开访问
                 .antMatchers("/", "/static/**", "/uploads/**").permitAll()

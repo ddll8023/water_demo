@@ -24,11 +24,4 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowCredentials(true)
                 .maxAge(3600);
     }
-
-    @Override
-    public void addResourceHandlers(org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry) {
-        // 将本地 uploads/ 目录映射为 /uploads/** 便于前端直接访问图片
-        registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:uploads/");
-    }
 }
