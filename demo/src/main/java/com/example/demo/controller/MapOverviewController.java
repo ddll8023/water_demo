@@ -4,8 +4,6 @@ import com.example.demo.common.ApiResponse;
 import com.example.demo.dto.map.*;
 import com.example.demo.dto.warning.WarningRecordResponseDTO;
 import com.example.demo.service.MapOverviewService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,7 +26,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/map")
 @RequiredArgsConstructor
-@Tag(name = "一张图模块", description = "一张图模块相关接口")
 public class MapOverviewController {
 
     private final MapOverviewService mapOverviewService;
@@ -39,7 +36,6 @@ public class MapOverviewController {
      * @return "一张图"模块概览响应数据
      */
     @GetMapping("/overview")
-    @Operation(summary = "获取一张图概览数据", description = "获取一张图模块的所有数据，包括设施、管理体系、监测站点、预警信息和统计数据")
     @PreAuthorize("hasAuthority('business:operate')")
     public ResponseEntity<ApiResponse<MapOverviewResponseDTO>> getMapOverview() {
         MapOverviewResponseDTO result = mapOverviewService.getMapOverview();
@@ -52,7 +48,6 @@ public class MapOverviewController {
      * @return 设施地理位置列表
      */
     @GetMapping("/facilities")
-    @Operation(summary = "获取设施位置信息", description = "获取所有水利设施的地理位置和基本信息")
     @PreAuthorize("hasAuthority('business:operate')")
     public ResponseEntity<ApiResponse<List<FacilityLocationDTO>>> getAllFacilityLocations() {
         List<FacilityLocationDTO> result = mapOverviewService.getAllFacilityLocations();
@@ -65,7 +60,6 @@ public class MapOverviewController {
      * @return 管理体系信息列表
      */
     @GetMapping("/management-system")
-    @Operation(summary = "获取管理体系信息", description = "获取管理体系的部门、人员及其负责区域信息")
     @PreAuthorize("hasAuthority('business:operate')")
     public ResponseEntity<ApiResponse<List<ManagementSystemDTO>>> getManagementSystem() {
         List<ManagementSystemDTO> result = mapOverviewService.getManagementSystem();
@@ -78,7 +72,6 @@ public class MapOverviewController {
      * @return 监测站点信息列表
      */
     @GetMapping("/monitoring-stations")
-    @Operation(summary = "获取监测站点信息", description = "获取所有监测站点及其最新监测数据")
     @PreAuthorize("hasAuthority('business:operate')")
     public ResponseEntity<ApiResponse<List<MonitoringStationDTO>>> getMonitoringStationsWithLatestData() {
         List<MonitoringStationDTO> result = mapOverviewService.getMonitoringStationsWithLatestData();
@@ -91,7 +84,6 @@ public class MapOverviewController {
      * @return 预警信息列表
      */
     @GetMapping("/warnings")
-    @Operation(summary = "获取活跃预警信息", description = "获取当前状态为'进行中'的预警信息")
     @PreAuthorize("hasAuthority('business:operate')")
     public ResponseEntity<ApiResponse<List<WarningRecordResponseDTO>>> getActiveWarnings() {
         List<WarningRecordResponseDTO> result = mapOverviewService.getActiveWarnings();
@@ -104,7 +96,6 @@ public class MapOverviewController {
      * @return 统计数据
      */
     @GetMapping("/stats")
-    @Operation(summary = "获取统计数据", description = "获取设施、监测点、预警等基础数据的统计信息")
     @PreAuthorize("hasAuthority('business:operate')")
     public ResponseEntity<ApiResponse<WarningStatsDTO>> getWarningStats() {
         WarningStatsDTO result = mapOverviewService.getWarningStats();
