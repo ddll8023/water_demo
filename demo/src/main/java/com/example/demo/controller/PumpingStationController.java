@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import javax.validation.Valid;
 
 /**
@@ -26,6 +27,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/api/engineering-service/pumping-stations")
 @RequiredArgsConstructor
+@Api(tags = "泵站管理", description = "泵站相关的CRUD操作")
 public class PumpingStationController {
 
     /**
@@ -49,6 +51,7 @@ public class PumpingStationController {
      */
     @GetMapping
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "分页查询泵站列表", notes = "根据条件分页查询泵站信息")
     public ResponseEntity<ApiResponse<PageResponseDTO<PumpingStationResponseDTO>>> getPumpingStationPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -77,6 +80,7 @@ public class PumpingStationController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "查询泵站详情", notes = "根据ID查询泵站的详细信息")
     public ResponseEntity<ApiResponse<PumpingStationResponseDTO>> getPumpingStationById(
             @PathVariable Long id) {
         try {
@@ -103,6 +107,7 @@ public class PumpingStationController {
      */
     @PostMapping
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "创建泵站", notes = "创建新的泵站信息")
     public ResponseEntity<ApiResponse<PumpingStationResponseDTO>> createPumpingStation(
             @Valid @RequestBody PumpingStationCreateDTO createDTO) {
         try {
@@ -130,6 +135,7 @@ public class PumpingStationController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "更新泵站信息", notes = "根据ID更新泵站信息")
     public ResponseEntity<ApiResponse<PumpingStationResponseDTO>> updatePumpingStation(
             @PathVariable Long id,
             @Valid @RequestBody PumpingStationUpdateDTO updateDTO) {
@@ -158,6 +164,7 @@ public class PumpingStationController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "删除泵站", notes = "根据ID删除泵站信息（软删除）")
     public ResponseEntity<ApiResponse<Void>> deletePumpingStation(
             @PathVariable Long id) {
         try {

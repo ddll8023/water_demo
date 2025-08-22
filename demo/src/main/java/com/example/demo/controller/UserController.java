@@ -8,6 +8,8 @@ import com.example.demo.dto.common.PageResponseDTO;
 import com.example.demo.entity.system.Role;
 import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@Api(tags = "用户管理", description = "用户相关的CRUD操作、权限查询、状态管理等功能")
 public class UserController {
 
     /**
@@ -41,6 +44,7 @@ public class UserController {
      * @param isActive 按激活状态筛选
      * @return 分页的用户信息列表
      */
+    @ApiOperation(value = "分页查询用户列表", notes = "根据条件分页查询用户信息")
     @GetMapping
     @PreAuthorize("hasAuthority('system:manage')")
     public ResponseEntity<ApiResponse<PageResponseDTO<UserResponseDTO>>> getUsers(
@@ -65,6 +69,7 @@ public class UserController {
      * @param id 用户ID
      * @return 用户详细信息
      */
+    @ApiOperation(value = "查询用户详情", notes = "根据ID查询用户详细信息")
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('system:manage')")
     public ResponseEntity<ApiResponse<UserResponseDTO>> getUserById(
@@ -84,6 +89,7 @@ public class UserController {
      * @param createDTO 用户创建信息
      * @return 创建成功的用户信息
      */
+    @ApiOperation(value = "创建用户", notes = "创建新的用户信息")
     @PostMapping
     @PreAuthorize("hasAuthority('system:manage')")
     public ResponseEntity<ApiResponse<UserResponseDTO>> createUser(
@@ -104,6 +110,7 @@ public class UserController {
      * @param updateDTO 更新的用户信息
      * @return 更新后的用户信息
      */
+    @ApiOperation(value = "更新用户信息", notes = "根据ID更新用户信息")
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('system:manage')")
     public ResponseEntity<ApiResponse<UserResponseDTO>> updateUser(
@@ -124,6 +131,7 @@ public class UserController {
      * @param id 用户ID
      * @return 删除结果
      */
+    @ApiOperation(value = "删除用户", notes = "根据ID删除用户信息（软删除）")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('system:manage')")
     public ResponseEntity<ApiResponse<Void>> deleteUser(
@@ -143,6 +151,7 @@ public class UserController {
      * @param id 用户ID
      * @return 用户的角色列表
      */
+    @ApiOperation(value = "获取用户角色列表", notes = "查询指定用户已分配的所有角色")
     @GetMapping("/{id}/roles")
     @PreAuthorize("hasAuthority('system:manage')")
     public ResponseEntity<ApiResponse<List<Role>>> getUserRoles(
@@ -163,6 +172,7 @@ public class UserController {
      * @param roleIds 角色ID列表
      * @return 更新结果
      */
+    @ApiOperation(value = "为用户分配角色", notes = "更新指定用户的角色列表，会覆盖原有角色")
     @PutMapping("/{id}/roles")
     @PreAuthorize("hasAuthority('system:manage')")
     public ResponseEntity<ApiResponse<Void>> assignUserRoles(

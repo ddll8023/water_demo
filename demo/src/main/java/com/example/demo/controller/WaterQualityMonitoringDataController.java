@@ -12,7 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,6 +38,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/monitoring")
 @RequiredArgsConstructor
+@Api(tags = "水质监测数据管理", description = "水质监测数据的CRUD操作及相关统计功能")
 public class WaterQualityMonitoringDataController {
 
     private final WaterQualityMonitoringDataService waterQualityMonitoringDataService;
@@ -66,6 +68,7 @@ public class WaterQualityMonitoringDataController {
      */
     @GetMapping("/water-quality-data")
     @PreAuthorize("hasAuthority('business:operate')")
+    @ApiOperation(value = "分页查询水质监测数据", notes = "根据条件分页查询水质监测数据")
     public ResponseEntity<ApiResponse<PageResponseDTO<WaterQualityMonitoringDataResponseDTO>>> getWaterQualityMonitoringData(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -115,6 +118,7 @@ public class WaterQualityMonitoringDataController {
      */
     @GetMapping("/water-quality-chart-data")
     @PreAuthorize("hasAuthority('business:operate')")
+    @ApiOperation(value = "获取水质监测图表数据", notes = "根据站点ID和时间范围获取水质图表数据")
     public ResponseEntity<ApiResponse<WaterQualityChartDataResponseDTO>> getWaterQualityChartData(
             @RequestParam(required = false) Long stationId,
             @RequestParam String monitoringItemCode,
@@ -143,6 +147,7 @@ public class WaterQualityMonitoringDataController {
      */
     @PostMapping("/water-quality/export")
     @PreAuthorize("hasAuthority('business:operate')")
+    @ApiOperation(value = "导出水质监测数据", notes = "根据查询条件将水质监测数据导出为Excel文件")
     public ResponseEntity<byte[]> exportWaterQualityData(
             @RequestBody WaterQualityMonitoringDataQueryDTO queryDTO) {
         try {
@@ -211,6 +216,7 @@ public class WaterQualityMonitoringDataController {
      */
     @PostMapping("/water-quality/import")
     @PreAuthorize("hasAuthority('business:operate')")
+    @ApiOperation(value = "导入水质监测数据", notes = "批量导入Excel解析后的水质监测数据")
     public ResponseEntity<ApiResponse<ImportResultDTO>> importWaterQualityData(
             @RequestBody @Valid List<WaterQualityDataImportDTO> dataList) {
 

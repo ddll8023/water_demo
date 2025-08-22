@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 /**
  * "一张图"模块控制器
  * 提供"一张图"模块相关的API接口
@@ -26,6 +29,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/map")
 @RequiredArgsConstructor
+@Api(tags = "地图概览服务", description = "地图概览相关的数据查询操作")
 public class MapOverviewController {
 
     private final MapOverviewService mapOverviewService;
@@ -37,6 +41,7 @@ public class MapOverviewController {
      */
     @GetMapping("/overview")
     @PreAuthorize("hasAuthority('business:operate')")
+    @ApiOperation(value = "获取地图概览数据", notes = "返回一张图模块的概览数据")
     public ResponseEntity<ApiResponse<MapOverviewResponseDTO>> getMapOverview() {
         MapOverviewResponseDTO result = mapOverviewService.getMapOverview();
         return ResponseEntity.ok(ApiResponse.success("获取一张图概览数据成功", result));
@@ -49,6 +54,7 @@ public class MapOverviewController {
      */
     @GetMapping("/facilities")
     @PreAuthorize("hasAuthority('business:operate')")
+    @ApiOperation(value = "获取水利设施地理位置信息", notes = "返回所有水利设施的地理位置信息")
     public ResponseEntity<ApiResponse<List<FacilityLocationDTO>>> getAllFacilityLocations() {
         List<FacilityLocationDTO> result = mapOverviewService.getAllFacilityLocations();
         return ResponseEntity.ok(ApiResponse.success("获取设施位置信息成功", result));
@@ -61,6 +67,7 @@ public class MapOverviewController {
      */
     @GetMapping("/management-system")
     @PreAuthorize("hasAuthority('business:operate')")
+    @ApiOperation(value = "获取管理体系信息", notes = "返回管理体系信息，包括部门、人员及其负责区域")
     public ResponseEntity<ApiResponse<List<ManagementSystemDTO>>> getManagementSystem() {
         List<ManagementSystemDTO> result = mapOverviewService.getManagementSystem();
         return ResponseEntity.ok(ApiResponse.success("获取管理体系信息成功", result));
@@ -73,6 +80,7 @@ public class MapOverviewController {
      */
     @GetMapping("/monitoring-stations")
     @PreAuthorize("hasAuthority('business:operate')")
+    @ApiOperation(value = "获取监测站点信息", notes = "返回所有监测站点的最新数据")
     public ResponseEntity<ApiResponse<List<MonitoringStationDTO>>> getMonitoringStationsWithLatestData() {
         List<MonitoringStationDTO> result = mapOverviewService.getMonitoringStationsWithLatestData();
         return ResponseEntity.ok(ApiResponse.success("获取监测站点信息成功", result));
@@ -85,6 +93,7 @@ public class MapOverviewController {
      */
     @GetMapping("/warnings")
     @PreAuthorize("hasAuthority('business:operate')")
+    @ApiOperation(value = "获取活跃预警信息", notes = "返回当前活跃的预警信息")
     public ResponseEntity<ApiResponse<List<WarningRecordResponseDTO>>> getActiveWarnings() {
         List<WarningRecordResponseDTO> result = mapOverviewService.getActiveWarnings();
         return ResponseEntity.ok(ApiResponse.success("获取活跃预警信息成功", result));
@@ -97,6 +106,7 @@ public class MapOverviewController {
      */
     @GetMapping("/stats")
     @PreAuthorize("hasAuthority('business:operate')")
+    @ApiOperation(value = "获取统计数据", notes = "返回基础数据统计信息")
     public ResponseEntity<ApiResponse<WarningStatsDTO>> getWarningStats() {
         WarningStatsDTO result = mapOverviewService.getWarningStats();
         return ResponseEntity.ok(ApiResponse.success("获取统计数据成功", result));

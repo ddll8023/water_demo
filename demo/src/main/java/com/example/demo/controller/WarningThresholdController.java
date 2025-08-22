@@ -10,7 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/warning/thresholds")
 @RequiredArgsConstructor
+@Api(tags = "预警指标设定管理", description = "预警指标的CRUD操作及相关统计功能")
 public class WarningThresholdController {
 
     /**
@@ -54,6 +56,7 @@ public class WarningThresholdController {
      */
     @GetMapping
     @PreAuthorize("hasAuthority('business:operate')")
+    @ApiOperation(value = "分页查询预警指标列表", notes = "根据条件分页查询预警指标信息")
     public ResponseEntity<ApiResponse<PageResponseDTO<WarningThresholdResponseDTO>>> getWarningThresholds(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -76,6 +79,7 @@ public class WarningThresholdController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('business:operate')")
+    @ApiOperation(value = "查询预警指标详情", notes = "根据ID查询预警指标详细信息")
     public ResponseEntity<ApiResponse<WarningThresholdResponseDTO>> getWarningThresholdById(
             @PathVariable Long id) {
 
@@ -91,6 +95,7 @@ public class WarningThresholdController {
      */
     @PostMapping
     @PreAuthorize("hasAuthority('business:operate')")
+    @ApiOperation(value = "创建预警指标", notes = "创建新的预警指标信息")
     public ResponseEntity<ApiResponse<WarningThresholdResponseDTO>> createWarningThreshold(
             @Valid @RequestBody WarningThresholdCreateDTO createDTO) {
         try {
@@ -111,6 +116,7 @@ public class WarningThresholdController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('business:operate')")
+    @ApiOperation(value = "更新预警指标", notes = "根据ID更新预警指标信息")
     public ResponseEntity<ApiResponse<WarningThresholdResponseDTO>> updateWarningThreshold(
             @PathVariable Long id,
             @Valid @RequestBody WarningThresholdUpdateDTO updateDTO) {
@@ -132,6 +138,7 @@ public class WarningThresholdController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('business:operate')")
+    @ApiOperation(value = "删除预警指标", notes = "根据ID删除预警指标信息")
     public ResponseEntity<ApiResponse<Void>> deleteWarningThreshold(
             @PathVariable Long id) {
         try {
@@ -150,6 +157,7 @@ public class WarningThresholdController {
      */
     @GetMapping("/active")
     @PreAuthorize("hasAuthority('business:operate')")
+    @ApiOperation(value = "获取所有预警指标", notes = "获取系统中所有可用于选择预警指标列表")
     public ResponseEntity<ApiResponse<List<WarningThresholdResponseDTO>>> getAllWarningThresholds() {
         List<WarningThresholdResponseDTO> result = warningThresholdService.getAllActiveWarningThresholds();
         return ResponseEntity.ok(ApiResponse.success("查询成功", result));
@@ -168,6 +176,7 @@ public class WarningThresholdController {
      */
     @GetMapping("/statistics")
     @PreAuthorize("hasAuthority('business:operate')")
+    @ApiOperation(value = "获取预警指标统计信息", notes = "获取预警指标的统计数据")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getWarningThresholdStatistics() {
         Map<String, Object> statistics = new HashMap<>();
 
@@ -200,6 +209,7 @@ public class WarningThresholdController {
      */
     @GetMapping("/check-duplicate")
     @PreAuthorize("hasAuthority('business:operate')")
+    @ApiOperation(value = "检查测点和监测项组合是否存在", notes = "验证新增或修改预警指标时，指定的测点和监测项组合是否已存在")
     public ResponseEntity<ApiResponse<Map<String, Boolean>>> checkStationAndItemExists(
             @RequestParam String stationName,
             @RequestParam String monitoringItem,

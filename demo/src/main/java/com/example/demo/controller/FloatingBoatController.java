@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 /**
  * 浮船信息管理控制器
@@ -25,6 +27,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/engineering-service/floating-boats")
 @RequiredArgsConstructor
+@Api(tags = "浮船信息管理", description = "浮船信息相关的增删改查操作")
 public class FloatingBoatController {
 
     /**
@@ -43,6 +46,7 @@ public class FloatingBoatController {
      */
     @GetMapping
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "获取浮船信息分页数据", notes = "支持关键词搜索（浮船名称）和条件筛选（抽水状态）")
     public ResponseEntity<ApiResponse<PageResponseDTO<FloatingBoatResponseDTO>>> getFloatingBoatPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -71,6 +75,7 @@ public class FloatingBoatController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "获取浮船信息详情", notes = "根据ID查询浮船详细信息")
     public ResponseEntity<ApiResponse<FloatingBoatResponseDTO>> getFloatingBoatById(
             @PathVariable Long id) {
         try {
@@ -90,6 +95,7 @@ public class FloatingBoatController {
      */
     @PostMapping
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "创建浮船信息", notes = "创建新的浮船信息，需提供必要的浮船信息")
     public ResponseEntity<ApiResponse<FloatingBoatResponseDTO>> createFloatingBoat(
             @Valid @RequestBody FloatingBoatCreateDTO createDTO) {
         try {
@@ -110,6 +116,7 @@ public class FloatingBoatController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "更新浮船信息", notes = "根据ID更新浮船的信息")
     public ResponseEntity<ApiResponse<FloatingBoatResponseDTO>> updateFloatingBoat(
             @PathVariable Long id,
             @Valid @RequestBody FloatingBoatUpdateDTO updateDTO) {
@@ -131,6 +138,7 @@ public class FloatingBoatController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "删除浮船信息", notes = "根据ID删除浮船信息（软删除）")
     public ResponseEntity<ApiResponse<Void>> deleteFloatingBoat(
             @PathVariable Long id) {
         try {
@@ -150,6 +158,7 @@ public class FloatingBoatController {
      */
     @DeleteMapping("/batch")
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "批量删除浮船信息", notes = "根据ID列表批量删除多个浮船信息（软删除）")
     public ResponseEntity<ApiResponse<Void>> batchDeleteFloatingBoats(
             @RequestBody List<Long> ids) {
         try {
@@ -171,6 +180,7 @@ public class FloatingBoatController {
      */
     @GetMapping("/available")
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "获取所有可用浮船信息", notes = "获取所有可用的浮船信息列表，通常用于下拉选择框")
     public ResponseEntity<ApiResponse<List<FloatingBoat>>> getAvailableFloatingBoats() {
         try {
             List<FloatingBoat> result = floatingBoatService.getAvailableFloatingBoats();
@@ -188,6 +198,7 @@ public class FloatingBoatController {
      */
     @GetMapping("/count")
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "统计浮船信息总数", notes = "统计系统中浮船信息的总数量")
     public ResponseEntity<ApiResponse<Long>> countTotal() {
         try {
             long result = floatingBoatService.countTotal();

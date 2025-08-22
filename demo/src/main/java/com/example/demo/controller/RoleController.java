@@ -11,7 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/roles")
 @RequiredArgsConstructor
+@Api(tags = "角色管理", description = "角色相关的CRUD操作和权限分配")
 public class RoleController {
 
     private final RoleService roleService;
@@ -38,6 +40,7 @@ public class RoleController {
      * @param name 角色名称搜索，可选参数
      * @return 返回分页的角色列表数据
      */
+    @ApiOperation(value = "分页查询角色列表", notes = "根据条件分页查询角色信息")
     @GetMapping
     @PreAuthorize("hasAuthority('system:manage')")
     public ResponseEntity<ApiResponse<PageResponseDTO<RoleResponseDTO>>> getRoles(
@@ -59,6 +62,7 @@ public class RoleController {
      * @param id 角色ID
      * @return 返回角色的详细信息
      */
+    @ApiOperation(value = "查询角色详情", notes = "根据ID查询角色详细信息")
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('system:manage')")
     public ResponseEntity<ApiResponse<RoleResponseDTO>> getRoleById(
@@ -78,6 +82,7 @@ public class RoleController {
      * @param createDTO 角色创建数据传输对象，包含角色名称、编码、描述等信息
      * @return 返回创建成功的角色信息
      */
+    @ApiOperation(value = "创建角色", notes = "创建新的角色信息")
     @PostMapping
     @PreAuthorize("hasAuthority('system:manage')")
     public ResponseEntity<ApiResponse<RoleResponseDTO>> createRole(
@@ -98,6 +103,7 @@ public class RoleController {
      * @param updateDTO 角色更新数据传输对象，包含需要更新的角色信息
      * @return 返回更新后的角色信息
      */
+    @ApiOperation(value = "更新角色信息", notes = "根据ID更新角色信息")
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('system:manage')")
     public ResponseEntity<ApiResponse<RoleResponseDTO>> updateRole(
@@ -119,6 +125,7 @@ public class RoleController {
      * @param id 需要删除的角色ID
      * @return 返回删除操作结果
      */
+    @ApiOperation(value = "删除角色", notes = "根据ID删除角色信息（软删除）")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('system:manage')")
     public ResponseEntity<ApiResponse<Void>> deleteRole(
@@ -139,6 +146,7 @@ public class RoleController {
      * @param id 角色ID
      * @return 返回该角色拥有的权限列表
      */
+    @ApiOperation(value = "获取角色权限列表", notes = "查询指定角色已分配的所有权限")
     @GetMapping("/{id}/permissions")
     @PreAuthorize("hasAuthority('system:manage')")
     public ResponseEntity<ApiResponse<List<Permission>>> getRolePermissions(
@@ -160,6 +168,7 @@ public class RoleController {
      * @param permissionIds 需要分配的权限ID列表
      * @return 返回权限分配操作结果
      */
+    @ApiOperation(value = "为角色分配权限", notes = "更新指定角色的权限列表，会覆盖原有权限")
     @PutMapping("/{id}/permissions")
     @PreAuthorize("hasAuthority('system:manage')")
     public ResponseEntity<ApiResponse<Void>> assignPermissions(
@@ -180,6 +189,7 @@ public class RoleController {
      * 
      * @return 返回所有可用的角色列表
      */
+    @ApiOperation(value = "获取所有可用角色", notes = "获取系统中所有可用于选择的角色列表")
     @GetMapping("/available")
     @PreAuthorize("hasAuthority('system:manage')")
     public ResponseEntity<ApiResponse<List<RoleResponseDTO>>> getAllAvailableRoles() {
@@ -200,6 +210,7 @@ public class RoleController {
      * @param excludeId 在更新操作时，需要排除的角色ID
      * @return 返回包含available字段的Map，true表示名称可用，false表示已被使用
      */
+    @ApiOperation(value = "检查角色名称是否可用", notes = "验证角色名称是否已被使用")
     @GetMapping("/check-name")
     @PreAuthorize("hasAuthority('system:manage')")
     public ResponseEntity<ApiResponse<Map<String, Boolean>>> checkRoleNameAvailable(

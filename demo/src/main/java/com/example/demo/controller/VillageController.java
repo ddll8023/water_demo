@@ -12,7 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -26,6 +27,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/engineering-service/villages")
 @RequiredArgsConstructor
+@Api(tags = "村庄管理", description = "村庄相关的CRUD操作")
 public class VillageController {
 
     /**
@@ -44,6 +46,7 @@ public class VillageController {
      * @param keyword 搜索关键词（村庄名称）
      * @return 分页的村庄信息列表
      */
+    @ApiOperation(value = "分页查询村庄列表", notes = "根据条件分页查询村庄信息")
     @GetMapping
     @PreAuthorize("hasAuthority('business:manage')")
     public ResponseEntity<ApiResponse<PageResponseDTO<VillageResponseDTO>>> getVillagePage(
@@ -73,6 +76,7 @@ public class VillageController {
      * @param id 村庄信息ID
      * @return 村庄详细信息
      */
+    @ApiOperation(value = "查询村庄详情", notes = "根据ID查询村庄详细信息")
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('business:manage')")
     public ResponseEntity<ApiResponse<VillageResponseDTO>> getVillageById(
@@ -95,6 +99,7 @@ public class VillageController {
      * @param createDTO 创建村庄的数据传输对象
      * @return 创建成功后的村庄信息
      */
+    @ApiOperation(value = "创建村庄", notes = "创建新的村庄信息")
     @PostMapping
     @PreAuthorize("hasAuthority('business:manage')")
     public ResponseEntity<ApiResponse<VillageResponseDTO>> createVillage(
@@ -118,6 +123,7 @@ public class VillageController {
      * @param updateDTO 更新村庄的数据传输对象
      * @return 更新后的村庄信息
      */
+    @ApiOperation(value = "更新村庄信息", notes = "根据ID更新村庄信息")
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('business:manage')")
     public ResponseEntity<ApiResponse<VillageResponseDTO>> updateVillage(
@@ -142,6 +148,7 @@ public class VillageController {
      * @param id 村庄信息ID
      * @return 删除操作响应
      */
+    @ApiOperation(value = "删除村庄", notes = "根据ID删除村庄信息（软删除）")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('business:manage')")
     public ResponseEntity<ApiResponse<Void>> deleteVillage(
@@ -164,6 +171,7 @@ public class VillageController {
      * @param ids 村庄信息ID列表
      * @return 批量删除操作响应
      */
+    @ApiOperation(value = "批量删除村庄", notes = "根据ID列表批量删除村庄（软删除）")
     @DeleteMapping("/batch")
     @PreAuthorize("hasAuthority('business:manage')")
     public ResponseEntity<ApiResponse<Void>> batchDeleteVillages(
@@ -188,6 +196,7 @@ public class VillageController {
      *
      * @return 所有可用的村庄信息列表
      */
+    @ApiOperation(value = "获取所有可用村庄", notes = "获取系统中所有可用于选择村庄列表")
     @GetMapping("/available")
     @PreAuthorize("hasAuthority('business:manage')")
     public ResponseEntity<ApiResponse<List<Village>>> getAvailableVillages() {
@@ -208,6 +217,7 @@ public class VillageController {
      *
      * @return 村庄信息总数
      */
+    @ApiOperation(value = "统计村庄总数", notes = "统计系统中村庄的总数量")
     @GetMapping("/count")
     @PreAuthorize("hasAuthority('business:manage')")
     public ResponseEntity<ApiResponse<Long>> countTotal() {

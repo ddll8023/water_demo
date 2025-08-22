@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 /**
  * 工程信息服务总控制器
  * 
@@ -21,6 +24,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/engineering-service")
 @RequiredArgsConstructor
+@Api(tags = "工程信息服务", description = "工程信息服务相关接口，包括设施类型查询和映射信息")
 public class EngineeringServiceController {
 
     /**
@@ -32,6 +36,7 @@ public class EngineeringServiceController {
      */
     @GetMapping("/facility-types")
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "获取设施类型枚举", notes = "返回系统中所有可用的设施类型列表，包含类型值、标签、描述、实体类和API路径信息")
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getFacilityTypes() {
         try {
             List<Map<String, Object>> facilityTypes = new ArrayList<>();
@@ -124,6 +129,7 @@ public class EngineeringServiceController {
      */
     @GetMapping("/facility-type-map")
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "获取设施类型映射", notes = "返回设施类型的键值对映射，用于快速查询和显示")
     public ResponseEntity<ApiResponse<Map<String, String>>> getFacilityTypeMap() {
         try {
             Map<String, String> facilityTypeMap = new HashMap<>();

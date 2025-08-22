@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 /**
  * 消毒药材管理控制器
@@ -26,6 +28,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/engineering-service/disinfection-materials")
 @RequiredArgsConstructor
+@Api(tags = "消毒药材管理", description = "消毒药材相关的增删改查操作")
 public class DisinfectionMaterialController {
 
     /**
@@ -47,6 +50,7 @@ public class DisinfectionMaterialController {
      */
     @GetMapping
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "获取消毒药材分页数据", notes = "支持关键词搜索（药材名称）和条件筛选（所属水厂）")
     public ResponseEntity<ApiResponse<PageResponseDTO<DisinfectionMaterialResponseDTO>>> getDisinfectionMaterialPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -72,6 +76,7 @@ public class DisinfectionMaterialController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "获取消毒药材详情", notes = "根据ID查询消毒药材详细信息")
     public ResponseEntity<ApiResponse<DisinfectionMaterialResponseDTO>> getDisinfectionMaterialById(
             @PathVariable Long id) {
         try {
@@ -94,6 +99,7 @@ public class DisinfectionMaterialController {
      */
     @PostMapping
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "创建消毒药材", notes = "创建新的消毒药材信息，需提供必要的药材信息")
     public ResponseEntity<ApiResponse<DisinfectionMaterialResponseDTO>> createDisinfectionMaterial(
             @Valid @RequestBody DisinfectionMaterialCreateDTO createDTO) {
         try {
@@ -117,6 +123,7 @@ public class DisinfectionMaterialController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "更新消毒药材信息", notes = "根据ID更新消毒药材的信息")
     public ResponseEntity<ApiResponse<DisinfectionMaterialResponseDTO>> updateDisinfectionMaterial(
             @PathVariable Long id,
             @Valid @RequestBody DisinfectionMaterialUpdateDTO updateDTO) {
@@ -141,6 +148,7 @@ public class DisinfectionMaterialController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "删除消毒药材", notes = "根据ID删除消毒药材（软删除）")
     public ResponseEntity<ApiResponse<Void>> deleteDisinfectionMaterial(
             @PathVariable Long id) {
         try {
@@ -163,6 +171,7 @@ public class DisinfectionMaterialController {
      */
     @DeleteMapping("/batch")
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "批量删除消毒药材", notes = "根据ID列表批量删除多个消毒药材（软删除）")
     public ResponseEntity<ApiResponse<Void>> batchDeleteDisinfectionMaterials(
             @RequestBody List<Long> ids) {
         try {
@@ -187,6 +196,7 @@ public class DisinfectionMaterialController {
      */
     @GetMapping("/available")
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "获取所有可用消毒药材", notes = "获取所有可用的消毒药材列表，通常用于下拉选择框")
     public ResponseEntity<ApiResponse<List<DisinfectionMaterial>>> getAvailableDisinfectionMaterials() {
         try {
             List<DisinfectionMaterial> result = disinfectionMaterialService.getAvailableDisinfectionMaterials();
@@ -207,6 +217,7 @@ public class DisinfectionMaterialController {
      */
     @GetMapping("/count")
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "统计消毒药材总数", notes = "统计系统中消毒药材的总数量")
     public ResponseEntity<ApiResponse<Long>> countTotal() {
         try {
             long result = disinfectionMaterialService.countTotal();
@@ -227,6 +238,7 @@ public class DisinfectionMaterialController {
      */
     @GetMapping("/statistics")
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "获取库存统计信息", notes = "获取消毒药材的库存统计信息，包括总数、库存不足、即将过期等")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getStockStatistics() {
         try {
             Map<String, Object> result = disinfectionMaterialService.getStockStatistics();

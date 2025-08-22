@@ -9,7 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/engineering-service/water-plants")
 @RequiredArgsConstructor
+@Api(tags = "水厂管理", description = "水厂信息的CRUD操作及其他管理功能")
 public class WaterPlantController {
 
     /**
@@ -36,6 +38,7 @@ public class WaterPlantController {
      * @param keyword 搜索关键词（水厂名称）
      * @return 分页的水厂信息列表
      */
+    @ApiOperation(value = "分页查询水厂列表", notes = "根据条件分页查询水厂信息")
     @GetMapping
     @PreAuthorize("hasAuthority('business:manage')")
     public ResponseEntity<ApiResponse<PageResponseDTO<WaterPlantResponseDTO>>> getWaterPlantPage(
@@ -64,6 +67,7 @@ public class WaterPlantController {
      * @param id 水厂ID
      * @return 水厂详细信息
      */
+    @ApiOperation(value = "查询水厂详情", notes = "根据水厂ID查询详细信息")
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('business:manage')")
     public ResponseEntity<ApiResponse<WaterPlantResponseDTO>> getWaterPlantById(
@@ -89,6 +93,7 @@ public class WaterPlantController {
      * @param createDTO 水厂创建信息
      * @return 创建成功的水厂信息
      */
+    @ApiOperation(value = "创建水厂", notes = "创建新的水厂记录")
     @PostMapping
     @PreAuthorize("hasAuthority('business:manage')")
     public ResponseEntity<ApiResponse<WaterPlantResponseDTO>> createWaterPlant(
@@ -115,6 +120,7 @@ public class WaterPlantController {
      * @param updateDTO 水厂更新信息
      * @return 更新后的水厂信息
      */
+    @ApiOperation(value = "更新水厂信息", notes = "根据水厂ID更新水厂信息")
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('business:manage')")
     public ResponseEntity<ApiResponse<WaterPlantResponseDTO>> updateWaterPlant(
@@ -142,6 +148,7 @@ public class WaterPlantController {
      * @param id 水厂ID
      * @return 删除结果
      */
+    @ApiOperation(value = "删除水厂", notes = "根据水厂ID删除水厂记录")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('business:manage')")
     public ResponseEntity<ApiResponse<Void>> deleteWaterPlant(
@@ -167,6 +174,7 @@ public class WaterPlantController {
      * @param ids 水厂ID列表
      * @return 批量删除结果
      */
+    @ApiOperation(value = "批量删除水厂", notes = "根据水厂ID列表批量删除水厂记录")
     @DeleteMapping("/batch")
     @PreAuthorize("hasAuthority('business:manage')")
     public ResponseEntity<ApiResponse<Void>> batchDeleteWaterPlants(
@@ -191,6 +199,7 @@ public class WaterPlantController {
      * 
      * @return 可用水厂列表
      */
+    @ApiOperation(value = "获取可用水厂列表", notes = "获取所有可用的水厂列表")
     @GetMapping("/available")
     @PreAuthorize("hasAuthority('business:manage')")
     public ResponseEntity<ApiResponse<List<WaterPlant>>> getAvailableWaterPlants() {
@@ -210,6 +219,7 @@ public class WaterPlantController {
      * 
      * @return 水厂总数
      */
+    @ApiOperation(value = "统计水厂总数", notes = "统计系统中水厂的总数量")
     @GetMapping("/count")
     @PreAuthorize("hasAuthority('business:manage')")
     public ResponseEntity<ApiResponse<Long>> countTotal() {

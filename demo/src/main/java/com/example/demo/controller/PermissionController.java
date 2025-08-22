@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 /**
  * 权限管理控制器
  * 
@@ -26,6 +29,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/api/permissions")
+@Api(tags = "权限管理", description = "权限相关的CRUD操作")
 public class PermissionController {
 
     @Autowired
@@ -44,6 +48,7 @@ public class PermissionController {
      */
     @GetMapping
     @PreAuthorize("hasAuthority('system:manage')")
+    @ApiOperation(value = "分页查询权限列表", notes = "根据条件分页查询权限信息")
     public ResponseEntity<ApiResponse<PageResponseDTO<PermissionResponseDTO>>> getPermissions(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -69,6 +74,7 @@ public class PermissionController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('system:manage')")
+    @ApiOperation(value = "根据ID查询权限详情", notes = "根据ID查询权限详细信息")
     public ResponseEntity<ApiResponse<PermissionResponseDTO>> getPermissionById(
             @PathVariable Long id) {
         try {
@@ -90,6 +96,7 @@ public class PermissionController {
      */
     @GetMapping("/tree")
     @PreAuthorize("hasAuthority('system:manage')")
+    @ApiOperation(value = "获取权限树结构", notes = "获取完整的权限层级树结构")
     public ResponseEntity<ApiResponse<List<PermissionResponseDTO>>> getPermissionTree() {
         try {
             List<PermissionResponseDTO> tree = permissionService.getPermissionTree();
@@ -110,6 +117,7 @@ public class PermissionController {
      */
     @GetMapping("/menu-tree")
     @PreAuthorize("hasAuthority('data:view')")
+    @ApiOperation(value = "获取菜单权限树", notes = "获取仅包含菜单类型的权限树")
     public ResponseEntity<ApiResponse<List<PermissionResponseDTO>>> getMenuTree() {
         try {
             List<PermissionResponseDTO> menuTree = permissionService.getMenuTree();
@@ -130,6 +138,7 @@ public class PermissionController {
      */
     @GetMapping("/by-type")
     @PreAuthorize("hasAuthority('system:manage')")
+    @ApiOperation(value = "根据权限类型获取权限列表", notes = "根据权限类型获取权限列表")
     public ResponseEntity<ApiResponse<List<PermissionResponseDTO>>> getPermissionsByType(
             @RequestParam String type) {
         try {
@@ -150,6 +159,7 @@ public class PermissionController {
      */
     @GetMapping("/available")
     @PreAuthorize("hasAuthority('system:manage')")
+    @ApiOperation(value = "获取所有可用权限", notes = "获取系统中所有可用于分配的权限列表")
     public ResponseEntity<ApiResponse<List<PermissionResponseDTO>>> getAllAvailablePermissions() {
         try {
             List<PermissionResponseDTO> permissions = permissionService.getAllAvailablePermissions();
@@ -171,6 +181,7 @@ public class PermissionController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('system:manage')")
+    @ApiOperation(value = "删除权限", notes = "根据ID删除权限信息（软删除）")
     public ResponseEntity<ApiResponse<Void>> deletePermission(
             @PathVariable Long id) {
         try {
@@ -193,6 +204,7 @@ public class PermissionController {
      */
     @GetMapping("/check-code")
     @PreAuthorize("hasAuthority('system:manage')")
+    @ApiOperation(value = "检查权限编码是否可用", notes = "检查指定的权限编码是否已存在")
     public ResponseEntity<ApiResponse<Map<String, Boolean>>> checkPermissionCodeAvailable(
             @RequestParam String code,
             @RequestParam(required = false) Long excludeId) {

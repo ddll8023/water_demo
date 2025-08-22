@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
-
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 /**
  * 流量监测数据管理控制器
  * 处理流量监测数据的查询、统计和分析操作
@@ -26,6 +27,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/monitoring")
 @RequiredArgsConstructor
+@Api(tags = "流量监测数据管理", description = "流量监测数据相关的增删改查操作")
 public class FlowMonitoringDataController {
 
     /**
@@ -49,6 +51,7 @@ public class FlowMonitoringDataController {
      */
     @GetMapping("/flow-data")
     @PreAuthorize("hasAuthority('business:operate')")
+    @ApiOperation(value = "获取流量监测数据分页数据", notes = "支持按站点、时间范围、数据质量等条件筛选")
     public ResponseEntity<ApiResponse<PageResponseDTO<FlowMonitoringDataResponseDTO>>> getFlowMonitoringData(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -96,6 +99,7 @@ public class FlowMonitoringDataController {
      */
     @GetMapping("/flow-chart-data")
     @PreAuthorize("hasAuthority('business:operate')")
+    @ApiOperation(value = "获取流量监测图表数据", notes = "根据站点ID和时间范围获取流量图表数据")
     public ResponseEntity<ApiResponse<FlowChartDataResponseDTO>> getFlowChartData(
             @RequestParam(required = false) Long stationId,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
@@ -128,6 +132,7 @@ public class FlowMonitoringDataController {
      */
     @PostMapping("/flow-data/export")
     @PreAuthorize("hasAuthority('business:operate')")
+    @ApiOperation(value = "导出流量监测数据", notes = "根据查询条件将流量监测数据导出为Excel文件")
     public ResponseEntity<byte[]> exportFlowData(
             @RequestBody FlowMonitoringDataQueryDTO queryDTO) {
         try {
@@ -170,6 +175,7 @@ public class FlowMonitoringDataController {
      */
     @PostMapping("/flow-data/import")
     @PreAuthorize("hasAuthority('business:operate')")
+    @ApiOperation(value = "导入流量监测数据", notes = "批量导入Excel解析后的流量监测数据")
     public ResponseEntity<ApiResponse<ImportResultDTO>> importFlowData(
             @RequestBody @Valid List<FlowDataImportDTO> dataList) {
 

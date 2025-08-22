@@ -9,7 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -20,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/engineering-service/reservoirs")
 @RequiredArgsConstructor
+@Api(tags = "水库管理", description = "水库相关的CRUD操作")
 public class ReservoirController {
 
     /**
@@ -39,6 +41,7 @@ public class ReservoirController {
      */
     @GetMapping
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "分页查询水库列表", notes = "根据条件分页查询水库信息")
     public ResponseEntity<ApiResponse<PageResponseDTO<ReservoirResponseDTO>>> getReservoirPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -68,6 +71,7 @@ public class ReservoirController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "查询水库详情", notes = "根据ID查询水库详细信息")
     public ResponseEntity<ApiResponse<ReservoirResponseDTO>> getReservoirById(
             @PathVariable Long id) {
         try {
@@ -91,6 +95,7 @@ public class ReservoirController {
      */
     @PostMapping
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "创建水库", notes = "创建新的水库信息")
     public ResponseEntity<ApiResponse<ReservoirResponseDTO>> createReservoir(
             @Valid @RequestBody ReservoirCreateDTO createDTO) {
         try {
@@ -115,6 +120,7 @@ public class ReservoirController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "更新水库信息", notes = "根据ID更新水库信息")
     public ResponseEntity<ApiResponse<ReservoirResponseDTO>> updateReservoir(
             @PathVariable Long id,
             @Valid @RequestBody ReservoirUpdateDTO updateDTO) {
@@ -140,6 +146,7 @@ public class ReservoirController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "删除水库", notes = "根据ID删除水库信息（软删除）")
     public ResponseEntity<ApiResponse<Void>> deleteReservoir(
             @PathVariable Long id) {
         try {
@@ -163,6 +170,7 @@ public class ReservoirController {
      */
     @DeleteMapping("/batch")
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "批量删除水库", notes = "根据ID列表批量删除水库（软删除）")
     public ResponseEntity<ApiResponse<Void>> batchDeleteReservoirs(
             @RequestBody List<Long> ids) {
         try {
@@ -185,6 +193,7 @@ public class ReservoirController {
      */
     @GetMapping("/available")
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "获取所有可用水库", notes = "获取系统中所有可用于选择的水库列表")
     public ResponseEntity<ApiResponse<List<Reservoir>>> getAvailableReservoirs() {
         try {
             List<Reservoir> result = reservoirService.getAvailableReservoirs();
@@ -203,6 +212,7 @@ public class ReservoirController {
      */
     @GetMapping("/count")
     @PreAuthorize("hasAuthority('business:manage')")
+    @ApiOperation(value = "统计水库总数", notes = "统计系统中水库的总数量")
     public ResponseEntity<ApiResponse<Long>> countTotal() {
         try {
             long result = reservoirService.countTotal();
