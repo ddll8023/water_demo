@@ -114,8 +114,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 认证接口允许公开访问（用于登录、注册等功能）
                 .antMatchers("/api/auth/**").permitAll()
                 
-                // Swagger API文档相关路径允许公开访问（方便开发和调试）
-                .antMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html").permitAll()
+                // Knife4j API文档相关路径允许公开访问（方便开发和调试）
+                .antMatchers("/doc.html", "/webjars/**", "/swagger-resources/**", "/v2/api-docs").permitAll()
                 
                 // 静态资源允许公开访问
                 .antMatchers("/", "/static/**", "/uploads/**").permitAll()
