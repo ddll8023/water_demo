@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 /**
  * 管理信息服务控制�? * 
  * 该控制器处理工程运行管理中的基础信息档案管理，主要包括：
@@ -27,7 +27,7 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/api/management-info")
  // 统一权限控制
-@Api(tags = "管理信息服务", description = "人员和部门信息档案的CRUD操作")
+@Tag(name = "管理信息服务", description = "人员和部门信息档案的CRUD操作")
 public class ManagementInfoController {
 
     /**
@@ -47,7 +47,7 @@ public class ManagementInfoController {
      * @return 分页的人员信息列表
      */
     @GetMapping("/personnel")
-    @ApiOperation(value = "分页查询人员信息列表", notes = "支持按姓名、部门、岗位等条件筛选")
+    @Operation(summary = "分页查询人员信息列表", description = "支持按姓名、部门、岗位等条件筛选")
     public ResponseEntity<ApiResponse<PageResponseDTO<PersonnelInfoResponseDTO>>> getPersonnelList(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Long departmentId,
@@ -71,7 +71,7 @@ public class ManagementInfoController {
      * @return 创建成功的人员信息
      */
     @PostMapping("/personnel")
-    @ApiOperation(value = "创建人员信息", notes = "创建新的人员信息，需提供必要的个人信息")
+    @Operation(summary = "创建人员信息", description = "创建新的人员信息，需提供必要的个人信息")
     public ResponseEntity<ApiResponse<PersonnelInfoResponseDTO>> createPersonnel(
             @Valid @RequestBody PersonnelInfoCreateDTO createDTO) {
         try {
@@ -94,7 +94,7 @@ public class ManagementInfoController {
      * @return 更新后的人员信息
      */
     @PutMapping("/personnel/{id}")
-    @ApiOperation(value = "更新人员信息", notes = "根据ID更新人员的基本信息")
+    @Operation(summary = "更新人员信息", description = "根据ID更新人员的基本信息")
     public ResponseEntity<ApiResponse<PersonnelInfoResponseDTO>> updatePersonnel(
             @PathVariable Long id,
             @Valid @RequestBody PersonnelInfoUpdateDTO updateDTO) {
@@ -117,7 +117,7 @@ public class ManagementInfoController {
      * @return 删除操作结果
      */
     @DeleteMapping("/personnel/{id}")
-    @ApiOperation(value = "删除人员信息", notes = "根据ID删除人员信息（软删除）")
+    @Operation(summary = "删除人员信息", description = "根据ID删除人员信息（软删除）")
     public ResponseEntity<ApiResponse<Void>> deletePersonnel(
             @PathVariable Long id) {
         try {
@@ -139,7 +139,7 @@ public class ManagementInfoController {
      * @return 批量删除操作结果
      */
     @DeleteMapping("/personnel/batch")
-    @ApiOperation(value = "批量删除人员信息", notes = "根据ID列表批量删除多个人员信息（软删除）")
+    @Operation(summary = "批量删除人员信息", description = "根据ID列表批量删除多个人员信息（软删除）")
     public ResponseEntity<ApiResponse<Void>> batchDeletePersonnel(
             @RequestBody List<Long> ids) {
         try {
@@ -167,7 +167,7 @@ public class ManagementInfoController {
      * @return 部门树形结构，每个节点包含其子部门
      */
     @GetMapping("/departments/tree")
-    @ApiOperation(value = "获取部门树形结构", notes = "返回完整的部门层级结构，用于展示组织架构")
+    @Operation(summary = "获取部门树形结构", description = "返回完整的部门层级结构，用于展示组织架构")
     public ResponseEntity<ApiResponse<List<DepartmentInfoResponseDTO>>> getDepartmentTree() {
         try {
             // 获取部门的树形结构
@@ -188,7 +188,7 @@ public class ManagementInfoController {
      * @return 更新后的部门信息
      */
     @PutMapping("/departments/{id}")
-    @ApiOperation(value = "更新部门信息", notes = "根据ID更新部门的基本信息")
+    @Operation(summary = "更新部门信息", description = "根据ID更新部门的基本信息")
     public ResponseEntity<ApiResponse<DepartmentInfoResponseDTO>> updateDepartment(
             @PathVariable Long id,
             @Valid @RequestBody DepartmentInfoUpdateDTO updateDTO) {

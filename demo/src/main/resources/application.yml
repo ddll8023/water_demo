@@ -48,6 +48,12 @@ knife4j:
   enable: true
   production: false
 
+springdoc:
+  group-configs:
+    - group: "default"
+      paths-to-match: "/api/**"
+      packages-to-scan: com.example.demo.controller
+
 demo:
   jwt:
     # 设置jwt签名加密时使用的秘钥

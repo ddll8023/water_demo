@@ -13,12 +13,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
 @RequestMapping("/api/inspection")
-@Api(tags = "巡检管理", description = "巡检任务和记录相关的增删改查操作")
+@Tag(name = "巡检管理", description = "巡检任务和记录相关的增删改查操作")
 public class InspectionController {
 
     @Autowired
@@ -28,7 +28,7 @@ public class InspectionController {
 
     @GetMapping("/tasks")
     
-    @ApiOperation(value = "获取巡检任务分页数据", notes = "支持按任务状态、时间范围等条件筛选")
+    @Operation(summary = "获取巡检任务分页数据", description = "支持按任务状态、时间范围等条件筛选")
     public ResponseEntity<ApiResponse<PageResponseDTO<InspectionTaskResponseDTO>>> getTasks(
             @Valid InspectionTaskQueryDTO queryDTO) {
         try {
@@ -41,7 +41,7 @@ public class InspectionController {
 
     @GetMapping("/tasks/{id}")
     
-    @ApiOperation(value = "获取巡检任务详情", notes = "根据ID查询巡检任务详细信息")
+    @Operation(summary = "获取巡检任务详情", description = "根据ID查询巡检任务详细信息")
     public ResponseEntity<ApiResponse<InspectionTaskResponseDTO>> getTaskById(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(ApiResponse.success("查询成功", inspectionService.getTaskById(id)));
@@ -52,7 +52,7 @@ public class InspectionController {
 
     @PostMapping("/tasks")
     
-    @ApiOperation(value = "创建巡检任务", notes = "创建新的巡检任务，需提供必要的任务信息")
+    @Operation(summary = "创建巡检任务", description = "创建新的巡检任务，需提供必要的任务信息")
     public ResponseEntity<ApiResponse<InspectionTaskResponseDTO>> createTask(@Valid @RequestBody InspectionTaskCreateDTO createDTO) {
         try {
             return ResponseEntity.ok(ApiResponse.success("创建成功", inspectionService.createTask(createDTO)));
@@ -63,7 +63,7 @@ public class InspectionController {
 
     @PutMapping("/tasks/{id}")
     
-    @ApiOperation(value = "更新巡检任务信息", notes = "根据ID更新巡检任务的基本信息")
+    @Operation(summary = "更新巡检任务信息", description = "根据ID更新巡检任务的基本信息")
     public ResponseEntity<ApiResponse<InspectionTaskResponseDTO>> updateTask(@PathVariable Long id,
                                                                              @Valid @RequestBody InspectionTaskUpdateDTO updateDTO) {
         try {
@@ -76,7 +76,7 @@ public class InspectionController {
 
     @PatchMapping("/tasks/{id}/status")
     
-    @ApiOperation(value = "更新巡检任务状态", notes = "根据ID更新巡检任务的状态")
+    @Operation(summary = "更新巡检任务状态", description = "根据ID更新巡检任务的状态")
     public ResponseEntity<ApiResponse<Void>> updateTaskStatus(@PathVariable Long id, @RequestParam String status) {
         try {
             // 参数验证
@@ -93,7 +93,7 @@ public class InspectionController {
 
     @DeleteMapping("/tasks/{id}")
     
-    @ApiOperation(value = "删除巡检任务", notes = "根据ID删除巡检任务（软删除）")
+    @Operation(summary = "删除巡检任务", description = "根据ID删除巡检任务（软删除）")
     public ResponseEntity<ApiResponse<Void>> deleteTask(@PathVariable Long id) {
         try {
             inspectionService.deleteTask(id);
@@ -107,7 +107,7 @@ public class InspectionController {
 
     @GetMapping("/records")
     
-    @ApiOperation(value = "获取巡检记录分页数据", notes = "支持按任务、时间范围等条件筛选")
+    @Operation(summary = "获取巡检记录分页数据", description = "支持按任务、时间范围等条件筛选")
     public ResponseEntity<ApiResponse<PageResponseDTO<InspectionRecordResponseDTO>>> getRecords(@Valid InspectionRecordQueryDTO queryDTO) {
         try {
             PageResponseDTO<InspectionRecordResponseDTO> result = inspectionService.getRecordPage(queryDTO);
@@ -119,7 +119,7 @@ public class InspectionController {
 
     @GetMapping("/records/{id}")
     
-    @ApiOperation(value = "获取巡检记录详情", notes = "根据ID查询巡检记录详细信息")
+    @Operation(summary = "获取巡检记录详情", description = "根据ID查询巡检记录详细信息")
     public ResponseEntity<ApiResponse<InspectionRecordResponseDTO>> getRecordById(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(ApiResponse.success("查询成功", inspectionService.getRecordById(id)));
@@ -130,7 +130,7 @@ public class InspectionController {
 
     @GetMapping("/records/{id}/attachments")
     
-    @ApiOperation(value = "获取巡检记录附件", notes = "根据记录ID获取关联的附件列表")
+    @Operation(summary = "获取巡检记录附件", description = "根据记录ID获取关联的附件列表")
     public ResponseEntity<ApiResponse<List<InspectionAttachment>>> getRecordAttachments(@PathVariable("id") Long recordId) {
         try {
             return ResponseEntity.ok(ApiResponse.success("查询成功", inspectionService.getRecordAttachments(recordId)));
@@ -141,7 +141,7 @@ public class InspectionController {
 
     @PostMapping(value = "/records", consumes = {"multipart/form-data"})
     
-    @ApiOperation(value = "创建巡检记录", notes = "创建新的巡检记录，需提供必要的记录信息和附件")
+        @Operation(summary = "创建巡检记录", description = "创建新的巡检记录，需提供必要的记录信息和附件")
     public ResponseEntity<ApiResponse<InspectionRecordResponseDTO>> createRecord(
             @Valid @RequestPart("data") InspectionRecordCreateDTO createDTO,
             @RequestPart(value = "files", required = false) MultipartFile[] files) {
@@ -156,7 +156,7 @@ public class InspectionController {
     // 新增：再次处理接口（使用请求参数保持与前端一致）
     @PatchMapping("/records/{id}/resolve")
     
-    @ApiOperation(value = "处理巡检记录", notes = "根据ID处理巡检记录，支持指定处理结果")
+    @Operation(summary = "处理巡检记录", description = "根据ID处理巡检记录，支持指定处理结果")
     public ResponseEntity<ApiResponse<Void>> resolveRecord(@PathVariable Long id, @RequestParam String resolution) {
         try {
             inspectionService.resolveRecord(id, resolution);

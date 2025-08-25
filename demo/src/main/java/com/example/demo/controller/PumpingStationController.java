@@ -9,8 +9,8 @@ import com.example.demo.service.PumpingStationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import javax.validation.Valid;
 
 /**
@@ -25,7 +25,7 @@ import javax.validation.Valid;
  */
 @RestController
 @RequestMapping("/api/engineering-service/pumping-stations")
-@Api(tags = "泵站管理", description = "泵站相关的CRUD操作")
+@Tag(name = "泵站管理", description = "泵站相关的CRUD操作")
 public class PumpingStationController {
 
     /**
@@ -50,7 +50,7 @@ public class PumpingStationController {
      */
     @GetMapping
     
-    @ApiOperation(value = "分页查询泵站列表", notes = "根据条件分页查询泵站信息")
+    @Operation(summary = "分页查询泵站列表", description = "根据条件分页查询泵站信息")
     public ResponseEntity<ApiResponse<PageResponseDTO<PumpingStationResponseDTO>>> getPumpingStationPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -79,7 +79,7 @@ public class PumpingStationController {
      */
     @GetMapping("/{id}")
     
-    @ApiOperation(value = "查询泵站详情", notes = "根据ID查询泵站的详细信息")
+    @Operation(summary = "查询泵站详情", description = "根据ID查询泵站的详细信息")
     public ResponseEntity<ApiResponse<PumpingStationResponseDTO>> getPumpingStationById(
             @PathVariable Long id) {
         try {
@@ -106,7 +106,7 @@ public class PumpingStationController {
      */
     @PostMapping
     
-    @ApiOperation(value = "创建泵站", notes = "创建新的泵站信息")
+    @Operation(summary = "创建泵站", description = "创建新的泵站信息")
     public ResponseEntity<ApiResponse<PumpingStationResponseDTO>> createPumpingStation(
             @Valid @RequestBody PumpingStationCreateDTO createDTO) {
         try {
@@ -134,7 +134,7 @@ public class PumpingStationController {
      */
     @PutMapping("/{id}")
     
-    @ApiOperation(value = "更新泵站信息", notes = "根据ID更新泵站信息")
+    @Operation(summary = "更新泵站信息", description = "根据ID更新泵站信息")
     public ResponseEntity<ApiResponse<PumpingStationResponseDTO>> updatePumpingStation(
             @PathVariable Long id,
             @Valid @RequestBody PumpingStationUpdateDTO updateDTO) {
@@ -163,7 +163,7 @@ public class PumpingStationController {
      */
     @DeleteMapping("/{id}")
     
-    @ApiOperation(value = "删除泵站", notes = "根据ID删除泵站信息（软删除）")
+        @Operation(summary = "删除泵站", description = "根据ID删除泵站信息（软删除）")
     public ResponseEntity<ApiResponse<Void>> deletePumpingStation(
             @PathVariable Long id) {
         try {

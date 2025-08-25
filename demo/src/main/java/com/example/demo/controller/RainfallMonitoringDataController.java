@@ -21,8 +21,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 
 /**
  * 雨情监测数据管理控制器
@@ -37,7 +37,7 @@ import io.swagger.annotations.ApiOperation;
 @Slf4j
 @RestController
 @RequestMapping("/api/monitoring")
-@Api(tags = "雨情监测数据管理", description = "雨情监测数据相关的增删改查操作")
+@Tag(name = "雨情监测数据管理", description = "雨情监测数据相关的增删改查操作")
 public class RainfallMonitoringDataController {
 
     /**
@@ -62,7 +62,7 @@ public class RainfallMonitoringDataController {
      */
     @GetMapping("/rainfall-data")
     
-    @ApiOperation(value = "分页查询雨情监测数据", notes = "支持按站点、时间范围、数据质量等条件筛选")
+    @Operation(summary = "分页查询雨情监测数据", description = "支持按站点、时间范围、数据质量等条件筛选")
     public ResponseEntity<ApiResponse<PageResponseDTO<RainfallMonitoringDataResponseDTO>>> getRainfallMonitoringData(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -109,7 +109,7 @@ public class RainfallMonitoringDataController {
      */
     @GetMapping("/rainfall-chart-data")
     
-    @ApiOperation(value = "获取雨情监测图表数据", notes = "根据站点ID和时间范围获取雨情图表数据")
+    @Operation(summary = "获取雨情监测图表数据", description = "根据站点ID和时间范围获取雨情图表数据")
     public ResponseEntity<ApiResponse<RainfallChartDataResponseDTO>> getRainfallChartData(
             @RequestParam(required = false) Long stationId,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
@@ -142,7 +142,7 @@ public class RainfallMonitoringDataController {
      */
     @PostMapping("/rainfall/export")
     
-    @ApiOperation(value = "导出雨情监测数据", notes = "根据查询条件将雨情监测数据导出为Excel文件")
+    @Operation(summary = "导出雨情监测数据", description = "根据查询条件将雨情监测数据导出为Excel文件")
     public ResponseEntity<byte[]> exportRainfallData(
             @RequestBody RainfallMonitoringDataQueryDTO queryDTO) {
         try {
@@ -187,7 +187,7 @@ public class RainfallMonitoringDataController {
      */
     @PostMapping("/rainfall-data/import")
     
-    @ApiOperation(value = "导入雨情监测数据", notes = "批量导入Excel解析后的雨情监测数据")
+        @Operation(summary = "导入雨情监测数据", description = "批量导入Excel解析后的雨情监测数据")
     public ResponseEntity<ApiResponse<Map<String, Object>>> importRainfallData(
             @RequestParam Long stationId,
             @Valid @RequestBody List<RainfallDataImportDTO> dataList) {

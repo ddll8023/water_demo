@@ -10,8 +10,8 @@ import com.example.demo.service.WarningThresholdService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;  
 import org.springframework.web.bind.annotation.*;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/api/warning/thresholds")
-@Api(tags = "预警指标设定管理", description = "预警指标的CRUD操作及相关统计功能")
+@Tag(name = "预警指标设定管理", description = "预警指标的CRUD操作及相关统计功能")
 public class WarningThresholdController {
 
     /**
@@ -54,7 +54,7 @@ public class WarningThresholdController {
      */
     @GetMapping
     
-    @ApiOperation(value = "分页查询预警指标列表", notes = "根据条件分页查询预警指标信息")
+    @Operation(summary = "分页查询预警指标列表", description = "根据条件分页查询预警指标信息")
     public ResponseEntity<ApiResponse<PageResponseDTO<WarningThresholdResponseDTO>>> getWarningThresholds(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -77,7 +77,7 @@ public class WarningThresholdController {
      */
     @GetMapping("/{id}")
     
-    @ApiOperation(value = "查询预警指标详情", notes = "根据ID查询预警指标详细信息")
+    @Operation(summary = "查询预警指标详情", description = "根据ID查询预警指标详细信息")
     public ResponseEntity<ApiResponse<WarningThresholdResponseDTO>> getWarningThresholdById(
             @PathVariable Long id) {
 
@@ -93,7 +93,7 @@ public class WarningThresholdController {
      */
     @PostMapping
     
-    @ApiOperation(value = "创建预警指标", notes = "创建新的预警指标信息")
+    @Operation(summary = "创建预警指标", description = "创建新的预警指标信息")
     public ResponseEntity<ApiResponse<WarningThresholdResponseDTO>> createWarningThreshold(
             @Valid @RequestBody WarningThresholdCreateDTO createDTO) {
         try {
@@ -114,7 +114,7 @@ public class WarningThresholdController {
      */
     @PutMapping("/{id}")
     
-    @ApiOperation(value = "更新预警指标", notes = "根据ID更新预警指标信息")
+    @Operation(summary = "更新预警指标", description = "根据ID更新预警指标信息")
     public ResponseEntity<ApiResponse<WarningThresholdResponseDTO>> updateWarningThreshold(
             @PathVariable Long id,
             @Valid @RequestBody WarningThresholdUpdateDTO updateDTO) {
@@ -136,7 +136,7 @@ public class WarningThresholdController {
      */
     @DeleteMapping("/{id}")
     
-    @ApiOperation(value = "删除预警指标", notes = "根据ID删除预警指标信息")
+    @Operation(summary = "删除预警指标", description = "根据ID删除预警指标信息")
     public ResponseEntity<ApiResponse<Void>> deleteWarningThreshold(
             @PathVariable Long id) {
         try {
@@ -155,7 +155,7 @@ public class WarningThresholdController {
      */
     @GetMapping("/active")
     
-    @ApiOperation(value = "获取所有预警指标", notes = "获取系统中所有可用于选择预警指标列表")
+    @Operation(summary = "获取所有预警指标", description = "获取系统中所有可用于选择预警指标列表")
     public ResponseEntity<ApiResponse<List<WarningThresholdResponseDTO>>> getAllWarningThresholds() {
         List<WarningThresholdResponseDTO> result = warningThresholdService.getAllActiveWarningThresholds();
         return ResponseEntity.ok(ApiResponse.success("查询成功", result));
@@ -174,7 +174,7 @@ public class WarningThresholdController {
      */
     @GetMapping("/statistics")
     
-    @ApiOperation(value = "获取预警指标统计信息", notes = "获取预警指标的统计数据")
+    @Operation(summary = "获取预警指标统计信息", description = "获取预警指标的统计数据")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getWarningThresholdStatistics() {
         Map<String, Object> statistics = new HashMap<>();
 
@@ -207,7 +207,7 @@ public class WarningThresholdController {
      */
     @GetMapping("/check-duplicate")
     
-    @ApiOperation(value = "检查测点和监测项组合是否存在", notes = "验证新增或修改预警指标时，指定的测点和监测项组合是否已存在")
+        @Operation(summary = "检查测点和监测项组合是否存在", description = "验证新增或修改预警指标时，指定的测点和监测项组合是否已存在")
     public ResponseEntity<ApiResponse<Map<String, Boolean>>> checkStationAndItemExists(
             @RequestParam String stationName,
             @RequestParam String monitoringItem,

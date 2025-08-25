@@ -16,15 +16,24 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
+ * 认证管理控制器
  * 
+ * 提供用户登录、登出、令牌管理等认证相关接口
+ * 
+ * 包括：
+ * - 用户登录
+ * - 用户登出
+ * - 获取当前用户信息
+ * - 刷新Token
+ * - 验证Token
  */
 @RestController
 @RequestMapping("/api/auth")
-@Api(tags = "认证管理", description = "用户登录、登出、令牌管理等认证相关接口")
+@Tag(name = "认证管理", description = "用户登录、登出、令牌管理等认证相关接口")
 public class AuthController {
 
     /**
@@ -42,10 +51,11 @@ public class AuthController {
     /**
      * 用户登录接口
      * 
-     * @param loginRequest 登录请求DTO，包含用户名和密�?     * @return 登录成功返回用户信息和令牌；失败返回错误信息
+     * @param loginRequest 登录请求DTO，包含用户名和密码
+     * @return 登录成功返回用户信息和令牌；失败返回错误信息
      */
     @PostMapping("/login")
-    @ApiOperation(value = "用户登录", notes = "验证用户凭据并返回JWT访问令牌和刷新令牌")
+    @Operation(summary = "用户登录", description = "验证用户凭据并返回JWT访问令牌和刷新令牌", tags = "认证管理")
     public ResponseEntity<ApiResponse<LoginResponseDTO>> login(
             @Valid @RequestBody LoginRequestDTO loginRequest) {
         try {
@@ -63,9 +73,11 @@ public class AuthController {
     /**
      * 用户登出接口
      * 
-     * @param request HTTP请求对象，用于提取认证令�?     * @return 登出成功返回成功信息；失败返回错误信�?     */
+     * @param request HTTP请求对象，用于提取认证令牌
+     * @return 登出成功返回成功信息；失败返回错误信息
+     */
     @PostMapping("/logout")
-    @ApiOperation(value = "用户登出", notes = "使当前用户的JWT令牌失效并执行登出操作")
+    @Operation(summary = "用户登出", description = "使当前用户的JWT令牌失效并执行登出操作", tags = "认证管理")
     public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest request) {
         try {
             // 从请求头中提取Token
@@ -100,7 +112,7 @@ public class AuthController {
      * @return 成功返回用户详细信息；失败返回错误信息
      */
     @GetMapping("/me")
-    @ApiOperation(value = "获取当前用户信息", notes = "根据JWT令牌获取当前登录用户的详细信息和权限列表")
+    @Operation(summary = "获取当前用户信息", description = "根据JWT令牌获取当前登录用户的详细信息和权限列表", tags = "认证管理")
     public ResponseEntity<ApiResponse<UserInfoWithPermissionsDTO>> getCurrentUser(
             HttpServletRequest request) {
         try {
@@ -130,7 +142,7 @@ public class AuthController {
      * @return 成功返回新的访问令牌；失败返回错误信息
      */
     @PostMapping("/refresh")
-    @ApiOperation(value = "刷新Token", notes = "使用刷新令牌获取新的访问令牌")
+    @Operation(summary = "刷新Token", description = "使用刷新令牌获取新的访问令牌", tags = "认证管理")
     public ResponseEntity<ApiResponse<RefreshTokenResponseDTO>> refreshToken(
             @Valid @RequestBody RefreshTokenRequestDTO request) {
         try {
@@ -152,7 +164,7 @@ public class AuthController {
      * @return 成功返回Token的有效性信息；失败返回错误信息
      */
     @GetMapping("/validate")
-    @ApiOperation(value = "验证Token", notes = "验证当前持有的Token是否有效")
+    @Operation(summary = "验证Token", description = "验证当前持有的Token是否有效", tags = "认证管理")
     public ResponseEntity<ApiResponse<java.util.Map<String, Object>>> validateToken(
             HttpServletRequest request) {
         try {

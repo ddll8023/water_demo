@@ -12,8 +12,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,7 +31,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/monitoring")
-@Api(tags = "水位监测数据管理", description = "水位监测数据的CRUD操作及相关统计功能")
+@Tag(name = "水位监测数据管理", description = "水位监测数据的CRUD操作及相关统计功能")
 public class WaterLevelMonitoringDataController {
 
     /**
@@ -56,7 +56,7 @@ public class WaterLevelMonitoringDataController {
      */
     @GetMapping("/water-level-data")
     
-    @ApiOperation(value = "分页查询水位监测数据", notes = "根据条件分页查询水位监测数据")
+    @Operation(summary = "分页查询水位监测数据", description = "根据条件分页查询水位监测数据")
     public ResponseEntity<ApiResponse<PageResponseDTO<WaterLevelMonitoringDataResponseDTO>>> getWaterLevelMonitoringData(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -101,7 +101,7 @@ public class WaterLevelMonitoringDataController {
      */
     @GetMapping("/water-level-chart-data")
     
-    @ApiOperation(value = "获取水位监测图表数据", notes = "根据站点ID和时间范围获取水位图表数据")
+    @Operation(summary = "获取水位监测图表数据", description = "根据站点ID和时间范围获取水位图表数据")
     public ResponseEntity<ApiResponse<WaterLevelChartDataResponseDTO>> getWaterLevelChartData(
             @RequestParam(required = false) Long stationId,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
@@ -126,7 +126,7 @@ public class WaterLevelMonitoringDataController {
      */
     @PostMapping("/water-level-data/export")
     
-    @ApiOperation(value = "导出水位监测数据", notes = "根据查询条件将水位监测数据导出为Excel文件")
+    @Operation(summary = "导出水位监测数据", description = "根据查询条件将水位监测数据导出为Excel文件")
     public ResponseEntity<byte[]> exportWaterLevelData(
             @Valid @RequestBody WaterLevelMonitoringDataQueryDTO queryDTO) {
 
@@ -153,7 +153,7 @@ public class WaterLevelMonitoringDataController {
      */
     @PostMapping("/water-level-data/import")
     
-    @ApiOperation(value = "导入水位监测数据", notes = "批量导入Excel解析后的水位监测数据")
+        @Operation(summary = "导入水位监测数据", description = "批量导入Excel解析后的水位监测数据")
         public ResponseEntity<ApiResponse<ImportResultDTO>> importWaterLevelData(
             @Valid @RequestBody List<WaterLevelDataImportDTO> dataList) {
 

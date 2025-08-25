@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 
 /**
  * 水情监测数据控制器
@@ -26,7 +26,7 @@ import io.swagger.annotations.ApiOperation;
  */
 @RestController
 @RequestMapping("/api/monitoring/water-condition")
-@Api(tags = "水情监测数据管理", description = "水情监测数据的CRUD操作及相关统计功能")
+@Tag(name = "水情监测数据管理", description = "水情监测数据的CRUD操作及相关统计功能")
 public class WaterConditionMonitoringDataController {
 
     /**
@@ -46,7 +46,7 @@ public class WaterConditionMonitoringDataController {
      * @return 包含分页数据的API统一响应
      */
     @GetMapping
-    @ApiOperation(value = "分页查询水情监测数据", notes = "根据条件分页获取水情监测数据")
+    @Operation(summary = "分页查询水情监测数据", description = "根据条件分页获取水情监测数据")
     public ApiResponse<PageResponseDTO<WaterConditionMonitoringDataResponseDTO>> pageWaterConditionMonitoringData(WaterConditionMonitoringDataQueryDTO queryDTO) {
         PageResponseDTO<WaterConditionMonitoringDataResponseDTO> page = waterConditionMonitoringDataService.pageWaterConditionMonitoringData(queryDTO);
         return ApiResponse.success("查询成功", page);

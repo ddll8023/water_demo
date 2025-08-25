@@ -7,8 +7,8 @@ import com.example.demo.common.ApiResponse;
 import com.example.demo.pojo.DTO.common.PageResponseDTO;
 import com.example.demo.pojo.entity.system.Role;
 import com.example.demo.service.UserService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/users")
-@Api(tags = "用户管理", description = "用户相关的CRUD操作，需要system:manage权限")
+@Tag(name = "用户管理", description = "用户相关的CRUD操作，需要system:manage权限")
 public class UserController {
 
     /**
@@ -44,7 +44,7 @@ public class UserController {
      * @param isActive 是否活跃，可选参数
      * @return 分页的用户信息列表
      */
-    @ApiOperation(value = "分页查询用户列表", notes = "根据条件分页查询用户信息")
+    @Operation(summary = "分页查询用户列表", description = "根据条件分页查询用户信息")
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponseDTO<UserResponseDTO>>> getUsers(
             @RequestParam(defaultValue = "1") int page,
@@ -68,7 +68,7 @@ public class UserController {
      * @param id 用户ID
      * @return 用户详细信息
      */
-    @ApiOperation(value = "根据ID查询用户详情", notes = "根据用户ID查询用户详细信息")
+    @Operation(summary = "根据ID查询用户详情", description = "根据用户ID查询用户详细信息")
     @GetMapping("/{id}")
     
     public ResponseEntity<ApiResponse<UserResponseDTO>> getUserById(
@@ -88,7 +88,7 @@ public class UserController {
      * @param createDTO 创建用户请求DTO
      * @return 创建后的用户信息
      */
-    @ApiOperation(value = "创建新用户", notes = "创建新用户")
+    @Operation(summary = "创建新用户", description = "创建新用户")
     @PostMapping
     
     public ResponseEntity<ApiResponse<UserResponseDTO>> createUser(
@@ -109,7 +109,7 @@ public class UserController {
      * @param updateDTO 更新用户请求DTO
      * @return ????????
      */
-    @ApiOperation(value = "更新用户信息", notes = "根据用户ID更新用户信息")
+    @Operation(summary = "更新用户信息", description = "根据用户ID更新用户信息")
     @PutMapping("/{id}")
     
     public ResponseEntity<ApiResponse<UserResponseDTO>> updateUser(
@@ -130,7 +130,7 @@ public class UserController {
      * @param id 用户ID
      * @return 删除结果
      */
-    @ApiOperation(value = "删除用户", notes = "根据用户ID删除用户")
+    @Operation(summary = "删除用户", description = "根据用户ID删除用户")
     @DeleteMapping("/{id}")
     
     public ResponseEntity<ApiResponse<Void>> deleteUser(
@@ -150,7 +150,7 @@ public class UserController {
      * @param id 用户ID
      * @return 用户角色列表
      */
-    @ApiOperation(value = "获取用户角色列表", notes = "根据用户ID获取用户角色列表")
+    @Operation(summary = "获取用户角色列表", description = "根据用户ID获取用户角色列表")
     @GetMapping("/{id}/roles")
     
     public ResponseEntity<ApiResponse<List<Role>>> getUserRoles(
@@ -171,7 +171,7 @@ public class UserController {
      * @param roleIds 角色ID列表
      * @return 分配结果
      */
-    @ApiOperation(value = "为用户分配角色", notes = "根据用户ID和角色ID列表为用户分配角色")
+    @Operation(summary = "为用户分配角色", description = "根据用户ID和角色ID列表为用户分配角色")
     @PutMapping("/{id}/roles")
 
     public ResponseEntity<ApiResponse<Void>> assignUserRoles(

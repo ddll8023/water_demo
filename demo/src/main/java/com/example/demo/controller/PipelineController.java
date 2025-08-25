@@ -11,8 +11,8 @@ import com.example.demo.service.PipelineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 
 
 import javax.validation.Valid;
@@ -34,7 +34,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/engineering-service/pipelines")
-@Api(tags = "管道管理", description = "管道相关的CRUD操作")
+@Tag(name = "管道管理", description = "管道相关的CRUD操作")
 public class PipelineController {
 
     /**
@@ -56,7 +56,7 @@ public class PipelineController {
      * @param operationStatus 运行状态
      * @return 分页管道信息列表
      */
-    @ApiOperation(value = "分页查询管道信息", notes = "根据条件分页查询管道信息")
+    @Operation(summary = "分页查询管道信息", description = "根据条件分页查询管道信息")
     @GetMapping
     
     public ResponseEntity<ApiResponse<PageResponseDTO<PipelineResponseDTO>>> getPipelinePage(
@@ -94,7 +94,7 @@ public class PipelineController {
      * @param id 管道信息ID
      * @return 管道详细信息
      */
-    @ApiOperation(value = "根据ID查询管道信息详情", notes = "根据ID查询管道详细信息")
+    @Operation(summary = "根据ID查询管道信息详情", description = "根据ID查询管道详细信息")
     @GetMapping("/{id}")
     
     public ResponseEntity<ApiResponse<PipelineResponseDTO>> getPipelineById(
@@ -116,7 +116,7 @@ public class PipelineController {
      * @param createDTO 管道创建数据传输对象
      * @return 创建成功的管道信息
      */
-    @ApiOperation(value = "创建管道信息", notes = "创建新的管道信息")
+    @Operation(summary = "创建管道信息", description = "创建新的管道信息")
     @PostMapping
     
     public ResponseEntity<ApiResponse<PipelineResponseDTO>> createPipeline(
@@ -139,7 +139,7 @@ public class PipelineController {
      * @param updateDTO 管道更新数据传输对象
      * @return 更新后的管道信息
      */
-    @ApiOperation(value = "更新管道信息", notes = "根据ID更新管道信息")
+    @Operation(summary = "更新管道信息", description = "根据ID更新管道信息")
     @PutMapping("/{id}")
     
     public ResponseEntity<ApiResponse<PipelineResponseDTO>> updatePipeline(
@@ -163,7 +163,7 @@ public class PipelineController {
      * @param id 管道信息ID
      * @return 删除结果
      */
-    @ApiOperation(value = "删除管道信息", notes = "根据ID删除管道信息（软删除）")
+    @Operation(summary = "删除管道信息", description = "根据ID删除管道信息（软删除）")
     @DeleteMapping("/{id}")
     
     public ResponseEntity<ApiResponse<Void>> deletePipeline(
@@ -185,7 +185,7 @@ public class PipelineController {
      * @param ids 管道信息ID列表
      * @return 批量删除结果
      */
-    @ApiOperation(value = "批量删除管道信息", notes = "根据ID列表批量删除管道信息（软删除）")
+    @Operation(summary = "批量删除管道信息", description = "根据ID列表批量删除管道信息（软删除）")
     @DeleteMapping("/batch")
     
     public ResponseEntity<ApiResponse<Void>> batchDeletePipelines(
@@ -210,7 +210,7 @@ public class PipelineController {
      * 
      * @return 可用管道列表
      */
-    @ApiOperation(value = "获取所有可用管道信息", notes = "获取系统中所有可用于选择的管道列表")
+    @Operation(summary = "获取所有可用管道信息", description = "获取系统中所有可用于选择的管道列表")
     @GetMapping("/available")
     
     public ResponseEntity<ApiResponse<List<Pipeline>>> getAvailablePipelines() {
@@ -230,7 +230,7 @@ public class PipelineController {
      *
      * @return 管道信息总数
      */
-    @ApiOperation(value = "统计管道信息总数", notes = "统计系统中管道信息的总数")
+    @Operation(summary = "统计管道信息总数", description = "统计系统中管道信息的总数")
     @GetMapping("/count")
     
     public ResponseEntity<ApiResponse<Long>> countTotal() {

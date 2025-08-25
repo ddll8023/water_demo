@@ -8,8 +8,8 @@ import com.example.demo.pojo.DTO.facility.MonitoringStationResponseDTO;
 import com.example.demo.pojo.DTO.facility.MonitoringStationUpdateDTO;
 import com.example.demo.pojo.entity.facility.MonitoringStation;
 import com.example.demo.service.MonitoringStationService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +27,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/engineering-service/monitoring-stations")
-@Api(tags = "监测站点管理", description = "监测站点相关的CRUD操作")
+@Tag(name = "监测站点管理", description = "监测站点相关的CRUD操作")
 public class MonitoringStationController {
 
     /**
@@ -48,7 +48,7 @@ public class MonitoringStationController {
      * @param transmissionMethod 数据传输方式
      * @return 包含监测站点分页信息的API响应
      */
-    @ApiOperation(value = "分页查询监测站点列表", notes = "根据条件分页查询监测站点信息")
+    @Operation(summary = "分页查询监测站点列表", description = "根据条件分页查询监测站点信息")
     @GetMapping
     
     public ResponseEntity<ApiResponse<PageResponseDTO<MonitoringStationResponseDTO>>> getMonitoringStationPage(
@@ -82,7 +82,7 @@ public class MonitoringStationController {
      * @param createDTO 监测站点创建信息DTO
      * @return 包含创建成功的监测站点实体的API响应
      */
-    @ApiOperation(value = "创建监测站点", notes = "创建新的监测站点信息并保存到数据库")
+    @Operation(summary = "创建监测站点", description = "创建新的监测站点信息并保存到数据库")
     @PostMapping
     
     public ResponseEntity<ApiResponse<MonitoringStation>> createMonitoringStation(
@@ -107,7 +107,7 @@ public class MonitoringStationController {
      * @param updateDTO 监测站点更新信息DTO
      * @return 包含更新后的监测站点实体的API响应
      */
-    @ApiOperation(value = "更新监测站点信息", notes = "根据ID更新监测站点的信息")
+    @Operation(summary = "更新监测站点信息", description = "根据ID更新监测站点的信息")
     @PutMapping("/{id}")
     
     public ResponseEntity<ApiResponse<MonitoringStation>> updateMonitoringStation(
@@ -132,7 +132,7 @@ public class MonitoringStationController {
      * @param id 需要删除的监测站点ID
      * @return API响应
      */
-    @ApiOperation(value = "删除监测站点", notes = "根据ID删除监测站点信息（软删除）")
+    @Operation(summary = "删除监测站点", description = "根据ID删除监测站点信息（软删除）")
     @DeleteMapping("/{id}")
     
     public ResponseEntity<ApiResponse<Void>> deleteMonitoringStation(
@@ -157,7 +157,7 @@ public class MonitoringStationController {
      * @param ids 需要批量删除的监测站点ID列表
      * @return API响应
      */
-    @ApiOperation(value = "批量删除监测站点", notes = "根据ID列表批量删除多个监测站点（软删除）")
+    @Operation(summary = "批量删除监测站点", description = "根据ID列表批量删除多个监测站点（软删除）")
     @DeleteMapping("/batch")
     
     public ResponseEntity<ApiResponse<Void>> batchDeleteMonitoringStations(
@@ -183,7 +183,7 @@ public class MonitoringStationController {
      * @param monitoringItemCode 监测项目代码（可选）
      * @return 包含可用监测站点列表的API响应
      */
-    @ApiOperation(value = "获取所有可用监测站点", notes = "获取所有可用的监测站点列表，用于下拉选择")
+    @Operation(summary = "获取所有可用监测站点", description = "获取所有可用的监测站点列表，用于下拉选择")
     @GetMapping("/available")
     
     public ResponseEntity<ApiResponse<List<MonitoringStation>>> getAvailableMonitoringStations(
@@ -209,7 +209,7 @@ public class MonitoringStationController {
      * 
      * @return 包含监测站点总数的API响应
      */
-    @ApiOperation(value = "统计监测站点总数", notes = "统计系统中监测站点的总数")
+    @Operation(summary = "统计监测站点总数", description = "统计系统中监测站点的总数")
     @GetMapping("/count")
     
     public ResponseEntity<ApiResponse<Long>> countTotal() {

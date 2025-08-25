@@ -15,8 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 
 /**
  * 岗位管理控制�? * 提供岗位的增删改查、统计等功能
@@ -26,7 +26,7 @@ import io.swagger.annotations.ApiOperation;
  */
 @RestController
 @RequestMapping("/api/positions")
-@Api(tags = "岗位管理", description = "岗位相关的CRUD操作")
+@Tag(name = "岗位管理", description = "岗位相关的CRUD操作")
 public class PositionController {
 
     /**
@@ -45,7 +45,7 @@ public class PositionController {
      */
     @GetMapping
     
-    @ApiOperation(value = "分页查询岗位列表", notes = "根据条件分页查询岗位信息")
+    @Operation(summary = "分页查询岗位列表", description = "根据条件分页查询岗位信息")
     public ResponseEntity<ApiResponse<PageResponseDTO<PositionResponseDTO>>> getPositionPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -68,7 +68,7 @@ public class PositionController {
      */
     @PostMapping
     
-    @ApiOperation(value = "创建岗位", notes = "创建新的岗位信息")
+    @Operation(summary = "创建岗位", description = "创建新的岗位信息")
     public ResponseEntity<ApiResponse<PositionResponseDTO>> createPosition(
             @Valid @RequestBody PositionCreateDTO createDTO) {
         try {
@@ -93,7 +93,7 @@ public class PositionController {
      */
     @PutMapping("/{id}")
     
-    @ApiOperation(value = "更新岗位信息", notes = "根据ID更新岗位信息")
+    @Operation(summary = "更新岗位信息", description = "根据ID更新岗位信息")
     public ResponseEntity<ApiResponse<PositionResponseDTO>> updatePosition(
             @PathVariable Long id,
             @Valid @RequestBody PositionUpdateDTO updateDTO) {
@@ -118,7 +118,7 @@ public class PositionController {
      */
     @DeleteMapping("/{id}")
     
-    @ApiOperation(value = "删除岗位", notes = "根据ID删除岗位信息（软删除）")
+    @Operation(summary = "删除岗位", description = "根据ID删除岗位信息（软删除）")
     public ResponseEntity<ApiResponse<Void>> deletePosition(
             @PathVariable Long id) {
         try {
@@ -144,7 +144,7 @@ public class PositionController {
      */
     @GetMapping("/{id}/personnel")
     
-    @ApiOperation(value = "获取岗位下的人员列表", notes = "根据岗位ID获取岗位下的人员列表")
+    @Operation(summary = "获取岗位下的人员列表", description = "根据岗位ID获取岗位下的人员列表")
     public ResponseEntity<ApiResponse<List<Object>>> getPositionPersonnel(
             @PathVariable Long id) {
         try {
@@ -166,7 +166,7 @@ public class PositionController {
      */
     @GetMapping("/check-name")
     
-    @ApiOperation(value = "检查岗位名称是否可用", notes = "检查指定的岗位名称是否已存在")
+    @Operation(summary = "检查岗位名称是否可用", description = "检查指定的岗位名称是否已存在")
     public ResponseEntity<ApiResponse<Map<String, Boolean>>> checkPositionNameAvailable(
             @RequestParam String name,
             @RequestParam(required = false) Long excludeId) {

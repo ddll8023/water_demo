@@ -11,8 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 
 import java.util.Map;
 
@@ -33,7 +33,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/api/departments")
-@Api(tags = "部门管理", description = "部门相关的增删改查操作")
+@Tag(name = "部门管理", description = "部门相关的增删改查操作")
 public class DepartmentController {
 
     /**
@@ -56,7 +56,7 @@ public class DepartmentController {
      */
     @GetMapping
     
-    @ApiOperation(value = "获取部门分页数据", notes = "支持按名称关键词模糊搜索，可以筛选启用/禁用状态")
+    @Operation(summary = "获取部门分页数据", description = "支持按名称关键词模糊搜索，可以筛选启用/禁用状态")
     public ResponseEntity<ApiResponse<PageResponseDTO<DepartmentResponseDTO>>> getDepartmentPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -85,7 +85,7 @@ public class DepartmentController {
      */
     @GetMapping("/check-name")
     
-    @ApiOperation(value = "检查部门名称是否可用", notes = "验证部门名称在同级部门中是否唯一，用于表单提交前的实时校验")
+    @Operation(summary = "检查部门名称是否可用", description = "验证部门名称在同级部门中是否唯一，用于表单提交前的实时校验")
     public ResponseEntity<ApiResponse<Map<String, Object>>> checkDepartmentNameAvailable(
             @RequestParam String name,
             @RequestParam(required = false) Long parentId,
@@ -112,7 +112,7 @@ public class DepartmentController {
      */
     @PostMapping
     
-    @ApiOperation(value = "创建部门", notes = "创建新的部门信息，支持设置部门名称、描述、父部门")
+    @Operation(summary = "创建部门", description = "创建新的部门信息，支持设置部门名称、描述、父部门")
     public ResponseEntity<ApiResponse<DepartmentResponseDTO>> createDepartment(
             @Valid @RequestBody DepartmentCreateDTO createDTO) {
         try {
@@ -142,7 +142,7 @@ public class DepartmentController {
      */
     @PutMapping("/{id}")
     
-    @ApiOperation(value = "更新部门信息", notes = "更新指定部门的基本信息，包括名称、描述等")
+    @Operation(summary = "更新部门信息", description = "更新指定部门的基本信息，包括名称、描述等")
     public ResponseEntity<ApiResponse<DepartmentResponseDTO>> updateDepartment(
             @PathVariable Long id,
             @Valid @RequestBody DepartmentUpdateDTO updateDTO) {
@@ -172,7 +172,7 @@ public class DepartmentController {
      */
     @DeleteMapping("/{id}")
     
-    @ApiOperation(value = "删除部门", notes = "删除指定的部门，如果部门下有子部门或用户则不允许删除")
+    @Operation(summary = "删除部门", description = "删除指定的部门，如果部门下有子部门或用户则不允许删除")
     public ResponseEntity<ApiResponse<Void>> deleteDepartment(
             @PathVariable Long id) {
         try {

@@ -1,7 +1,6 @@
 package com.example.demo.common;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -11,19 +10,19 @@ import java.time.LocalDateTime;
  * 用于所有API接口的统一响应结构
  */
 @Data
-@ApiModel(description = "统一API响应格式")
+@Schema(description = "统一API响应格式")
 public class ApiResponse<T> implements Serializable {
     
-    @ApiModelProperty(value = "响应状态码")
+    @Schema(description = "响应状态码")
     private int code;
     
-    @ApiModelProperty(value = "响应消息")
+    @Schema(description = "响应消息")
     private String message;
     
-    @ApiModelProperty(value = "响应数据")
+    @Schema(description = "响应数据")
     private T data;
     
-    @ApiModelProperty(value = "响应时间戳")
+    @Schema(description = "响应时间戳")
     private LocalDateTime timestamp;
     
     public ApiResponse() {

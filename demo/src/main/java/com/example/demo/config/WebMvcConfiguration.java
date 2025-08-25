@@ -10,21 +10,14 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Contact;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
+
 
 /**
  * Web MVC配置类
  * 统一管理Web层相关组件配置，包括：
- * 1. Knife4j API文档配置
- * 2. 静态资源映射配置
- * 3. CORS跨域配置
- * 4. JWT拦截器配置
+ * 1. 静态资源映射配置
+ * 2. CORS跨域配置
+ * 3. JWT拦截器配置
  */
 @Configuration
 @Slf4j
@@ -64,34 +57,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
                 .maxAge(3600);
     }
 
-    /**
-     * 通过knife4j生成接口文档
-     * @return Docket配置
-     */
-    @Bean
-    public Docket createRestApi() {
-        log.info("开始生成API接口文档");
-        return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(apiInfo())
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("com.example.demo.controller"))
-                .paths(PathSelectors.any())
-                .build();
-    }
 
-    /**
-     * API信息配置
-     */
-    private ApiInfo apiInfo() {
-        return new ApiInfoBuilder()
-                .title("鄂北地区水资源项目 API 文档")
-                .description("鄂北地区水资源项目后端API接口文档，包含认证、用户管理、角色权限等功能模块")
-                .version("v1.0")
-                .contact(new Contact("开发团队", "https://example.com", "dev@example.com"))
-                .license("MIT License")
-                .licenseUrl("https://opensource.org/licenses/MIT")
-                .build();
-    }
 
     /**
      * 设置静态资源映射

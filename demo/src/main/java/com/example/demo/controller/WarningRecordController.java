@@ -10,8 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,7 +29,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/warning/records")
 @RequiredArgsConstructor
-@Api(tags = "预警信息记录管理", description = "预警记录的CRUD操作及相关统计功能")
+@Tag(name = "预警信息记录管理", description = "预警记录的CRUD操作及相关统计功能")
 public class WarningRecordController {
 
     /**
@@ -54,7 +54,7 @@ public class WarningRecordController {
      */
     @GetMapping
     
-    @ApiOperation(value = "分页查询预警记录列表", notes = "根据条件分页查询预警记录信息")
+    @Operation(summary = "分页查询预警记录列表", description = "根据条件分页查询预警记录信息")
     public ResponseEntity<ApiResponse<PageResponseDTO<WarningRecordResponseDTO>>> getWarningRecords(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -82,7 +82,7 @@ public class WarningRecordController {
      */
     @PostMapping
     
-    @ApiOperation(value = "创建预警记录", notes = "创建新的预警记录信息")
+    @Operation(summary = "创建预警记录", description = "创建新的预警记录信息")
     public ResponseEntity<ApiResponse<WarningRecordResponseDTO>> createWarningRecord(
             @Valid @RequestBody WarningRecordCreateDTO createDTO) {
         
@@ -112,7 +112,7 @@ public class WarningRecordController {
      */
     @PutMapping("/{id}/resolve")
     
-    @ApiOperation(value = "解除预警", notes = "根据ID解除预警记录")
+    @Operation(summary = "解除预警", description = "根据ID解除预警记录")
     public ResponseEntity<ApiResponse<Void>> resolveWarning(
             @PathVariable Long id,
             @Valid @RequestBody WarningResolveDTO resolveDTO) {
@@ -134,7 +134,7 @@ public class WarningRecordController {
      */
     @DeleteMapping("/{id}")
     
-    @ApiOperation(value = "删除预警记录", notes = "根据ID删除预警记录")
+    @Operation(summary = "删除预警记录", description = "根据ID删除预警记录")
     public ResponseEntity<ApiResponse<Void>> deleteWarningRecord(
             @PathVariable Long id) {
         try {
@@ -154,7 +154,7 @@ public class WarningRecordController {
      */
     @GetMapping("/statistics")
     
-    @ApiOperation(value = "获取预警统计信息", notes = "获取预警的整体统计数据")
+    @Operation(summary = "获取预警统计信息", description = "获取预警的整体统计数据")
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getWarningStatistics() {
         List<Map<String, Object>> result = warningRecordService.getWarningStatistics();
         return ResponseEntity.ok(ApiResponse.success("查询成功", result));
@@ -168,7 +168,7 @@ public class WarningRecordController {
      */
     @GetMapping("/level-statistics")
     
-    @ApiOperation(value = "获取各等级预警数量统计", notes = "按预警等级分类统计预警数量")
+    @Operation(summary = "获取各等级预警数量统计", description = "按预警等级分类统计预警数量")
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getWarningLevelStatistics() {
         List<Map<String, Object>> result = warningRecordService.getWarningLevelStatistics();
         return ResponseEntity.ok(ApiResponse.success("查询成功", result));
@@ -184,7 +184,7 @@ public class WarningRecordController {
      */
     @GetMapping("/trend")
     
-    @ApiOperation(value = "获取预警趋势数据", notes = "获取指定时间周期内的预警数量变化趋势")
+    @Operation(summary = "获取预警趋势数据", description = "获取指定时间周期内的预警数量变化趋势")
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getWarningTrend(
             @RequestParam(required = false, defaultValue = "day") String period,
             @RequestParam(required = false, defaultValue = "30") Integer days) {
@@ -201,7 +201,7 @@ public class WarningRecordController {
      */
     @GetMapping("/locations")
     
-    @ApiOperation(value = "获取预警地点列表", notes = "从现有预警记录中获取不重复的预警地点列表")
+    @Operation(summary = "获取预警地点列表", description = "从现有预警记录中获取不重复的预警地点列表")
     public ResponseEntity<ApiResponse<List<String>>> getWarningLocationOptions() {
         List<String> result = warningRecordService.getWarningLocationOptions();
         return ResponseEntity.ok(ApiResponse.success("查询成功", result));
