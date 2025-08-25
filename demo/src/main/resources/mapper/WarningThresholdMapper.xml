@@ -3,7 +3,7 @@
 <mapper namespace="com.example.demo.mapper.WarningThresholdMapper">
 
     <!-- 结果映射：预警指标响应DTO -->
-    <resultMap id="WarningThresholdResponseDTOMap" type="com.example.demo.pojo.dto.warning.WarningThresholdResponseDTO">
+    <resultMap id="WarningThresholdResponseDTOMap" type="com.example.demo.pojo.DTO.warning.WarningThresholdResponseDTO">
         <id property="id" column="id"/>
         <result property="stationName" column="station_name"/>
         <result property="monitoringItem" column="monitoring_item"/>

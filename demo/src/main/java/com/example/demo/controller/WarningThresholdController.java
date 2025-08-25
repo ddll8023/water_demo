@@ -1,10 +1,10 @@
 package com.example.demo.controller;
 
-import com.example.demo.pojo.dto.warning.WarningThresholdCreateDTO;
-import com.example.demo.pojo.dto.warning.WarningThresholdResponseDTO;
-import com.example.demo.pojo.dto.warning.WarningThresholdUpdateDTO;
+import com.example.demo.pojo.DTO.warning.WarningThresholdCreateDTO;
+import com.example.demo.pojo.DTO.warning.WarningThresholdResponseDTO;
+import com.example.demo.pojo.DTO.warning.WarningThresholdUpdateDTO;
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.DTO.common.PageResponseDTO;
 import com.example.demo.service.WarningThresholdService;
 
 import org.springframework.beans.factory.annotation.Autowired;

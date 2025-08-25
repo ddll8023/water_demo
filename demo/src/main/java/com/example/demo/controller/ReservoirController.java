@@ -1,14 +1,13 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.dto.common.PageResponseDTO;
-import com.example.demo.pojo.dto.facility.ReservoirCreateDTO;
-import com.example.demo.pojo.dto.facility.ReservoirQueryDTO;
-import com.example.demo.pojo.dto.facility.ReservoirResponseDTO;
-import com.example.demo.pojo.dto.facility.ReservoirUpdateDTO;
+import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.pojo.DTO.facility.ReservoirCreateDTO;
+import com.example.demo.pojo.DTO.facility.ReservoirQueryDTO;
+import com.example.demo.pojo.DTO.facility.ReservoirResponseDTO;
+import com.example.demo.pojo.DTO.facility.ReservoirUpdateDTO;
 import com.example.demo.pojo.entity.facility.Reservoir;
 import com.example.demo.service.ReservoirService;
-import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

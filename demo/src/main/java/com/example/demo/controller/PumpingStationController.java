@@ -1,10 +1,10 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.dto.common.PageResponseDTO;
-import com.example.demo.pojo.dto.facility.PumpingStationCreateDTO;
-import com.example.demo.pojo.dto.facility.PumpingStationResponseDTO;
-import com.example.demo.pojo.dto.facility.PumpingStationUpdateDTO;
+import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.pojo.DTO.facility.PumpingStationCreateDTO;
+import com.example.demo.pojo.DTO.facility.PumpingStationResponseDTO;
+import com.example.demo.pojo.DTO.facility.PumpingStationUpdateDTO;
 import com.example.demo.service.PumpingStationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

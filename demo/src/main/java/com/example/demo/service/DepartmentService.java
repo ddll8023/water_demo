@@ -1,10 +1,9 @@
 package com.example.demo.service;
 
-import com.example.demo.pojo.dto.system.DepartmentCreateDTO;
-import com.example.demo.pojo.dto.system.DepartmentResponseDTO;
-import com.example.demo.pojo.dto.system.DepartmentUpdateDTO;
-import com.example.demo.pojo.dto.common.PageResponseDTO;
-import com.example.demo.pojo.dto.common.ValidationResponseDTO;
+import com.example.demo.pojo.DTO.system.DepartmentCreateDTO;
+import com.example.demo.pojo.DTO.system.DepartmentResponseDTO;
+import com.example.demo.pojo.DTO.system.DepartmentUpdateDTO;
+import com.example.demo.pojo.DTO.common.PageResponseDTO;
 import com.example.demo.pojo.entity.system.Department;
 import com.example.demo.mapper.DepartmentMapper;
 import com.github.pagehelper.PageHelper;
@@ -17,7 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -176,14 +177,14 @@ public class DepartmentService {
     /**
      * 检查部门名称是否可用
      */
-    public ValidationResponseDTO checkNameAvailable(String name, Long parentId, Long excludeId) {
+    public Map<String, Object> checkNameAvailable(String name, Long parentId, Long excludeId) {
         int count = departmentMapper.countByNameAndParent(name, parentId, excludeId);
         boolean available = count == 0;
 
-        return ValidationResponseDTO.builder()
-            .available(available)
-            .message(available ? "部门名称可用" : "同级部门中已存在相同名称")
-            .build();
+        Map<String, Object> result = new HashMap<>();
+        result.put("available", available);
+        result.put("message", available ? "部门名称可用" : "同级部门中已存在相同名称");
+        return result;
     }
 
 }

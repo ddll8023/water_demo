@@ -1,9 +1,9 @@
 package com.example.demo.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.demo.pojo.dto.monitoring.WaterConditionMonitoringDataQueryDTO;
-import com.example.demo.pojo.dto.monitoring.WaterConditionMonitoringDataResponseDTO;
-import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.DTO.monitoring.WaterConditionMonitoringDataQueryDTO;
+import com.example.demo.pojo.DTO.monitoring.WaterConditionMonitoringDataResponseDTO;
+import com.example.demo.pojo.DTO.common.PageResponseDTO;
 import com.example.demo.pojo.entity.monitoring.ReservoirMonitoringData;
 import com.example.demo.mapper.WaterConditionMonitoringDataMapper;
 import com.github.pagehelper.PageHelper;

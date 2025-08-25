@@ -1,9 +1,9 @@
 package com.example.demo.service;
 
-import com.example.demo.pojo.dto.system.UserCreateDTO;
-import com.example.demo.pojo.dto.system.UserResponseDTO;
-import com.example.demo.pojo.dto.system.UserUpdateDTO;
-import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.DTO.system.UserCreateDTO;
+import com.example.demo.pojo.DTO.system.UserResponseDTO;
+import com.example.demo.pojo.DTO.system.UserUpdateDTO;
+import com.example.demo.pojo.DTO.common.PageResponseDTO;
 import com.example.demo.pojo.entity.system.Role;
 import com.example.demo.pojo.entity.system.User;
 import com.example.demo.mapper.UserMapper;

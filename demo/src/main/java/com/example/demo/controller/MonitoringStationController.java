@@ -1,14 +1,13 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.dto.common.PageResponseDTO;
-import com.example.demo.pojo.dto.facility.MonitoringStationCreateDTO;
-import com.example.demo.pojo.dto.facility.MonitoringStationQueryDTO;
-import com.example.demo.pojo.dto.facility.MonitoringStationResponseDTO;
-import com.example.demo.pojo.dto.facility.MonitoringStationUpdateDTO;
+import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.pojo.DTO.facility.MonitoringStationCreateDTO;
+import com.example.demo.pojo.DTO.facility.MonitoringStationQueryDTO;
+import com.example.demo.pojo.DTO.facility.MonitoringStationResponseDTO;
+import com.example.demo.pojo.DTO.facility.MonitoringStationUpdateDTO;
 import com.example.demo.pojo.entity.facility.MonitoringStation;
 import com.example.demo.service.MonitoringStationService;
-import lombok.RequiredArgsConstructor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 

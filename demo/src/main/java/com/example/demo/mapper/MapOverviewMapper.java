@@ -1,9 +1,9 @@
 package com.example.demo.mapper;
 
-import com.example.demo.pojo.dto.map.FacilityLocationDTO;
-import com.example.demo.pojo.dto.map.ManagementSystemDTO;
-import com.example.demo.pojo.dto.map.MonitoringStationDTO;
-import com.example.demo.pojo.dto.map.WarningStatsDTO;
+import com.example.demo.pojo.DTO.map.FacilityLocationDTO;
+import com.example.demo.pojo.DTO.map.ManagementSystemDTO;
+import com.example.demo.pojo.DTO.map.MonitoringStationDTO;
+import com.example.demo.pojo.DTO.map.WarningStatsDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

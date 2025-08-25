@@ -1,10 +1,10 @@
 package com.example.demo.service;
 
-import com.example.demo.pojo.dto.common.PageResponseDTO;
-import com.example.demo.pojo.dto.facility.FloatingBoatCreateDTO;
-import com.example.demo.pojo.dto.facility.FloatingBoatQueryDTO;
-import com.example.demo.pojo.dto.facility.FloatingBoatResponseDTO;
-import com.example.demo.pojo.dto.facility.FloatingBoatUpdateDTO;
+import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.pojo.DTO.facility.FloatingBoatCreateDTO;
+import com.example.demo.pojo.DTO.facility.FloatingBoatQueryDTO;
+import com.example.demo.pojo.DTO.facility.FloatingBoatResponseDTO;
+import com.example.demo.pojo.DTO.facility.FloatingBoatUpdateDTO;
 import com.example.demo.pojo.entity.facility.FloatingBoat;
 import com.example.demo.mapper.FloatingBoatMapper;
 import com.github.pagehelper.PageHelper;

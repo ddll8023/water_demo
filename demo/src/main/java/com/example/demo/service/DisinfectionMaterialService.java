@@ -1,9 +1,9 @@
 package com.example.demo.service;
 
-import com.example.demo.pojo.dto.common.PageResponseDTO;
-import com.example.demo.pojo.dto.facility.DisinfectionMaterialCreateDTO;
-import com.example.demo.pojo.dto.facility.DisinfectionMaterialResponseDTO;
-import com.example.demo.pojo.dto.facility.DisinfectionMaterialUpdateDTO;
+import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.pojo.DTO.facility.DisinfectionMaterialCreateDTO;
+import com.example.demo.pojo.DTO.facility.DisinfectionMaterialResponseDTO;
+import com.example.demo.pojo.DTO.facility.DisinfectionMaterialUpdateDTO;
 import com.example.demo.pojo.entity.facility.DisinfectionMaterial;
 import com.example.demo.mapper.DisinfectionMaterialMapper;
 import com.github.pagehelper.PageHelper;

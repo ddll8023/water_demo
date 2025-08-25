@@ -1,10 +1,10 @@
 package com.example.demo.controller;
 
-import com.example.demo.pojo.dto.auth.LoginRequestDTO;
-import com.example.demo.pojo.dto.auth.LoginResponseDTO;
-import com.example.demo.pojo.dto.auth.RefreshTokenRequestDTO;
-import com.example.demo.pojo.dto.auth.RefreshTokenResponseDTO;
-import com.example.demo.pojo.dto.auth.UserInfoWithPermissionsDTO;
+import com.example.demo.pojo.DTO.auth.LoginRequestDTO;
+import com.example.demo.pojo.DTO.auth.LoginResponseDTO;
+import com.example.demo.pojo.DTO.auth.RefreshTokenRequestDTO;
+import com.example.demo.pojo.DTO.auth.RefreshTokenResponseDTO;
+import com.example.demo.pojo.DTO.auth.UserInfoWithPermissionsDTO;
 import com.example.demo.common.ApiResponse;
 import com.example.demo.service.AuthService;
 import com.example.demo.config.JwtTokenUtil;

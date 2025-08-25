@@ -1,11 +1,11 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.dto.common.PageResponseDTO;
-import com.example.demo.pojo.dto.facility.VillageCreateDTO;
-import com.example.demo.pojo.dto.facility.VillageQueryDTO;
-import com.example.demo.pojo.dto.facility.VillageResponseDTO;
-import com.example.demo.pojo.dto.facility.VillageUpdateDTO;
+import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.pojo.DTO.facility.VillageCreateDTO;
+import com.example.demo.pojo.DTO.facility.VillageQueryDTO;
+import com.example.demo.pojo.DTO.facility.VillageResponseDTO;
+import com.example.demo.pojo.DTO.facility.VillageUpdateDTO;
 import com.example.demo.pojo.entity.facility.Village;
 import com.example.demo.service.VillageService;
 import lombok.RequiredArgsConstructor;

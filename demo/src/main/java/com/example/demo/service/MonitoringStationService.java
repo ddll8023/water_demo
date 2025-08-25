@@ -1,12 +1,12 @@
 package com.example.demo.service;
 
-import com.example.demo.pojo.dto.facility.MonitoringStationCreateDTO;
-import com.example.demo.pojo.dto.facility.MonitoringStationQueryDTO;
-import com.example.demo.pojo.dto.facility.MonitoringStationResponseDTO;
-import com.example.demo.pojo.dto.facility.MonitoringStationUpdateDTO;
+import com.example.demo.pojo.DTO.facility.MonitoringStationCreateDTO;
+import com.example.demo.pojo.DTO.facility.MonitoringStationQueryDTO;
+import com.example.demo.pojo.DTO.facility.MonitoringStationResponseDTO;
+import com.example.demo.pojo.DTO.facility.MonitoringStationUpdateDTO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.DTO.common.PageResponseDTO;
 import com.example.demo.pojo.entity.facility.MonitoringStation;
 import com.example.demo.mapper.MonitoringStationMapper;
 import lombok.RequiredArgsConstructor;

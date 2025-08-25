@@ -3,7 +3,7 @@
 <mapper namespace="com.example.demo.mapper.ReservoirMapper">
 
     <!-- 结果映射：水库响应DTO -->
-    <resultMap id="ReservoirResponseDTOMap" type="com.example.demo.pojo.dto.facility.ReservoirResponseDTO">
+    <resultMap id="ReservoirResponseDTOMap" type="com.example.demo.pojo.DTO.facility.ReservoirResponseDTO">
         <id property="id" column="id"/>
         <result property="reservoirCode" column="reservoir_code"/>
         <result property="name" column="name"/>

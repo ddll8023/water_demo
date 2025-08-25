@@ -1,9 +1,9 @@
 package com.example.demo.service;
 
-import com.example.demo.pojo.dto.system.RoleCreateDTO;
-import com.example.demo.pojo.dto.system.RoleResponseDTO;
-import com.example.demo.pojo.dto.system.RoleUpdateDTO;
-import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.DTO.system.RoleCreateDTO;
+import com.example.demo.pojo.DTO.system.RoleResponseDTO;
+import com.example.demo.pojo.DTO.system.RoleUpdateDTO;
+import com.example.demo.pojo.DTO.common.PageResponseDTO;
 import com.example.demo.pojo.entity.system.Permission;
 import com.example.demo.pojo.entity.system.Role;
 import com.example.demo.pojo.entity.system.RolePermission;

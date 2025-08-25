@@ -3,7 +3,7 @@
 <mapper namespace="com.example.demo.mapper.PumpingStationMapper">
 
     <!-- 结果映射：泵站响应DTO -->
-    <resultMap id="PumpingStationResponseDTOMap" type="com.example.demo.pojo.dto.facility.PumpingStationResponseDTO">
+    <resultMap id="PumpingStationResponseDTOMap" type="com.example.demo.pojo.DTO.facility.PumpingStationResponseDTO">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="stationCode" column="station_code"/>

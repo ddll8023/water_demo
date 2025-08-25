@@ -3,7 +3,7 @@
 <mapper namespace="com.example.demo.mapper.WaterPlantMapper">
 
     <!-- 结果映射：水厂响应DTO -->
-    <resultMap id="WaterPlantResponseDTOMap" type="com.example.demo.pojo.dto.facility.WaterPlantResponseDTO">
+    <resultMap id="WaterPlantResponseDTOMap" type="com.example.demo.pojo.DTO.facility.WaterPlantResponseDTO">
         <id property="id" column="id"/>
         <result property="plantCode" column="plant_code"/>
         <result property="name" column="name"/>

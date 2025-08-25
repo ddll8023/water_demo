@@ -1,11 +1,10 @@
 package com.example.demo.controller;
 
-import com.example.demo.pojo.dto.system.DepartmentCreateDTO;
-import com.example.demo.pojo.dto.system.DepartmentResponseDTO;
-import com.example.demo.pojo.dto.system.DepartmentUpdateDTO;
+import com.example.demo.pojo.DTO.system.DepartmentCreateDTO;
+import com.example.demo.pojo.DTO.system.DepartmentResponseDTO;
+import com.example.demo.pojo.DTO.system.DepartmentUpdateDTO;
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.dto.common.PageResponseDTO;
-import com.example.demo.pojo.dto.common.ValidationResponseDTO;
+import com.example.demo.pojo.DTO.common.PageResponseDTO;
 import com.example.demo.service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import java.util.Map;
+
 /**
  * 部门管理控制器
  * <p>
@@ -84,13 +86,13 @@ public class DepartmentController {
     @GetMapping("/check-name")
     
     @ApiOperation(value = "检查部门名称是否可用", notes = "验证部门名称在同级部门中是否唯一，用于表单提交前的实时校验")
-    public ResponseEntity<ApiResponse<ValidationResponseDTO>> checkDepartmentNameAvailable(
+    public ResponseEntity<ApiResponse<Map<String, Object>>> checkDepartmentNameAvailable(
             @RequestParam String name,
             @RequestParam(required = false) Long parentId,
             @RequestParam(required = false) Long excludeId) {
         try {
             // 调用服务层方法检查名称是否可用
-            ValidationResponseDTO result = departmentService.checkNameAvailable(name, parentId, excludeId);
+            Map<String, Object> result = departmentService.checkNameAvailable(name, parentId, excludeId);
             return ResponseEntity.ok(ApiResponse.success("检查完成", result));
         } catch (Exception e) {
             // 处理检查异常

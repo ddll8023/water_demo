@@ -3,7 +3,7 @@
 <mapper namespace="com.example.demo.mapper.WarningRecordMapper">
 
     <!-- 结果映射：预警记录响应DTO -->
-    <resultMap id="WarningRecordResponseDTOMap" type="com.example.demo.pojo.dto.warning.WarningRecordResponseDTO">
+    <resultMap id="WarningRecordResponseDTOMap" type="com.example.demo.pojo.DTO.warning.WarningRecordResponseDTO">
         <id property="id" column="id"/>
         <result property="warningLocation" column="warning_location"/>
         <result property="warningType" column="warning_type"/>

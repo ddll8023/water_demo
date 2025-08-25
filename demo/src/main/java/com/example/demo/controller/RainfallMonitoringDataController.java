@@ -1,11 +1,11 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.dto.common.PageResponseDTO;
-import com.example.demo.pojo.dto.monitoring.RainfallChartDataResponseDTO;
-import com.example.demo.pojo.dto.monitoring.RainfallDataImportDTO;
-import com.example.demo.pojo.dto.monitoring.RainfallMonitoringDataQueryDTO;
-import com.example.demo.pojo.dto.monitoring.RainfallMonitoringDataResponseDTO;
+import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.pojo.DTO.monitoring.RainfallChartDataResponseDTO;
+import com.example.demo.pojo.DTO.monitoring.RainfallDataImportDTO;
+import com.example.demo.pojo.DTO.monitoring.RainfallMonitoringDataQueryDTO;
+import com.example.demo.pojo.DTO.monitoring.RainfallMonitoringDataResponseDTO;
 import com.example.demo.service.RainfallMonitoringDataService;
 import lombok.extern.slf4j.Slf4j;
 

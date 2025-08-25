@@ -1,10 +1,10 @@
 package com.example.demo.controller;
 
-import com.example.demo.pojo.dto.system.PositionCreateDTO;
-import com.example.demo.pojo.dto.system.PositionResponseDTO;
-import com.example.demo.pojo.dto.system.PositionUpdateDTO;
+import com.example.demo.pojo.DTO.system.PositionCreateDTO;
+import com.example.demo.pojo.DTO.system.PositionResponseDTO;
+import com.example.demo.pojo.DTO.system.PositionUpdateDTO;
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.DTO.common.PageResponseDTO;
 import com.example.demo.service.PositionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

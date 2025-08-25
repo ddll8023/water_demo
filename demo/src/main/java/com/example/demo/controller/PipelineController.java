@@ -1,11 +1,11 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.dto.common.PageResponseDTO;
-import com.example.demo.pojo.dto.facility.PipelineCreateDTO;
-import com.example.demo.pojo.dto.facility.PipelineQueryDTO;
-import com.example.demo.pojo.dto.facility.PipelineResponseDTO;
-import com.example.demo.pojo.dto.facility.PipelineUpdateDTO;
+import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.pojo.DTO.facility.PipelineCreateDTO;
+import com.example.demo.pojo.DTO.facility.PipelineQueryDTO;
+import com.example.demo.pojo.DTO.facility.PipelineResponseDTO;
+import com.example.demo.pojo.DTO.facility.PipelineUpdateDTO;
 import com.example.demo.pojo.entity.facility.Pipeline;
 import com.example.demo.service.PipelineService;
 import org.springframework.beans.factory.annotation.Autowired;

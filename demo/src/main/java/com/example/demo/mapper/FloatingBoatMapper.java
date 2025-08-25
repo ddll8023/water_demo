@@ -1,6 +1,6 @@
 package com.example.demo.mapper;
 
-import com.example.demo.pojo.dto.facility.FloatingBoatResponseDTO;
+import com.example.demo.pojo.DTO.facility.FloatingBoatResponseDTO;
 import com.example.demo.pojo.entity.facility.FloatingBoat;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

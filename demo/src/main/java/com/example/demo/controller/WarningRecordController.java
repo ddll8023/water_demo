@@ -1,10 +1,10 @@
 package com.example.demo.controller;
 
-import com.example.demo.pojo.dto.warning.WarningRecordCreateDTO;
-import com.example.demo.pojo.dto.warning.WarningRecordResponseDTO;
-import com.example.demo.pojo.dto.warning.WarningResolveDTO;
+import com.example.demo.pojo.DTO.warning.WarningRecordCreateDTO;
+import com.example.demo.pojo.DTO.warning.WarningRecordResponseDTO;
+import com.example.demo.pojo.DTO.warning.WarningResolveDTO;
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.DTO.common.PageResponseDTO;
 import com.example.demo.service.WarningRecordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;

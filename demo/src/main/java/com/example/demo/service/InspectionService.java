@@ -1,8 +1,8 @@
 package com.example.demo.service;
 
-import com.example.demo.pojo.dto.common.PageResponseDTO;
-import com.example.demo.pojo.dto.inspection.*;
-import com.example.demo.pojo.dto.system.DictDataResponseDTO;
+import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.pojo.DTO.inspection.*;
+import com.example.demo.pojo.DTO.system.DictDataResponseDTO;
 import com.example.demo.pojo.entity.inspection.InspectionAttachment;
 import com.example.demo.pojo.entity.inspection.InspectionRecord;
 import com.example.demo.pojo.entity.inspection.InspectionTask;

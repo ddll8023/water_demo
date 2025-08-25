@@ -3,7 +3,7 @@
 <mapper namespace="com.example.demo.mapper.WaterConditionMonitoringDataMapper">
 
     <!-- 分页查询水情监测数据 -->
-    <select id="pageWaterConditionMonitoringData" resultType="com.example.demo.pojo.dto.monitoring.WaterConditionMonitoringDataResponseDTO">
+    <select id="pageWaterConditionMonitoringData" resultType="com.example.demo.pojo.DTO.monitoring.WaterConditionMonitoringDataResponseDTO">
         SELECT
             reservoir_monitoring_data.id,
             reservoir_monitoring_data.station_id,

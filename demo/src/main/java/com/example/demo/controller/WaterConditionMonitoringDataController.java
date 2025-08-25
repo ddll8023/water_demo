@@ -1,9 +1,9 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.dto.common.PageResponseDTO;
-import com.example.demo.pojo.dto.monitoring.WaterConditionMonitoringDataQueryDTO;
-import com.example.demo.pojo.dto.monitoring.WaterConditionMonitoringDataResponseDTO;
+import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.pojo.DTO.monitoring.WaterConditionMonitoringDataQueryDTO;
+import com.example.demo.pojo.DTO.monitoring.WaterConditionMonitoringDataResponseDTO;
 import com.example.demo.service.WaterConditionMonitoringDataService;
 
 import org.springframework.beans.factory.annotation.Autowired;

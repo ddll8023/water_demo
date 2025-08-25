@@ -1,7 +1,7 @@
 package com.example.demo.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.demo.pojo.dto.inspection.InspectionRecordResponseDTO;
+import com.example.demo.pojo.DTO.inspection.InspectionRecordResponseDTO;
 import com.example.demo.pojo.entity.inspection.InspectionRecord;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

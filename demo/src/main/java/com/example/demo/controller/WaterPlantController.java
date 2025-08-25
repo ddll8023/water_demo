@@ -1,14 +1,13 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.dto.common.PageResponseDTO;
-import com.example.demo.pojo.dto.facility.WaterPlantCreateDTO;
-import com.example.demo.pojo.dto.facility.WaterPlantQueryDTO;
-import com.example.demo.pojo.dto.facility.WaterPlantResponseDTO;
-import com.example.demo.pojo.dto.facility.WaterPlantUpdateDTO;
+import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.pojo.DTO.facility.WaterPlantCreateDTO;
+import com.example.demo.pojo.DTO.facility.WaterPlantQueryDTO;
+import com.example.demo.pojo.DTO.facility.WaterPlantResponseDTO;
+import com.example.demo.pojo.DTO.facility.WaterPlantUpdateDTO;
 import com.example.demo.pojo.entity.facility.WaterPlant;
 import com.example.demo.service.WaterPlantService;
-import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

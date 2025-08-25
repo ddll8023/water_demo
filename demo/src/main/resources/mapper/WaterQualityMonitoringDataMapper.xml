@@ -3,7 +3,7 @@
 <mapper namespace="com.example.demo.mapper.WaterQualityMonitoringDataMapper">
 
     <!-- 结果映射：水质监测数据响应DTO -->
-    <resultMap id="WaterQualityMonitoringDataResponseDTOMap" type="com.example.demo.pojo.dto.monitoring.WaterQualityMonitoringDataResponseDTO">
+    <resultMap id="WaterQualityMonitoringDataResponseDTOMap" type="com.example.demo.pojo.DTO.monitoring.WaterQualityMonitoringDataResponseDTO">
         <id property="id" column="id"/>
         <result property="stationId" column="station_id"/>
         <result property="stationName" column="station_name"/>

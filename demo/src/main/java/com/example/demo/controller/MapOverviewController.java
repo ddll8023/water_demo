@@ -1,10 +1,9 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.dto.map.*;
-import com.example.demo.pojo.dto.warning.WarningRecordResponseDTO;
+import com.example.demo.pojo.DTO.map.*;
+import com.example.demo.pojo.DTO.warning.WarningRecordResponseDTO;
 import com.example.demo.service.MapOverviewService;
-import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

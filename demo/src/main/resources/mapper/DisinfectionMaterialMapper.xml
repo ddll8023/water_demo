@@ -3,7 +3,7 @@
 <mapper namespace="com.example.demo.mapper.DisinfectionMaterialMapper">
 
     <!-- 结果映射：消毒药材响应DTO -->
-    <resultMap id="DisinfectionMaterialResponseDTOMap" type="com.example.demo.pojo.dto.facility.DisinfectionMaterialResponseDTO">
+    <resultMap id="DisinfectionMaterialResponseDTOMap" type="com.example.demo.pojo.DTO.facility.DisinfectionMaterialResponseDTO">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="waterPlantId" column="water_plant_id"/>

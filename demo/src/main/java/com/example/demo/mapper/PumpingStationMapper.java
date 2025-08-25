@@ -1,7 +1,7 @@
 package com.example.demo.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.demo.pojo.dto.facility.PumpingStationResponseDTO;
+import com.example.demo.pojo.DTO.facility.PumpingStationResponseDTO;
 import com.example.demo.pojo.entity.facility.PumpingStation;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

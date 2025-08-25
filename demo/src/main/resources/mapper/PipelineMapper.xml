@@ -3,7 +3,7 @@
 <mapper namespace="com.example.demo.mapper.PipelineMapper">
 
     <!-- 结果映射：管道信息响应DTO -->
-    <resultMap id="PipelineResponseDTOMap" type="com.example.demo.pojo.dto.facility.PipelineResponseDTO">
+    <resultMap id="PipelineResponseDTOMap" type="com.example.demo.pojo.DTO.facility.PipelineResponseDTO">
         <id property="id" column="id"/>
         <result property="pipelineCode" column="pipeline_code"/>
         <result property="name" column="name"/>

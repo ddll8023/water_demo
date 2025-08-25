@@ -3,7 +3,7 @@
 <mapper namespace="com.example.demo.mapper.VillageMapper">
 
     <!-- 结果映射：村庄信息响应DTO -->
-    <resultMap id="VillageResponseDTOMap" type="com.example.demo.pojo.dto.facility.VillageResponseDTO">
+    <resultMap id="VillageResponseDTOMap" type="com.example.demo.pojo.DTO.facility.VillageResponseDTO">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="longitude" column="longitude"/>

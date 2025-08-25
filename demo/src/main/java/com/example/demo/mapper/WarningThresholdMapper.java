@@ -2,7 +2,7 @@ package com.example.demo.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.demo.pojo.entity.warning.WarningThreshold;
-import com.example.demo.pojo.dto.warning.WarningThresholdResponseDTO;
+import com.example.demo.pojo.DTO.warning.WarningThresholdResponseDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

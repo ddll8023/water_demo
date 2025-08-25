@@ -2,7 +2,7 @@ package com.example.demo.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.demo.pojo.entity.warning.WarningRecord;
-import com.example.demo.pojo.dto.warning.WarningRecordResponseDTO;
+import com.example.demo.pojo.DTO.warning.WarningRecordResponseDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;

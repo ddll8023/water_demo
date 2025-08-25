@@ -3,7 +3,7 @@
 <mapper namespace="com.example.demo.mapper.FloatingBoatMapper">
 
     <!-- 结果映射：浮船信息响应DTO -->
-    <resultMap id="FloatingBoatResponseDTOMap" type="com.example.demo.pojo.dto.facility.FloatingBoatResponseDTO">
+    <resultMap id="FloatingBoatResponseDTOMap" type="com.example.demo.pojo.DTO.facility.FloatingBoatResponseDTO">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="longitude" column="longitude"/>

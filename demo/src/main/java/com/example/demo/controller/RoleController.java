@@ -1,13 +1,12 @@
 package com.example.demo.controller;
 
-import com.example.demo.pojo.dto.system.RoleCreateDTO;
-import com.example.demo.pojo.dto.system.RoleResponseDTO;
-import com.example.demo.pojo.dto.system.RoleUpdateDTO;
+import com.example.demo.pojo.DTO.system.RoleCreateDTO;
+import com.example.demo.pojo.DTO.system.RoleResponseDTO;
+import com.example.demo.pojo.DTO.system.RoleUpdateDTO;
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.DTO.common.PageResponseDTO;
 import com.example.demo.pojo.entity.system.Permission;
 import com.example.demo.service.RoleService;
-import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

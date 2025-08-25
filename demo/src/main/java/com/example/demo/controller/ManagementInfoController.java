@@ -1,14 +1,13 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.dto.common.PageResponseDTO;
-import com.example.demo.pojo.dto.management.DepartmentInfoResponseDTO;
-import com.example.demo.pojo.dto.management.DepartmentInfoUpdateDTO;
-import com.example.demo.pojo.dto.management.PersonnelInfoCreateDTO;
-import com.example.demo.pojo.dto.management.PersonnelInfoResponseDTO;
-import com.example.demo.pojo.dto.management.PersonnelInfoUpdateDTO;
+import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.pojo.DTO.management.DepartmentInfoResponseDTO;
+import com.example.demo.pojo.DTO.management.DepartmentInfoUpdateDTO;
+import com.example.demo.pojo.DTO.management.PersonnelInfoCreateDTO;
+import com.example.demo.pojo.DTO.management.PersonnelInfoResponseDTO;
+import com.example.demo.pojo.DTO.management.PersonnelInfoUpdateDTO;
 import com.example.demo.service.ManagementInfoService;
-import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
