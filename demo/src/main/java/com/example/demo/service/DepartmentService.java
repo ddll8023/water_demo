@@ -1,11 +1,11 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.system.DepartmentCreateDTO;
-import com.example.demo.dto.system.DepartmentResponseDTO;
-import com.example.demo.dto.system.DepartmentUpdateDTO;
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.dto.common.ValidationResponseDTO;
-import com.example.demo.entity.system.Department;
+import com.example.demo.pojo.dto.system.DepartmentCreateDTO;
+import com.example.demo.pojo.dto.system.DepartmentResponseDTO;
+import com.example.demo.pojo.dto.system.DepartmentUpdateDTO;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.dto.common.ValidationResponseDTO;
+import com.example.demo.pojo.entity.system.Department;
 import com.example.demo.mapper.DepartmentMapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;

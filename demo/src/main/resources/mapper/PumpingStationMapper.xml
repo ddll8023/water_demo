@@ -3,7 +3,7 @@
 <mapper namespace="com.example.demo.mapper.PumpingStationMapper">
 
     <!-- 结果映射：泵站响应DTO -->
-    <resultMap id="PumpingStationResponseDTOMap" type="com.example.demo.dto.facility.PumpingStationResponseDTO">
+    <resultMap id="PumpingStationResponseDTOMap" type="com.example.demo.pojo.dto.facility.PumpingStationResponseDTO">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="stationCode" column="station_code"/>
@@ -26,7 +26,7 @@
     </resultMap>
     
     <!-- 结果映射：泵站实体 -->
-    <resultMap id="PumpingStationMap" type="com.example.demo.entity.facility.PumpingStation">
+    <resultMap id="PumpingStationMap" type="com.example.demo.pojo.entity.facility.PumpingStation">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="stationCode" column="station_code"/>
@@ -111,7 +111,7 @@
     </select>
     
     <!-- 插入泵站记录 -->
-    <insert id="insertPumpingStation" parameterType="com.example.demo.entity.facility.PumpingStation" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertPumpingStation" parameterType="com.example.demo.pojo.entity.facility.PumpingStation" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO pumping_stations (
             name, station_code, station_type, water_project, water_company, 
             longitude, latitude, address, operation_mode, unit_count, 
@@ -126,7 +126,7 @@
     </insert>
     
     <!-- 根据ID更新泵站信息 -->
-    <update id="updatePumpingStationById" parameterType="com.example.demo.entity.facility.PumpingStation">
+    <update id="updatePumpingStationById" parameterType="com.example.demo.pojo.entity.facility.PumpingStation">
         UPDATE pumping_stations
         <set>
             <if test="name != null">name = #{name},</if>

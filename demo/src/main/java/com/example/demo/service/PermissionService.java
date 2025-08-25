@@ -1,9 +1,9 @@
 package com.example.demo.service;
 
 
-import com.example.demo.dto.system.PermissionResponseDTO;
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.entity.system.Permission;
+import com.example.demo.pojo.dto.system.PermissionResponseDTO;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.entity.system.Permission;
 import com.example.demo.mapper.PermissionMapper;
 import com.example.demo.mapper.RoleMapper;
 import com.github.pagehelper.PageHelper;

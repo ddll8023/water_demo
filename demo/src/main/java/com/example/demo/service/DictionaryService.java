@@ -1,9 +1,9 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.dto.system.*;
-import com.example.demo.entity.system.DictData;
-import com.example.demo.entity.system.DictType;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.dto.system.*;
+import com.example.demo.pojo.entity.system.DictData;
+import com.example.demo.pojo.entity.system.DictType;
 import com.example.demo.mapper.DictionaryMapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;

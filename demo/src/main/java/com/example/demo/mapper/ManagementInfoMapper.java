@@ -1,7 +1,7 @@
 package com.example.demo.mapper;
 
-import com.example.demo.entity.system.Department;
-import com.example.demo.entity.system.Personnel;
+import com.example.demo.pojo.entity.system.Department;
+import com.example.demo.pojo.entity.system.Personnel;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

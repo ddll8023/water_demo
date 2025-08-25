@@ -1,11 +1,11 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.dto.inspection.*;
-import com.example.demo.dto.system.DictDataResponseDTO;
-import com.example.demo.entity.inspection.InspectionAttachment;
-import com.example.demo.entity.inspection.InspectionRecord;
-import com.example.demo.entity.inspection.InspectionTask;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.dto.inspection.*;
+import com.example.demo.pojo.dto.system.DictDataResponseDTO;
+import com.example.demo.pojo.entity.inspection.InspectionAttachment;
+import com.example.demo.pojo.entity.inspection.InspectionRecord;
+import com.example.demo.pojo.entity.inspection.InspectionTask;
 import com.example.demo.mapper.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;

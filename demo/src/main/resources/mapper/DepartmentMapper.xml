@@ -3,7 +3,7 @@
 <mapper namespace="com.example.demo.mapper.DepartmentMapper">
 
     <!-- 基础部门结果映射 -->
-    <resultMap id="DepartmentMap" type="com.example.demo.entity.system.Department">
+    <resultMap id="DepartmentMap" type="com.example.demo.pojo.entity.system.Department">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="parentId" column="parent_id"/>
@@ -21,12 +21,12 @@
     </resultMap>
 
     <!-- 部门详情结果映射（包含关联信息） -->
-    <resultMap id="DepartmentWithDetailsMap" type="com.example.demo.entity.system.Department" extends="DepartmentMap">
+    <resultMap id="DepartmentWithDetailsMap" type="com.example.demo.pojo.entity.system.Department" extends="DepartmentMap">
         <!-- 继承基础映射，可以添加额外字段 -->
     </resultMap>
 
     <!-- 人员信息结果映射 -->
-    <resultMap id="PersonnelInfoMap" type="com.example.demo.entity.system.Personnel">
+    <resultMap id="PersonnelInfoMap" type="com.example.demo.pojo.entity.system.Personnel">
         <result property="id" column="id"/>
         <result property="fullName" column="full_name"/>
         <result property="phone" column="phone"/>
@@ -109,7 +109,7 @@
     </select>
     
     <!-- 更新部门信息 -->
-    <update id="updateDepartment" parameterType="com.example.demo.entity.system.Department">
+    <update id="updateDepartment" parameterType="com.example.demo.pojo.entity.system.Department">
         UPDATE departments
         SET name = #{name},
             parent_id = #{parentId},
@@ -123,7 +123,7 @@
     </update>
     
     <!-- 插入部门信息 -->
-    <insert id="insertDepartment" parameterType="com.example.demo.entity.system.Department" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertDepartment" parameterType="com.example.demo.pojo.entity.system.Department" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO departments (
             name,
             parent_id,

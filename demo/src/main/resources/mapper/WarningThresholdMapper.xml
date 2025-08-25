@@ -3,7 +3,7 @@
 <mapper namespace="com.example.demo.mapper.WarningThresholdMapper">
 
     <!-- 结果映射：预警指标响应DTO -->
-    <resultMap id="WarningThresholdResponseDTOMap" type="com.example.demo.dto.warning.WarningThresholdResponseDTO">
+    <resultMap id="WarningThresholdResponseDTOMap" type="com.example.demo.pojo.dto.warning.WarningThresholdResponseDTO">
         <id property="id" column="id"/>
         <result property="stationName" column="station_name"/>
         <result property="monitoringItem" column="monitoring_item"/>
@@ -84,7 +84,7 @@
     </select>
 
     <!-- 查询所有预警指标（不考虑是否启用） -->
-    <select id="selectAll" resultType="com.example.demo.entity.warning.WarningThreshold">
+    <select id="selectAll" resultType="com.example.demo.pojo.entity.warning.WarningThreshold">
         SELECT * FROM warning_thresholds 
         WHERE deleted_at IS NULL 
         ORDER BY created_at DESC
@@ -119,7 +119,7 @@
     </insert>
 
     <!-- 根据ID查询预警阈值 -->
-    <select id="selectWarningThresholdById" resultType="com.example.demo.entity.warning.WarningThreshold">
+    <select id="selectWarningThresholdById" resultType="com.example.demo.pojo.entity.warning.WarningThreshold">
         SELECT * FROM warning_thresholds 
         WHERE id = #{id} AND deleted_at IS NULL
     </select>

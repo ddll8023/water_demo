@@ -1,9 +1,11 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.dto.system.DictDataResponseDTO;
-import com.example.demo.dto.warning.*;
-import com.example.demo.entity.warning.WarningRecord;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.dto.system.DictDataResponseDTO;
+import com.example.demo.pojo.dto.warning.WarningRecordCreateDTO;
+import com.example.demo.pojo.dto.warning.WarningRecordResponseDTO;
+import com.example.demo.pojo.dto.warning.WarningResolveDTO;
+import com.example.demo.pojo.entity.warning.WarningRecord;
 import com.example.demo.mapper.WarningRecordMapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;

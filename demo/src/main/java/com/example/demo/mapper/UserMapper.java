@@ -1,12 +1,11 @@
 package com.example.demo.mapper;
 
-import com.example.demo.entity.system.Permission;
-import com.example.demo.entity.system.Role;
-import com.example.demo.entity.system.User;
+import com.example.demo.pojo.entity.system.Permission;
+import com.example.demo.pojo.entity.system.Role;
+import com.example.demo.pojo.entity.system.User;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 用户Mapper接口

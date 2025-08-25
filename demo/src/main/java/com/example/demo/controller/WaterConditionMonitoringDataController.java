@@ -1,11 +1,12 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.dto.monitoring.WaterConditionMonitoringDataQueryDTO;
-import com.example.demo.dto.monitoring.WaterConditionMonitoringDataResponseDTO;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.dto.monitoring.WaterConditionMonitoringDataQueryDTO;
+import com.example.demo.pojo.dto.monitoring.WaterConditionMonitoringDataResponseDTO;
 import com.example.demo.service.WaterConditionMonitoringDataService;
-import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,8 +17,8 @@ import io.swagger.annotations.ApiOperation;
 /**
  * 水情监测数据控制器
  * <p>
- * 提供水情监测数据的查询接口，支持分页查询水情数据，
- * 可通过不同参数筛选查询结果。
+ * 提供水情监测数据的查询接口，支持分页查询水情数据
+ * 可通过不同参数筛选查询结果
  * </p>
  * 
  * @author system
@@ -25,7 +26,6 @@ import io.swagger.annotations.ApiOperation;
  */
 @RestController
 @RequestMapping("/api/monitoring/water-condition")
-@RequiredArgsConstructor
 @Api(tags = "水情监测数据管理", description = "水情监测数据的CRUD操作及相关统计功能")
 public class WaterConditionMonitoringDataController {
 
@@ -33,7 +33,8 @@ public class WaterConditionMonitoringDataController {
      * 水情监测数据服务
      * 通过构造函数注入，负责处理水情监测数据的业务逻辑
      */
-    private final WaterConditionMonitoringDataService waterConditionMonitoringDataService;
+    @Autowired
+    private WaterConditionMonitoringDataService waterConditionMonitoringDataService;
 
     /**
      * 分页查询水情监测数据

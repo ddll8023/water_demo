@@ -1,9 +1,11 @@
 package com.example.demo.service;
 
 
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.dto.warning.*;
-import com.example.demo.entity.warning.WarningThreshold;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.dto.warning.WarningThresholdCreateDTO;
+import com.example.demo.pojo.dto.warning.WarningThresholdResponseDTO;
+import com.example.demo.pojo.dto.warning.WarningThresholdUpdateDTO;
+import com.example.demo.pojo.entity.warning.WarningThreshold;
 import com.example.demo.mapper.WarningThresholdMapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;

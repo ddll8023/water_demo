@@ -1,14 +1,15 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.auth.LoginRequestDTO;
-import com.example.demo.dto.auth.LoginResponseDTO;
-import com.example.demo.dto.auth.RefreshTokenRequestDTO;
-import com.example.demo.dto.auth.RefreshTokenResponseDTO;
-import com.example.demo.dto.auth.UserInfoWithPermissionsDTO;
+import com.example.demo.pojo.dto.auth.LoginRequestDTO;
+import com.example.demo.pojo.dto.auth.LoginResponseDTO;
+import com.example.demo.pojo.dto.auth.RefreshTokenRequestDTO;
+import com.example.demo.pojo.dto.auth.RefreshTokenResponseDTO;
+import com.example.demo.pojo.dto.auth.UserInfoWithPermissionsDTO;
 import com.example.demo.common.ApiResponse;
 import com.example.demo.service.AuthService;
 import com.example.demo.config.JwtTokenUtil;
-import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,37 +20,29 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * 认证控制器
- * 处理用户登录、登出、Token刷新等认证相关请求
  * 
- * 主要功能包括：
- * 1. 用户登录认证并返回JWT令牌
- * 2. 用户登出处理
- * 3. 获取当前登录用户信息
- * 4. 刷新访问令牌
- * 5. 验证令牌有效性
  */
 @RestController
 @RequestMapping("/api/auth")
-@RequiredArgsConstructor
 @Api(tags = "认证管理", description = "用户登录、登出、令牌管理等认证相关接口")
 public class AuthController {
 
     /**
      * 认证服务，处理具体的认证业务逻辑
      */
-    private final AuthService authService;
+    @Autowired
+    private AuthService authService;
 
     /**
      * JWT令牌工具类，用于Token的生成、解析和验证
      */
-    private final JwtTokenUtil jwtTokenUtil;
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
     /**
      * 用户登录接口
      * 
-     * @param loginRequest 登录请求DTO，包含用户名和密码
-     * @return 登录成功返回用户信息和令牌；失败返回错误信息
+     * @param loginRequest 登录请求DTO，包含用户名和密�?     * @return 登录成功返回用户信息和令牌；失败返回错误信息
      */
     @PostMapping("/login")
     @ApiOperation(value = "用户登录", notes = "验证用户凭据并返回JWT访问令牌和刷新令牌")
@@ -70,9 +63,7 @@ public class AuthController {
     /**
      * 用户登出接口
      * 
-     * @param request HTTP请求对象，用于提取认证令牌
-     * @return 登出成功返回成功信息；失败返回错误信息
-     */
+     * @param request HTTP请求对象，用于提取认证令�?     * @return 登出成功返回成功信息；失败返回错误信�?     */
     @PostMapping("/logout")
     @ApiOperation(value = "用户登出", notes = "使当前用户的JWT令牌失效并执行登出操作")
     public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest request) {
@@ -85,7 +76,7 @@ public class AuthController {
                     .body(ApiResponse.error(401, "未提供认证Token"));
             }
 
-            // 验证token有效性
+            // 验证token有效
             if (!jwtTokenUtil.validateToken(token)) {
                 // Token无效或已过期，返回未授权错误
                 return ResponseEntity.status(401)

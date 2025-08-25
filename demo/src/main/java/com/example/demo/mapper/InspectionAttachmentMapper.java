@@ -1,7 +1,7 @@
 package com.example.demo.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.demo.entity.inspection.InspectionAttachment;
+import com.example.demo.pojo.entity.inspection.InspectionAttachment;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

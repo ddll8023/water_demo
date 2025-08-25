@@ -2,8 +2,8 @@ package com.example.demo.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.example.demo.dto.facility.ReservoirResponseDTO;
-import com.example.demo.entity.facility.Reservoir;
+import com.example.demo.pojo.dto.facility.ReservoirResponseDTO;
+import com.example.demo.pojo.entity.facility.Reservoir;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

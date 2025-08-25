@@ -3,7 +3,7 @@
 <mapper namespace="com.example.demo.mapper.DisinfectionMaterialMapper">
 
     <!-- 结果映射：消毒药材响应DTO -->
-    <resultMap id="DisinfectionMaterialResponseDTOMap" type="com.example.demo.dto.facility.DisinfectionMaterialResponseDTO">
+    <resultMap id="DisinfectionMaterialResponseDTOMap" type="com.example.demo.pojo.dto.facility.DisinfectionMaterialResponseDTO">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="waterPlantId" column="water_plant_id"/>
@@ -52,7 +52,7 @@
     </select>
 
     <!-- 获取所有可用的消毒药材（用于下拉选择） -->
-    <select id="selectAvailableDisinfectionMaterials" resultType="com.example.demo.entity.facility.DisinfectionMaterial">
+    <select id="selectAvailableDisinfectionMaterials" resultType="com.example.demo.pojo.entity.facility.DisinfectionMaterial">
         SELECT id, name, unit FROM disinfection_materials
         WHERE deleted_at IS NULL
         ORDER BY name

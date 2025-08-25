@@ -1,10 +1,13 @@
 package com.example.demo.service;
 
+import com.example.demo.pojo.dto.facility.ReservoirCreateDTO;
+import com.example.demo.pojo.dto.facility.ReservoirQueryDTO;
+import com.example.demo.pojo.dto.facility.ReservoirResponseDTO;
+import com.example.demo.pojo.dto.facility.ReservoirUpdateDTO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.dto.facility.*;
-import com.example.demo.entity.facility.Reservoir;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.entity.facility.Reservoir;
 import com.example.demo.mapper.ReservoirMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

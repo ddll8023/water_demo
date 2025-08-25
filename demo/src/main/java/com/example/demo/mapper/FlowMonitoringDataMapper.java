@@ -1,8 +1,8 @@
 package com.example.demo.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.demo.dto.monitoring.FlowMonitoringDataResponseDTO;
-import com.example.demo.entity.monitoring.FlowMonitoringData;
+import com.example.demo.pojo.dto.monitoring.FlowMonitoringDataResponseDTO;
+import com.example.demo.pojo.entity.monitoring.FlowMonitoringData;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.MapKey;

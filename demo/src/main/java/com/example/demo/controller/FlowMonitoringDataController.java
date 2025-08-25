@@ -1,56 +1,55 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.dto.monitoring.*;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.dto.monitoring.*;
 import com.example.demo.service.FlowMonitoringDataService;
-import lombok.RequiredArgsConstructor;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+
 /**
- * 流量监测数据管理控制器
- * 处理流量监测数据的查询、统计和分析操作
+ * 流量监测数据管理控制器 * 处理流量监测数据的查询、统计和分析操作
  * 提供流量数据的CRUD、导入导出、统计分析等功能
  */
 @Slf4j
 @RestController
 @RequestMapping("/api/monitoring")
-@RequiredArgsConstructor
 @Api(tags = "流量监测数据管理", description = "流量监测数据相关的增删改查操作")
 public class FlowMonitoringDataController {
 
     /**
      * 流量监测数据服务
      */
-    private final FlowMonitoringDataService flowMonitoringDataService;
+    @Autowired
+    private FlowMonitoringDataService flowMonitoringDataService;
 
     /**
      * 分页查询流量监测数据列表
-     * 
-     * @param page 页码，默认为1
-     * @param size 每页大小，默认为10
-     * @param stationId 监测站点ID（可选）
-     * @param startTime 开始时间（可选）
-     * @param endTime 结束时间（可选）
-     * @param dataQuality 数据质量(1:正常,2:异常,3:缺失)（可选）
+     *
+     * @param page             页码，默认为1
+     * @param size             每页大小，默认为10
+     * @param stationId        监测站点ID（可选）
+     * @param startTime        开始时间（可选）
+     * @param endTime          结束时间（可选）
+     * @param dataQuality      数据质量(1:正常,2:异常,3:缺失)（可选）
      * @param collectionMethod 采集方式(AUTO:自动,MANUAL:手动)（可选）
-     * @param dataSource 数据来源设备（可选）
-     * @param sort 排序字段，默认为"monitoring_time,desc"
+     * @param dataSource       数据来源设备（可选）
+     * @param sort             排序字段，默认为"monitoring_time,desc"
      * @return 流量监测数据分页结果
      */
     @GetMapping("/flow-data")
-    @PreAuthorize("hasAuthority('business:operate')")
+
     @ApiOperation(value = "获取流量监测数据分页数据", notes = "支持按站点、时间范围、数据质量等条件筛选")
     public ResponseEntity<ApiResponse<PageResponseDTO<FlowMonitoringDataResponseDTO>>> getFlowMonitoringData(
             @RequestParam(defaultValue = "1") int page,
@@ -75,9 +74,8 @@ public class FlowMonitoringDataController {
             queryDTO.setDataSource(dataSource);
             queryDTO.setSort(sort != null ? sort : "monitoring_time,desc");
 
-            // 调用服务层获取分页数据
-            PageResponseDTO<FlowMonitoringDataResponseDTO> result =
-                    flowMonitoringDataService.getFlowMonitoringDataPage(queryDTO);
+            // 调用服务层获取分页数据           
+            PageResponseDTO<FlowMonitoringDataResponseDTO> result = flowMonitoringDataService.getFlowMonitoringDataPage(queryDTO);
             return ResponseEntity.ok(ApiResponse.success("查询成功", result));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
@@ -88,17 +86,17 @@ public class FlowMonitoringDataController {
     /**
      * 获取流量监测图表数据
      * 获取指定站点和时间范围的流量图表数据
-     * 支持数据类型区分（瞬时流量/累计流量）
-     * 
+     * 支持数据类型区分（瞬时流量,累计流量）     *
+     *
      * @param stationId 监测站点ID（必须提供）
      * @param startTime 开始时间（可选）
-     * @param endTime 结束时间（可选）
-     * @param interval 时间间隔(hour:小时,day:天,month:月)，默认为hour
-     * @param dataType 数据类型(flowRate:瞬时流量,cumulativeFlow:累计流量)，默认为flowRate
+     * @param endTime   结束时间（可选）
+     * @param interval  时间间隔(hour:小时,day:天,month:月，默认为hour
+     * @param dataType  数据类型(flowRate:瞬时流量,cumulativeFlow:累计流量)，默认为flowRate
      * @return 流量图表数据
      */
     @GetMapping("/flow-chart-data")
-    @PreAuthorize("hasAuthority('business:operate')")
+
     @ApiOperation(value = "获取流量监测图表数据", notes = "根据站点ID和时间范围获取流量图表数据")
     public ResponseEntity<ApiResponse<FlowChartDataResponseDTO>> getFlowChartData(
             @RequestParam(required = false) Long stationId,
@@ -112,8 +110,8 @@ public class FlowMonitoringDataController {
                 return ResponseEntity.badRequest()
                         .body(ApiResponse.error(400, "查询失败: 必须提供监测站点ID"));
             }
-            
-            // 调用服务层获取图表数据
+
+            // 调用服务层获取图表数据            
             FlowChartDataResponseDTO result = flowMonitoringDataService.getFlowChartData(
                     stationId, startTime, endTime, interval, dataType);
             return ResponseEntity.ok(ApiResponse.success("查询成功", result));
@@ -126,12 +124,12 @@ public class FlowMonitoringDataController {
     /**
      * 导出流量监测数据
      * 根据查询条件将流量监测数据导出为Excel文件
-     * 
-     * @param queryDTO 查询参数DTO，包含筛选条件
+     *
+     * @param queryDTO 查询参数DTO，包含筛选条件     *
      * @return 导出的Excel文件字节数组
      */
     @PostMapping("/flow-data/export")
-    @PreAuthorize("hasAuthority('business:operate')")
+
     @ApiOperation(value = "导出流量监测数据", notes = "根据查询条件将流量监测数据导出为Excel文件")
     public ResponseEntity<byte[]> exportFlowData(
             @RequestBody FlowMonitoringDataQueryDTO queryDTO) {
@@ -144,7 +142,7 @@ public class FlowMonitoringDataController {
             // 调用服务层导出数据为Excel
             byte[] excelData = flowMonitoringDataService.exportToExcel(queryDTO);
 
-            // 设置响应头信息
+                        // 设置响应头信息
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
             headers.setContentDispositionFormData("attachment",
@@ -169,18 +167,17 @@ public class FlowMonitoringDataController {
     /**
      * 导入流量监测数据
      * 批量导入Excel解析后的流量监测数据
-     * 
-     * @param dataList 导入的数据列表
-     * @return 导入结果，包含成功和失败的数据统计
+     *
+     * @param dataList 导入的数据列表     * @return 导入结果，包含成功和失败的数据统计
      */
     @PostMapping("/flow-data/import")
-    @PreAuthorize("hasAuthority('business:operate')")
+
     @ApiOperation(value = "导入流量监测数据", notes = "批量导入Excel解析后的流量监测数据")
     public ResponseEntity<ApiResponse<ImportResultDTO>> importFlowData(
             @RequestBody @Valid List<FlowDataImportDTO> dataList) {
 
         try {
-            log.info("开始导入流量监测数据，数据量: {}", dataList.size());
+            log.info("开始导入流量监测数据，数据数量: {}", dataList.size());
 
             // 参数验证
             if (dataList == null || dataList.isEmpty()) {
@@ -205,7 +202,7 @@ public class FlowMonitoringDataController {
                 log.info("流量监测数据导入部分成功，总数: {}, 成功: {}, 失败: {}",
                         result.getTotalRows(), result.getSuccessRows(), result.getErrorRows());
                 return ResponseEntity.ok(ApiResponse.success(
-                        String.format("数据导入完成，成功%d条，失败%d条", result.getSuccessRows(), result.getErrorRows()),
+                        String.format("数据导入完成，成功: %d条，失败: %d条", result.getSuccessRows(), result.getErrorRows()),
                         result));
             } else {
                 // 全部成功

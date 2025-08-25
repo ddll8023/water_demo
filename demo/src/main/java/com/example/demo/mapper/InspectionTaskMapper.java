@@ -1,8 +1,8 @@
 package com.example.demo.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.demo.dto.inspection.InspectionTaskResponseDTO;
-import com.example.demo.entity.inspection.InspectionTask;
+import com.example.demo.pojo.dto.inspection.InspectionTaskResponseDTO;
+import com.example.demo.pojo.entity.inspection.InspectionTask;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

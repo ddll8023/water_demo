@@ -3,7 +3,7 @@
 <mapper namespace="com.example.demo.mapper.UserMapper">
 
     <!-- 结果映射：用户实体 -->
-    <resultMap id="UserMap" type="com.example.demo.entity.system.User">
+    <resultMap id="UserMap" type="com.example.demo.pojo.entity.system.User">
         <id property="id" column="id"/>
         <result property="username" column="username"/>
         <result property="passwordHash" column="password_hash"/>
@@ -17,7 +17,7 @@
     </resultMap>
 
     <!-- 结果映射：权限实体 -->
-    <resultMap id="PermissionMap" type="com.example.demo.entity.system.Permission">
+    <resultMap id="PermissionMap" type="com.example.demo.pojo.entity.system.Permission">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="code" column="code"/>
@@ -29,7 +29,7 @@
     </resultMap>
 
     <!-- 结果映射：角色实体 -->
-    <resultMap id="RoleMap" type="com.example.demo.entity.system.Role">
+    <resultMap id="RoleMap" type="com.example.demo.pojo.entity.system.Role">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="description" column="description"/>

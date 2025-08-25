@@ -1,16 +1,16 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.dto.monitoring.*;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.dto.monitoring.*;
 import com.example.demo.service.WaterLevelMonitoringDataService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,7 +23,7 @@ import java.util.List;
  * 处理水位监测数据的查询、统计和分析操作
  * 
  * 设计说明：
- * - 严格参考FlowMonitoringDataController的实现规范
+ * - 严格参考FlowMonitoringDataController的实现
  * - 提供完整的水位监测数据管理接口
  * - 支持分页查询、统计分析、图表数据、导入导出等功能
  * - 使用统一的权限控制和异常处理机制
@@ -31,31 +31,31 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/monitoring")
-@RequiredArgsConstructor
 @Api(tags = "水位监测数据管理", description = "水位监测数据的CRUD操作及相关统计功能")
 public class WaterLevelMonitoringDataController {
 
     /**
      * 水位监测数据服务
      */
-    private final WaterLevelMonitoringDataService waterLevelMonitoringDataService;
+    @Autowired
+    private WaterLevelMonitoringDataService waterLevelMonitoringDataService;
 
     /**
      * 分页查询水位监测数据列表
      * 
-     * @param page 页码，默认为第1页
-     * @param size 每页记录数，默认为10条
-     * @param stationId 监测站点ID，可选
-     * @param startTime 开始时间，可选
-     * @param endTime 结束时间，可选
-     * @param dataQuality 数据质量，可选
-     * @param collectionMethod 采集方式，可选
-     * @param dataSource 数据来源设备，可选
+     * @param page 页码，默认为1
+     * @param size 每页记录数，默认10
+     * @param stationId 监测站点ID，可为空
+     * @param startTime 开始时间，可为空
+     * @param endTime 结束时间，可为空
+     * @param dataQuality 数据质量，可为空
+     * @param collectionMethod 采集方式，可为空
+     * @param dataSource 数据来源设备，可为空
      * @param sort 排序字段，可选，格式如："monitoring_time,desc"
      * @return 分页的水位监测数据列表
      */
     @GetMapping("/water-level-data")
-    @PreAuthorize("hasAuthority('business:operate')")
+    
     @ApiOperation(value = "分页查询水位监测数据", notes = "根据条件分页查询水位监测数据")
     public ResponseEntity<ApiResponse<PageResponseDTO<WaterLevelMonitoringDataResponseDTO>>> getWaterLevelMonitoringData(
             @RequestParam(defaultValue = "1") int page,
@@ -93,14 +93,14 @@ public class WaterLevelMonitoringDataController {
     /**
      * 获取水位监测图表数据
      * 
-     * @param stationId 监测站点ID，可选
-     * @param startTime 开始时间，可选
-     * @param endTime 结束时间，可选
-     * @param interval 时间间隔，例如："hour"、"day"、"week"等
+     * @param stationId 监测站点ID，可为空
+     * @param startTime 开始时间，可为空
+     * @param endTime 结束时间，可为空
+     * @param interval 时间间隔，例如："hour"、"day"、"week"
      * @return 用于图表展示的水位监测数据
      */
     @GetMapping("/water-level-chart-data")
-    @PreAuthorize("hasAuthority('business:operate')")
+    
     @ApiOperation(value = "获取水位监测图表数据", notes = "根据站点ID和时间范围获取水位图表数据")
     public ResponseEntity<ApiResponse<WaterLevelChartDataResponseDTO>> getWaterLevelChartData(
             @RequestParam(required = false) Long stationId,
@@ -125,7 +125,7 @@ public class WaterLevelMonitoringDataController {
      * @return 导出的Excel文件内容
      */
     @PostMapping("/water-level-data/export")
-    @PreAuthorize("hasAuthority('business:operate')")
+    
     @ApiOperation(value = "导出水位监测数据", notes = "根据查询条件将水位监测数据导出为Excel文件")
     public ResponseEntity<byte[]> exportWaterLevelData(
             @Valid @RequestBody WaterLevelMonitoringDataQueryDTO queryDTO) {
@@ -152,7 +152,7 @@ public class WaterLevelMonitoringDataController {
      * @return 导入结果，包含成功和失败的记录数
      */
     @PostMapping("/water-level-data/import")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     @ApiOperation(value = "导入水位监测数据", notes = "批量导入Excel解析后的水位监测数据")
         public ResponseEntity<ApiResponse<ImportResultDTO>> importWaterLevelData(
             @Valid @RequestBody List<WaterLevelDataImportDTO> dataList) {

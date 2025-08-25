@@ -1,15 +1,16 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.system.RoleCreateDTO;
-import com.example.demo.dto.system.RoleResponseDTO;
-import com.example.demo.dto.system.RoleUpdateDTO;
+import com.example.demo.pojo.dto.system.RoleCreateDTO;
+import com.example.demo.pojo.dto.system.RoleResponseDTO;
+import com.example.demo.pojo.dto.system.RoleUpdateDTO;
 import com.example.demo.common.ApiResponse;
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.entity.system.Permission;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.entity.system.Permission;
 import com.example.demo.service.RoleService;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -26,11 +27,13 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/api/roles")
-@RequiredArgsConstructor
 @Api(tags = "角色管理", description = "角色相关的CRUD操作和权限分配")
 public class RoleController {
-
-    private final RoleService roleService;
+    /**
+     * 角色服务
+     */
+    @Autowired
+    private RoleService roleService;
 
     /**
      * 分页查询角色列表
@@ -38,11 +41,11 @@ public class RoleController {
      * @param page 页码，默认为1
      * @param size 每页大小，默认为10
      * @param name 角色名称搜索，可选参数
-     * @return 返回分页的角色列表数据
+     * @return 返回分页的角色列表
      */
     @ApiOperation(value = "分页查询角色列表", notes = "根据条件分页查询角色信息")
     @GetMapping
-    @PreAuthorize("hasAuthority('system:manage')")
+    
     public ResponseEntity<ApiResponse<PageResponseDTO<RoleResponseDTO>>> getRoles(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -64,7 +67,7 @@ public class RoleController {
      */
     @ApiOperation(value = "查询角色详情", notes = "根据ID查询角色详细信息")
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('system:manage')")
+    
     public ResponseEntity<ApiResponse<RoleResponseDTO>> getRoleById(
             @PathVariable Long id) {
         try {
@@ -84,7 +87,7 @@ public class RoleController {
      */
     @ApiOperation(value = "创建角色", notes = "创建新的角色信息")
     @PostMapping
-    @PreAuthorize("hasAuthority('system:manage')")
+    
     public ResponseEntity<ApiResponse<RoleResponseDTO>> createRole(
             @Valid @RequestBody RoleCreateDTO createDTO) {
         try {
@@ -105,7 +108,7 @@ public class RoleController {
      */
     @ApiOperation(value = "更新角色信息", notes = "根据ID更新角色信息")
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('system:manage')")
+    
     public ResponseEntity<ApiResponse<RoleResponseDTO>> updateRole(
             @PathVariable Long id,
             @Valid @RequestBody RoleUpdateDTO updateDTO) {
@@ -127,7 +130,7 @@ public class RoleController {
      */
     @ApiOperation(value = "删除角色", notes = "根据ID删除角色信息（软删除）")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('system:manage')")
+    
     public ResponseEntity<ApiResponse<Void>> deleteRole(
             @PathVariable Long id) {
         try {
@@ -148,7 +151,7 @@ public class RoleController {
      */
     @ApiOperation(value = "获取角色权限列表", notes = "查询指定角色已分配的所有权限")
     @GetMapping("/{id}/permissions")
-    @PreAuthorize("hasAuthority('system:manage')")
+    
     public ResponseEntity<ApiResponse<List<Permission>>> getRolePermissions(
             @PathVariable Long id) {
         try {
@@ -170,7 +173,7 @@ public class RoleController {
      */
     @ApiOperation(value = "为角色分配权限", notes = "更新指定角色的权限列表，会覆盖原有权限")
     @PutMapping("/{id}/permissions")
-    @PreAuthorize("hasAuthority('system:manage')")
+    
     public ResponseEntity<ApiResponse<Void>> assignPermissions(
             @PathVariable Long id,
             @RequestBody List<Long> permissionIds) {
@@ -191,7 +194,7 @@ public class RoleController {
      */
     @ApiOperation(value = "获取所有可用角色", notes = "获取系统中所有可用于选择的角色列表")
     @GetMapping("/available")
-    @PreAuthorize("hasAuthority('system:manage')")
+    
     public ResponseEntity<ApiResponse<List<RoleResponseDTO>>> getAllAvailableRoles() {
         try {
             List<RoleResponseDTO> roles = roleService.getAllAvailableRoles();
@@ -212,7 +215,7 @@ public class RoleController {
      */
     @ApiOperation(value = "检查角色名称是否可用", notes = "验证角色名称是否已被使用")
     @GetMapping("/check-name")
-    @PreAuthorize("hasAuthority('system:manage')")
+    
     public ResponseEntity<ApiResponse<Map<String, Boolean>>> checkRoleNameAvailable(
             @RequestParam String name,
             @RequestParam(required = false) Long excludeId) {

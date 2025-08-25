@@ -3,7 +3,7 @@
 <mapper namespace="com.example.demo.mapper.WarningRecordMapper">
 
     <!-- 结果映射：预警记录响应DTO -->
-    <resultMap id="WarningRecordResponseDTOMap" type="com.example.demo.dto.warning.WarningRecordResponseDTO">
+    <resultMap id="WarningRecordResponseDTOMap" type="com.example.demo.pojo.dto.warning.WarningRecordResponseDTO">
         <id property="id" column="id"/>
         <result property="warningLocation" column="warning_location"/>
         <result property="warningType" column="warning_type"/>
@@ -22,7 +22,7 @@
     </resultMap>
     
     <!-- 实体映射 -->
-    <resultMap id="WarningRecordMap" type="com.example.demo.entity.warning.WarningRecord">
+    <resultMap id="WarningRecordMap" type="com.example.demo.pojo.entity.warning.WarningRecord">
         <id property="id" column="id"/>
         <result property="warningLocation" column="warning_location"/>
         <result property="warningType" column="warning_type"/>
@@ -155,7 +155,7 @@
     </select>
     
     <!-- 插入预警记录 -->
-    <insert id="insertWarningRecord" parameterType="com.example.demo.entity.warning.WarningRecord" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertWarningRecord" parameterType="com.example.demo.pojo.entity.warning.WarningRecord" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO warning_records (
             warning_location, warning_type, warning_level, warning_content, 
             warning_status, project_name, occurred_at, resolved_at, 
@@ -178,7 +178,7 @@
     </select>
     
     <!-- 更新预警记录 -->
-    <update id="updateWarningRecord" parameterType="com.example.demo.entity.warning.WarningRecord">
+    <update id="updateWarningRecord" parameterType="com.example.demo.pojo.entity.warning.WarningRecord">
         UPDATE warning_records
         <set>
             <if test="warningLocation != null">warning_location = #{warningLocation},</if>

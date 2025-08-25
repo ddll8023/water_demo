@@ -1,10 +1,13 @@
 package com.example.demo.service;
 
+import com.example.demo.pojo.dto.facility.MonitoringStationCreateDTO;
+import com.example.demo.pojo.dto.facility.MonitoringStationQueryDTO;
+import com.example.demo.pojo.dto.facility.MonitoringStationResponseDTO;
+import com.example.demo.pojo.dto.facility.MonitoringStationUpdateDTO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.dto.facility.*;
-import com.example.demo.entity.facility.MonitoringStation;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.entity.facility.MonitoringStation;
 import com.example.demo.mapper.MonitoringStationMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;

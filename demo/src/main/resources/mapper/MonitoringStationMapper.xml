@@ -3,7 +3,7 @@
 <mapper namespace="com.example.demo.mapper.MonitoringStationMapper">
 
     <!-- 结果映射：监测站点响应DTO -->
-    <resultMap id="MonitoringStationResponseDTOMap" type="com.example.demo.dto.facility.MonitoringStationResponseDTO">
+    <resultMap id="MonitoringStationResponseDTOMap" type="com.example.demo.pojo.dto.facility.MonitoringStationResponseDTO">
         <id property="id" column="id"/>
         <result property="stationCode" column="station_code"/>
         <result property="name" column="name"/>
@@ -21,7 +21,7 @@
     </resultMap>
 
     <!-- 结果映射：监测站点实体 -->
-    <resultMap id="MonitoringStationMap" type="com.example.demo.entity.facility.MonitoringStation">
+    <resultMap id="MonitoringStationMap" type="com.example.demo.pojo.entity.facility.MonitoringStation">
         <id property="id" column="id"/>
         <result property="stationCode" column="station_code"/>
         <result property="name" column="name"/>

@@ -1,13 +1,17 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.dto.facility.*;
-import com.example.demo.entity.facility.WaterPlant;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.dto.facility.WaterPlantCreateDTO;
+import com.example.demo.pojo.dto.facility.WaterPlantQueryDTO;
+import com.example.demo.pojo.dto.facility.WaterPlantResponseDTO;
+import com.example.demo.pojo.dto.facility.WaterPlantUpdateDTO;
+import com.example.demo.pojo.entity.facility.WaterPlant;
 import com.example.demo.service.WaterPlantService;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -21,14 +25,14 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/engineering-service/water-plants")
-@RequiredArgsConstructor
 @Api(tags = "水厂管理", description = "水厂信息的CRUD操作及其他管理功能")
 public class WaterPlantController {
 
     /**
      * 水厂服务接口
      */
-    private final WaterPlantService waterPlantService;
+    @Autowired
+    private WaterPlantService waterPlantService;
 
     /**
      * 分页查询水厂列表
@@ -40,7 +44,7 @@ public class WaterPlantController {
      */
     @ApiOperation(value = "分页查询水厂列表", notes = "根据条件分页查询水厂信息")
     @GetMapping
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<PageResponseDTO<WaterPlantResponseDTO>>> getWaterPlantPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -52,7 +56,7 @@ public class WaterPlantController {
             queryDTO.setSize(size);
             queryDTO.setKeyword(keyword);
 
-            // 调用服务层方法获取分页结果
+            // 调用服务层方法获取分页数据
             PageResponseDTO<WaterPlantResponseDTO> result = waterPlantService.getWaterPlantPage(queryDTO);
             return ResponseEntity.ok(ApiResponse.success("查询成功", result));
         } catch (Exception e) {
@@ -69,7 +73,7 @@ public class WaterPlantController {
      */
     @ApiOperation(value = "查询水厂详情", notes = "根据水厂ID查询详细信息")
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<WaterPlantResponseDTO>> getWaterPlantById(
             @PathVariable Long id) {
         try {
@@ -95,7 +99,7 @@ public class WaterPlantController {
      */
     @ApiOperation(value = "创建水厂", notes = "创建新的水厂记录")
     @PostMapping
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<WaterPlantResponseDTO>> createWaterPlant(
             @Valid @RequestBody WaterPlantCreateDTO createDTO) {
         try {
@@ -109,7 +113,7 @@ public class WaterPlantController {
         } catch (Exception e) {
             // 处理其他异常
             return ResponseEntity.badRequest()
-                .body(ApiResponse.error(500, "创建失败：" + e.getMessage()));
+                .body(ApiResponse.error(500, "创建失败" + e.getMessage()));
         }
     }
 
@@ -122,7 +126,7 @@ public class WaterPlantController {
      */
     @ApiOperation(value = "更新水厂信息", notes = "根据水厂ID更新水厂信息")
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<WaterPlantResponseDTO>> updateWaterPlant(
             @PathVariable Long id,
             @Valid @RequestBody WaterPlantUpdateDTO updateDTO) {
@@ -138,7 +142,7 @@ public class WaterPlantController {
         } catch (Exception e) {
             // 处理其他异常
             return ResponseEntity.badRequest()
-                .body(ApiResponse.error(500, "更新失败：" + e.getMessage()));
+                .body(ApiResponse.error(500, "更新失败" + e.getMessage()));
         }
     }
 
@@ -150,7 +154,7 @@ public class WaterPlantController {
      */
     @ApiOperation(value = "删除水厂", notes = "根据水厂ID删除水厂记录")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<Void>> deleteWaterPlant(
             @PathVariable Long id) {
         try {
@@ -164,7 +168,7 @@ public class WaterPlantController {
         } catch (Exception e) {
             // 处理其他异常
             return ResponseEntity.badRequest()
-                .body(ApiResponse.error(500, "删除失败：" + e.getMessage()));
+                .body(ApiResponse.error(500, "删除失败" + e.getMessage()));
         }
     }
 
@@ -176,7 +180,7 @@ public class WaterPlantController {
      */
     @ApiOperation(value = "批量删除水厂", notes = "根据水厂ID列表批量删除水厂记录")
     @DeleteMapping("/batch")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<Void>> batchDeleteWaterPlants(
             @RequestBody List<Long> ids) {
         try {
@@ -201,7 +205,7 @@ public class WaterPlantController {
      */
     @ApiOperation(value = "获取可用水厂列表", notes = "获取所有可用的水厂列表")
     @GetMapping("/available")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<List<WaterPlant>>> getAvailableWaterPlants() {
         try {
             // 获取所有可用的水厂列表
@@ -219,12 +223,12 @@ public class WaterPlantController {
      * 
      * @return 水厂总数
      */
-    @ApiOperation(value = "统计水厂总数", notes = "统计系统中水厂的总数量")
+    @ApiOperation(value = "统计水厂总数", notes = "统计系统中水厂的总数")
     @GetMapping("/count")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<Long>> countTotal() {
         try {
-            // 统计系统中水厂的总数量
+            // 统计系统中水厂的总数
             long result = waterPlantService.countTotal();
             return ResponseEntity.ok(ApiResponse.success("统计成功", result));
         } catch (Exception e) {

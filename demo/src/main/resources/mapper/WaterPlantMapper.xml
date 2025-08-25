@@ -3,7 +3,7 @@
 <mapper namespace="com.example.demo.mapper.WaterPlantMapper">
 
     <!-- 结果映射：水厂响应DTO -->
-    <resultMap id="WaterPlantResponseDTOMap" type="com.example.demo.dto.facility.WaterPlantResponseDTO">
+    <resultMap id="WaterPlantResponseDTOMap" type="com.example.demo.pojo.dto.facility.WaterPlantResponseDTO">
         <id property="id" column="id"/>
         <result property="plantCode" column="plant_code"/>
         <result property="name" column="name"/>
@@ -68,7 +68,7 @@
     </select>
 
     <!-- 获取所有可用水厂（用于下拉选择） -->
-    <select id="selectAvailableWaterPlants" resultType="com.example.demo.entity.facility.WaterPlant">
+    <select id="selectAvailableWaterPlants" resultType="com.example.demo.pojo.entity.facility.WaterPlant">
         SELECT id, name, plant_code FROM water_plants
         WHERE deleted_at IS NULL
         ORDER BY name ASC

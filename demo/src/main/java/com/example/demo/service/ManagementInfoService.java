@@ -1,13 +1,13 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.dto.management.DepartmentInfoResponseDTO;
-import com.example.demo.dto.management.DepartmentInfoUpdateDTO;
-import com.example.demo.dto.management.PersonnelInfoCreateDTO;
-import com.example.demo.dto.management.PersonnelInfoUpdateDTO;
-import com.example.demo.dto.management.PersonnelInfoResponseDTO;
-import com.example.demo.entity.system.Department;
-import com.example.demo.entity.system.Personnel;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.dto.management.DepartmentInfoResponseDTO;
+import com.example.demo.pojo.dto.management.DepartmentInfoUpdateDTO;
+import com.example.demo.pojo.dto.management.PersonnelInfoCreateDTO;
+import com.example.demo.pojo.dto.management.PersonnelInfoUpdateDTO;
+import com.example.demo.pojo.dto.management.PersonnelInfoResponseDTO;
+import com.example.demo.pojo.entity.system.Department;
+import com.example.demo.pojo.entity.system.Personnel;
 import com.example.demo.mapper.ManagementInfoMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

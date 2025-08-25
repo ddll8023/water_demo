@@ -95,11 +95,7 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
-        <!-- Spring Security (版本由Spring Boot 2.6.13自动管理为5.6.8) -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
+
 
         <!-- JWT (最新稳定版本，兼容Java 8+) -->
         <dependency>

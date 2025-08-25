@@ -1,16 +1,15 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.dto.facility.VillageCreateDTO;
-import com.example.demo.dto.facility.VillageQueryDTO;
-import com.example.demo.dto.facility.VillageResponseDTO;
-import com.example.demo.dto.facility.VillageUpdateDTO;
-import com.example.demo.entity.facility.Village;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.dto.facility.VillageCreateDTO;
+import com.example.demo.pojo.dto.facility.VillageQueryDTO;
+import com.example.demo.pojo.dto.facility.VillageResponseDTO;
+import com.example.demo.pojo.dto.facility.VillageUpdateDTO;
+import com.example.demo.pojo.entity.facility.Village;
 import com.example.demo.service.VillageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -20,8 +19,7 @@ import java.util.List;
 /**
  * 村庄信息管理控制器
  * <p>
- * 提供村庄信息的增删改查等管理功能，支持分页查询、条件筛选、详情查看、新增、修改、删除等操作。
- * 所有接口均需要"business:manage"权限才能访问。
+ * 提供村庄信息的增删改查等管理功能，支持分页查询、条件筛选、详情查看、新增、修改、删除等操作
  * </p>
  */
 @RestController
@@ -48,7 +46,7 @@ public class VillageController {
      */
     @ApiOperation(value = "分页查询村庄列表", notes = "根据条件分页查询村庄信息")
     @GetMapping
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<PageResponseDTO<VillageResponseDTO>>> getVillagePage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -78,7 +76,7 @@ public class VillageController {
      */
     @ApiOperation(value = "查询村庄详情", notes = "根据ID查询村庄详细信息")
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<VillageResponseDTO>> getVillageById(
             @PathVariable Long id) {
         try {
@@ -101,7 +99,7 @@ public class VillageController {
      */
     @ApiOperation(value = "创建村庄", notes = "创建新的村庄信息")
     @PostMapping
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<VillageResponseDTO>> createVillage(
             @Valid @RequestBody VillageCreateDTO createDTO) {
         try {
@@ -125,7 +123,7 @@ public class VillageController {
      */
     @ApiOperation(value = "更新村庄信息", notes = "根据ID更新村庄信息")
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<VillageResponseDTO>> updateVillage(
             @PathVariable Long id,
             @Valid @RequestBody VillageUpdateDTO updateDTO) {
@@ -150,7 +148,7 @@ public class VillageController {
      */
     @ApiOperation(value = "删除村庄", notes = "根据ID删除村庄信息（软删除）")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<Void>> deleteVillage(
             @PathVariable Long id) {
         try {
@@ -173,7 +171,7 @@ public class VillageController {
      */
     @ApiOperation(value = "批量删除村庄", notes = "根据ID列表批量删除村庄（软删除）")
     @DeleteMapping("/batch")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<Void>> batchDeleteVillages(
             @RequestBody List<Long> ids) {
         try {
@@ -196,9 +194,9 @@ public class VillageController {
      *
      * @return 所有可用的村庄信息列表
      */
-    @ApiOperation(value = "获取所有可用村庄", notes = "获取系统中所有可用于选择村庄列表")
+    @ApiOperation(value = "获取所有可用村庄信息", notes = "获取系统中所有可用于选择村庄列表")
     @GetMapping("/available")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<List<Village>>> getAvailableVillages() {
         try {
             List<Village> result = villageService.getAvailableVillages();
@@ -212,14 +210,14 @@ public class VillageController {
     /**
      * 统计村庄信息总数
      * <p>
-     * 统计系统中村庄信息的总数量
+     * 统计系统中村庄信息的总数
      * </p>
      *
      * @return 村庄信息总数
      */
-    @ApiOperation(value = "统计村庄总数", notes = "统计系统中村庄的总数量")
+    @ApiOperation(value = "统计村庄总数", notes = "统计系统中村庄的总数")
     @GetMapping("/count")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<Long>> countTotal() {
         try {
             long result = villageService.countTotal();

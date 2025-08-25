@@ -1,16 +1,19 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.dto.monitoring.*;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.dto.monitoring.RainfallChartDataResponseDTO;
+import com.example.demo.pojo.dto.monitoring.RainfallDataImportDTO;
+import com.example.demo.pojo.dto.monitoring.RainfallMonitoringDataQueryDTO;
+import com.example.demo.pojo.dto.monitoring.RainfallMonitoringDataResponseDTO;
 import com.example.demo.service.RainfallMonitoringDataService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,7 +28,7 @@ import io.swagger.annotations.ApiOperation;
  * 雨情监测数据管理控制器
  * 处理雨情监测数据的查询、统计和分析操作
  * 
- * 设计说明：
+ * 设计说明
  * - 严格参考WaterLevelMonitoringDataController的实现规范
  * - 提供完整的雨情监测数据管理接口
  * - 支持分页查询、统计分析、图表数据、导入导出等功能
@@ -34,14 +37,14 @@ import io.swagger.annotations.ApiOperation;
 @Slf4j
 @RestController
 @RequestMapping("/api/monitoring")
-@RequiredArgsConstructor
 @Api(tags = "雨情监测数据管理", description = "雨情监测数据相关的增删改查操作")
 public class RainfallMonitoringDataController {
 
     /**
      * 雨情监测数据服务
      */
-    private final RainfallMonitoringDataService rainfallMonitoringDataService;
+    @Autowired
+    private RainfallMonitoringDataService rainfallMonitoringDataService;
 
     /**
      * 分页查询雨情监测数据列表
@@ -58,7 +61,7 @@ public class RainfallMonitoringDataController {
      * @return 分页的雨情监测数据列表
      */
     @GetMapping("/rainfall-data")
-    @PreAuthorize("hasAuthority('business:operate')")
+    
     @ApiOperation(value = "分页查询雨情监测数据", notes = "支持按站点、时间范围、数据质量等条件筛选")
     public ResponseEntity<ApiResponse<PageResponseDTO<RainfallMonitoringDataResponseDTO>>> getRainfallMonitoringData(
             @RequestParam(defaultValue = "1") int page,
@@ -71,7 +74,7 @@ public class RainfallMonitoringDataController {
             @RequestParam(required = false) String dataSource,
             @RequestParam(required = false) String sort) {
         
-        log.info("分页查询雨情监测数据 - 页码: {}, 大小: {}, 站点ID: {}, 开始时间: {}, 结束时间: {}", 
+        log.info("分页查询雨情监测数据 - 页码: {}, 大小: {}, 站点ID: {}, 开始时�? {}, 结束时间: {}", 
                 page, size, stationId, startTime, endTime);
 
         // 构建查询对象
@@ -95,7 +98,7 @@ public class RainfallMonitoringDataController {
 
     /**
      * 获取用于图表展示的雨情监测数据
-     * 支持数据类型区分（时段雨量/累计雨量）
+     * 支持数据类型区分（时段雨量,累计雨量）
      *
      * @param stationId 监测站点ID（可选）
      * @param startTime 开始时间（可选）
@@ -105,7 +108,7 @@ public class RainfallMonitoringDataController {
      * @return 图表所需的雨情监测数据
      */
     @GetMapping("/rainfall-chart-data")
-    @PreAuthorize("hasAuthority('business:operate')")
+    
     @ApiOperation(value = "获取雨情监测图表数据", notes = "根据站点ID和时间范围获取雨情图表数据")
     public ResponseEntity<ApiResponse<RainfallChartDataResponseDTO>> getRainfallChartData(
             @RequestParam(required = false) Long stationId,
@@ -114,7 +117,7 @@ public class RainfallMonitoringDataController {
             @RequestParam(defaultValue = "hour") String interval,
             @RequestParam(defaultValue = "rainfall") String dataType) {
 
-        log.info("获取雨情监测图表数据 - 站点ID: {}, 开始时间: {}, 结束时间: {}, 间隔: {}, 数据类型: {}",
+        log.info("获取雨情监测图表数据 - 站点ID: {}, 开始时�? {}, 结束时间: {}, 间隔: {}, 数据类型: {}",
                 stationId, startTime, endTime, interval, dataType);
 
         try {
@@ -138,7 +141,7 @@ public class RainfallMonitoringDataController {
      * @return 导出的Excel文件字节数组
      */
     @PostMapping("/rainfall/export")
-    @PreAuthorize("hasAuthority('business:operate')")
+    
     @ApiOperation(value = "导出雨情监测数据", notes = "根据查询条件将雨情监测数据导出为Excel文件")
     public ResponseEntity<byte[]> exportRainfallData(
             @RequestBody RainfallMonitoringDataQueryDTO queryDTO) {
@@ -183,7 +186,7 @@ public class RainfallMonitoringDataController {
      * @return 导入结果，包含成功和失败数量
      */
     @PostMapping("/rainfall-data/import")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     @ApiOperation(value = "导入雨情监测数据", notes = "批量导入Excel解析后的雨情监测数据")
     public ResponseEntity<ApiResponse<Map<String, Object>>> importRainfallData(
             @RequestParam Long stationId,
@@ -209,7 +212,7 @@ public class RainfallMonitoringDataController {
             log.info("雨情监测数据导入部分成功，总数: {}, 成功: {}, 失败: {}",
                     totalCount, successCount, failCount);
             return ResponseEntity.ok(ApiResponse.success(
-                    String.format("数据导入完成，成功%d条，失败%d条", successCount, failCount),
+                    String.format("数据导入完成，成功: %d条，失败: %d条", successCount, failCount),
                     result));
         } else {
             // 全部成功

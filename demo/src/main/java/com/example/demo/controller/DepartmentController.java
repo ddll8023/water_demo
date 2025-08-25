@@ -1,15 +1,14 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.system.DepartmentCreateDTO;
-import com.example.demo.dto.system.DepartmentResponseDTO;
-import com.example.demo.dto.system.DepartmentUpdateDTO;
+import com.example.demo.pojo.dto.system.DepartmentCreateDTO;
+import com.example.demo.pojo.dto.system.DepartmentResponseDTO;
+import com.example.demo.pojo.dto.system.DepartmentUpdateDTO;
 import com.example.demo.common.ApiResponse;
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.dto.common.ValidationResponseDTO;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.dto.common.ValidationResponseDTO;
 import com.example.demo.service.DepartmentService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -32,7 +31,6 @@ import io.swagger.annotations.ApiOperation;
  */
 @RestController
 @RequestMapping("/api/departments")
-@RequiredArgsConstructor
 @Api(tags = "部门管理", description = "部门相关的增删改查操作")
 public class DepartmentController {
 
@@ -40,14 +38,14 @@ public class DepartmentController {
      * 部门服务组件，负责处理部门相关的业务逻辑
      * 通过构造函数注入（@RequiredArgsConstructor + final）
      */
-    private final DepartmentService departmentService;
+    @Autowired
+    private DepartmentService departmentService;
 
     /**
      * 分页查询部门列表
      * <p>
      * 支持按名称关键词模糊搜索，可以筛选启用/禁用状态
      * 需要系统管理权限
-     *
      * @param page 当前页码，从1开始
      * @param size 每页记录数
      * @param keyword 搜索关键词，可选参数，用于部门名称的模糊匹配
@@ -55,7 +53,7 @@ public class DepartmentController {
      * @return 部门分页数据，包含总数、当前页数据等信息
      */
     @GetMapping
-    @PreAuthorize("hasAuthority('system:manage')")
+    
     @ApiOperation(value = "获取部门分页数据", notes = "支持按名称关键词模糊搜索，可以筛选启用/禁用状态")
     public ResponseEntity<ApiResponse<PageResponseDTO<DepartmentResponseDTO>>> getDepartmentPage(
             @RequestParam(defaultValue = "1") int page,
@@ -74,18 +72,17 @@ public class DepartmentController {
     }
 
     /**
-     * 检查部门名称是否可用
+    * 检查部门名称是否可用
      * <p>
      * 验证部门名称在同级部门中是否唯一，用于表单提交前的实时校验
      * 需要系统管理权限
-     *
      * @param name 待检查的部门名称
      * @param parentId 父部门ID，可选参数，存在时检查在指定父部门下的唯一性
      * @param excludeId 排除的部门ID，可选参数，用于编辑时排除自身
      * @return 名称可用性校验结果，包含是否可用、提示信息等
      */
     @GetMapping("/check-name")
-    @PreAuthorize("hasAuthority('system:manage')")
+    
     @ApiOperation(value = "检查部门名称是否可用", notes = "验证部门名称在同级部门中是否唯一，用于表单提交前的实时校验")
     public ResponseEntity<ApiResponse<ValidationResponseDTO>> checkDepartmentNameAvailable(
             @RequestParam String name,
@@ -105,16 +102,15 @@ public class DepartmentController {
     /**
      * 创建部门
      * <p>
-     * 创建新的部门信息，支持设置部门名称、描述、父部门等
+     * 创建新的部门信息，支持设置部门名称、描述、父部门
      * 需要系统管理权限
-     *
-     * @param createDTO 部门创建信息，包含名称、描述、父部门ID等
+     * @param createDTO 部门创建信息，包含名称、描述、父部门ID
      * @return 创建成功的部门信息
      * @throws RuntimeException 如果部门名称已存在或其他业务规则校验失败
      */
     @PostMapping
-    @PreAuthorize("hasAuthority('system:manage')")
-    @ApiOperation(value = "创建部门", notes = "创建新的部门信息，支持设置部门名称、描述、父部门等")
+    
+    @ApiOperation(value = "创建部门", notes = "创建新的部门信息，支持设置部门名称、描述、父部门")
     public ResponseEntity<ApiResponse<DepartmentResponseDTO>> createDepartment(
             @Valid @RequestBody DepartmentCreateDTO createDTO) {
         try {
@@ -122,7 +118,7 @@ public class DepartmentController {
             DepartmentResponseDTO department = departmentService.createDepartment(createDTO);
             return ResponseEntity.ok(ApiResponse.success("部门创建成功", department));
         } catch (RuntimeException e) {
-            // 处理业务异常，如名称重复等
+            // 处理业务异常，如名称重复
             return ResponseEntity.badRequest()
                 .body(ApiResponse.error(400, e.getMessage()));
         } catch (Exception e) {
@@ -137,14 +133,13 @@ public class DepartmentController {
      * <p>
      * 更新指定部门的基本信息，包括名称、描述等
      * 需要系统管理权限
-     *
      * @param id 部门ID，标识要更新的部门
      * @param updateDTO 部门更新信息，包含要更新的字段和值
      * @return 更新后的部门信息
      * @throws RuntimeException 如果部门不存在、名称已被占用或其他业务规则校验失败
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('system:manage')")
+    
     @ApiOperation(value = "更新部门信息", notes = "更新指定部门的基本信息，包括名称、描述等")
     public ResponseEntity<ApiResponse<DepartmentResponseDTO>> updateDepartment(
             @PathVariable Long id,
@@ -169,13 +164,12 @@ public class DepartmentController {
      * <p>
      * 删除指定的部门，如果部门下有子部门或用户则不允许删除
      * 需要系统管理权限
-     *
      * @param id 要删除的部门ID
      * @return 删除操作的结果
      * @throws RuntimeException 如果部门不存在或者存在子部门/用户无法删除
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('system:manage')")
+    
     @ApiOperation(value = "删除部门", notes = "删除指定的部门，如果部门下有子部门或用户则不允许删除")
     public ResponseEntity<ApiResponse<Void>> deleteDepartment(
             @PathVariable Long id) {

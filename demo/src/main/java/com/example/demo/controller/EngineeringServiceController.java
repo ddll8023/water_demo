@@ -1,9 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -23,7 +21,6 @@ import io.swagger.annotations.ApiOperation;
  */
 @RestController
 @RequestMapping("/api/engineering-service")
-@RequiredArgsConstructor
 @Api(tags = "工程信息服务", description = "工程信息服务相关接口，包括设施类型查询和映射信息")
 public class EngineeringServiceController {
 
@@ -35,7 +32,6 @@ public class EngineeringServiceController {
      * @return 设施类型枚举列表
      */
     @GetMapping("/facility-types")
-    @PreAuthorize("hasAuthority('business:manage')")
     @ApiOperation(value = "获取设施类型枚举", notes = "返回系统中所有可用的设施类型列表，包含类型值、标签、描述、实体类和API路径信息")
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getFacilityTypes() {
         try {
@@ -123,12 +119,11 @@ public class EngineeringServiceController {
     /**
      * 获取设施类型映射信息
      * 
-     * 返回设施类型的键值对映射，用于快速查询
+     * 返回设施类型的键值对映射，用于快速查询和显示
      *
      * @return 设施类型映射
      */
-    @GetMapping("/facility-type-map")
-    @PreAuthorize("hasAuthority('business:manage')")
+    @GetMapping("/facility-type-map")    
     @ApiOperation(value = "获取设施类型映射", notes = "返回设施类型的键值对映射，用于快速查询和显示")
     public ResponseEntity<ApiResponse<Map<String, String>>> getFacilityTypeMap() {
         try {

@@ -1,9 +1,8 @@
 package com.example.demo.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.example.demo.entity.system.DictData;
-import com.example.demo.entity.system.DictType;
+import com.example.demo.pojo.entity.system.DictData;
+import com.example.demo.pojo.entity.system.DictType;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

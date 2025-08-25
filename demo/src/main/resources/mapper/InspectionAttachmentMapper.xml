@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.demo.mapper.InspectionAttachmentMapper">
 
-    <resultMap id="InspectionAttachmentMap" type="com.example.demo.entity.inspection.InspectionAttachment">
+    <resultMap id="InspectionAttachmentMap" type="com.example.demo.pojo.entity.inspection.InspectionAttachment">
         <id property="id" column="id"/>
         <result property="recordId" column="record_id"/>
         <result property="fileName" column="file_name"/>

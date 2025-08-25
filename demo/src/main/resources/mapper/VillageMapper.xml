@@ -3,7 +3,7 @@
 <mapper namespace="com.example.demo.mapper.VillageMapper">
 
     <!-- 结果映射：村庄信息响应DTO -->
-    <resultMap id="VillageResponseDTOMap" type="com.example.demo.dto.facility.VillageResponseDTO">
+    <resultMap id="VillageResponseDTOMap" type="com.example.demo.pojo.dto.facility.VillageResponseDTO">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="longitude" column="longitude"/>
@@ -55,7 +55,7 @@
     </select>
 
     <!-- 获取所有可用的村庄信息（用于下拉选择） -->
-    <select id="selectAvailableVillages" resultType="com.example.demo.entity.facility.Village">
+    <select id="selectAvailableVillages" resultType="com.example.demo.pojo.entity.facility.Village">
         SELECT id, name FROM villages
         WHERE deleted_at IS NULL
         ORDER BY name

@@ -1,10 +1,10 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.system.PositionCreateDTO;
-import com.example.demo.dto.system.PositionResponseDTO;
-import com.example.demo.dto.system.PositionUpdateDTO;
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.entity.system.Position;
+import com.example.demo.pojo.dto.system.PositionCreateDTO;
+import com.example.demo.pojo.dto.system.PositionResponseDTO;
+import com.example.demo.pojo.dto.system.PositionUpdateDTO;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.entity.system.Position;
 import com.example.demo.mapper.PositionMapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;

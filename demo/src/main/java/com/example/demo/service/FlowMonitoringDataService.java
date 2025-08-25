@@ -1,9 +1,10 @@
 package com.example.demo.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.dto.monitoring.*;
-import com.example.demo.entity.monitoring.FlowMonitoringData;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.dto.monitoring.*;
+import com.example.demo.pojo.entity.facility.MonitoringStation;
+import com.example.demo.pojo.entity.monitoring.FlowMonitoringData;
 import com.example.demo.mapper.FlowMonitoringDataMapper;
 import com.example.demo.mapper.MonitoringStationMapper;
 import com.github.pagehelper.PageHelper;
@@ -539,7 +540,7 @@ public class FlowMonitoringDataService extends ServiceImpl<FlowMonitoringDataMap
         // 逐个创建缺失站点
         for (String code : missing) {
             String name = codeToName.getOrDefault(code, code);
-            com.example.demo.entity.facility.MonitoringStation station = new com.example.demo.entity.facility.MonitoringStation();
+            MonitoringStation station = new MonitoringStation();
             station.setStationCode(code);
             station.setName(name);
             station.setMonitoringItemCode("Q");

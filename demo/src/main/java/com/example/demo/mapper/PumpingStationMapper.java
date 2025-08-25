@@ -1,12 +1,11 @@
 package com.example.demo.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.demo.dto.facility.PumpingStationResponseDTO;
-import com.example.demo.entity.facility.PumpingStation;
+import com.example.demo.pojo.dto.facility.PumpingStationResponseDTO;
+import com.example.demo.pojo.entity.facility.PumpingStation;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**

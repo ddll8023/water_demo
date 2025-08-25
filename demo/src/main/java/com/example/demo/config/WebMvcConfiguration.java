@@ -1,27 +1,68 @@
 package com.example.demo.config;
 
+import com.example.demo.interceptor.JwtTokenInterceptor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.*;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
-import java.util.Arrays;
-import java.util.List;
 
 /**
- * 配置类，注册web层相关组件
- * 使用Knife4j生成接口文档
+ * Web MVC配置类
+ * 统一管理Web层相关组件配置，包括：
+ * 1. Knife4j API文档配置
+ * 2. 静态资源映射配置
+ * 3. CORS跨域配置
+ * 4. JWT拦截器配置
  */
 @Configuration
 @Slf4j
-public class WebMvcConfiguration implements WebMvcConfigurer {
+public class WebMvcConfiguration extends WebMvcConfigurationSupport {
+
+    @Autowired
+    private JwtTokenInterceptor jwtTokenInterceptor;
+
+    /**
+     * 注册自定义拦截器
+     *
+     * @param registry
+     */
+    @Override
+    protected void addInterceptors(InterceptorRegistry registry) {
+        log.info("开始注册JWT拦截器...");
+        registry.addInterceptor(jwtTokenInterceptor)
+                .addPathPatterns("/api/**")
+                .excludePathPatterns("/api/auth/**");
+    }
+
+    /**
+     * CORS跨域配置
+     * 解决前端（localhost:5173）访问后端API（localhost:8080）的跨域问题
+     */
+    @Override
+    public void addCorsMappings(@NonNull CorsRegistry registry) {
+        log.info("配置CORS跨域支持");
+        registry.addMapping("/api/**")
+                .allowedOrigins(
+                        "http://localhost:5173",
+                        "http://localhost:5174"
+                )
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
+                .allowedHeaders("*")
+                .allowCredentials(true)
+                .maxAge(3600);
+    }
 
     /**
      * 通过knife4j生成接口文档
@@ -29,15 +70,13 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
      */
     @Bean
     public Docket createRestApi() {
-        log.info("开始生产API接口文档");
+        log.info("开始生成API接口文档");
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.example.demo.controller"))
                 .paths(PathSelectors.any())
-                .build()
-                .securitySchemes(securitySchemes())
-                .securityContexts(securityContexts());
+                .build();
     }
 
     /**
@@ -55,44 +94,11 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     }
 
     /**
-     * 安全模式配置
-     */
-    private List<SecurityScheme> securitySchemes() {
-        return Arrays.asList(
-            new ApiKey("Bearer", "Authorization", "header")
-        );
-    }
-
-    /**
-     * 安全上下文配置
-     */
-    private List<SecurityContext> securityContexts() {
-        return Arrays.asList(
-            SecurityContext.builder()
-                .securityReferences(securityReferences())
-                .forPaths(PathSelectors.regex("/api/.*"))
-                .build()
-        );
-    }
-
-    /**
-     * 安全引用配置
-     */
-    private List<SecurityReference> securityReferences() {
-        AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
-        AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
-        authorizationScopes[0] = authorizationScope;
-        return Arrays.asList(
-            new SecurityReference("Bearer", authorizationScopes)
-        );
-    }
-
-    /**
      * 设置静态资源映射
      * @param registry
      */
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    protected void addResourceHandlers(ResourceHandlerRegistry registry) {
         log.info("开始静态资源映射");
         // Knife4j文档相关资源
         registry.addResourceHandler("/doc.html").addResourceLocations("classpath:/META-INF/resources/");

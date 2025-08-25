@@ -1,9 +1,9 @@
 package com.example.demo.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.demo.entity.system.Permission;
-import com.example.demo.entity.system.Role;
-import com.example.demo.entity.system.RolePermission;
+import com.example.demo.pojo.entity.system.Permission;
+import com.example.demo.pojo.entity.system.Role;
+import com.example.demo.pojo.entity.system.RolePermission;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

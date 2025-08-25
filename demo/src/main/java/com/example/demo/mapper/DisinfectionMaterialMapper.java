@@ -1,8 +1,8 @@
 package com.example.demo.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.demo.dto.facility.DisinfectionMaterialResponseDTO;
-import com.example.demo.entity.facility.DisinfectionMaterial;
+import com.example.demo.pojo.dto.facility.DisinfectionMaterialResponseDTO;
+import com.example.demo.pojo.entity.facility.DisinfectionMaterial;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

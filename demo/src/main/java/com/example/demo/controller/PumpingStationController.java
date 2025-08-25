@@ -1,45 +1,44 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.dto.facility.*;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.dto.facility.PumpingStationCreateDTO;
+import com.example.demo.pojo.dto.facility.PumpingStationResponseDTO;
+import com.example.demo.pojo.dto.facility.PumpingStationUpdateDTO;
 import com.example.demo.service.PumpingStationService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import javax.validation.Valid;
 
 /**
- * 泵站管理控制器
- * 
+ * 泵站管理控制�? * 
  * 提供泵站信息的增删改查等基础功能接口，包括：
  * - 分页查询泵站列表
  * - 查询泵站详情
  * - 创建泵站
  * - 更新泵站信息
- * - 删除泵站（单个/批量）
- * - 获取可用泵站列表
+ * - 删除泵站（单�?批量�? * - 获取可用泵站列表
  * - 统计泵站总数
  */
 @RestController
 @RequestMapping("/api/engineering-service/pumping-stations")
-@RequiredArgsConstructor
 @Api(tags = "泵站管理", description = "泵站相关的CRUD操作")
 public class PumpingStationController {
 
     /**
      * 泵站服务接口
      */
-    private final PumpingStationService pumpingStationService;
+    @Autowired
+    private PumpingStationService pumpingStationService;
 
     /**
      * 分页查询泵站列表
      * 
      * 根据条件分页查询泵站信息，支持关键词搜索和条件筛选
-     *
+     * 
      * @param page 页码，默认为1
      * @param size 每页大小，默认为10
      * @param keyword 搜索关键词（泵站名称、编码、地址）
@@ -50,7 +49,7 @@ public class PumpingStationController {
      * @return 分页查询结果，包含泵站信息列表
      */
     @GetMapping
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     @ApiOperation(value = "分页查询泵站列表", notes = "根据条件分页查询泵站信息")
     public ResponseEntity<ApiResponse<PageResponseDTO<PumpingStationResponseDTO>>> getPumpingStationPage(
             @RequestParam(defaultValue = "1") int page,
@@ -74,12 +73,12 @@ public class PumpingStationController {
      * 查询泵站详情
      * 
      * 根据ID查询泵站的详细信息
-     *
+     * 
      * @param id 泵站ID
      * @return 泵站详细信息
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     @ApiOperation(value = "查询泵站详情", notes = "根据ID查询泵站的详细信息")
     public ResponseEntity<ApiResponse<PumpingStationResponseDTO>> getPumpingStationById(
             @PathVariable Long id) {
@@ -106,7 +105,7 @@ public class PumpingStationController {
      * @return 创建成功的泵站信息
      */
     @PostMapping
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     @ApiOperation(value = "创建泵站", notes = "创建新的泵站信息")
     public ResponseEntity<ApiResponse<PumpingStationResponseDTO>> createPumpingStation(
             @Valid @RequestBody PumpingStationCreateDTO createDTO) {
@@ -120,7 +119,7 @@ public class PumpingStationController {
         } catch (Exception e) {
             // 其他服务器端异常
             return ResponseEntity.badRequest()
-                .body(ApiResponse.error(500, "创建失败：" + e.getMessage()));
+                .body(ApiResponse.error(500, "创建失败" + e.getMessage()));
         }
     }
 
@@ -128,13 +127,13 @@ public class PumpingStationController {
      * 更新泵站信息
      * 
      * 更新指定泵站的详细信息
-     *
+     * 
      * @param id 泵站ID
      * @param updateDTO 泵站更新数据传输对象
      * @return 更新后的泵站信息
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     @ApiOperation(value = "更新泵站信息", notes = "根据ID更新泵站信息")
     public ResponseEntity<ApiResponse<PumpingStationResponseDTO>> updatePumpingStation(
             @PathVariable Long id,
@@ -150,7 +149,7 @@ public class PumpingStationController {
         } catch (Exception e) {
             // 其他服务器端异常
             return ResponseEntity.badRequest()
-                .body(ApiResponse.error(500, "更新失败：" + e.getMessage()));
+                .body(ApiResponse.error(500, "更新失败" + e.getMessage()));
         }
     }
 
@@ -163,7 +162,7 @@ public class PumpingStationController {
      * @return 删除操作结果
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     @ApiOperation(value = "删除泵站", notes = "根据ID删除泵站信息（软删除）")
     public ResponseEntity<ApiResponse<Void>> deletePumpingStation(
             @PathVariable Long id) {
@@ -177,7 +176,7 @@ public class PumpingStationController {
         } catch (Exception e) {
             // 其他服务器端异常
             return ResponseEntity.badRequest()
-                .body(ApiResponse.error(500, "删除失败：" + e.getMessage()));
+                .body(ApiResponse.error(500, "删除失败" + e.getMessage()));
         }
     }
 

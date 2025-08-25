@@ -5,7 +5,7 @@
     <!-- =================== 字典类型相关映射 =================== -->
     
     <!-- 结果映射：字典类型基础映射 -->
-    <resultMap id="DictTypeMap" type="com.example.demo.entity.system.DictType">
+    <resultMap id="DictTypeMap" type="com.example.demo.pojo.entity.system.DictType">
         <id property="id" column="id"/>
         <result property="typeCode" column="type_code"/>
         <result property="typeName" column="type_name"/>
@@ -91,7 +91,7 @@
     <!-- =================== 字典数据相关映射 =================== -->
 
     <!-- 结果映射：字典数据基础映射 -->
-    <resultMap id="DictDataMap" type="com.example.demo.entity.system.DictData">
+    <resultMap id="DictDataMap" type="com.example.demo.pojo.entity.system.DictData">
         <id property="id" column="id"/>
         <result property="typeId" column="type_id"/>
         <result property="dataLabel" column="data_label"/>

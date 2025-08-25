@@ -1,6 +1,9 @@
 package com.example.demo.common;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -8,36 +11,21 @@ import java.time.LocalDateTime;
  * 用于所有API接口的统一响应结构
  */
 @Data
-public class ApiResponse<T> {
+@ApiModel(description = "统一API响应格式")
+public class ApiResponse<T> implements Serializable {
     
-    /**
-     * 响应状态码
-     */
+    @ApiModelProperty(value = "响应状态码")
     private int code;
     
-    /**
-     * 响应消息
-     */
+    @ApiModelProperty(value = "响应消息")
     private String message;
     
-    /**
-     * 响应数据
-     */
+    @ApiModelProperty(value = "响应数据")
     private T data;
     
-    /**
-     * 响应时间戳
-     */
+    @ApiModelProperty(value = "响应时间戳")
     private LocalDateTime timestamp;
     
-    /**
-     * 请求路径（可选）
-     */
-    private String path;
-    
-    /**
-     * 默认构造函数
-     */
     public ApiResponse() {
         this.timestamp = LocalDateTime.now();
     }
@@ -53,67 +41,76 @@ public class ApiResponse<T> {
     }
     
     /**
-     * 成功响应（带数据）
+     * 成功响应（无数据，无消息）
+     */
+    public static <T> ApiResponse<T> success() {
+        ApiResponse<T> result = new ApiResponse<T>();
+        result.code = 200;
+        result.message = "操作成功";
+        return result;
+    }
+    
+    /**
+     * 成功响应（带数据，默认消息）
+     */
+    public static <T> ApiResponse<T> success(T data) {
+        ApiResponse<T> result = new ApiResponse<T>();
+        result.code = 200;
+        result.message = "操作成功";
+        result.data = data;
+        return result;
+    }
+    
+    /**
+     * 成功响应（带数据和自定义消息）
      */
     public static <T> ApiResponse<T> success(String message, T data) {
-        return new ApiResponse<>(200, message, data);
+        ApiResponse<T> result = new ApiResponse<T>();
+        result.code = 200;
+        result.message = message;
+        result.data = data;
+        return result;
     }
     
     /**
-     * 成功响应（无数据）
+     * 成功响应（只有自定义消息）
      */
     public static <T> ApiResponse<T> success(String message) {
-        return new ApiResponse<>(200, message, null);
+        ApiResponse<T> result = new ApiResponse<T>();
+        result.code = 200;
+        result.message = message;
+        return result;
     }
     
     /**
-     * 错误响应
+     * 错误响应（自定义状态码和消息）
      */
     public static <T> ApiResponse<T> error(int code, String message) {
-        return new ApiResponse<>(code, message, null);
+        ApiResponse<T> result = new ApiResponse<T>();
+        result.code = code;
+        result.message = message;
+        return result;
     }
     
     /**
      * 错误响应（默认400状态码）
      */
     public static <T> ApiResponse<T> error(String message) {
-        return new ApiResponse<>(400, message, null);
+        ApiResponse<T> result = new ApiResponse<T>();
+        result.code = 400;
+        result.message = message;
+        return result;
     }
 
     /**
      * 错误响应（带数据，默认400状态码）
      */
     public static <T> ApiResponse<T> error(String message, T data) {
-        return new ApiResponse<>(400, message, data);
-    }
-    
-    /**
-     * 服务器错误响应
-     */
-    public static <T> ApiResponse<T> serverError(String message) {
-        return new ApiResponse<>(500, message, null);
-    }
-    
-    /**
-     * 权限不足响应
-     */
-    public static <T> ApiResponse<T> forbidden(String message) {
-        return new ApiResponse<>(403, message, null);
-    }
-    
-    /**
-     * 未授权响应
-     */
-    public static <T> ApiResponse<T> unauthorized(String message) {
-        return new ApiResponse<>(401, message, null);
-    }
-
-    /**
-     * 设置请求路径
-     */
-    public ApiResponse<T> withPath(String path) {
-        this.path = path;
-        return this;
+        ApiResponse<T> result = new ApiResponse<T>();
+        result.code = 400;
+        result.message = message;
+        result.data = data;
+        return result;
     }
 
 }

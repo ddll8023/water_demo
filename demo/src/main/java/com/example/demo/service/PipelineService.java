@@ -2,12 +2,12 @@ package com.example.demo.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.dto.facility.PipelineCreateDTO;
-import com.example.demo.dto.facility.PipelineQueryDTO;
-import com.example.demo.dto.facility.PipelineResponseDTO;
-import com.example.demo.dto.facility.PipelineUpdateDTO;
-import com.example.demo.entity.facility.Pipeline;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.dto.facility.PipelineCreateDTO;
+import com.example.demo.pojo.dto.facility.PipelineQueryDTO;
+import com.example.demo.pojo.dto.facility.PipelineResponseDTO;
+import com.example.demo.pojo.dto.facility.PipelineUpdateDTO;
+import com.example.demo.pojo.entity.facility.Pipeline;
 import com.example.demo.mapper.PipelineMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;

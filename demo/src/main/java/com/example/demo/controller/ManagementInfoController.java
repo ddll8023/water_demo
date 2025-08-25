@@ -1,16 +1,17 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.dto.management.DepartmentInfoResponseDTO;
-import com.example.demo.dto.management.DepartmentInfoUpdateDTO;
-import com.example.demo.dto.management.PersonnelInfoCreateDTO;
-import com.example.demo.dto.management.PersonnelInfoResponseDTO;
-import com.example.demo.dto.management.PersonnelInfoUpdateDTO;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.dto.management.DepartmentInfoResponseDTO;
+import com.example.demo.pojo.dto.management.DepartmentInfoUpdateDTO;
+import com.example.demo.pojo.dto.management.PersonnelInfoCreateDTO;
+import com.example.demo.pojo.dto.management.PersonnelInfoResponseDTO;
+import com.example.demo.pojo.dto.management.PersonnelInfoUpdateDTO;
 import com.example.demo.service.ManagementInfoService;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -18,26 +19,23 @@ import java.util.List;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 /**
- * 管理信息服务控制器
- * 
+ * 管理信息服务控制�? * 
  * 该控制器处理工程运行管理中的基础信息档案管理，主要包括：
  * - 人员信息档案的CRUD操作
- * - 部门信息档案的查询操作
- * - 工号查重等辅助功能
- * 
- * 所有接口都需要'business:manage'权限
+ * - 部门信息档案的查询操�? * - 工号查重等辅助功�? * 
+ * 所有接口都需�?business:manage'权限
  */
 @RestController
 @RequestMapping("/api/management-info")
-@RequiredArgsConstructor
-@PreAuthorize("hasAuthority('business:manage')") // 统一权限控制
+ // 统一权限控制
 @Api(tags = "管理信息服务", description = "人员和部门信息档案的CRUD操作")
 public class ManagementInfoController {
 
     /**
      * 管理信息服务，处理人员和部门信息档案
      */
-    private final ManagementInfoService managementInfoService;
+    @Autowired
+    private ManagementInfoService managementInfoService;
 
     /**
      * 分页查询人员信息列表
@@ -166,12 +164,11 @@ public class ManagementInfoController {
     /**
      * 获取部门树形结构
      * <p>
-     * 返回完整的部门层级结构，用于展示组织架构图
-     *
+     * 返回完整的部门层级结构，用于展示组织架构
      * @return 部门树形结构，每个节点包含其子部门
      */
     @GetMapping("/departments/tree")
-    @ApiOperation(value = "获取部门树形结构", notes = "返回完整的部门层级结构，用于展示组织架构图")
+    @ApiOperation(value = "获取部门树形结构", notes = "返回完整的部门层级结构，用于展示组织架构")
     public ResponseEntity<ApiResponse<List<DepartmentInfoResponseDTO>>> getDepartmentTree() {
         try {
             // 获取部门的树形结构

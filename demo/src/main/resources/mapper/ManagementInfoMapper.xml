@@ -3,7 +3,7 @@
 <mapper namespace="com.example.demo.mapper.ManagementInfoMapper">
     
     <!-- 部门结果映射 -->
-    <resultMap id="DepartmentMap" type="com.example.demo.entity.system.Department">
+    <resultMap id="DepartmentMap" type="com.example.demo.pojo.entity.system.Department">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="parentId" column="parent_id"/>
@@ -21,7 +21,7 @@
     </resultMap>
     
     <!-- 人员结果映射 -->
-    <resultMap id="PersonnelMap" type="com.example.demo.entity.system.Personnel">
+    <resultMap id="PersonnelMap" type="com.example.demo.pojo.entity.system.Personnel">
         <id property="id" column="id"/>
         <result property="fullName" column="full_name"/>
         <result property="phone" column="phone"/>
@@ -42,7 +42,7 @@
     </resultMap>
 
     <!-- 部门详情结果映射（包含关联信息） -->
-    <resultMap id="DepartmentWithDetailsMap" type="com.example.demo.entity.system.Department" extends="DepartmentMap">
+    <resultMap id="DepartmentWithDetailsMap" type="com.example.demo.pojo.entity.system.Department" extends="DepartmentMap">
         <!-- 继承基础映射，可以添加额外字段 -->
     </resultMap>
 

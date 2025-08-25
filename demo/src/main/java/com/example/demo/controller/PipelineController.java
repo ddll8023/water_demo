@@ -1,16 +1,15 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.dto.facility.PipelineCreateDTO;
-import com.example.demo.dto.facility.PipelineQueryDTO;
-import com.example.demo.dto.facility.PipelineResponseDTO;
-import com.example.demo.dto.facility.PipelineUpdateDTO;
-import com.example.demo.entity.facility.Pipeline;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.dto.facility.PipelineCreateDTO;
+import com.example.demo.pojo.dto.facility.PipelineQueryDTO;
+import com.example.demo.pojo.dto.facility.PipelineResponseDTO;
+import com.example.demo.pojo.dto.facility.PipelineUpdateDTO;
+import com.example.demo.pojo.entity.facility.Pipeline;
 import com.example.demo.service.PipelineService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,14 +34,14 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/engineering-service/pipelines")
-@RequiredArgsConstructor
 @Api(tags = "管道管理", description = "管道相关的CRUD操作")
 public class PipelineController {
 
     /**
      * 管道服务接口
      */
-    private final PipelineService pipelineService;
+    @Autowired
+    private PipelineService pipelineService;
 
     /**
      * 分页查询管道信息列表
@@ -59,7 +58,7 @@ public class PipelineController {
      */
     @ApiOperation(value = "分页查询管道信息", notes = "根据条件分页查询管道信息")
     @GetMapping
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<PageResponseDTO<PipelineResponseDTO>>> getPipelinePage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -97,7 +96,7 @@ public class PipelineController {
      */
     @ApiOperation(value = "根据ID查询管道信息详情", notes = "根据ID查询管道详细信息")
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<PipelineResponseDTO>> getPipelineById(
             @PathVariable Long id) {
         try {
@@ -119,7 +118,7 @@ public class PipelineController {
      */
     @ApiOperation(value = "创建管道信息", notes = "创建新的管道信息")
     @PostMapping
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<PipelineResponseDTO>> createPipeline(
             @Valid @RequestBody PipelineCreateDTO createDTO) {
         try {
@@ -142,7 +141,7 @@ public class PipelineController {
      */
     @ApiOperation(value = "更新管道信息", notes = "根据ID更新管道信息")
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<PipelineResponseDTO>> updatePipeline(
             @PathVariable Long id,
             @Valid @RequestBody PipelineUpdateDTO updateDTO) {
@@ -160,13 +159,13 @@ public class PipelineController {
 
     /**
      * 删除管道信息（软删除）
-     *
+     * 
      * @param id 管道信息ID
      * @return 删除结果
      */
     @ApiOperation(value = "删除管道信息", notes = "根据ID删除管道信息（软删除）")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<Void>> deletePipeline(
             @PathVariable Long id) {
         try {
@@ -182,13 +181,13 @@ public class PipelineController {
 
     /**
      * 批量删除管道信息（软删除）
-     *
+     * 
      * @param ids 管道信息ID列表
      * @return 批量删除结果
      */
     @ApiOperation(value = "批量删除管道信息", notes = "根据ID列表批量删除管道信息（软删除）")
     @DeleteMapping("/batch")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<Void>> batchDeletePipelines(
             @RequestBody List<Long> ids) {
         try {
@@ -208,12 +207,12 @@ public class PipelineController {
 
     /**
      * 获取所有可用管道信息（用于下拉选择）
-     *
+     * 
      * @return 可用管道列表
      */
     @ApiOperation(value = "获取所有可用管道信息", notes = "获取系统中所有可用于选择的管道列表")
     @GetMapping("/available")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<List<Pipeline>>> getAvailablePipelines() {
         try {
             // 调用服务获取可用管道列表
@@ -231,9 +230,9 @@ public class PipelineController {
      *
      * @return 管道信息总数
      */
-    @ApiOperation(value = "统计管道信息总数", notes = "统计系统中管道信息的总数量")
+    @ApiOperation(value = "统计管道信息总数", notes = "统计系统中管道信息的总数")
     @GetMapping("/count")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<Long>> countTotal() {
         try {
             // 调用服务统计管道总数

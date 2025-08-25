@@ -1,12 +1,11 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.system.PermissionResponseDTO;
+import com.example.demo.pojo.dto.system.PermissionResponseDTO;
 import com.example.demo.common.ApiResponse;
-import com.example.demo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
 import com.example.demo.service.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -18,7 +17,6 @@ import io.swagger.annotations.ApiOperation;
 
 /**
  * 权限管理控制器
- * 
  * 该控制器负责处理与系统权限相关的所有操作，包括：
  * - 权限的分页查询和条件筛选
  * - 权限详情查询
@@ -43,11 +41,11 @@ public class PermissionController {
      * @param page 页码，默认为1
      * @param size 每页大小，默认为10
      * @param keyword 搜索关键词，可根据权限名称或编码模糊查询
-     * @param type 权限类型，如"菜单"、"按钮"等
+     * @param type 权限类型，如"菜单"或"按钮"
      * @return 权限分页信息，包含总数和权限列表
      */
     @GetMapping
-    @PreAuthorize("hasAuthority('system:manage')")
+    
     @ApiOperation(value = "分页查询权限列表", notes = "根据条件分页查询权限信息")
     public ResponseEntity<ApiResponse<PageResponseDTO<PermissionResponseDTO>>> getPermissions(
             @RequestParam(defaultValue = "1") int page,
@@ -73,7 +71,7 @@ public class PermissionController {
      * @return 权限详细信息
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('system:manage')")
+    
     @ApiOperation(value = "根据ID查询权限详情", notes = "根据ID查询权限详细信息")
     public ResponseEntity<ApiResponse<PermissionResponseDTO>> getPermissionById(
             @PathVariable Long id) {
@@ -95,7 +93,7 @@ public class PermissionController {
      * @return 权限树列表，包含层级关系
      */
     @GetMapping("/tree")
-    @PreAuthorize("hasAuthority('system:manage')")
+    
     @ApiOperation(value = "获取权限树结构", notes = "获取完整的权限层级树结构")
     public ResponseEntity<ApiResponse<List<PermissionResponseDTO>>> getPermissionTree() {
         try {
@@ -116,7 +114,7 @@ public class PermissionController {
      * @return 菜单权限树列表
      */
     @GetMapping("/menu-tree")
-    @PreAuthorize("hasAuthority('data:view')")
+    
     @ApiOperation(value = "获取菜单权限树", notes = "获取仅包含菜单类型的权限树")
     public ResponseEntity<ApiResponse<List<PermissionResponseDTO>>> getMenuTree() {
         try {
@@ -133,11 +131,11 @@ public class PermissionController {
      * 
      * 按指定类型筛选权限，如仅获取"按钮"类型的权限列表
      * 
-     * @param type 权限类型，如"MENU"（菜单）、"BUTTON"（按钮）等
+     * @param type 权限类型，如"MENU"（菜单）或"BUTTON"（按钮）
      * @return 指定类型的权限列表
      */
     @GetMapping("/by-type")
-    @PreAuthorize("hasAuthority('system:manage')")
+    
     @ApiOperation(value = "根据权限类型获取权限列表", notes = "根据权限类型获取权限列表")
     public ResponseEntity<ApiResponse<List<PermissionResponseDTO>>> getPermissionsByType(
             @RequestParam String type) {
@@ -158,7 +156,7 @@ public class PermissionController {
      * @return 所有可用于分配的权限列表
      */
     @GetMapping("/available")
-    @PreAuthorize("hasAuthority('system:manage')")
+    
     @ApiOperation(value = "获取所有可用权限", notes = "获取系统中所有可用于分配的权限列表")
     public ResponseEntity<ApiResponse<List<PermissionResponseDTO>>> getAllAvailablePermissions() {
         try {
@@ -180,7 +178,7 @@ public class PermissionController {
      * @return 删除结果
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('system:manage')")
+    
     @ApiOperation(value = "删除权限", notes = "根据ID删除权限信息（软删除）")
     public ResponseEntity<ApiResponse<Void>> deletePermission(
             @PathVariable Long id) {
@@ -203,7 +201,7 @@ public class PermissionController {
      * @return 包含权限编码可用性的结果
      */
     @GetMapping("/check-code")
-    @PreAuthorize("hasAuthority('system:manage')")
+    
     @ApiOperation(value = "检查权限编码是否可用", notes = "检查指定的权限编码是否已存在")
     public ResponseEntity<ApiResponse<Map<String, Boolean>>> checkPermissionCodeAvailable(
             @RequestParam String code,

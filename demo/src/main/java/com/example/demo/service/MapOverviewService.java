@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.map.*;
-import com.example.demo.dto.warning.WarningRecordResponseDTO;
+import com.example.demo.pojo.dto.map.*;
+import com.example.demo.pojo.dto.warning.WarningRecordResponseDTO;
 import com.example.demo.mapper.MapOverviewMapper;
 import com.example.demo.mapper.WarningRecordMapper;
 import lombok.RequiredArgsConstructor;

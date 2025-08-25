@@ -3,7 +3,7 @@
 <mapper namespace="com.example.demo.mapper.PositionMapper">
 
     <!-- 结果映射：岗位实体 -->
-    <resultMap id="PositionMap" type="com.example.demo.entity.system.Position">
+    <resultMap id="PositionMap" type="com.example.demo.pojo.entity.system.Position">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="description" column="description"/>
@@ -16,7 +16,7 @@
     </resultMap>
 
     <!-- 新增岗位 -->
-    <insert id="insert" parameterType="com.example.demo.entity.system.Position" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insert" parameterType="com.example.demo.pojo.entity.system.Position" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO positions (
             name, description, responsibilities, level, 
             created_at, updated_at, deleted_at
@@ -27,7 +27,7 @@
     </insert>
     
     <!-- 更新岗位 -->
-    <update id="updateById" parameterType="com.example.demo.entity.system.Position">
+    <update id="updateById" parameterType="com.example.demo.pojo.entity.system.Position">
         UPDATE positions SET 
             name = #{name},
             description = #{description},

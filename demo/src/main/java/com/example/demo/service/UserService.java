@@ -1,21 +1,21 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.system.UserCreateDTO;
-import com.example.demo.dto.system.UserResponseDTO;
-import com.example.demo.dto.system.UserUpdateDTO;
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.entity.system.User;
+import com.example.demo.pojo.dto.system.UserCreateDTO;
+import com.example.demo.pojo.dto.system.UserResponseDTO;
+import com.example.demo.pojo.dto.system.UserUpdateDTO;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.entity.system.Role;
+import com.example.demo.pojo.entity.system.User;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.mapper.RoleMapper;
+import com.example.demo.utils.BaseContext;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.DigestUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,7 +31,15 @@ public class UserService {
 
     private final UserMapper userMapper;
     private final RoleMapper roleMapper;
-    private final PasswordEncoder passwordEncoder;
+
+    /**
+     * 密码加密处理（简化版本）
+     * 实际项目中应使用BCrypt等安全加密方式
+     */
+    private String encodePassword(String rawPassword) {
+        // 使用MD5加密密码，实际项目中应使用更安全的加密方式
+        return DigestUtils.md5DigestAsHex(rawPassword.getBytes());
+    }
 
     /**
      * 分页查询用户列表
@@ -86,7 +94,7 @@ public class UserService {
         BeanUtils.copyProperties(createDTO, user);
 
         // 加密密码
-        user.setPasswordHash(passwordEncoder.encode(createDTO.getPassword()));
+        user.setPasswordHash(encodePassword(createDTO.getPassword()));
         user.setIsActive("1");
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
@@ -107,9 +115,11 @@ public class UserService {
         }
 
         // 获取当前登录用户信息
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUsername = authentication.getName();
-        User currentUser = userMapper.selectByUsername(currentUsername);
+        Long currentUserId = BaseContext.getCurrentId();
+        if (currentUserId == null) {
+            throw new RuntimeException("无法获取当前用户信息");
+        }
+        User currentUser = userMapper.selectById(currentUserId);
         
         // 更新用户信息（排除不可更新的字段）
         BeanUtils.copyProperties(updateDTO, existingUser);
@@ -122,9 +132,9 @@ public class UserService {
             }
             
             // 获取当前用户角色
-            List<com.example.demo.entity.system.Role> currentUserRoles = userMapper.selectUserRoles(currentUser.getId());
+            List<Role> currentUserRoles = userMapper.selectUserRoles(currentUser.getId());
             boolean isCurrentUserSuperAdmin = false;
-            for (com.example.demo.entity.system.Role role : currentUserRoles) {
+            for (Role role : currentUserRoles) {
                 String roleName = role.getName();
                 if (roleName != null && roleName.equals("超级管理员")) {
                     isCurrentUserSuperAdmin = true;
@@ -133,8 +143,8 @@ public class UserService {
             }
 
             // 检查目标用户是否是超级管理员
-            List<com.example.demo.entity.system.Role> userRoles = userMapper.selectUserRoles(id);
-            for (com.example.demo.entity.system.Role role : userRoles) {
+            List<Role> userRoles = userMapper.selectUserRoles(id);
+            for (Role role : userRoles) {
                 String roleName = role.getName();
                 if (roleName != null && roleName.equals("超级管理员")) {
                     // 检查系统中超级管理员数量，确保至少保留一个
@@ -183,7 +193,7 @@ public class UserService {
      * @param userId 用户ID
      * @return 角色列表
      */
-    public List<com.example.demo.entity.system.Role> getUserRoles(Long userId) {
+    public List<Role> getUserRoles(Long userId) {
         // 验证用户是否存在
         User user = userMapper.selectById(userId);
         if (user == null) {

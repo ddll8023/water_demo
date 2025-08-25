@@ -1,9 +1,12 @@
 package com.example.demo.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.dto.facility.*;
-import com.example.demo.entity.facility.WaterPlant;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.dto.facility.WaterPlantCreateDTO;
+import com.example.demo.pojo.dto.facility.WaterPlantQueryDTO;
+import com.example.demo.pojo.dto.facility.WaterPlantResponseDTO;
+import com.example.demo.pojo.dto.facility.WaterPlantUpdateDTO;
+import com.example.demo.pojo.entity.facility.WaterPlant;
 import com.example.demo.mapper.WaterPlantMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

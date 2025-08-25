@@ -1,12 +1,12 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.system.RoleCreateDTO;
-import com.example.demo.dto.system.RoleResponseDTO;
-import com.example.demo.dto.system.RoleUpdateDTO;
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.entity.system.Permission;
-import com.example.demo.entity.system.Role;
-import com.example.demo.entity.system.RolePermission;
+import com.example.demo.pojo.dto.system.RoleCreateDTO;
+import com.example.demo.pojo.dto.system.RoleResponseDTO;
+import com.example.demo.pojo.dto.system.RoleUpdateDTO;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.entity.system.Permission;
+import com.example.demo.pojo.entity.system.Role;
+import com.example.demo.pojo.entity.system.RolePermission;
 import com.example.demo.mapper.RoleMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;

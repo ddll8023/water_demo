@@ -1,16 +1,19 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.dto.facility.*;
-import com.example.demo.entity.facility.MonitoringStation;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.dto.facility.MonitoringStationCreateDTO;
+import com.example.demo.pojo.dto.facility.MonitoringStationQueryDTO;
+import com.example.demo.pojo.dto.facility.MonitoringStationResponseDTO;
+import com.example.demo.pojo.dto.facility.MonitoringStationUpdateDTO;
+import com.example.demo.pojo.entity.facility.MonitoringStation;
 import com.example.demo.service.MonitoringStationService;
 import lombok.RequiredArgsConstructor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -18,29 +21,26 @@ import java.util.List;
 
 /**
  * 监测站点管理控制器
- * 
- * 用于处理与监测站点相关的API请求，包括查询、创建、更新和删除监测站点信息。
- * 提供监测站点的CRUD操作以及统计、批量处理等功能。
- * 
+ * 用于处理与监测站点相关的API请求，包括查询、创建、更新和删除监测站点信息
+ * 提供监测站点的CRUD操作以及统计、批量处理等功能
  * @author system
  * @version 1.0
  */
 @RestController
 @RequestMapping("/api/engineering-service/monitoring-stations")
-@RequiredArgsConstructor
 @Api(tags = "监测站点管理", description = "监测站点相关的CRUD操作")
 public class MonitoringStationController {
 
     /**
      * 监测站点服务
      */
-    private final MonitoringStationService monitoringStationService;
+    @Autowired
+    private MonitoringStationService monitoringStationService;
 
     /**
      * 分页查询监测站点列表
      * 
-     * 根据条件分页查询监测站点信息，支持关键词搜索和条件筛选。
-     * 
+     * 根据条件分页查询监测站点信息，支持关键词搜索和条件筛选
      * @param page 页码，默认值为1
      * @param size 每页大小，默认值为10
      * @param keyword 搜索关键词（站点名称、编码、安装位置）
@@ -51,7 +51,7 @@ public class MonitoringStationController {
      */
     @ApiOperation(value = "分页查询监测站点列表", notes = "根据条件分页查询监测站点信息")
     @GetMapping
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<PageResponseDTO<MonitoringStationResponseDTO>>> getMonitoringStationPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -79,14 +79,13 @@ public class MonitoringStationController {
     /**
      * 创建监测站点
      * 
-     * 创建新的监测站点信息并保存到数据库。
-     * 
+     * 创建新的监测站点信息并保存到数据库
      * @param createDTO 监测站点创建信息DTO
      * @return 包含创建成功的监测站点实体的API响应
      */
     @ApiOperation(value = "创建监测站点", notes = "创建新的监测站点信息并保存到数据库")
     @PostMapping
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<MonitoringStation>> createMonitoringStation(
             @Valid @RequestBody MonitoringStationCreateDTO createDTO) {
         try {
@@ -104,15 +103,14 @@ public class MonitoringStationController {
     /**
      * 更新监测站点信息
      * 
-     * 根据ID更新监测站点的信息。
-     * 
+     * 根据ID更新监测站点的信息
      * @param id 需要更新的监测站点ID
      * @param updateDTO 监测站点更新信息DTO
      * @return 包含更新后的监测站点实体的API响应
      */
     @ApiOperation(value = "更新监测站点信息", notes = "根据ID更新监测站点的信息")
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<MonitoringStation>> updateMonitoringStation(
             @PathVariable Long id,
             @Valid @RequestBody MonitoringStationUpdateDTO updateDTO) {
@@ -131,14 +129,13 @@ public class MonitoringStationController {
     /**
      * 删除监测站点
      * 
-     * 根据ID删除监测站点信息（软删除）。
-     * 
+     * 根据ID删除监测站点信息（软删除）
      * @param id 需要删除的监测站点ID
      * @return API响应
      */
     @ApiOperation(value = "删除监测站点", notes = "根据ID删除监测站点信息（软删除）")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<Void>> deleteMonitoringStation(
             @PathVariable Long id) {
         try {
@@ -156,14 +153,14 @@ public class MonitoringStationController {
     /**
      * 批量删除监测站点
      * 
-     * 根据ID列表批量删除多个监测站点（软删除）。
+     * 根据ID列表批量删除多个监测站点（软删除）
      * 
      * @param ids 需要批量删除的监测站点ID列表
      * @return API响应
      */
     @ApiOperation(value = "批量删除监测站点", notes = "根据ID列表批量删除多个监测站点（软删除）")
     @DeleteMapping("/batch")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<Void>> batchDeleteMonitoringStations(
             @RequestBody List<Long> ids) {
         try {
@@ -181,15 +178,15 @@ public class MonitoringStationController {
     /**
      * 获取所有可用监测站点
      * 
-     * 获取所有可用的监测站点列表，用于下拉选择。
-     * 可以通过监测项目代码筛选特定类型的监测站点。
+     * 获取所有可用的监测站点列表，用于下拉选择
+     * 可以通过监测项目代码筛选特定类型的监测站点
      * 
      * @param monitoringItemCode 监测项目代码（可选）
      * @return 包含可用监测站点列表的API响应
      */
     @ApiOperation(value = "获取所有可用监测站点", notes = "获取所有可用的监测站点列表，用于下拉选择")
     @GetMapping("/available")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<List<MonitoringStation>>> getAvailableMonitoringStations(
             @RequestParam(value = "monitoringItemCode", required = false) String monitoringItemCode) {
         try {
@@ -209,13 +206,13 @@ public class MonitoringStationController {
     /**
      * 统计监测站点总数
      * 
-     * 统计系统中监测站点的总数量。
+     * 统计系统中监测站点的总数量
      * 
      * @return 包含监测站点总数的API响应
      */
-    @ApiOperation(value = "统计监测站点总数", notes = "统计系统中监测站点的总数量")
+    @ApiOperation(value = "统计监测站点总数", notes = "统计系统中监测站点的总数")
     @GetMapping("/count")
-    @PreAuthorize("hasAuthority('business:manage')")
+    
     public ResponseEntity<ApiResponse<Long>> countTotal() {
         try {
             long result = monitoringStationService.countTotal();

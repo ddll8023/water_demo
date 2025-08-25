@@ -1,9 +1,9 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.monitoring.ImportResultDTO;
-import com.example.demo.dto.common.PageResponseDTO;
-import com.example.demo.dto.monitoring.*;
-import com.example.demo.entity.monitoring.WaterQualityMonitoringData;
+import com.example.demo.pojo.dto.monitoring.*;
+import com.example.demo.pojo.dto.common.PageResponseDTO;
+import com.example.demo.pojo.entity.facility.MonitoringStation;
+import com.example.demo.pojo.entity.monitoring.WaterQualityMonitoringData;
 import com.example.demo.mapper.MonitoringStationMapper;
 import com.example.demo.mapper.WaterQualityMonitoringDataMapper;
 import lombok.RequiredArgsConstructor;
@@ -104,8 +104,8 @@ public class WaterQualityMonitoringDataService {
      * @return 图表数据响应
      */
     public WaterQualityChartDataResponseDTO getWaterQualityChartData(Long stationId, String monitoringItemCode,
-    LocalDateTime startTime, LocalDateTime endTime,
-                                                             String interval) {
+                                                                     LocalDateTime startTime, LocalDateTime endTime,
+                                                                     String interval) {
         log.info("开始查询水质图表数据，站点ID: {}, 监测项目: {}, 时间范围: {} - {}",
                 stationId, monitoringItemCode, startTime, endTime);
 
@@ -471,7 +471,7 @@ public class WaterQualityMonitoringDataService {
         // 逐个创建缺失站点
         for (String code : missing) {
             String name = codeToName.getOrDefault(code, code);
-            com.example.demo.entity.facility.MonitoringStation station = new com.example.demo.entity.facility.MonitoringStation();
+            MonitoringStation station = new MonitoringStation();
             station.setStationCode(code);
             station.setName(name);
             station.setMonitoringItemCode("WQ");

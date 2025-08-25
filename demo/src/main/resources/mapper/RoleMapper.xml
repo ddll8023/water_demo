@@ -3,7 +3,7 @@
 <mapper namespace="com.example.demo.mapper.RoleMapper">
 
     <!-- 结果映射：角色实体 -->
-    <resultMap id="RoleMap" type="com.example.demo.entity.system.Role">
+    <resultMap id="RoleMap" type="com.example.demo.pojo.entity.system.Role">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="description" column="description"/>
@@ -15,7 +15,7 @@
     </resultMap>
 
     <!-- 结果映射：权限实体 -->
-    <resultMap id="PermissionMap" type="com.example.demo.entity.system.Permission">
+    <resultMap id="PermissionMap" type="com.example.demo.pojo.entity.system.Permission">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="code" column="code"/>
@@ -87,7 +87,7 @@
     </select>
     
     <!-- 插入新角色 -->
-    <insert id="insertRole" parameterType="com.example.demo.entity.system.Role" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertRole" parameterType="com.example.demo.pojo.entity.system.Role" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO roles (
             name, description, sort_order, is_active, created_at, updated_at
         ) VALUES (
@@ -96,7 +96,7 @@
     </insert>
     
     <!-- 更新角色 -->
-    <update id="updateRole" parameterType="com.example.demo.entity.system.Role">
+    <update id="updateRole" parameterType="com.example.demo.pojo.entity.system.Role">
         UPDATE roles
         SET 
             name = #{name},
