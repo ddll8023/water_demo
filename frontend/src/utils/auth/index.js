@@ -3,7 +3,7 @@
 
 // 存储键名常量
 const TOKEN_KEY = "water_resources_token";
-const REFRESH_TOKEN_KEY = "water_resources_refresh_token";
+
 const CREDENTIALS_KEY = "water_resources_credentials";
 
 // ==================== 令牌管理 ====================
@@ -25,27 +25,10 @@ export function setToken(token) {
 }
 
 /**
- * 移除访问令牌和刷新令牌
+ * 移除访问令牌
  */
 export function removeToken() {
 	localStorage.removeItem(TOKEN_KEY);
-	localStorage.removeItem(REFRESH_TOKEN_KEY);
-}
-
-/**
- * 获取刷新令牌
- * @returns {string|null} 刷新令牌
- */
-export function getRefreshToken() {
-	return localStorage.getItem(REFRESH_TOKEN_KEY);
-}
-
-/**
- * 设置刷新令牌
- * @param {string} refreshToken 刷新令牌
- */
-export function setRefreshToken(refreshToken) {
-	localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
 }
 
 // ==================== 记住密码功能 ====================

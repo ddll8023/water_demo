@@ -1,8 +1,7 @@
 package com.example.demo.pojo.entity.system;
 
-import com.baomidou.mybatisplus.annotation.*;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 
@@ -11,88 +10,39 @@ import java.time.LocalDateTime;
  * 对应数据库表: permissions
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@TableName("permissions")
+@Schema(name = "Permission", description = "权限表实体类")
 public class Permission {
 
-    /**
-     * 权限 ID
-     */
-    @TableId(value = "id", type = IdType.AUTO)
+    @Schema(name = "id", description = "权限ID")
     private Long id;
 
-    /**
-     * 权限名称
-     */
-    @TableField("name")
+    @Schema(name = "name", description = "权限名称")
     private String name;
 
-    /**
-     * 权限编码
-     */
-    @TableField("code")
+    @Schema(name = "code", description = "权限编码")
     private String code;
 
-    /**
-     * 权限类型(菜单/按钮/API)
-     */
-    @TableField("type")
+    @Schema(name = "type", description = "权限类型")
     private String type;
 
-    /**
-     * 权限描述
-     */
-    @TableField("description")
+    @Schema(name = "description", description = "权限描述")
     private String description;
 
-    /**
-     * 权限对应的URL路径
-     */
-    @TableField("url")
-    private String url;
-
-    /**
-     * HTTP方法(GET/POST/PUT/DELETE)
-     */
-    @TableField("method")
-    private String method;
-
-    /**
-     * 父权限ID
-     */
-    @TableField("parent_id")
+    @Schema(name = "parentId", description = "父权限ID")
     private Long parentId;
 
-    /**
-     * 排序值
-     */
-    @TableField("sort_order")
+    @Schema(name = "sortOrder", description = "排序值")
     private Integer sortOrder = 0;
 
-    /**
-     * 图标
-     */
-    @TableField("icon")
-    private String icon;
-
-    /**
-     * 创建时间
-     */
-    @TableField(value = "created_at", fill = FieldFill.INSERT)
+    @Schema(name = "createdAt", description = "创建时间")
     private LocalDateTime createdAt;
 
-    /**
-     * 更新时间
-     */
-    @TableField(value = "updated_at", fill = FieldFill.INSERT_UPDATE)
+    @Schema(name = "updatedAt", description = "更新时间")
     private LocalDateTime updatedAt;
 
-    /**
-     * 软删除标记
-     */
-    @TableLogic
-    @TableField("deleted_at")
+
+    @Schema(name = "deletedAt", description = "软删除时间")
     private LocalDateTime deletedAt;
 
-    // 注意：角色权限关联通过Service层处理
+
 }

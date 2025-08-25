@@ -64,7 +64,7 @@
         FROM roles
         WHERE id = #{roleId}
         AND deleted_at IS NULL
-        AND is_active = 1
+        AND is_active = '1'
     </select>
     
     <!-- 根据条件查询角色列表，支持PageHelper分页 -->
@@ -81,7 +81,7 @@
     </select>
 
     <!-- 根据ID查询角色 -->
-    <select id="selectRoleById" resultMap="RoleMap">
+    <select id="selectRoleById" resultType="com.example.demo.pojo.entity.system.Role">
         SELECT * FROM roles
         WHERE id = #{id} AND deleted_at IS NULL
     </select>

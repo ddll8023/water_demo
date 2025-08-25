@@ -5,9 +5,9 @@ USE eb_water_resources;
 -- 插入正确的角色（权限级别，按权限大小排序）
 INSERT INTO roles (name, description, sort_order, is_active, created_at, updated_at)
 VALUES
-    ('超级管理员', '拥有系统所有权限，包括系统配置和用户管理', 10, TRUE, NOW(), NOW()),
-    ('业务管理员', '拥有业务管理权限，不能修改系统核心配置', 20, TRUE, NOW(), NOW()),
-    ('只读用户', '仅有数据查看权限，不能进行任何修改操作', 40, TRUE, NOW(), NOW());
+    ('超级管理员', '拥有系统所有权限，包括系统配置和用户管理', 10, '1', NOW(), NOW()),
+    ('业务管理员', '拥有业务管理权限，不能修改系统核心配置', 20, '1', NOW(), NOW()),
+    ('只读用户', '仅有数据查看权限，不能进行任何修改操作', 40, '1', NOW(), NOW());
 
 -- 插入岗位数据（职务职责，不关联角色）
 INSERT INTO positions (name, description, responsibilities, level, created_at, updated_at)
@@ -19,10 +19,10 @@ VALUES
     ('数据分析员', '负责数据统计分析和报表生成', '数据统计、趋势分析、报表制作、决策支持', '中级', NOW(), NOW());
 
 -- 插入初始用户 (密码: admin123)
-INSERT INTO users (username, password_hash, email, role_id, is_active, created_at, updated_at)
-SELECT 'admin', '$2a$10$WLeiMBhn4Xyv.NkIh6ITb.d486nM1x22N0CfGxOswB85jqw7AawVq', 'admin@example.com',
+INSERT INTO users (username, password, email, role_id, is_active, created_at, updated_at)
+SELECT 'admin', '0192023a7bbd73250516f069df18b500', 'admin@example.com',
        (SELECT id FROM roles WHERE name = '超级管理员'),
-       TRUE, NOW(), NOW();
+       '1', NOW(), NOW();
 
 
 -- 插入简化权限体系（按重要性排序）

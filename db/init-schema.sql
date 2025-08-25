@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS `roles` (
   `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '角色名称',
   `description` text COLLATE utf8mb4_unicode_ci COMMENT '角色描述',
   `sort_order` int DEFAULT 0 COMMENT '排序值，数值越小优先级越高',
-  `is_active` tinyint(1) DEFAULT '1' COMMENT '角色是否启用',
+  `is_active` VARCHAR(50) DEFAULT '1' COMMENT '角色是否启用',
   `created_at` datetime NOT NULL COMMENT '创建时间',
   `updated_at` datetime NOT NULL COMMENT '更新时间',
   `deleted_at` datetime DEFAULT NULL COMMENT '软删除标记',
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS `roles` (
 CREATE TABLE IF NOT EXISTS `users` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '用户 ID',
   `username` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '用户名 (用于登录)',
-  `password_hash` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '加密后的密码',
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '加密后的密码',
   `email` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '电子邮箱',
   `role_id` bigint DEFAULT NULL COMMENT '角色 ID',
   `is_active` VARCHAR(50) DEFAULT '1' COMMENT '账户是否激活',

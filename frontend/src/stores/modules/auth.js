@@ -2,22 +2,14 @@
 // 管理用户登录状态、令牌和权限信息
 
 import { defineStore } from "pinia";
-import { login, logout, getCurrentUser, refreshToken } from "@/api/auth";
-import {
-	getToken,
-	setToken,
-	removeToken,
-	getRefreshToken,
-	setRefreshToken,
-	parseToken,
-} from "@/utils/auth";
+import { login, logout, getCurrentUser } from "@/api/auth";
+import { getToken, setToken, removeToken, parseToken } from "@/utils/auth";
 
 export const useAuthStore = defineStore("auth", {
 	state: () => ({
 		// 访问令牌
 		token: getToken(),
-		// 刷新令牌
-		refreshToken: getRefreshToken(),
+
 		// 用户信息
 		userInfo: null,
 		// 用户权限列表
@@ -91,9 +83,7 @@ export const useAuthStore = defineStore("auth", {
 
 				// 保存令牌
 				this.token = data.accessToken;
-				this.refreshToken = data.refreshToken;
 				setToken(data.accessToken);
-				setRefreshToken(data.refreshToken);
 
 				// 保存用户信息
 				this.userInfo = data.userInfo;
@@ -173,42 +163,10 @@ export const useAuthStore = defineStore("auth", {
 		},
 
 		/**
-		 * 刷新访问令牌
-		 * @returns {Promise} 新的令牌信息
-		 */
-		async refreshAccessToken() {
-			try {
-				if (!this.refreshToken) {
-					throw new Error("没有刷新令牌");
-				}
-
-				const tokenResponse = await refreshToken(this.refreshToken);
-
-				// 后端现在统一返回对象格式
-				this.token = tokenResponse.accessToken;
-				setToken(tokenResponse.accessToken);
-
-				// 更新刷新令牌（如果后端返回了新的）
-				if (tokenResponse.refreshToken) {
-					this.refreshToken = tokenResponse.refreshToken;
-					setRefreshToken(tokenResponse.refreshToken);
-				}
-
-				return tokenResponse;
-			} catch (error) {
-				console.error("刷新令牌失败:", error);
-				// 刷新失败，清除认证状态
-				this.clearAuthData();
-				throw error;
-			}
-		},
-
-		/**
 		 * 清除认证数据
 		 */
 		clearAuthData() {
 			this.token = null;
-			this.refreshToken = null;
 			this.userInfo = null;
 			this.permissions = [];
 			this.roles = [];
@@ -247,66 +205,6 @@ export const useAuthStore = defineStore("auth", {
 		},
 
 		/**
-		 * 检查令牌是否即将过期
-		 * @param {number} threshold 提前刷新的时间阈值（秒）
-		 * @returns {boolean} 是否需要刷新
-		 */
-		shouldRefreshToken(threshold = 300) {
-			if (!this.token) {
-				console.debug("没有令牌，无需刷新");
-				return false;
-			}
-
-			// 首先验证令牌格式
-			if (!this.isValidJWTFormat(this.token)) {
-				console.error("令牌格式无效，清除认证状态");
-				this.clearAuthData();
-				return false;
-			}
-
-			try {
-				// 使用统一的令牌解析函数
-				const payload = parseToken(this.token);
-
-				if (!payload) {
-					console.error("令牌解析失败，清除认证状态");
-					this.clearAuthData();
-					return false;
-				}
-
-				if (!payload.exp) {
-					console.error("令牌缺少过期时间，清除认证状态");
-					this.clearAuthData();
-					return false;
-				}
-
-				const expirationTime = payload.exp * 1000;
-				const currentTime = Date.now();
-				const timeUntilExpiration = expirationTime - currentTime;
-
-				// 如果已经过期，清除认证状态
-				if (timeUntilExpiration <= 0) {
-					console.debug("令牌已过期，清除认证状态");
-					this.clearAuthData();
-					return false;
-				}
-
-				const needsRefresh = timeUntilExpiration < threshold * 1000;
-				console.debug(
-					`令牌剩余时间: ${Math.floor(
-						timeUntilExpiration / 1000
-					)}秒, 需要刷新: ${needsRefresh}`
-				);
-
-				return needsRefresh;
-			} catch (error) {
-				console.error("解析令牌失败，清除认证状态:", error);
-				this.clearAuthData();
-				return false;
-			}
-		},
-
-		/**
 		 * 初始化认证状态
 		 * 应用启动时调用，检查本地存储的令牌
 		 */
@@ -328,14 +226,8 @@ export const useAuthStore = defineStore("auth", {
 			try {
 				console.debug("令牌格式有效，继续初始化");
 
-				// 检查令牌是否需要刷新
-				const needsRefresh = this.shouldRefreshToken();
-				if (needsRefresh) {
-					console.debug("令牌即将过期，开始刷新");
-					await this.refreshAccessToken();
-					console.debug("令牌刷新成功");
-				} else if (!this.token) {
-					// shouldRefreshToken可能已经清除了认证状态
+				// 直接使用现有令牌进行认证
+				if (!this.token) {
 					console.debug("令牌已被清除，停止初始化");
 					return;
 				}

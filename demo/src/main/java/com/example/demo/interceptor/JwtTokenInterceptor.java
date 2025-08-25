@@ -1,6 +1,6 @@
 package com.example.demo.interceptor;
 
-import com.example.demo.config.JwtTokenUtil;
+import com.example.demo.utils.JwtTokenUtil;
 import com.example.demo.config.JwtProperties;
 import com.example.demo.utils.BaseContext;
 import lombok.extern.slf4j.Slf4j;

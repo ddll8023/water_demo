@@ -1,18 +1,20 @@
-package com.example.demo.pojo.entity.system;
+package com.example.demo.pojo.VO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.example.demo.pojo.entity.system.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
- * 用户信息表实体类
- * 对应数据库表: users
+ * 用户视图对象
+ * 用于处理包含关联信息的用户数据
  */
 @Data
-@Schema(name = "User", description = "用户信息表")
-public class User {
+@Schema(name = "UserVO", description = "用户视图对象")
+public class UserVO {
 
     @Schema(name = "id", description = "用户ID")
     private Long id;
@@ -27,7 +29,7 @@ public class User {
     private Long roleId;
 
     @Schema(name = "isActive", description = "账户是否激活")
-    private String isActive = "1";
+    private String isActive;
 
     @Schema(name = "lastLogin", description = "最后登录时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -45,4 +47,12 @@ public class User {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime deletedAt;
 
-}
+    // ========== 关联信息字段（非数据库字段，用于存储关联查询结果） ==========
+
+    @Schema(name = "roleName", description = "角色名称")
+    private String roleName;
+    
+    @Schema(name = "roles", description = "用户角色列表")
+    private List<Role> roles;
+
+} 

@@ -1,11 +1,13 @@
-package com.example.demo.config;
+package com.example.demo.utils;
 
+import com.example.demo.config.JwtProperties;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
@@ -108,22 +110,10 @@ public class JwtTokenUtil {
      * @return 生成的JWT令牌字符串
      */
     public String generateToken(String username, Map<String, Object> claims) {
-        claims.put("sub", username);
         return createJWT(jwtProperties.getAdminSecretKey(), jwtProperties.getAdminTtl(), claims);
     }
 
-    /**
-     * 生成刷新令牌
-     *
-     * @param username 用户名
-     * @return 生成的刷新令牌字符串
-     */
-    public String generateRefreshToken(String username) {
-        Map<String, Object> claims = new java.util.HashMap<>();
-        claims.put("type", "refresh");
-        claims.put("sub", username);
-        return createJWT(jwtProperties.getAdminSecretKey(), jwtProperties.getAdminRefreshTtl(), claims);
-    }
+
 
     /**
      * 验证令牌是否有效
@@ -151,18 +141,21 @@ public class JwtTokenUtil {
         return claims.get("userId", Long.class);
     }
 
+
+
     /**
-     * 检查是否为刷新令牌
-     *
-     * @param token JWT令牌字符串
-     * @return 如果是刷新令牌返回true，否则返回false
+     * 从HTTP请求中提取认证Token
+     * 
+     * @param request HTTP请求对象
+     * @return 提取的Token字符串，如果没有找到则返回null
      */
-    public Boolean isRefreshToken(String token) {
-        try {
-            Claims claims = parseJWT(jwtProperties.getAdminSecretKey(), token);
-            return "refresh".equals(claims.get("type"));
-        } catch (Exception e) {
-            return false;
+    public String extractTokenFromRequest(HttpServletRequest request) {
+        // 从Authorization请求头中提取Bearer令牌
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            // 去掉"Bearer "前缀，返回实际的Token
+            return bearerToken.substring(7);
         }
+        return null;
     }
 }

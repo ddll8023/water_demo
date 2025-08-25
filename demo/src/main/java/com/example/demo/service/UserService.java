@@ -6,6 +6,7 @@ import com.example.demo.pojo.DTO.system.UserUpdateDTO;
 import com.example.demo.pojo.DTO.common.PageResponseDTO;
 import com.example.demo.pojo.entity.system.Role;
 import com.example.demo.pojo.entity.system.User;
+import com.example.demo.pojo.VO.UserVO;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.mapper.RoleMapper;
 import com.example.demo.utils.BaseContext;
@@ -49,12 +50,12 @@ public class UserService {
         // 使用PageHelper进行分页
         PageHelper.startPage(page, size);
 
-        // 执行查询
-        List<User> users = userMapper.selectUserPageWithDetails(
+        // 执行查询（返回UserVO包含关联信息）
+        List<UserVO> users = userMapper.selectUserPageWithDetails(
             null, username, roleId, isActive, null);
 
         // 获取分页信息
-        PageInfo<User> pageInfo = new PageInfo<>(users);
+        PageInfo<UserVO> pageInfo = new PageInfo<>(users);
 
         // 转换为DTO
         List<UserResponseDTO> userDTOs = pageInfo.getList().stream()
@@ -73,7 +74,7 @@ public class UserService {
      * 根据ID查询用户
      */
     public UserResponseDTO getUserById(Long id) {
-        User user = userMapper.selectUserDetailById(id);
+        UserVO user = userMapper.selectUserDetailById(id);
         if (user == null) {
             throw new RuntimeException("用户不存在");
         }
@@ -94,7 +95,7 @@ public class UserService {
         BeanUtils.copyProperties(createDTO, user);
 
         // 加密密码
-        user.setPasswordHash(encodePassword(createDTO.getPassword()));
+        user.setPassword(encodePassword(createDTO.getPassword()));
         user.setIsActive("1");
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
@@ -235,7 +236,7 @@ public class UserService {
     /**
      * 转换为响应DTO
      */
-    private UserResponseDTO convertToResponseDTO(User user) {
+    private UserResponseDTO convertToResponseDTO(UserVO user) {
         UserResponseDTO dto = new UserResponseDTO();
         BeanUtils.copyProperties(user, dto);
 

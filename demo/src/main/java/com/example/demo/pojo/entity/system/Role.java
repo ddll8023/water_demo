@@ -1,8 +1,8 @@
 package com.example.demo.pojo.entity.system;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 
@@ -11,61 +11,34 @@ import java.time.LocalDateTime;
  * 对应数据库表: roles
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@TableName("roles")
+@Schema(name = "Role", description = "角色表")
 public class Role {
 
-    /**
-     * 角色 ID
-     */
-    @TableId(value = "id", type = IdType.AUTO)
+    @Schema(name = "id", description = "角色ID")
     private Long id;
 
-    /**
-     * 角色名称
-     */
-    @TableField("name")
+    @Schema(name = "name", description = "角色名称")
     private String name;
 
-    /**
-     * 角色描述
-     */
-    @TableField("description")
+    @Schema(name = "description", description = "角色描述")
     private String description;
 
-    /**
-     * 排序值，数值越小优先级越高
-     */
-    @TableField("sort_order")
+    @Schema(name = "sortOrder", description = "排序值")
     private Integer sortOrder;
 
-    /**
-     * 角色是否启用
-     */
-    @TableField("is_active")
-    private Boolean isActive;
+    @Schema(name = "isActive", description = "角色是否启用")
+    private String isActive;
 
-    /**
-     * 创建时间
-     */
-    @TableField(value = "created_at", fill = FieldFill.INSERT)
+    @Schema(name = "createdAt", description = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
-    /**
-     * 更新时间
-     */
-    @TableField(value = "updated_at", fill = FieldFill.INSERT_UPDATE)
+    @Schema(name = "updatedAt", description = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 
-    /**
-     * 软删除标记
-     */
-    @TableLogic
-    @TableField("deleted_at")
+    @Schema(name = "deletedAt", description = "软删除时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime deletedAt;
 
-    // 注意：MyBatis-Plus中不直接支持关联查询
-    // 以下关联数据需要通过Service层处理：
-    // - 该角色的用户列表：通过查询role_id = this.id的用户记录
-    // - 角色权限关联：通过查询role_id = this.id的角色权限记录
 }

@@ -3,6 +3,7 @@ package com.example.demo.mapper;
 import com.example.demo.pojo.entity.system.Permission;
 import com.example.demo.pojo.entity.system.Role;
 import com.example.demo.pojo.entity.system.User;
+import com.example.demo.pojo.VO.UserVO;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -13,12 +14,6 @@ import java.util.List;
  */
 @Mapper
 public interface UserMapper {
-
-    /**
-     * 根据用户名查询用户（包含角色信息）
-     * 用于登录认证时获取用户基本信息和角色
-     */
-    User selectByUsernameWithRole(@Param("username") String username);
 
     /**
      * 根据用户ID查询用户权限列表
@@ -40,7 +35,7 @@ public interface UserMapper {
     /**
      * 根据用户ID查询用户详细信息（包含角色信息）
      */
-    User selectUserDetailById(@Param("userId") Long userId);
+    UserVO selectUserDetailById(@Param("userId") Long userId);
 
     /**
      * 分页查询用户列表（包含关联信息）
@@ -49,7 +44,7 @@ public interface UserMapper {
      * 
      * 排序默认使用创建时间降序
      */
-    List<User> selectUserPageWithDetails(
+    List<UserVO> selectUserPageWithDetails(
             @Param("keyword") String keyword,
             @Param("username") String username,
             @Param("roleId") Long roleId,

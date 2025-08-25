@@ -354,18 +354,6 @@ router.beforeEach(async (to, from, next) => {
 			}
 		}
 
-		// 检查Token是否即将过期
-		if (authStore.shouldRefreshToken && authStore.shouldRefreshToken()) {
-			try {
-				await authStore.refreshAccessToken();
-			} catch (error) {
-				console.error("Token刷新失败:", error);
-				authStore.clearAuthData();
-				next(`/login?redirect=${encodeURIComponent(to.fullPath)}`);
-				return;
-			}
-		}
-
 		// 检查页面权限
 		if (to.meta?.permission && !authStore.hasPermission(to.meta.permission)) {
 			next("/403");
