@@ -289,8 +289,8 @@ const roleTableColumns = [
 // 转换角色选项数据格式
 const roleSelectOptions = computed(() => {
   return roleOptions.value.map(role => {
-    // 如果is_active不存在，默认为true（可选状态）
-    const isActive = role.is_active !== undefined ? role.is_active : true
+            // 如果is_active不存在，默认为"1"（启用状态）
+        const isActive = role.is_active !== undefined ? role.is_active : "1"
     return {
       value: role.id,
       label: role.name,

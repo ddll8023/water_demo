@@ -3,14 +3,16 @@ package com.example.demo.controller;
 import com.example.demo.common.ApiResponse;
 import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.system.*;
+import com.example.demo.pojo.VO.DictTypeVO;
+import com.example.demo.pojo.VO.DictDataVO;
 import com.example.demo.service.DictionaryService;
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,99 +25,81 @@ import io.swagger.v3.oas.annotations.Operation;
 @RestController
 @RequestMapping("/api/system/dict")
 @Slf4j
+@RequiredArgsConstructor
 @Tag(name = "数据字典管理", description = "字典类型和字典数据相关的增删改查操作")
 public class DictionaryController {
 
-    @Autowired
-    private DictionaryService dictionaryService;
+    private final DictionaryService dictionaryService;
 
     // =================== 字典类型相关接口 ===================
 
     /**
-     * 分页查询字典类型列表
+     * 获取字典类型分页数据
+     * @param dictTypeQueryDTO
+     * @return
      */
-    @GetMapping("/types")
-    
+    @GetMapping("/types") 
     @Operation(summary = "获取字典类型分页数据", description = "支持按名称关键词模糊搜索，可以筛选启用/禁用状态")
-    public ResponseEntity<ApiResponse<PageResult<DictTypeResponseDTO>>> getDictTypes(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String typeCode,
-            @RequestParam(required = false) String typeName,
-            @RequestParam(required = false) Boolean isActive,
-            @RequestParam(required = false) String sort) {
-
-        PageResult<DictTypeResponseDTO> result = dictionaryService.getDictTypes(
-            page, size, keyword, typeCode, typeName, isActive, sort);
-
-        return ResponseEntity.ok(ApiResponse.success("查询成功", result));
+    public ResponseEntity<ApiResponse<PageResult<DictTypeVO>>> getDictTypes(
+            @Valid DictTypeQueryDTO dictTypeQueryDTO) {
+        PageResult<DictTypeVO> pageResult = dictionaryService.getDictTypes(dictTypeQueryDTO);
+        return ResponseEntity.ok(ApiResponse.success("查询成功", pageResult));
     }
 
     /**
      * 根据ID查询字典类型详情
      */
     @GetMapping("/types/{id}")
-    
-    @Operation(summary = "获取字典类型详情", description = "根据ID查询字典类型详细信息")
-    public ResponseEntity<ApiResponse<DictTypeResponseDTO>> getDictTypeById(
+    @Operation(summary = "获取字典类型详情", description = "根据ID查询字典类型详细信息，包含关联的字典数据数量")
+    public ResponseEntity<ApiResponse<DictTypeVO>> getDictTypeById(
             @PathVariable Long id) {
-
-        DictTypeResponseDTO result = dictionaryService.getDictTypeById(id);
-        return ResponseEntity.ok(ApiResponse.success("查询成功", result));
+        DictTypeVO dictTypeVO = dictionaryService.getDictTypeById(id);
+        return ResponseEntity.ok(ApiResponse.success("查询成功", dictTypeVO));
     }
 
     /**
      * 根据类型编码查询字典类型
      */
     @GetMapping("/types/code/{typeCode}")
-    
     @Operation(summary = "根据类型编码查询字典类型", description = "根据类型编码查询字典类型详细信息")
-    public ResponseEntity<ApiResponse<DictTypeResponseDTO>> getDictTypeByCode(
+    public ResponseEntity<ApiResponse<DictTypeVO>> getDictTypeByCode(
             @PathVariable String typeCode) {
-
-        DictTypeResponseDTO result = dictionaryService.getDictTypeByCode(typeCode);
-        return ResponseEntity.ok(ApiResponse.success("查询成功", result));
+        DictTypeVO dictTypeVO = dictionaryService.getDictTypeByCode(typeCode);
+        return ResponseEntity.ok(ApiResponse.success("查询成功", dictTypeVO));
     }
 
     /**
      * 创建字典类型
      */
     @PostMapping("/types")
-    
     @Operation(summary = "创建字典类型", description = "创建新的字典类型信息，支持设置类型编码、名称、描述等")
-    public ResponseEntity<ApiResponse<DictTypeResponseDTO>> createDictType(
-            @Valid @RequestBody DictTypeCreateDTO createDTO) {
+    public ResponseEntity<ApiResponse<Void>> createDictType(
+            @Valid @RequestBody DictTypeCreateDTO dictTypeCreateDTO) {
 
-        DictTypeResponseDTO result = dictionaryService.createDictType(createDTO);
-        return ResponseEntity.ok(ApiResponse.success("字典类型创建成功", result));
+        dictionaryService.createDictType(dictTypeCreateDTO);
+        return ResponseEntity.ok(ApiResponse.success("字典类型创建成功"));
     }
 
     /**
      * 更新字典类型
      */
     @PutMapping("/types/{id}")
-    
     @Operation(summary = "更新字典类型信息", description = "更新指定字典类型的基本信息，包括名称、描述等")
-    public ResponseEntity<ApiResponse<DictTypeResponseDTO>> updateDictType(
+    public ResponseEntity<ApiResponse<Void>> updateDictType(
             @PathVariable Long id,
-            @Valid @RequestBody DictTypeUpdateDTO updateDTO) {
-
-        // 确保ID一�?
-        updateDTO.setId(id);
-        DictTypeResponseDTO result = dictionaryService.updateDictType(updateDTO);
-        return ResponseEntity.ok(ApiResponse.success("字典类型更新成功", result));
+            @Valid @RequestBody DictTypeUpdateDTO dictTypeUpdateDTO) {
+        dictTypeUpdateDTO.setId(id);
+        dictionaryService.updateDictType(dictTypeUpdateDTO);
+        return ResponseEntity.ok(ApiResponse.success("字典类型更新成功"));
     }
 
     /**
      * 删除字典类型
      */
     @DeleteMapping("/types/{id}")
-    
     @Operation(summary = "删除字典类型", description = "删除指定的字典类型，如果类型下有数据则不允许删除")
     public ResponseEntity<ApiResponse<Void>> deleteDictType(
             @PathVariable Long id) {
-
         dictionaryService.deleteDictType(id);
         return ResponseEntity.ok(ApiResponse.success("字典类型删除成功"));
     }
@@ -130,9 +114,7 @@ public class DictionaryController {
             @RequestParam String typeCode,
             @RequestParam(required = false) Long excludeId) {
 
-        boolean exists = dictionaryService.checkTypeCodeExists(typeCode, excludeId);
-        Map<String, Boolean> result = new HashMap<>();
-        result.put("exists", exists);
+        Map<String, Boolean> result = dictionaryService.checkTypeCodeExists(typeCode, excludeId);
         return ResponseEntity.ok(ApiResponse.success("检查完成", result));
     }
 
@@ -142,13 +124,11 @@ public class DictionaryController {
      * 根据类型编码查询字典数据
      */
     @GetMapping("/data/type/{typeCode}")
-    
-    @Operation(summary = "根据类型编码查询字典数据", description = "根据类型编码查询字典数据列表")
-    public ResponseEntity<ApiResponse<List<DictDataResponseDTO>>> getDictDataByTypeCode(
+    @Operation(summary = "根据类型编码查询字典数据", description = "根据类型编码查询字典数据列表，包含关联的字典类型信息")
+    public ResponseEntity<ApiResponse<List<DictDataVO>>> getDictDataByTypeCode(
             @PathVariable String typeCode) {
-
-        // 调用服务层方法获取指定类型编码的字典数据列表
-        List<DictDataResponseDTO> result = dictionaryService.getDictDataByTypeCode(typeCode);
+        // 调用服务层方法获取指定类型编码的字典数据列表（返回VO包含关联信息）
+        List<DictDataVO> result = dictionaryService.getDictDataVOByTypeCode(typeCode);
         return ResponseEntity.ok(ApiResponse.success("查询成功", result));
     }
 
@@ -156,13 +136,11 @@ public class DictionaryController {
      * 根据类型ID查询字典数据
      */
     @GetMapping("/data/type-id/{typeId}")
-    
-    @Operation(summary = "根据类型ID查询字典数据", description = "根据类型ID查询字典数据列表")
-    public ResponseEntity<ApiResponse<List<DictDataResponseDTO>>> getDictDataByTypeId(
+    @Operation(summary = "根据类型ID查询字典数据", description = "根据类型ID查询字典数据列表，包含关联的字典类型信息")
+    public ResponseEntity<ApiResponse<List<DictDataVO>>> getDictDataByTypeId(
             @PathVariable Long typeId) {
-
-        // 调用服务层方法获取指定类型ID的字典数据列表
-        List<DictDataResponseDTO> result = dictionaryService.getDictDataByTypeId(typeId);
+        // 调用服务层方法获取指定类型ID的字典数据列表（返回VO包含关联信息）
+        List<DictDataVO> result = dictionaryService.getDictDataVOByTypeId(typeId);
         return ResponseEntity.ok(ApiResponse.success("查询成功", result));
     }
 
@@ -170,42 +148,37 @@ public class DictionaryController {
      * 创建字典数据
      */
     @PostMapping("/data")
-    
-        @Operation(summary = "创建字典数据", description = "创建新的字典数据信息，支持设置类型编码、数据值、数据标签等")
-    public ResponseEntity<ApiResponse<DictDataResponseDTO>> createDictData(
-            @Valid @RequestBody DictDataCreateDTO createDTO) {
-
+    @Operation(summary = "创建字典数据", description = "创建新的字典数据信息，支持设置类型编码、数据值、数据标签等")
+    public ResponseEntity<ApiResponse<Void>> createDictData(
+            @Valid @RequestBody DictDataCreateDTO dictDataCreateDTO) {
         // 调用服务层方法创建字典数据
-        DictDataResponseDTO result = dictionaryService.createDictData(createDTO);
-        return ResponseEntity.ok(ApiResponse.success("字典数据创建成功", result));
+        dictionaryService.createDictData(dictDataCreateDTO);
+        return ResponseEntity.ok(ApiResponse.success("字典数据创建成功"));
     }
 
     /**
      * 更新字典数据
      */
     @PutMapping("/data/{id}")
-    
     @Operation(summary = "更新字典数据信息", description = "更新指定字典数据的基本信息，包括数据值、标签等")
-    public ResponseEntity<ApiResponse<DictDataResponseDTO>> updateDictData(
+    public ResponseEntity<ApiResponse<Void>> updateDictData(
             @PathVariable Long id,
-            @Valid @RequestBody DictDataUpdateDTO updateDTO) {
+            @Valid @RequestBody DictDataUpdateDTO dictDataUpdateDTO) {
 
         // 确保ID一致，防止URI与请求体中ID不匹配
-        updateDTO.setId(id);
+        dictDataUpdateDTO.setId(id);
         // 调用服务层方法更新字典数据
-        DictDataResponseDTO result = dictionaryService.updateDictData(updateDTO);
-        return ResponseEntity.ok(ApiResponse.success("字典数据更新成功", result));
+        dictionaryService.updateDictData(dictDataUpdateDTO);
+        return ResponseEntity.ok(ApiResponse.success("字典数据更新成功"));
     }
 
     /**
      * 删除字典数据
      */
     @DeleteMapping("/data/{id}")
-    
     @Operation(summary = "删除字典数据", description = "删除指定的字典数据，如果数据关联了其他业务则不允许删除")
     public ResponseEntity<ApiResponse<Void>> deleteDictData(
             @PathVariable Long id) {
-
         // 调用服务层方法删除指定ID的字典数据
         dictionaryService.deleteDictData(id);
         return ResponseEntity.ok(ApiResponse.success("字典数据删除成功"));

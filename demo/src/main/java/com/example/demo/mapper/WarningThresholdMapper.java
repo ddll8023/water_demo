@@ -30,7 +30,7 @@ public interface WarningThresholdMapper extends BaseMapper<WarningThreshold> {
             @Param("keyword") String keyword,
             @Param("stationName") String stationName,
             @Param("monitoringItem") String monitoringItem,
-            @Param("isActive") Boolean isActive,
+            @Param("isActive") String isActive,
             @Param("sort") String sort);
 
     /**

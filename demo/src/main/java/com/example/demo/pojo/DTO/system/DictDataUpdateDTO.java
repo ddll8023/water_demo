@@ -1,61 +1,48 @@
 package com.example.demo.pojo.DTO.system;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 
 /**
  * 字典数据更新DTO
  * 用于更新字典数据信息的请求
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-public class DictDataUpdateDTO {
+@Schema(description = "字典数据更新DTO")
+public class DictDataUpdateDTO implements Serializable {
 
-    /**
-     * 字典数据ID
-     */
     @NotNull(message = "字典数据ID不能为空")
+    @Schema(description = "字典数据ID", required = true, example = "1")
     private Long id;
 
-    /**
-     * 关联字典类型ID
-     */
     @NotNull(message = "字典类型ID不能为空")
+    @Schema(description = "关联字典类型ID", required = true, example = "1")
     private Long typeId;
 
-    /**
-     * 字典标签（显示值）
-     */
     @NotBlank(message = "字典标签不能为空")
     @Size(max = 100, message = "字典标签长度不能超过100个字符")
+    @Schema(description = "字典标签（显示值）", required = true, example = "启用")
     private String dataLabel;
 
-    /**
-     * 字典键值（实际值）
-     */
     @NotBlank(message = "字典键值不能为空")
     @Size(max = 100, message = "字典键值长度不能超过100个字符")
+    @Schema(description = "字典键值（实际值）", required = true, example = "1")
     private String dataValue;
 
-    /**
-     * 描述信息
-     */
     @Size(max = 500, message = "描述信息长度不能超过500个字符")
+    @Schema(description = "描述信息", example = "字典数据的详细描述")
     private String description;
 
-    /**
-     * 排序值
-     */
     @NotNull(message = "排序值不能为空")
+    @Schema(description = "排序值", required = true, example = "1")
     private Integer sortOrder;
 
-    /**
-     * 是否启用
-     */
     @NotNull(message = "启用状态不能为空")
-    private Boolean isActive;
+    @Schema(description = "是否启用", required = true, example = "1")
+    private String isActive = "1";
 }

@@ -19,4 +19,29 @@ public class MessageConstant {
     public static final String DEPARTMENT_HAS_CHILDREN = "该部门下还有子部门，无法删除";
     public static final String DEPARTMENT_HAS_USERS = "该部门下还有用户，无法删除";
 
+    // 字典相关常量
+    public static final String DICT_TYPE_NOT_EXIST = "字典类型不存在";
+    public static final String DICT_DATA_NOT_EXIST = "字典数据不存在";
+    public static final String DICT_TYPE_CODE_DUPLICATE = "字典类型编码已存在";
+    public static final String DICT_DATA_VALUE_DUPLICATE = "同一字典类型下的键值已存在";
+    public static final String DICT_QUERY_PARAM_INVALID = "查询参数无效";
+    public static final String DICT_TYPE_ID_NULL = "字典类型ID不能为空";
+    public static final String DICT_TYPE_CODE_NULL = "字典类型编码不能为空";
+    public static final String DICT_TYPE_CREATE_FAILED = "字典类型创建失败";
+    public static final String DICT_TYPE_CREATE_PARAM_INVALID = "字典类型创建参数无效";
+    public static final String DICT_TYPE_UPDATE_FAILED = "字典类型更新失败";
+    public static final String DICT_TYPE_UPDATE_PARAM_INVALID = "字典类型更新参数无效";
+    public static final String DICT_TYPE_DELETE_FAILED = "字典类型删除失败";
+    public static final String DICT_TYPE_HAS_DATA = "该字典类型下还有字典数据，无法删除";
+    
+    // 字典数据查询相关常量
+    public static final String DICT_DATA_TYPE_CODE_NULL = "字典类型编码不能为空";
+    public static final String DICT_DATA_TYPE_ID_NULL = "字典类型ID不能为空";
+    
+    // 字典数据操作相关常量
+    public static final String DICT_DATA_CREATE_FAILED = "字典数据创建失败";
+    public static final String DICT_DATA_CREATE_PARAM_INVALID = "字典数据创建参数无效";
+    public static final String DICT_DATA_UPDATE_FAILED = "字典数据更新失败";
+    public static final String DICT_DATA_DELETE_FAILED = "字典数据删除失败";
+
 }

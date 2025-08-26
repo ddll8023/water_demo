@@ -48,7 +48,7 @@ public interface UserMapper {
             @Param("keyword") String keyword,
             @Param("username") String username,
             @Param("roleId") Long roleId,
-            @Param("isActive") Boolean isActive,
+            @Param("isActive") String isActive,
             @Param("sort") String sort);
             
     /**

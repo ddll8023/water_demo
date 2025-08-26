@@ -15,12 +15,10 @@
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
         <result property="deletedAt" column="deleted_at"/>
-        <!-- 关联查询字段 -->
-        <result property="dataCount" column="data_count"/>
     </resultMap>
 
     <!-- 根据类型编码查询字典类型 -->
-    <select id="selectDictTypeByCode" resultMap="DictTypeMap">
+    <select id="selectDictTypeByCode" resultType="com.example.demo.pojo.entity.system.DictType">
         SELECT * FROM dict_types WHERE type_code = #{typeCode} AND deleted_at IS NULL
     </select>
 
@@ -32,36 +30,50 @@
         </if>
     </select>
     
-    <!-- 查询字典类型列表（包含字典数据统计） -->
-    <select id="selectDictTypeList" resultMap="DictTypeMap">
-        SELECT dict_types.*,
-               COALESCE(dd_count.data_count, 0) as data_count
+    <!-- 查询字典类型列表 -->
+    <select id="selectDictTypeList" resultType="com.example.demo.pojo.entity.system.DictType">
+        SELECT *
         FROM dict_types
-        LEFT JOIN (
-            SELECT type_id, COUNT(1) as data_count
-            FROM dict_data
-            WHERE deleted_at IS NULL
-            GROUP BY type_id
-        ) dd_count ON dict_types.id = dd_count.type_id
-        WHERE dict_types.deleted_at IS NULL
-        <if test="typeName != null and typeName != ''">
-            AND dict_types.type_name LIKE CONCAT('%', #{typeName}, '%')
+        WHERE deleted_at IS NULL
+        <if test="keyword != null and keyword != ''">
+            AND (type_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR type_code LIKE CONCAT('%', #{keyword}, '%')
+                 OR description LIKE CONCAT('%', #{keyword}, '%'))
         </if>
-        ORDER BY dict_types.sort_order ASC, dict_types.created_at DESC
+        <if test="typeCode != null and typeCode != ''">
+            AND type_code = #{typeCode}
+        </if>
+        <if test="typeName != null and typeName != ''">
+            AND type_name LIKE CONCAT('%', #{typeName}, '%')
+        </if>
+        <if test="isActive != null">
+            AND is_active = #{isActive}
+        </if>
+        ORDER BY 
+        <choose>
+            <when test="sort != null and sort != ''">
+                <if test="sort.contains('createdAt')">
+                    created_at ${sort.contains('desc') ? 'DESC' : 'ASC'}
+                </if>
+                <if test="sort.contains('typeName')">
+                    type_name ${sort.contains('desc') ? 'DESC' : 'ASC'}
+                </if>
+                <if test="sort.contains('typeCode')">
+                    type_code ${sort.contains('desc') ? 'DESC' : 'ASC'}
+                </if>
+                <if test="!sort.contains('createdAt') and !sort.contains('typeName') and !sort.contains('typeCode')">
+                    sort_order ASC, created_at DESC
+                </if>
+            </when>
+            <otherwise>
+                sort_order ASC, created_at DESC
+            </otherwise>
+        </choose>
     </select>
 
-    <!-- 根据ID查询字典类型详情（包含字典数据统计） -->
-    <select id="selectDictTypeById" resultMap="DictTypeMap">
-        SELECT dict_types.*,
-               COALESCE(dd_count.data_count, 0) as data_count
-        FROM dict_types
-        LEFT JOIN (
-            SELECT type_id, COUNT(1) as data_count
-            FROM dict_data
-            WHERE deleted_at IS NULL
-            GROUP BY type_id
-        ) dd_count ON dict_types.id = dd_count.type_id
-        WHERE dict_types.id = #{id} AND dict_types.deleted_at IS NULL
+    <!-- 根据ID查询字典类型详情 -->
+    <select id="selectDictTypeById" resultType="com.example.demo.pojo.entity.system.DictType">
+        SELECT * FROM dict_types WHERE id = #{id} AND deleted_at IS NULL
     </select>
     
     <!-- 更新字典类型 -->
@@ -108,8 +120,8 @@
     </resultMap>
 
     <!-- 根据类型编码查询字典数据 -->
-    <select id="selectDictDataByTypeCode" resultMap="DictDataMap">
-        SELECT dict_data.*
+    <select id="selectDictDataByTypeCode" resultType="com.example.demo.pojo.entity.system.DictData">
+        SELECT dict_data.*, dict_types.type_code, dict_types.type_name
         FROM dict_data
         LEFT JOIN dict_types ON dict_data.type_id = dict_types.id
         WHERE dict_types.type_code = #{typeCode}
@@ -120,7 +132,7 @@
     </select>
 
     <!-- 根据类型ID查询字典数据 -->
-    <select id="selectDictDataByTypeId" resultMap="DictDataMap">
+    <select id="selectDictDataByTypeId" resultType="com.example.demo.pojo.entity.system.DictData">
         SELECT *
         FROM dict_data
         WHERE type_id = #{typeId}
@@ -140,6 +152,11 @@
         <if test="!includeDeleted">
             AND deleted_at IS NULL
         </if>
+    </select>
+
+    <!-- 根据类型ID统计字典数据数量 -->
+    <select id="countDictDataByTypeId" resultType="int">
+        SELECT COUNT(1) FROM dict_data WHERE type_id = #{typeId} AND deleted_at IS NULL
     </select>
 
     <!-- 根据ID查询字典数据详情（包含类型信息） -->
@@ -191,7 +208,7 @@
             <if test="isActive != null">is_active = #{isActive},</if>
             <if test="updatedAt != null">updated_at = #{updatedAt}</if>
         </set>
-        WHERE id = #{id} AND deleted_at IS NULL
+        WHERE id = #{id}
     </update>
     
     <!-- 删除字典数据 -->

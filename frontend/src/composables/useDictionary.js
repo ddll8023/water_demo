@@ -60,7 +60,7 @@ export function useDictionary() {
 
 			// 转换为标准格式
 			const formattedData = dictData
-				.filter((item) => item.isActive) // 只返回启用的数据
+				.filter((item) => item.isActive === "1") // 只返回启用的数据
 				.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0)) // 按排序值排序
 				.map((item) => ({
 					label: item.dataLabel,

@@ -32,5 +32,5 @@ public class RoleUpdateDTO {
     /**
      * 角色是否启用
      */
-    private Boolean isActive;
+    private String isActive;
 }

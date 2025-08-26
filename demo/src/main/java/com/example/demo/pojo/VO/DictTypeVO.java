@@ -1,21 +1,19 @@
-package com.example.demo.pojo.entity.system;
+package com.example.demo.pojo.VO;
 
-import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 字典类型表实体类
- * 对应数据库表: dict_types
+ * 字典类型视图对象
+ * 用于API响应，包含字典类型的完整信息
  */
 @Data
-@Schema(name = "DictType", description = "字典类型实体")
-public class DictType implements Serializable {
+@Schema(name = "DictTypeVO", description = "字典类型视图对象")
+public class DictTypeVO implements Serializable {
 
     @Schema(name = "id", description = "字典类型ID")
     private Long id;
@@ -30,10 +28,10 @@ public class DictType implements Serializable {
     private String description;
 
     @Schema(name = "sortOrder", description = "排序值")
-    private Integer sortOrder = 0;
+    private Integer sortOrder;
 
     @Schema(name = "isActive", description = "是否启用")
-    private String isActive = "1";
+    private String isActive;
 
     @Schema(name = "createdAt", description = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -43,7 +41,6 @@ public class DictType implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 
-    @Schema(name = "deletedAt", description = "删除时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime deletedAt;
-}
+    @Schema(name = "dataCount", description = "字典数据数量")
+    private Integer dataCount;
+} 

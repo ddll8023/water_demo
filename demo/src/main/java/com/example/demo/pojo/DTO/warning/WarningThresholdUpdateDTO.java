@@ -71,5 +71,5 @@ public class WarningThresholdUpdateDTO {
      * 是否启用
      */
     @NotNull(message = "启用状态不能为空")
-    private Boolean isActive;
+    private String isActive;
 }

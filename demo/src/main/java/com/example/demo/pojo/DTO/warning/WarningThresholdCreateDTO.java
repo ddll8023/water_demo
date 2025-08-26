@@ -63,5 +63,5 @@ public class WarningThresholdCreateDTO {
     /**
      * 是否启用
      */
-    private Boolean isActive = true;
+    private String isActive = "1";
 }

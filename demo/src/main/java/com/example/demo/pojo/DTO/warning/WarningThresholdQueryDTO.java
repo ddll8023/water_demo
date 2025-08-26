@@ -43,7 +43,7 @@ public class WarningThresholdQueryDTO {
      * 是否启用
      * true-启用，false-禁用
      */
-    private Boolean isActive;
+    private String isActive;
 
     /**
      * 排序字段

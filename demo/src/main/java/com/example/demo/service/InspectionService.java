@@ -208,7 +208,8 @@ public class InspectionService {
         }
 
         try {
-            // 通过字典服务获取有效的巡检状态值
+            // TODO: 后续重构时改用getDictDataVOByTypeCode方法获取包含关联信息的完整数据
+            // 当前使用getDictDataByTypeCode方法保持兼容性
             List<DictDataResponseDTO> validStatuses = dictionaryService.getDictDataByTypeCode("inspection_status");
             return validStatuses.stream()
                     .anyMatch(dictData -> status.equals(dictData.getDataValue()));

@@ -42,7 +42,7 @@ public class DictTypeResponseDTO {
     /**
      * 是否启用
      */
-    private Boolean isActive;
+    private String isActive;
 
     /**
      * 创建时间

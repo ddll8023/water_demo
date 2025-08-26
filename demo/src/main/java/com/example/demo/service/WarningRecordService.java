@@ -75,7 +75,8 @@ public class WarningRecordService {
      */
     private Map<String, String> getDictValueLabelMap(String dictTypeCode) {
         try {
-            // 通过字典类型编码查询字典数据
+            // TODO: 后续重构时改用getDictDataVOByTypeCode方法获取包含关联信息的完整数据
+            // 当前使用getDictDataByTypeCode方法保持兼容性
             List<DictDataResponseDTO> dictDataList = dictionaryService.getDictDataByTypeCode(dictTypeCode);
             
             // 构建字典值到标签的映射

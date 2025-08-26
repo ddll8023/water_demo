@@ -62,8 +62,8 @@
                   :show-selection="false" :show-index="false" :show-actions="true" :actions-width="150"
                   :actions-fixed="true">
                   <template #isActive="{ row }">
-                    <el-tag :type="row.isActive ? 'success' : 'danger'">
-                      {{ row.isActive ? '启用' : '禁用' }}
+                    <el-tag :type="row.isActive === '1' ? 'success' : 'danger'">
+                      {{ row.isActive === '1' ? '启用' : '禁用' }}
                     </el-tag>
                   </template>
 
@@ -101,10 +101,10 @@
     <!-- 字典类型编辑对话框 -->
     <CustomDialog v-model:visible="typeDialogVisible" :title="typeDialogTitle" width="500px" :loading="typeLoading"
       @confirm="handleTypeSubmit" @cancel="() => {
-        Object.assign(typeForm, { id: null, typeName: '', typeCode: '', description: '', sortOrder: 0, isActive: true });
+        Object.assign(typeForm, { id: null, typeName: '', typeCode: '', description: '', sortOrder: 0, isActive: '1' });
         typeFormRef?.clearValidate();
       }" @close="() => {
-        Object.assign(typeForm, { id: null, typeName: '', typeCode: '', description: '', sortOrder: 0, isActive: true });
+        Object.assign(typeForm, { id: null, typeName: '', typeCode: '', description: '', sortOrder: 0, isActive: '1' });
         typeFormRef?.clearValidate();
       }">
       <el-form ref="typeFormRef" :model="typeForm" :rules="typeRules" label-width="100px">
@@ -129,10 +129,10 @@
     <!-- 字典项编辑对话框 -->
     <CustomDialog v-model:visible="itemDialogVisible" :title="itemDialogTitle" width="500px" :loading="itemLoading"
       @confirm="handleItemSubmit" @cancel="() => {
-        Object.assign(itemForm, { id: null, typeId: null, dataLabel: '', dataValue: '', sortOrder: 0, isActive: true, description: '' });
+        Object.assign(itemForm, { id: null, typeId: null, dataLabel: '', dataValue: '', sortOrder: 0, isActive: '1', description: '' });
         itemFormRef?.clearValidate();
       }" @close="() => {
-        Object.assign(itemForm, { id: null, typeId: null, dataLabel: '', dataValue: '', sortOrder: 0, isActive: true, description: '' });
+        Object.assign(itemForm, { id: null, typeId: null, dataLabel: '', dataValue: '', sortOrder: 0, isActive: '1', description: '' });
         itemFormRef?.clearValidate();
       }">
       <el-form ref="itemFormRef" :model="itemForm" :rules="itemRules" label-width="100px">
@@ -227,7 +227,7 @@ const typeForm = reactive({
   typeCode: '',
   description: '',
   sortOrder: 0,
-  isActive: true
+  isActive: '1'
 })
 
 // 字典项表单数据
@@ -237,7 +237,7 @@ const itemForm = reactive({
   dataLabel: '',
   dataValue: '',
   sortOrder: 0,
-  isActive: true,
+  isActive: '1',
   description: ''
 })
 
@@ -262,8 +262,8 @@ const paginatedItems = computed(() => {
 })
 
 const statusOptions = [
-  { label: '启用', value: true },
-  { label: '禁用', value: false }
+  { label: '启用', value: '1' },
+  { label: '禁用', value: '0' }
 ]
 
 // 表单验证规则
@@ -328,7 +328,7 @@ const loadDictionaryTypes = async () => {
     const response = await getDictTypeList({
       page: 1,
       size: 100, // 获取所有类型
-      isActive: true
+      isActive: '1'
     })
 
     // response 就是 PagedResponseDTO 对象，直接访问 items 字段
@@ -405,7 +405,7 @@ const handleAddType = () => {
     typeCode: '',
     description: '',
     sortOrder: 0,
-    isActive: true
+    isActive: '1'
   })
   typeFormRef.value?.clearValidate()
   typeDialogVisible.value = true
@@ -510,7 +510,7 @@ const handleAddItem = () => {
     dataLabel: '',
     dataValue: '',
     sortOrder: 0,
-    isActive: true,
+    isActive: '1',
     description: ''
   })
   itemFormRef.value?.clearValidate()

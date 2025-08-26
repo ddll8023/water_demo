@@ -36,5 +36,5 @@ public class RoleCreateDTO {
     /**
      * 角色是否启用
      */
-    private Boolean isActive = true;  // 默认为启用状态
+    private String isActive = "1";  // 默认为启用状态
 }

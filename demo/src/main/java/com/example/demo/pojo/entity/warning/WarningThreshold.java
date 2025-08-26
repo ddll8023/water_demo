@@ -75,7 +75,7 @@ public class WarningThreshold {
      * 是否启用
      */
     @TableField("is_active")
-    private Boolean isActive = true;
+    private String isActive = "1";
 
     /**
      * 创建时间

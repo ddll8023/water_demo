@@ -3,10 +3,12 @@ package com.example.demo.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.demo.pojo.entity.system.DictData;
 import com.example.demo.pojo.entity.system.DictType;
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import com.example.demo.pojo.DTO.system.DictTypeQueryDTO;
 
 /**
  * 数据字典Mapper接口
@@ -31,12 +33,7 @@ public interface DictionaryMapper extends BaseMapper<Object> {
      * 查询字典类型列表（包含字典数据统计）
      * 使用PageHelper分页插件
      */
-    List<DictType> selectDictTypeList(
-            @Param("keyword") String keyword,
-            @Param("typeCode") String typeCode,
-            @Param("typeName") String typeName,
-            @Param("isActive") Boolean isActive,
-            @Param("sort") String sort);
+    Page<DictType> selectDictTypeList(DictTypeQueryDTO queryDTO);
 
     /**
      * 根据ID查询字典类型详情（包含字典数据统计）
@@ -72,6 +69,11 @@ public interface DictionaryMapper extends BaseMapper<Object> {
             @Param("dataValue") String dataValue,
             @Param("excludeId") Long excludeId,
             @Param("includeDeleted") boolean includeDeleted);
+
+    /**
+     * 根据类型ID统计字典数据数量
+     */
+    int countDictDataByTypeId(@Param("typeId") Long typeId);
 
     /**
      * 根据ID查询字典数据详情（包含类型信息）

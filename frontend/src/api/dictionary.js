@@ -145,7 +145,7 @@ export function getDictDataByTypeId(typeId) {
  * @param {string} data.dataValue 字典键值
  * @param {string} data.description 描述信息
  * @param {number} data.sortOrder 排序值
- * @param {boolean} data.isActive 是否启用
+ * @param {string} data.isActive 是否启用（"1"启用，"0"禁用）
  * @returns {Promise} 创建结果
  */
 export function createDictData(data) {
@@ -160,6 +160,7 @@ export function createDictData(data) {
  * 更新字典数据
  * @param {number} id 字典数据ID
  * @param {Object} data 字典数据
+ * @param {string} data.isActive 是否启用（"1"启用，"0"禁用）
  * @returns {Promise} 更新结果
  */
 export function updateDictData(id, data) {

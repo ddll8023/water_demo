@@ -1,5 +1,6 @@
 package com.example.demo.pojo.DTO.system;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -12,43 +13,31 @@ import javax.validation.constraints.Size;
  * 用于创建新字典数据的请求
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
+@Schema(name = "DictDataCreateDTO", description = "字典数据创建DTO")
 public class DictDataCreateDTO {
 
-    /**
-     * 关联字典类型ID
-     */
     @NotNull(message = "字典类型ID不能为空")
+    @Schema(name = "typeId", description = "关联字典类型ID")
     private Long typeId;
 
-    /**
-     * 字典标签（显示值）
-     */
     @NotBlank(message = "字典标签不能为空")
     @Size(max = 100, message = "字典标签长度不能超过100个字符")
+    @Schema(name = "dataLabel", description = "字典标签（显示值）")
     private String dataLabel;
 
-    /**
-     * 字典键值（实际值）
-     */
     @NotBlank(message = "字典键值不能为空")
     @Size(max = 100, message = "字典键值长度不能超过100个字符")
+    @Schema(name = "dataValue", description = "字典键值（实际值）")
     private String dataValue;
 
-    /**
-     * 描述信息
-     */
     @Size(max = 500, message = "描述信息长度不能超过500个字符")
+    @Schema(name = "description", description = "描述信息")
     private String description;
 
-    /**
-     * 排序值
-     */
     @NotNull(message = "排序值不能为空")
+    @Schema(name = "sortOrder", description = "排序值")
     private Integer sortOrder = 0;
 
-    /**
-     * 是否启用
-     */
-    private Boolean isActive = true;
+    @Schema(name = "isActive", description = "是否启用")
+    private String isActive = "1";
 }

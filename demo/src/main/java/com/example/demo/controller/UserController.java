@@ -41,7 +41,7 @@ public class UserController {
      * @param size 每页大小，默认为10
      * @param username 用户名搜索，可选参数
      * @param roleId 角色ID，可选参数
-     * @param isActive 是否活跃，可选参数
+     * @param isActive 是否活跃（"1"启用，"0"禁用），可选参数
      * @return 分页的用户信息列表
      */
     @Operation(summary = "分页查询用户列表", description = "根据条件分页查询用户信息")
@@ -51,7 +51,7 @@ public class UserController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String username,
             @RequestParam(required = false) Long roleId,
-            @RequestParam(required = false) Boolean isActive) {
+            @RequestParam(required = false) String isActive) {
         try {
             PageResult<UserResponseDTO> result = userService.getUsers(
                 page, size, username, roleId, isActive);

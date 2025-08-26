@@ -47,7 +47,7 @@ public class UserService {
      * 分页查询用户列表
      */
     public PageResult<UserResponseDTO> getUsers(int page, int size,
-                                                String username, Long roleId, Boolean isActive) {
+                                                String username, Long roleId, String isActive) {
         // 使用PageHelper进行分页
         PageHelper.startPage(page, size);
 
