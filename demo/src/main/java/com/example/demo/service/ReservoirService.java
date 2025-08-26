@@ -6,7 +6,7 @@ import com.example.demo.pojo.DTO.facility.ReservoirResponseDTO;
 import com.example.demo.pojo.DTO.facility.ReservoirUpdateDTO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.entity.facility.Reservoir;
 import com.example.demo.mapper.ReservoirMapper;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class ReservoirService {
     /**
      * 分页查询水库列表
      */
-    public PageResponseDTO<ReservoirResponseDTO> getReservoirPage(ReservoirQueryDTO queryDTO) {
+    public PageResult<ReservoirResponseDTO> getReservoirPage(ReservoirQueryDTO queryDTO) {
         // 参数验证
         if (queryDTO.getPage() == null || queryDTO.getPage() < 1) {
             queryDTO.setPage(1);
@@ -53,7 +53,7 @@ public class ReservoirService {
         // 获取分页信息
         PageInfo<ReservoirResponseDTO> pageInfo = new PageInfo<>(reservoirs);
 
-        return new PageResponseDTO<>(
+        return new PageResult<>(
                 pageInfo.getList(),
                 (int) pageInfo.getTotal(),
                 queryDTO.getPage(),

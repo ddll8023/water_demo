@@ -1,5 +1,6 @@
 package com.example.demo.common;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.io.Serializable;
@@ -23,6 +24,7 @@ public class ApiResponse<T> implements Serializable {
     private T data;
     
     @Schema(description = "响应时间戳")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timestamp;
     
     public ApiResponse() {

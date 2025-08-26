@@ -8,7 +8,7 @@ import request from "./request";
  * @param {Object} params 查询参数
  * @param {number} params.page 页码
  * @param {number} params.size 每页大小
- * @param {string} params.keyword 关键词搜索（可选）
+ * @param {string} params.name 部门名称搜索（可选）
  * @param {boolean} params.isActive 启用状态（可选）
  * @returns {Promise} 部门列表响应
  */

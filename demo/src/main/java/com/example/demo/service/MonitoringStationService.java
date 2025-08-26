@@ -6,7 +6,7 @@ import com.example.demo.pojo.DTO.facility.MonitoringStationResponseDTO;
 import com.example.demo.pojo.DTO.facility.MonitoringStationUpdateDTO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.entity.facility.MonitoringStation;
 import com.example.demo.mapper.MonitoringStationMapper;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class MonitoringStationService {
     /**
      * 分页查询监测站点列表
      */
-    public PageResponseDTO<MonitoringStationResponseDTO> getMonitoringStationPage(MonitoringStationQueryDTO queryDTO) {
+    public PageResult<MonitoringStationResponseDTO> getMonitoringStationPage(MonitoringStationQueryDTO queryDTO) {
         // 参数验证
         int page = Math.max(queryDTO.getPage(), 1);
         int size = queryDTO.getSize() < 1 ? 10 : queryDTO.getSize();
@@ -45,7 +45,7 @@ public class MonitoringStationService {
         // 获取分页信息
         PageInfo<MonitoringStationResponseDTO> pageInfo = new PageInfo<>(stationList);
         
-        return new PageResponseDTO<>(
+        return new PageResult<>(
             pageInfo.getList(),
             (int) pageInfo.getTotal(),
             pageInfo.getPageNum(),

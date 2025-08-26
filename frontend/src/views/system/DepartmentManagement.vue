@@ -83,14 +83,30 @@
         </template>
 
         <template #parentDepartmentInfo>
-          <el-descriptions :column="2" border size="small">
-            <el-descriptions-item label="部门名称">
-              {{ parentDepartment.name }}
-            </el-descriptions-item>
-            <el-descriptions-item label="部门职责">
-              {{ parentDepartment.duty || '暂无' }}
-            </el-descriptions-item>
-          </el-descriptions>
+          <div class="parent-department-info">
+            <div class="parent-info-header">
+              <i class="fa fa-building-o parent-info-icon"></i>
+              <span class="parent-info-title">父部门信息</span>
+            </div>
+            <div class="parent-info-content">
+              <div class="parent-info-item">
+                <span class="info-label">部门名称：</span>
+                <span class="info-value">{{ parentDepartment.name || '未知' }}</span>
+              </div>
+              <div class="parent-info-item">
+                <span class="info-label">部门职责：</span>
+                <span class="info-value">{{ parentDepartment.duty || '暂无描述' }}</span>
+              </div>
+              <div class="parent-info-item" v-if="parentDepartment.contact">
+                <span class="info-label">联系方式：</span>
+                <span class="info-value">{{ parentDepartment.contact }}</span>
+              </div>
+              <div class="parent-info-item" v-if="parentDepartment.personnelCount !== undefined">
+                <span class="info-label">人员数量：</span>
+                <span class="info-value">{{ parentDepartment.personnelCount || 0 }}人</span>
+              </div>
+            </div>
+          </div>
         </template>
       </CommonForm>
 
@@ -187,7 +203,7 @@ const treeSelectProps = {
 
 // 搜索表单
 const searchForm = reactive({
-  keyword: ''
+  name: ''
 })
 
 // 分页信息
@@ -222,7 +238,7 @@ const formItems = ref([
     prop: 'isActive',
     label: '启用状态',
     type: 'radio',
-    options: departmentStatusOptions.value,
+    options: departmentStatusOptions,
     defaultValue: '1',
     required: true
   },
@@ -324,7 +340,7 @@ const formRules = {
 // 搜索字段配置
 const searchFields = [
   {
-    prop: 'keyword',
+    prop: 'name',
     label: '部门名称',
     type: 'input',
     placeholder: '请输入部门名称',
@@ -392,6 +408,37 @@ watch(
     }
   },
   { immediate: true, deep: true }
+)
+
+// 监听form.parentId变化，加载父部门详细信息
+watch(
+  () => form.parentId,
+  async (newParentId) => {
+    if (newParentId && departmentTreeOptions.value.length > 0) {
+      const findDepartmentInTree = (tree, targetId) => {
+        for (const node of tree) {
+          if (node.id === targetId) {
+            return node
+          }
+          if (node.children && node.children.length > 0) {
+            const found = findDepartmentInTree(node.children, targetId)
+            if (found) return found
+          }
+        }
+        return null
+      }
+
+      const foundParent = findDepartmentInTree(departmentTreeOptions.value, newParentId)
+      if (foundParent) {
+        parentDepartment.value = { ...foundParent }
+      } else {
+        parentDepartment.value = {}
+      }
+    } else {
+      parentDepartment.value = {}
+    }
+  },
+  { immediate: true }
 )
 
 // 监听对话框显示状态
@@ -670,7 +717,7 @@ const handleSearch = (searchData) => {
 
 // 重置搜索
 const handleResetSearch = () => {
-  searchForm.keyword = ''
+  searchForm.name = ''
   pagination.currentPage = 1
   // 移除直接调用loadDepartmentList()，避免重复请求
 }
@@ -797,6 +844,60 @@ const handleFormSuccess = () => {
       .custom-button {
         width: 100%;
         font-size: var(--font-size-sm);
+      }
+    }
+  }
+}
+
+/* 父部门信息样式 */
+.parent-department-info {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-medium);
+  margin-top: var(--spacing-small);
+
+  .parent-info-header {
+    @include flex-start;
+    margin-bottom: var(--spacing-medium);
+    padding-bottom: var(--spacing-small);
+    border-bottom: 1px solid var(--border-color-light);
+
+    .parent-info-icon {
+      color: var(--primary-color);
+      font-size: var(--font-size-medium);
+      margin-right: var(--spacing-small);
+    }
+
+    .parent-info-title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-medium);
+      color: var(--text-primary);
+    }
+  }
+
+  .parent-info-content {
+    .parent-info-item {
+      @include flex-start;
+      margin-bottom: var(--spacing-small);
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .info-label {
+        font-size: var(--font-size-sm);
+        color: var(--text-secondary);
+        font-weight: var(--font-weight-medium);
+        min-width: 80px;
+        flex-shrink: 0;
+      }
+
+      .info-value {
+        font-size: var(--font-size-sm);
+        color: var(--text-primary);
+        word-break: break-word;
+        flex: 1;
       }
     }
   }

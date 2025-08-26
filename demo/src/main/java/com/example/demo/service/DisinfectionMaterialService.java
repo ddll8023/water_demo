@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.facility.DisinfectionMaterialCreateDTO;
 import com.example.demo.pojo.DTO.facility.DisinfectionMaterialResponseDTO;
 import com.example.demo.pojo.DTO.facility.DisinfectionMaterialUpdateDTO;
@@ -29,12 +29,12 @@ public class DisinfectionMaterialService {
     /**
      * 分页查询消毒药材列表 - 直接接收参数
      */
-    public PageResponseDTO<DisinfectionMaterialResponseDTO> getDisinfectionMaterialPage(int page, int size, String keyword, Long waterPlantId) {
+    public PageResult<DisinfectionMaterialResponseDTO> getDisinfectionMaterialPage(int page, int size, String keyword, Long waterPlantId) {
         PageHelper.startPage(page, size);
         List<DisinfectionMaterialResponseDTO> list = disinfectionMaterialMapper.selectDisinfectionMaterialPage(keyword, waterPlantId);
         PageInfo<DisinfectionMaterialResponseDTO> pageInfo = new PageInfo<>(list);
 
-        return new PageResponseDTO<>(
+        return new PageResult<>(
                 pageInfo.getList(),
                 (int) pageInfo.getTotal(),
                 pageInfo.getPageNum(),

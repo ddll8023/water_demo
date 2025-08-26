@@ -2,7 +2,7 @@ package com.example.demo.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.facility.VillageCreateDTO;
 import com.example.demo.pojo.DTO.facility.VillageQueryDTO;
 import com.example.demo.pojo.DTO.facility.VillageResponseDTO;
@@ -28,7 +28,7 @@ public class VillageService {
     /**
      * 分页查询村庄信息列表
      */
-    public PageResponseDTO<VillageResponseDTO> getVillagePage(VillageQueryDTO queryDTO) {
+    public PageResult<VillageResponseDTO> getVillagePage(VillageQueryDTO queryDTO) {
         // 参数验证
         if (queryDTO.getPage() < 1) {
             queryDTO.setPage(1);
@@ -48,7 +48,7 @@ public class VillageService {
         // 获取分页信息
         PageInfo<VillageResponseDTO> pageInfo = new PageInfo<>(villages);
 
-        return new PageResponseDTO<VillageResponseDTO>(
+        return new PageResult<VillageResponseDTO>(
             pageInfo.getList(),
             (int) pageInfo.getTotal(),
             queryDTO.getPage(),

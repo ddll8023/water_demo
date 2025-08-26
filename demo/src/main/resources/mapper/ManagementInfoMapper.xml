@@ -14,10 +14,6 @@
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
         <result property="deletedAt" column="deleted_at"/>
-        <!-- 关联信息字段 -->
-        <result property="personnelCount" column="personnel_count"/>
-        <result property="parentName" column="parent_name"/>
-        <result property="regionName" column="region_name"/>
     </resultMap>
     
     <!-- 人员结果映射 -->
@@ -41,38 +37,53 @@
         <result property="username" column="username"/>
     </resultMap>
 
-    <!-- 部门详情结果映射（包含关联信息） -->
-    <resultMap id="DepartmentWithDetailsMap" type="com.example.demo.pojo.entity.system.Department" extends="DepartmentMap">
-        <!-- 继承基础映射，可以添加额外字段 -->
-    </resultMap>
-
     <!-- 获取部门树形结构 -->
     <select id="selectDepartmentTree" resultMap="DepartmentMap">
-        SELECT departments.*,
-               COUNT(personnel.id) as personnel_count,
-               regions.name as region_name,
-               parent_departments.name as parent_name
+        SELECT departments.id,
+               departments.name,
+               departments.parent_id,
+               departments.duty,
+               departments.contact,
+               departments.region_id,
+               departments.is_active,
+               departments.created_at,
+               departments.updated_at,
+               departments.deleted_at
         FROM departments
-        LEFT JOIN personnel ON departments.id = personnel.department_id AND personnel.deleted_at IS NULL
-        LEFT JOIN regions ON departments.region_id = regions.id
-        LEFT JOIN departments parent_departments ON departments.parent_id = parent_departments.id AND parent_departments.deleted_at IS NULL
         WHERE departments.deleted_at IS NULL
-        GROUP BY departments.id, departments.name, departments.parent_id, departments.duty,
-                 departments.contact, departments.region_id, departments.is_active,
-                 departments.created_at, departments.updated_at, departments.deleted_at,
-                 regions.name, parent_departments.name
         ORDER BY departments.parent_id ASC, departments.created_at ASC
     </select>
     
-    <!-- 根据ID查询部门详情（包含父部门名称） -->
-    <select id="selectDepartmentWithDetails" resultMap="DepartmentWithDetailsMap">
-        SELECT departments.*,
-               parent_departments.name as parent_name,
-               regions.name as region_name
+    <!-- 根据ID查询部门详情（基础信息） -->
+    <select id="selectDepartmentWithDetails" resultMap="DepartmentMap">
+        SELECT departments.id,
+               departments.name,
+               departments.parent_id,
+               departments.duty,
+               departments.contact,
+               departments.region_id,
+               departments.is_active,
+               departments.created_at,
+               departments.updated_at,
+               departments.deleted_at
         FROM departments
-        LEFT JOIN departments parent_departments ON departments.parent_id = parent_departments.id AND parent_departments.deleted_at IS NULL
-        LEFT JOIN regions ON departments.region_id = regions.id
         WHERE departments.id = #{id} AND departments.deleted_at IS NULL
+    </select>
+
+    <!-- 查询父部门名称 -->
+    <select id="selectParentNameByDepartmentId" resultType="java.lang.String">
+        SELECT pd.name
+        FROM departments d
+        LEFT JOIN departments pd ON d.parent_id = pd.id
+        WHERE d.id = #{departmentId} AND pd.deleted_at IS NULL
+    </select>
+
+    <!-- 查询区域名称 -->
+    <select id="selectRegionNameByDepartmentId" resultType="java.lang.String">
+        SELECT r.name
+        FROM departments d
+        LEFT JOIN regions r ON d.region_id = r.id
+        WHERE d.id = #{departmentId}
     </select>
     
     <!-- 获取子部门列表 -->

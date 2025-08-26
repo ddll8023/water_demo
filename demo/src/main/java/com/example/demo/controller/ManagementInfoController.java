@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.management.DepartmentInfoResponseDTO;
 import com.example.demo.pojo.DTO.management.DepartmentInfoUpdateDTO;
 import com.example.demo.pojo.DTO.management.PersonnelInfoCreateDTO;
@@ -48,14 +48,14 @@ public class ManagementInfoController {
      */
     @GetMapping("/personnel")
     @Operation(summary = "分页查询人员信息列表", description = "支持按姓名、部门、岗位等条件筛选")
-    public ResponseEntity<ApiResponse<PageResponseDTO<PersonnelInfoResponseDTO>>> getPersonnelList(
+    public ResponseEntity<ApiResponse<PageResult<PersonnelInfoResponseDTO>>> getPersonnelList(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Long departmentId,
             @RequestParam(required = false) Long positionId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
         try {
-            PageResponseDTO<PersonnelInfoResponseDTO> result = managementInfoService.getPersonnelList(
+            PageResult<PersonnelInfoResponseDTO> result = managementInfoService.getPersonnelList(
                 page, size, name, departmentId, null, positionId);
             return ResponseEntity.ok(ApiResponse.success("查询成功", result));
         } catch (Exception e) {

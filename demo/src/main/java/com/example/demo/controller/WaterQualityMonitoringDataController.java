@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.monitoring.*;
 import com.example.demo.service.WaterQualityMonitoringDataService;
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +68,7 @@ public class WaterQualityMonitoringDataController {
     @GetMapping("/water-quality-data")
     
     @Operation(summary = "分页查询水质监测数据", description = "根据条件分页查询水质监测数据")
-    public ResponseEntity<ApiResponse<PageResponseDTO<WaterQualityMonitoringDataResponseDTO>>> getWaterQualityMonitoringData(
+    public ResponseEntity<ApiResponse<PageResult<WaterQualityMonitoringDataResponseDTO>>> getWaterQualityMonitoringData(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) Long stationId,
@@ -92,7 +92,7 @@ public class WaterQualityMonitoringDataController {
             queryDTO.setDataSource(dataSource);
             queryDTO.setSort(sort != null ? sort : "monitoring_time,desc");
 
-            PageResponseDTO<WaterQualityMonitoringDataResponseDTO> result =
+            PageResult<WaterQualityMonitoringDataResponseDTO> result =
                     waterQualityMonitoringDataService.getWaterQualityMonitoringDataPage(queryDTO);
             return ResponseEntity.ok(ApiResponse.success("查询成功", result));
         } catch (Exception e) {

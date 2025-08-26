@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.facility.MonitoringStationCreateDTO;
 import com.example.demo.pojo.DTO.facility.MonitoringStationQueryDTO;
 import com.example.demo.pojo.DTO.facility.MonitoringStationResponseDTO;
@@ -51,7 +51,7 @@ public class MonitoringStationController {
     @Operation(summary = "分页查询监测站点列表", description = "根据条件分页查询监测站点信息")
     @GetMapping
     
-    public ResponseEntity<ApiResponse<PageResponseDTO<MonitoringStationResponseDTO>>> getMonitoringStationPage(
+    public ResponseEntity<ApiResponse<PageResult<MonitoringStationResponseDTO>>> getMonitoringStationPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String keyword,
@@ -67,7 +67,7 @@ public class MonitoringStationController {
             queryDTO.setOperationStatus(operationStatus);
             queryDTO.setTransmissionMethod(transmissionMethod);
 
-            PageResponseDTO<MonitoringStationResponseDTO> result = monitoringStationService.getMonitoringStationPage(queryDTO);
+            PageResult<MonitoringStationResponseDTO> result = monitoringStationService.getMonitoringStationPage(queryDTO);
             return ResponseEntity.ok(ApiResponse.success("查询成功", result));
         } catch (Exception e) {
             return ResponseEntity.badRequest()

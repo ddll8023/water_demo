@@ -4,7 +4,7 @@ import com.example.demo.pojo.DTO.system.PositionCreateDTO;
 import com.example.demo.pojo.DTO.system.PositionResponseDTO;
 import com.example.demo.pojo.DTO.system.PositionUpdateDTO;
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.service.PositionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -46,13 +46,13 @@ public class PositionController {
     @GetMapping
     
     @Operation(summary = "分页查询岗位列表", description = "根据条件分页查询岗位信息")
-    public ResponseEntity<ApiResponse<PageResponseDTO<PositionResponseDTO>>> getPositionPage(
+    public ResponseEntity<ApiResponse<PageResult<PositionResponseDTO>>> getPositionPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String keyword) {
         try {
             // 调用服务层方法获取分页数据
-            PageResponseDTO<PositionResponseDTO> result = positionService.getPositionPage(page, size, keyword);
+            PageResult<PositionResponseDTO> result = positionService.getPositionPage(page, size, keyword);
             return ResponseEntity.ok(ApiResponse.success("查询成功", result));
         } catch (Exception e) {
             return ResponseEntity.badRequest()

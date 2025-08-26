@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.facility.DisinfectionMaterialCreateDTO;
 import com.example.demo.pojo.DTO.facility.DisinfectionMaterialResponseDTO;
 import com.example.demo.pojo.DTO.facility.DisinfectionMaterialUpdateDTO;
@@ -48,13 +48,13 @@ public class DisinfectionMaterialController {
     @GetMapping
     
     @Operation(summary = "获取消毒药材分页数据", description = "支持关键词搜索（药材名称）和条件筛选（所属水厂）")
-    public ResponseEntity<ApiResponse<PageResponseDTO<DisinfectionMaterialResponseDTO>>> getDisinfectionMaterialPage(
+    public ResponseEntity<ApiResponse<PageResult<DisinfectionMaterialResponseDTO>>> getDisinfectionMaterialPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Long waterPlantId) {
         try {
-            PageResponseDTO<DisinfectionMaterialResponseDTO> result = disinfectionMaterialService.getDisinfectionMaterialPage(page, size, keyword, waterPlantId);
+            PageResult<DisinfectionMaterialResponseDTO> result = disinfectionMaterialService.getDisinfectionMaterialPage(page, size, keyword, waterPlantId);
             return ResponseEntity.ok(ApiResponse.success("查询成功", result));
         } catch (Exception e) {
             return ResponseEntity.badRequest()

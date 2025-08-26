@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.facility.PumpingStationCreateDTO;
 import com.example.demo.pojo.DTO.facility.PumpingStationResponseDTO;
 import com.example.demo.pojo.DTO.facility.PumpingStationUpdateDTO;
@@ -51,7 +51,7 @@ public class PumpingStationController {
     @GetMapping
     
     @Operation(summary = "分页查询泵站列表", description = "根据条件分页查询泵站信息")
-    public ResponseEntity<ApiResponse<PageResponseDTO<PumpingStationResponseDTO>>> getPumpingStationPage(
+    public ResponseEntity<ApiResponse<PageResult<PumpingStationResponseDTO>>> getPumpingStationPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String keyword,
@@ -60,7 +60,7 @@ public class PumpingStationController {
             @RequestParam(required = false) String waterProject,
             @RequestParam(required = false) String operationMode) {
         try {
-            PageResponseDTO<PumpingStationResponseDTO> result = pumpingStationService.getPumpingStationPage(
+            PageResult<PumpingStationResponseDTO> result = pumpingStationService.getPumpingStationPage(
                 page, size, keyword, name, stationType, waterProject, operationMode);
             return ResponseEntity.ok(ApiResponse.success("查询成功", result));
         } catch (Exception e) {

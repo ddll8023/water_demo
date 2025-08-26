@@ -2,7 +2,7 @@ package com.example.demo.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.facility.PipelineCreateDTO;
 import com.example.demo.pojo.DTO.facility.PipelineQueryDTO;
 import com.example.demo.pojo.DTO.facility.PipelineResponseDTO;
@@ -29,7 +29,7 @@ public class PipelineService {
     /**
      * 分页查询管道信息列表
      */
-    public PageResponseDTO<PipelineResponseDTO> getPipelinePage(PipelineQueryDTO queryDTO) {
+    public PageResult<PipelineResponseDTO> getPipelinePage(PipelineQueryDTO queryDTO) {
         // 参数验证
         if (queryDTO.getPage() < 1) queryDTO.setPage(1);
         if (queryDTO.getSize() < 1) queryDTO.setSize(10);
@@ -48,7 +48,7 @@ public class PipelineService {
         // 获取分页信息
         PageInfo<PipelineResponseDTO> pageInfo = new PageInfo<>(pipelines);
 
-        return new PageResponseDTO<>(
+        return new PageResult<>(
             pageInfo.getList(),
             (int) pageInfo.getTotal(),
             pageInfo.getPageNum(),

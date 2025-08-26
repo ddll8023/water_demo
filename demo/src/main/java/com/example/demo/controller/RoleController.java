@@ -4,7 +4,7 @@ import com.example.demo.pojo.DTO.system.RoleCreateDTO;
 import com.example.demo.pojo.DTO.system.RoleResponseDTO;
 import com.example.demo.pojo.DTO.system.RoleUpdateDTO;
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.entity.system.Permission;
 import com.example.demo.service.RoleService;
 
@@ -45,12 +45,12 @@ public class RoleController {
     @Operation(summary = "分页查询角色列表", description = "根据条件分页查询角色信息")
     @GetMapping
     
-    public ResponseEntity<ApiResponse<PageResponseDTO<RoleResponseDTO>>> getRoles(
+    public ResponseEntity<ApiResponse<PageResult<RoleResponseDTO>>> getRoles(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String name) {
         try {
-            PageResponseDTO<RoleResponseDTO> result = roleService.getRoles(page, size, name);
+            PageResult<RoleResponseDTO> result = roleService.getRoles(page, size, name);
             return ResponseEntity.ok(ApiResponse.success("查询成功", result));
         } catch (Exception e) {
             return ResponseEntity.badRequest()

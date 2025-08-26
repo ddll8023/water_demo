@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.management.DepartmentInfoResponseDTO;
 import com.example.demo.pojo.DTO.management.DepartmentInfoUpdateDTO;
 import com.example.demo.pojo.DTO.management.PersonnelInfoCreateDTO;
@@ -41,7 +41,7 @@ public class ManagementInfoService {
      * @param positionId 岗位ID过滤
      * @return 分页结果
      */
-    public PageResponseDTO<PersonnelInfoResponseDTO> getPersonnelList(
+    public PageResult<PersonnelInfoResponseDTO> getPersonnelList(
         int page, int size, String name, Long departmentId, String departmentName, Long positionId
     ) {
         try {
@@ -61,7 +61,7 @@ public class ManagementInfoService {
                     .map(this::convertToPersonnelInfoDTO)
                     .collect(Collectors.toList());
 
-            return new PageResponseDTO<>(
+            return new PageResult<>(
                     dtoList,
                     total,
                     page,
@@ -227,8 +227,9 @@ public class ManagementInfoService {
         DepartmentInfoResponseDTO dto = new DepartmentInfoResponseDTO();
         BeanUtils.copyProperties(department, dto);
 
-        // 设置上级部门名称
-        dto.setParentDepartment(department.getParentName());
+        // 查询并设置上级部门名称
+        String parentName = managementInfoMapper.selectParentNameByDepartmentId(department.getId());
+        dto.setParentDepartment(parentName);
 
         // 设置部门描述和联系信息
         dto.setDescription(department.getDuty());

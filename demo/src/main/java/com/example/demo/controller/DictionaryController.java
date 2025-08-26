@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.system.*;
 import com.example.demo.service.DictionaryService;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +37,7 @@ public class DictionaryController {
     @GetMapping("/types")
     
     @Operation(summary = "获取字典类型分页数据", description = "支持按名称关键词模糊搜索，可以筛选启用/禁用状态")
-    public ResponseEntity<ApiResponse<PageResponseDTO<DictTypeResponseDTO>>> getDictTypes(
+    public ResponseEntity<ApiResponse<PageResult<DictTypeResponseDTO>>> getDictTypes(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String keyword,
@@ -46,7 +46,7 @@ public class DictionaryController {
             @RequestParam(required = false) Boolean isActive,
             @RequestParam(required = false) String sort) {
 
-        PageResponseDTO<DictTypeResponseDTO> result = dictionaryService.getDictTypes(
+        PageResult<DictTypeResponseDTO> result = dictionaryService.getDictTypes(
             page, size, keyword, typeCode, typeName, isActive, sort);
 
         return ResponseEntity.ok(ApiResponse.success("查询成功", result));

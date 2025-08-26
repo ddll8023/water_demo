@@ -72,7 +72,7 @@ public class AuthService {
         }
 
         // 检查用户状态
-        if (!"1".equals(user.getIsActive())) {
+        if (!CommonConstant.ACTIVE_STATUS_ENABLED.equals(user.getIsActive())) {
             throw new UserDisabledException(MessageConstant.USER_DISABLED);
         }
 

@@ -1,13 +1,23 @@
 package com.example.demo.service;
 
 import com.example.demo.pojo.DTO.system.DepartmentCreateDTO;
-import com.example.demo.pojo.DTO.system.DepartmentResponseDTO;
+import com.example.demo.pojo.DTO.system.DepartmentNameCheckDTO;
+import com.example.demo.pojo.DTO.system.DepartmentQueryDTO;
 import com.example.demo.pojo.DTO.system.DepartmentUpdateDTO;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.pojo.VO.DepartmentVO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.entity.system.Department;
 import com.example.demo.mapper.DepartmentMapper;
+import com.example.demo.constant.MessageConstant;
+import com.example.demo.constant.CommonConstant;
+import com.example.demo.exception.DepartmentNotExistException;
+import com.example.demo.exception.DepartmentNameDuplicateException;
+import com.example.demo.exception.ParentDepartmentNotExistException;
+import com.example.demo.exception.CircularReferenceException;
+import com.example.demo.exception.DepartmentHasChildrenException;
+import com.example.demo.exception.DepartmentHasUsersException;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -32,140 +42,150 @@ public class DepartmentService {
     private final DepartmentMapper departmentMapper;
 
     /**
-     * 分页查询部门列表（支持状态筛选）
+     * 分页查询部门列表
      */
-    public PageResponseDTO<DepartmentResponseDTO> getDepartmentPage(int page, int size, String keyword, Boolean isActive) {
-        // 参数验证
-        if (page < 1) page = 1;
-        if (size < 1) size = 10;
-
-        // 使用PageHelper开始分页
-        PageHelper.startPage(page, size);
+    public PageResult<DepartmentVO> getDepartmentPage(DepartmentQueryDTO departmentQueryDTO) {
+        log.info("开始查询部门分页数据，查询条件: {}", departmentQueryDTO);
         
-        // 查询数据，不需要传入分页参数
-        List<Department> departments = departmentMapper.selectDepartmentListWithPersonnelCount(keyword, isActive);
+        // 使用PageHelper开始分页
+        PageHelper.startPage(departmentQueryDTO.getPage(), departmentQueryDTO.getSize());
+        
+        // 查询基础部门数据
+        Page<Department> departments = departmentMapper.selectDepartmentPageByNameAndActive(
+                departmentQueryDTO.getName(),
+                departmentQueryDTO.getIsActive()
+        );
         
         // 获取分页信息
-        PageInfo<Department> pageInfo = new PageInfo<>(departments);
+        long total = departments.getTotal();
+        List<Department> records = departments.getResult();
         
-        // 转换为DTO
-        List<DepartmentResponseDTO> records = departments.stream()
-                .map(department -> {
-                    DepartmentResponseDTO dto = new DepartmentResponseDTO();
-                    BeanUtils.copyProperties(department, dto);
-                    dto.setChildren(new ArrayList<>());
-                    return dto;
-                })
+        // 转换为VO并补充关联信息
+        List<DepartmentVO> departmentVOList = records.stream()
+                .map(this::convertToVO)
                 .collect(Collectors.toList());
 
-        return new PageResponseDTO<>(records, (int) pageInfo.getTotal(), page, size);
+        log.info("查询完成，返回 {} 条记录，总计 {} 条", departmentVOList.size(), total);
+        return new PageResult<>(total, departmentVOList);
     }
 
     /**
      * 创建部门
+     *
+     * @param departmentCreateDTO 部门创建请求数据传输对象
+     * @throws DepartmentNameDuplicateException 当同级部门下已存在相同名称时抛出
+     * @throws ParentDepartmentNotExistException 当父部门不存在时抛出
      */
     @Transactional
-    public DepartmentResponseDTO createDepartment(DepartmentCreateDTO createDTO) {
+    public void createDepartment(DepartmentCreateDTO departmentCreateDTO) {
+        log.info("开始创建部门，部门名称: {}, 父部门ID: {}", departmentCreateDTO.getName(), departmentCreateDTO.getParentId());
+
         // 检查部门名称是否已存在（同级部门下）
-        if (departmentMapper.countByNameAndParent(createDTO.getName(), createDTO.getParentId(), null) > 0) {
-            throw new RuntimeException("同级部门下已存在相同名称的部门");
+        if (departmentMapper.countByNameAndParent(departmentCreateDTO.getName(), departmentCreateDTO.getParentId(), null) > 0) {
+            throw new DepartmentNameDuplicateException(MessageConstant.DEPARTMENT_NAME_DUPLICATE);
         }
 
         // 如果有父部门，检查父部门是否存在
-        if (createDTO.getParentId() != null) {
-            Department parentDepartment = departmentMapper.selectDepartmentById(createDTO.getParentId());
+        if (departmentCreateDTO.getParentId() != null) {
+            Department parentDepartment = departmentMapper.selectDepartmentById(departmentCreateDTO.getParentId());
             if (parentDepartment == null) {
-                throw new RuntimeException("父部门不存在");
+                throw new ParentDepartmentNotExistException(MessageConstant.PARENT_DEPARTMENT_NOT_EXIST);
             }
+            log.debug("父部门验证通过: {}", parentDepartment.getName());
         }
 
+        log.debug("部门创建前置验证通过，开始创建部门实体");
         Department department = new Department();
-        BeanUtils.copyProperties(createDTO, department);
+        BeanUtils.copyProperties(departmentCreateDTO, department);
         department.setCreatedAt(LocalDateTime.now());
         department.setUpdatedAt(LocalDateTime.now());
-        department.setIsActive("1");
+        department.setIsActive(CommonConstant.ACTIVE_STATUS_ENABLED);
 
         departmentMapper.insertDepartment(department);
-        log.debug("创建部门成功，部门ID: {}, 部门名称: {}", department.getId(), department.getName());
-        
-        DepartmentResponseDTO dto = new DepartmentResponseDTO();
-        BeanUtils.copyProperties(department, dto);
-        dto.setChildren(new ArrayList<>());
-        return dto;
+        log.info("创建部门成功，部门ID: {}, 部门名称: {}", department.getId(), department.getName());
     }
 
     /**
      * 更新部门信息
+     *
+     * @param id 部门ID
+     * @param departmentUpdateDTO 部门更新请求数据传输对象
+     * @throws DepartmentNotExistException 当部门不存在时抛出
+     * @throws DepartmentNameDuplicateException 当同级部门下已存在相同名称时抛出
+     * @throws ParentDepartmentNotExistException 当父部门不存在时抛出
+     * @throws CircularReferenceException 当存在循环引用时抛出
      */
     @Transactional
-    public DepartmentResponseDTO updateDepartment(Long id, DepartmentUpdateDTO updateDTO) {
+    public void updateDepartment(Long id, DepartmentUpdateDTO departmentUpdateDTO) {
+        log.info("开始更新部门，部门ID: {}, 更新信息: {}", id, departmentUpdateDTO);
+        
         Department department = departmentMapper.selectDepartmentById(id);
         if (department == null) {
-            throw new RuntimeException("部门不存在");
+            throw new DepartmentNotExistException(MessageConstant.DEPARTMENT_NOT_EXIST);
         }
 
         // 检查部门名称是否已存在（同级部门下，排除当前部门）
-        Long parentId = updateDTO.getParentId() != null ? updateDTO.getParentId() : department.getParentId();
-        String name = updateDTO.getName() != null ? updateDTO.getName() : department.getName();
+        Long parentId = departmentUpdateDTO.getParentId() != null ? departmentUpdateDTO.getParentId() : department.getParentId();
+        String name = departmentUpdateDTO.getName() != null ? departmentUpdateDTO.getName() : department.getName();
         
         if (departmentMapper.countByNameAndParent(name, parentId, id) > 0) {
-            throw new RuntimeException("同级部门下已存在相同名称的部门");
+            throw new DepartmentNameDuplicateException(MessageConstant.DEPARTMENT_NAME_DUPLICATE);
         }
 
         // 如果要修改父部门，检查父部门是否存在，并防止循环引用
-        if (updateDTO.getParentId() != null) {
-            if (updateDTO.getParentId().equals(id)) {
-                throw new RuntimeException("不能将部门设置为自己的父部门");
+        if (departmentUpdateDTO.getParentId() != null) {
+            if (departmentUpdateDTO.getParentId().equals(id)) {
+                throw new CircularReferenceException(MessageConstant.DEPARTMENT_SELF_REFERENCE);
             }
             
-            Department parentDepartment = departmentMapper.selectDepartmentById(updateDTO.getParentId());
+            Department parentDepartment = departmentMapper.selectDepartmentById(departmentUpdateDTO.getParentId());
             if (parentDepartment == null) {
-                throw new RuntimeException("父部门不存在");
+                throw new ParentDepartmentNotExistException(MessageConstant.PARENT_DEPARTMENT_NOT_EXIST);
             }
             
             // 检查是否会形成循环引用 - 内联实现
-            Long checkParentId = updateDTO.getParentId();
+            Long checkParentId = departmentUpdateDTO.getParentId();
             if (checkParentId != null) {
                 Department parent = departmentMapper.selectDepartmentById(checkParentId);
                 while (parent != null) {
                     if (parent.getId().equals(id)) {
-                throw new RuntimeException("不能将部门设置为其子部门的子部门");
+                        throw new CircularReferenceException(MessageConstant.DEPARTMENT_CIRCULAR_REFERENCE);
                     }
                     parent = parent.getParentId() != null ? departmentMapper.selectDepartmentById(parent.getParentId()) : null;
                 }
             }
         }
 
-        BeanUtils.copyProperties(updateDTO, department);
+        BeanUtils.copyProperties(departmentUpdateDTO, department);
         department.setUpdatedAt(LocalDateTime.now());
 
         departmentMapper.updateDepartment(department);
         log.debug("更新部门成功，部门ID: {}, 部门名称: {}", department.getId(), department.getName());
-        
-        DepartmentResponseDTO dto = new DepartmentResponseDTO();
-        BeanUtils.copyProperties(department, dto);
-        dto.setChildren(new ArrayList<>());
-        return dto;
     }
 
     /**
      * 删除部门
+     *
+     * @param id 部门ID
+     * @throws DepartmentNotExistException 当部门不存在时抛出
+     * @throws DepartmentHasChildrenException 当部门有子部门时抛出
+     * @throws DepartmentHasUsersException 当部门有用户时抛出
      */
     @Transactional
     public void deleteDepartment(Long id) {
         Department department = departmentMapper.selectDepartmentById(id);
         if (department == null) {
-            throw new RuntimeException("部门不存在");
+            throw new DepartmentNotExistException(MessageConstant.DEPARTMENT_NOT_EXIST);
         }
 
         // 检查是否有子部门
         if (departmentMapper.countChildDepartments(id) > 0) {
-            throw new RuntimeException("该部门下还有子部门，无法删除");
+            throw new DepartmentHasChildrenException(MessageConstant.DEPARTMENT_HAS_CHILDREN);
         }
 
         // 检查是否有用户关联此部门
         if (departmentMapper.countUsersByDepartmentId(id)>0) {
-            throw new RuntimeException("该部门下还有用户，无法删除");
+            throw new DepartmentHasUsersException(MessageConstant.DEPARTMENT_HAS_USERS);
         }
 
         // 软删除
@@ -177,14 +197,28 @@ public class DepartmentService {
     /**
      * 检查部门名称是否可用
      */
-    public Map<String, Object> checkNameAvailable(String name, Long parentId, Long excludeId) {
-        int count = departmentMapper.countByNameAndParent(name, parentId, excludeId);
+    public Map<String, Object> checkNameAvailable(DepartmentNameCheckDTO departmentNameCheckDTO) {
+        int count = departmentMapper.countByNameAndParent(departmentNameCheckDTO.getName(), departmentNameCheckDTO.getParentId(), departmentNameCheckDTO.getExcludeId());
         boolean available = count == 0;
 
         Map<String, Object> result = new HashMap<>();
         result.put("available", available);
-        result.put("message", available ? "部门名称可用" : "同级部门中已存在相同名称");
+        result.put("message", available ? MessageConstant.DEPARTMENT_NAME_AVAILABLE : MessageConstant.DEPARTMENT_NAME_DUPLICATE_IN_SAME_LEVEL);
         return result;
     }
+    /**
+     * 将Department实体转换为DepartmentVO，并补充关联信息
+     */
+    private DepartmentVO convertToVO(Department department) {
+        DepartmentVO departmentVO = new DepartmentVO();
+        BeanUtils.copyProperties(department, departmentVO);
 
+        // 查询并设置关联信息
+        departmentVO.setPersonnelCount(departmentMapper.selectPersonnelCountByDepartmentId(department.getId()));
+        departmentVO.setParentName(departmentMapper.selectParentNameByDepartmentId(department.getId()));
+        departmentVO.setRegionName(departmentMapper.selectRegionNameByDepartmentId(department.getId()));
+        departmentVO.setChildren(new ArrayList<>());
+
+        return departmentVO;
+    }
 }

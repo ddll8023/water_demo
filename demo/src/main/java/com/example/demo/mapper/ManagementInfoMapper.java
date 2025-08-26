@@ -36,6 +36,16 @@ public interface ManagementInfoMapper {
      * 用于管理信息服务展示部门层级结构
      */
     List<Department> selectChildDepartments(@Param("parentId") Long parentId);
+
+    /**
+     * 查询父部门名称
+     */
+    String selectParentNameByDepartmentId(@Param("departmentId") Long departmentId);
+
+    /**
+     * 查询区域名称
+     */
+    String selectRegionNameByDepartmentId(@Param("departmentId") Long departmentId);
     
     /**
      * 更新部门信息

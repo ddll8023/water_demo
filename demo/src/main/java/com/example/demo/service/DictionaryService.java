@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.system.*;
 import com.example.demo.pojo.entity.system.DictData;
 import com.example.demo.pojo.entity.system.DictType;
@@ -33,8 +33,8 @@ public class DictionaryService {
     /**
      * 分页查询字典类型列表
      */
-    public PageResponseDTO<DictTypeResponseDTO> getDictTypes(int page, int size, String keyword,
-                                                             String typeCode, String typeName, Boolean isActive, String sort) {
+    public PageResult<DictTypeResponseDTO> getDictTypes(int page, int size, String keyword,
+                                                        String typeCode, String typeName, Boolean isActive, String sort) {
         log.info("分页查询字典类型: page={}, size={}, keyword={}, typeCode={}, typeName={}, isActive={}, sort={}",
                 page, size, keyword, typeCode, typeName, isActive, sort);
         
@@ -60,7 +60,7 @@ public class DictionaryService {
             })
             .collect(Collectors.toList());
 
-        return new PageResponseDTO<>(
+        return new PageResult<>(
             dictTypeDTOs,
             (int) pageInfo.getTotal(),
             pageInfo.getPageNum(),

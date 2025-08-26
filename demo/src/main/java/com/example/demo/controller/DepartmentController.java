@@ -1,18 +1,21 @@
 package com.example.demo.controller;
 
 import com.example.demo.pojo.DTO.system.DepartmentCreateDTO;
-import com.example.demo.pojo.DTO.system.DepartmentResponseDTO;
+import com.example.demo.pojo.DTO.system.DepartmentNameCheckDTO;
+import com.example.demo.pojo.DTO.system.DepartmentQueryDTO;
 import com.example.demo.pojo.DTO.system.DepartmentUpdateDTO;
+import com.example.demo.pojo.VO.DepartmentVO;
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.service.DepartmentService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
@@ -34,43 +37,24 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/departments")
 @Tag(name = "部门管理", description = "部门相关的增删改查操作")
+@Slf4j
+@RequiredArgsConstructor
 public class DepartmentController {
-
-    /**
-     * 部门服务组件，负责处理部门相关的业务逻辑
-     * 通过构造函数注入（@RequiredArgsConstructor + final）
-     */
-    @Autowired
-    private DepartmentService departmentService;
+    
+    private final DepartmentService departmentService;
 
     /**
      * 分页查询部门列表
-     * <p>
-     * 支持按名称关键词模糊搜索，可以筛选启用/禁用状态
-     * 需要系统管理权限
-     * @param page 当前页码，从1开始
-     * @param size 每页记录数
-     * @param keyword 搜索关键词，可选参数，用于部门名称的模糊匹配
-     * @param isActive 部门状态筛选，可选参数，true表示启用，false表示禁用
+     * 
+     * @param departmentQueryDTO 查询条件，包含分页、搜索、筛选等参数
      * @return 部门分页数据，包含总数、当前页数据等信息
      */
-    @GetMapping
-    
-    @Operation(summary = "获取部门分页数据", description = "支持按名称关键词模糊搜索，可以筛选启用/禁用状态")
-    public ResponseEntity<ApiResponse<PageResponseDTO<DepartmentResponseDTO>>> getDepartmentPage(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) Boolean isActive) {
-        try {
-            // 调用服务层方法获取分页数据
-            PageResponseDTO<DepartmentResponseDTO> result = departmentService.getDepartmentPage(page, size, keyword, isActive);
-            return ResponseEntity.ok(ApiResponse.success("查询成功", result));
-        } catch (Exception e) {
-            // 处理查询异常
-            return ResponseEntity.badRequest()
-                .body(ApiResponse.error(400, e.getMessage()));
-        }
+    @GetMapping("")
+    @Operation(summary = "获取部门分页数据", description = "支持按名称关键词模糊搜索，可以筛选启用/禁用状态、父部门、区域等")
+    public ResponseEntity<ApiResponse<PageResult<DepartmentVO>>> getDepartmentPage(
+            @Valid DepartmentQueryDTO departmentQueryDTO) {
+        PageResult<DepartmentVO> result = departmentService.getDepartmentPage(departmentQueryDTO);
+        return ResponseEntity.ok(ApiResponse.success("查询成功", result));
     }
 
     /**
@@ -78,27 +62,15 @@ public class DepartmentController {
      * <p>
      * 验证部门名称在同级部门中是否唯一，用于表单提交前的实时校验
      * 需要系统管理权限
-     * @param name 待检查的部门名称
-     * @param parentId 父部门ID，可选参数，存在时检查在指定父部门下的唯一性
-     * @param excludeId 排除的部门ID，可选参数，用于编辑时排除自身
+     * @param departmentNameCheckDTO 部门名称检查请求参数，包含名称、父部门ID、排除的部门ID等
      * @return 名称可用性校验结果，包含是否可用、提示信息等
      */
     @GetMapping("/check-name")
-    
     @Operation(summary = "检查部门名称是否可用", description = "验证部门名称在同级部门中是否唯一，用于表单提交前的实时校验")
     public ResponseEntity<ApiResponse<Map<String, Object>>> checkDepartmentNameAvailable(
-            @RequestParam String name,
-            @RequestParam(required = false) Long parentId,
-            @RequestParam(required = false) Long excludeId) {
-        try {
-            // 调用服务层方法检查名称是否可用
-            Map<String, Object> result = departmentService.checkNameAvailable(name, parentId, excludeId);
-            return ResponseEntity.ok(ApiResponse.success("检查完成", result));
-        } catch (Exception e) {
-            // 处理检查异常
-            return ResponseEntity.badRequest()
-                .body(ApiResponse.error(400, e.getMessage()));
-        }
+            @Valid DepartmentNameCheckDTO departmentNameCheckDTO) {
+        Map<String, Object> result = departmentService.checkNameAvailable(departmentNameCheckDTO);
+        return ResponseEntity.ok(ApiResponse.success("检查完成", result));
     }
 
     /**
@@ -106,28 +78,15 @@ public class DepartmentController {
      * <p>
      * 创建新的部门信息，支持设置部门名称、描述、父部门
      * 需要系统管理权限
-     * @param createDTO 部门创建信息，包含名称、描述、父部门ID
-     * @return 创建成功的部门信息
-     * @throws RuntimeException 如果部门名称已存在或其他业务规则校验失败
+     * @param departmentCreateDTO 部门创建信息，包含名称、描述、父部门ID
+     * @return 创建操作的结果
      */
-    @PostMapping
-    
+    @PostMapping("")
     @Operation(summary = "创建部门", description = "创建新的部门信息，支持设置部门名称、描述、父部门")
-    public ResponseEntity<ApiResponse<DepartmentResponseDTO>> createDepartment(
-            @Valid @RequestBody DepartmentCreateDTO createDTO) {
-        try {
-            // 创建新部门
-            DepartmentResponseDTO department = departmentService.createDepartment(createDTO);
-            return ResponseEntity.ok(ApiResponse.success("部门创建成功", department));
-        } catch (RuntimeException e) {
-            // 处理业务异常，如名称重复
-            return ResponseEntity.badRequest()
-                .body(ApiResponse.error(400, e.getMessage()));
-        } catch (Exception e) {
-            // 处理系统异常
-            return ResponseEntity.status(500)
-                .body(ApiResponse.error(500, "系统内部错误"));
-        }
+    public ResponseEntity<ApiResponse<Void>> createDepartment(
+            @Valid @RequestBody DepartmentCreateDTO departmentCreateDTO) {
+        departmentService.createDepartment(departmentCreateDTO);
+        return ResponseEntity.ok(ApiResponse.success("部门创建成功"));
     }
 
     /**
@@ -136,29 +95,16 @@ public class DepartmentController {
      * 更新指定部门的基本信息，包括名称、描述等
      * 需要系统管理权限
      * @param id 部门ID，标识要更新的部门
-     * @param updateDTO 部门更新信息，包含要更新的字段和值
-     * @return 更新后的部门信息
-     * @throws RuntimeException 如果部门不存在、名称已被占用或其他业务规则校验失败
+     * @param departmentUpdateDTO 部门更新信息，包含要更新的字段和值
+     * @return 更新操作的结果
      */
     @PutMapping("/{id}")
-    
     @Operation(summary = "更新部门信息", description = "更新指定部门的基本信息，包括名称、描述等")
-    public ResponseEntity<ApiResponse<DepartmentResponseDTO>> updateDepartment(
+    public ResponseEntity<ApiResponse<Void>> updateDepartment(
             @PathVariable Long id,
-            @Valid @RequestBody DepartmentUpdateDTO updateDTO) {
-        try {
-            // 更新部门信息
-            DepartmentResponseDTO department = departmentService.updateDepartment(id, updateDTO);
-            return ResponseEntity.ok(ApiResponse.success("部门更新成功", department));
-        } catch (RuntimeException e) {
-            // 处理业务异常
-            return ResponseEntity.badRequest()
-                .body(ApiResponse.error(400, e.getMessage()));
-        } catch (Exception e) {
-            // 处理系统异常
-            return ResponseEntity.status(500)
-                .body(ApiResponse.error(500, "系统内部错误"));
-        }
+            @Valid @RequestBody DepartmentUpdateDTO departmentUpdateDTO) {
+        departmentService.updateDepartment(id, departmentUpdateDTO);
+        return ResponseEntity.ok(ApiResponse.success("部门更新成功"));
     }
 
     /**
@@ -168,26 +114,13 @@ public class DepartmentController {
      * 需要系统管理权限
      * @param id 要删除的部门ID
      * @return 删除操作的结果
-     * @throws RuntimeException 如果部门不存在或者存在子部门/用户无法删除
      */
     @DeleteMapping("/{id}")
-    
     @Operation(summary = "删除部门", description = "删除指定的部门，如果部门下有子部门或用户则不允许删除")
     public ResponseEntity<ApiResponse<Void>> deleteDepartment(
             @PathVariable Long id) {
-        try {
-            // 删除指定部门
-            departmentService.deleteDepartment(id);
-            return ResponseEntity.ok(ApiResponse.success("部门删除成功"));
-        } catch (RuntimeException e) {
-            // 处理业务异常，如部门不存在、有子部门等
-            return ResponseEntity.badRequest()
-                .body(ApiResponse.error(400, e.getMessage()));
-        } catch (Exception e) {
-            // 处理系统异常
-            return ResponseEntity.status(500)
-                .body(ApiResponse.error(500, "系统内部错误"));
-        }
+        departmentService.deleteDepartment(id);
+        return ResponseEntity.ok(ApiResponse.success("部门删除成功"));
     }
 
 }

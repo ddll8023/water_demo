@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.monitoring.*;
 import com.example.demo.pojo.entity.facility.MonitoringStation;
 import com.example.demo.pojo.entity.monitoring.FlowMonitoringData;
@@ -36,7 +36,7 @@ public class FlowMonitoringDataService extends ServiceImpl<FlowMonitoringDataMap
     /**
      * 分页查询流量监测数据列表
      */
-    public PageResponseDTO<FlowMonitoringDataResponseDTO> getFlowMonitoringDataPage(FlowMonitoringDataQueryDTO queryDTO) {
+    public PageResult<FlowMonitoringDataResponseDTO> getFlowMonitoringDataPage(FlowMonitoringDataQueryDTO queryDTO) {
         // 设置默认分页参数
         if (queryDTO.getPage() == null || queryDTO.getPage() < 1) {
             queryDTO.setPage(1);
@@ -69,7 +69,7 @@ public class FlowMonitoringDataService extends ServiceImpl<FlowMonitoringDataMap
         // 使用PageInfo包装查询结果
         PageInfo<FlowMonitoringDataResponseDTO> pageInfo = new PageInfo<>(list);
 
-        return new PageResponseDTO<>(
+        return new PageResult<>(
                 pageInfo.getList(),
                 (int) pageInfo.getTotal(),
                 pageInfo.getPageNum(),
@@ -140,7 +140,7 @@ public class FlowMonitoringDataService extends ServiceImpl<FlowMonitoringDataMap
             // 计算总记录数
             queryDTO.setPage(1);
             queryDTO.setSize(1);
-            PageResponseDTO<FlowMonitoringDataResponseDTO> countPage = getFlowMonitoringDataPage(queryDTO);
+            PageResult<FlowMonitoringDataResponseDTO> countPage = getFlowMonitoringDataPage(queryDTO);
             int totalRecords = countPage.getTotal();
             int totalPages = (totalRecords + BATCH_SIZE - 1) / BATCH_SIZE;
             
@@ -156,7 +156,7 @@ public class FlowMonitoringDataService extends ServiceImpl<FlowMonitoringDataMap
                 log.info("导出CSV - 正在处理第{}/{}批", pageNum, totalPages);
                 
                 // 获取当前批次的数据
-                PageResponseDTO<FlowMonitoringDataResponseDTO> dataPage = getFlowMonitoringDataPage(queryDTO);
+                PageResult<FlowMonitoringDataResponseDTO> dataPage = getFlowMonitoringDataPage(queryDTO);
                 List<FlowMonitoringDataResponseDTO> dataList = dataPage.getItems();
                 
                 if (dataList.isEmpty()) {

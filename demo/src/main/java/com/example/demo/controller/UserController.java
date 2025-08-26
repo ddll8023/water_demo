@@ -4,7 +4,7 @@ import com.example.demo.pojo.DTO.system.UserCreateDTO;
 import com.example.demo.pojo.DTO.system.UserResponseDTO;
 import com.example.demo.pojo.DTO.system.UserUpdateDTO;
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.entity.system.Role;
 import com.example.demo.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -46,14 +46,14 @@ public class UserController {
      */
     @Operation(summary = "分页查询用户列表", description = "根据条件分页查询用户信息")
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponseDTO<UserResponseDTO>>> getUsers(
+    public ResponseEntity<ApiResponse<PageResult<UserResponseDTO>>> getUsers(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String username,
             @RequestParam(required = false) Long roleId,
             @RequestParam(required = false) Boolean isActive) {
         try {
-            PageResponseDTO<UserResponseDTO> result = userService.getUsers(
+            PageResult<UserResponseDTO> result = userService.getUsers(
                 page, size, username, roleId, isActive);
             return ResponseEntity.ok(ApiResponse.success("查询成功", result));
         } catch (Exception e) {

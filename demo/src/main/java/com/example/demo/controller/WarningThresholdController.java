@@ -4,7 +4,7 @@ import com.example.demo.pojo.DTO.warning.WarningThresholdCreateDTO;
 import com.example.demo.pojo.DTO.warning.WarningThresholdResponseDTO;
 import com.example.demo.pojo.DTO.warning.WarningThresholdUpdateDTO;
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.service.WarningThresholdService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +55,7 @@ public class WarningThresholdController {
     @GetMapping
     
     @Operation(summary = "分页查询预警指标列表", description = "根据条件分页查询预警指标信息")
-    public ResponseEntity<ApiResponse<PageResponseDTO<WarningThresholdResponseDTO>>> getWarningThresholds(
+    public ResponseEntity<ApiResponse<PageResult<WarningThresholdResponseDTO>>> getWarningThresholds(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String keyword,
@@ -63,7 +63,7 @@ public class WarningThresholdController {
             @RequestParam(required = false) String monitoringItem,
             @RequestParam(required = false) String sort) {
 
-        PageResponseDTO<WarningThresholdResponseDTO> result = warningThresholdService.getWarningThresholds(
+        PageResult<WarningThresholdResponseDTO> result = warningThresholdService.getWarningThresholds(
             page, size, keyword, stationName, monitoringItem, sort);
 
         return ResponseEntity.ok(ApiResponse.success("查询成功", result));

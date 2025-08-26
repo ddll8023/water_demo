@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.monitoring.*;
 import com.example.demo.pojo.entity.facility.MonitoringStation;
 import com.example.demo.pojo.entity.monitoring.WaterLevelMonitoringData;
@@ -45,7 +45,7 @@ public class WaterLevelMonitoringDataService extends ServiceImpl<WaterLevelMonit
      * @param queryDTO 查询条件DTO
      * @return 分页查询结果
      */
-    public PageResponseDTO<WaterLevelMonitoringDataResponseDTO> getWaterLevelMonitoringDataPage(WaterLevelMonitoringDataQueryDTO queryDTO) {
+    public PageResult<WaterLevelMonitoringDataResponseDTO> getWaterLevelMonitoringDataPage(WaterLevelMonitoringDataQueryDTO queryDTO) {
         // 参数验证和安全检查
         validateQueryParameters(queryDTO);
 
@@ -82,7 +82,7 @@ public class WaterLevelMonitoringDataService extends ServiceImpl<WaterLevelMonit
         PageInfo<WaterLevelMonitoringDataResponseDTO> pageInfo = new PageInfo<>(list);
 
         // 返回分页数据
-        return new PageResponseDTO<>(
+        return new PageResult<>(
                 pageInfo.getList(),
                 (int) pageInfo.getTotal(),
                 queryDTO.getPage(),
@@ -153,7 +153,7 @@ public class WaterLevelMonitoringDataService extends ServiceImpl<WaterLevelMonit
             }
 
             // 获取要导出的数据
-            PageResponseDTO<WaterLevelMonitoringDataResponseDTO> dataPage = getWaterLevelMonitoringDataPage(queryDTO);
+            PageResult<WaterLevelMonitoringDataResponseDTO> dataPage = getWaterLevelMonitoringDataPage(queryDTO);
             List<WaterLevelMonitoringDataResponseDTO> dataList = dataPage.getItems();
 
             // 创建CSV内容

@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.pojo.DTO.monitoring.*;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.entity.facility.MonitoringStation;
 import com.example.demo.pojo.entity.monitoring.WaterQualityMonitoringData;
 import com.example.demo.mapper.MonitoringStationMapper;
@@ -49,7 +49,7 @@ public class WaterQualityMonitoringDataService {
      * @param queryDTO 查询条件DTO
      * @return 分页数据响应
      */
-    public PageResponseDTO<WaterQualityMonitoringDataResponseDTO> getWaterQualityMonitoringDataPage(
+    public PageResult<WaterQualityMonitoringDataResponseDTO> getWaterQualityMonitoringDataPage(
             WaterQualityMonitoringDataQueryDTO queryDTO) {
         
         log.info("开始分页查询水质监测数据，查询条件: {}", queryDTO);
@@ -84,7 +84,7 @@ public class WaterQualityMonitoringDataService {
                 pageInfo.getTotal(), pageInfo.getList().size());
 
         // 返回分页数据
-        return new PageResponseDTO<>(
+        return new PageResult<>(
                 pageInfo.getList(),
                 (int) pageInfo.getTotal(),
                 queryDTO.getPage(),
@@ -165,7 +165,7 @@ public class WaterQualityMonitoringDataService {
             queryDTO.setPage(1);
             queryDTO.setSize(Integer.MAX_VALUE);
 
-            PageResponseDTO<WaterQualityMonitoringDataResponseDTO> pagedData = getWaterQualityMonitoringDataPage(queryDTO);
+            PageResult<WaterQualityMonitoringDataResponseDTO> pagedData = getWaterQualityMonitoringDataPage(queryDTO);
             List<WaterQualityMonitoringDataResponseDTO> exportData = pagedData.getItems();
 
             log.info("水质监测数据导出完成，导出记录数: {}", exportData.size());

@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.monitoring.*;
 import com.example.demo.service.FlowMonitoringDataService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -51,7 +51,7 @@ public class FlowMonitoringDataController {
     @GetMapping("/flow-data")
 
     @Operation(summary = "获取流量监测数据分页数据", description = "支持按站点、时间范围、数据质量等条件筛选")
-    public ResponseEntity<ApiResponse<PageResponseDTO<FlowMonitoringDataResponseDTO>>> getFlowMonitoringData(
+    public ResponseEntity<ApiResponse<PageResult<FlowMonitoringDataResponseDTO>>> getFlowMonitoringData(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) Long stationId,
@@ -75,7 +75,7 @@ public class FlowMonitoringDataController {
             queryDTO.setSort(sort != null ? sort : "monitoring_time,desc");
 
             // 调用服务层获取分页数据           
-            PageResponseDTO<FlowMonitoringDataResponseDTO> result = flowMonitoringDataService.getFlowMonitoringDataPage(queryDTO);
+            PageResult<FlowMonitoringDataResponseDTO> result = flowMonitoringDataService.getFlowMonitoringDataPage(queryDTO);
             return ResponseEntity.ok(ApiResponse.success("查询成功", result));
         } catch (Exception e) {
             return ResponseEntity.badRequest()

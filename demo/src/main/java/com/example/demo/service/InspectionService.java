@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.inspection.*;
 import com.example.demo.pojo.DTO.system.DictDataResponseDTO;
 import com.example.demo.pojo.entity.inspection.InspectionAttachment;
@@ -45,7 +45,7 @@ public class InspectionService {
 
     // ========================= 任务相关 =========================
 
-    public PageResponseDTO<InspectionTaskResponseDTO> getTaskPage(InspectionTaskQueryDTO queryDTO) {
+    public PageResult<InspectionTaskResponseDTO> getTaskPage(InspectionTaskQueryDTO queryDTO) {
         // 兼容：如果status传入了逗号分隔的多状态，自动拆分到statuses
         if ((queryDTO.getStatuses() == null || queryDTO.getStatuses().isEmpty())
                 && queryDTO.getStatus() != null && queryDTO.getStatus().contains(",")) {
@@ -69,7 +69,7 @@ public class InspectionService {
                 queryDTO.getSort()
         );
         PageInfo<InspectionTaskResponseDTO> pageInfo = new PageInfo<>(list);
-        return new PageResponseDTO<>(pageInfo.getList(), (int) pageInfo.getTotal(), pageInfo.getPageNum(), pageInfo.getPageSize());
+        return new PageResult<>(pageInfo.getList(), (int) pageInfo.getTotal(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
     public InspectionTaskResponseDTO getTaskById(Long id) {
@@ -133,7 +133,7 @@ public class InspectionService {
 
     // ========================= 记录相关 =========================
 
-    public PageResponseDTO<InspectionRecordResponseDTO> getRecordPage(InspectionRecordQueryDTO queryDTO) {
+    public PageResult<InspectionRecordResponseDTO> getRecordPage(InspectionRecordQueryDTO queryDTO) {
         int page = (queryDTO.getPage() == null || queryDTO.getPage() < 1) ? 1 : queryDTO.getPage();
         int size = (queryDTO.getSize() == null || queryDTO.getSize() < 1) ? 10 : queryDTO.getSize();
         PageHelper.startPage(page, size);
@@ -148,7 +148,7 @@ public class InspectionService {
                 queryDTO.getSort()
         );
         PageInfo<InspectionRecordResponseDTO> pageInfo = new PageInfo<>(list);
-        return new PageResponseDTO<>(pageInfo.getList(), (int) pageInfo.getTotal(), pageInfo.getPageNum(), pageInfo.getPageSize());
+        return new PageResult<>(pageInfo.getList(), (int) pageInfo.getTotal(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
     public InspectionRecordResponseDTO getRecordById(Long id) {

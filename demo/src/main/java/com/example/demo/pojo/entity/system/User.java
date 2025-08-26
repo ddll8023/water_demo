@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.io.Serializable;
 
 /**
  * 用户信息表实体类
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @Schema(name = "User", description = "用户信息表")
-public class User {
+public class User implements Serializable {
 
     @Schema(name = "id", description = "用户ID")
     private Long id;

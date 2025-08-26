@@ -14,10 +14,6 @@
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
         <result property="deletedAt" column="deleted_at"/>
-        <!-- 关联信息字段 -->
-        <result property="personnelCount" column="personnel_count"/>
-        <result property="parentName" column="parent_name"/>
-        <result property="regionName" column="region_name"/>
     </resultMap>
 
     <!-- 部门详情结果映射（包含关联信息） -->
@@ -32,7 +28,6 @@
         <result property="phone" column="phone"/>
         <result property="email" column="email"/>
         <result property="employeeNo" column="employee_no"/>
-        <result property="status" column="status"/>
         <result property="hireDate" column="hire_date"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
@@ -44,30 +39,41 @@
         <result property="username" column="username"/>
     </resultMap>
     
-    <!-- 查询部门列表（带人员数量统计）- 用于PageHelper分页 -->
-    <select id="selectDepartmentListWithPersonnelCount" resultMap="DepartmentMap">
-        SELECT departments.*,
-        COALESCE(pc.personnel_count, 0) as personnel_count,
-        regions.name as region_name,
-        pd.name as parent_name
+    <!-- 查询部门列表（基础信息）- 用于PageHelper分页 -->
+    <select id="selectDepartmentPageByNameAndActive" resultType="com.example.demo.pojo.entity.system.Department">
+        SELECT *
         FROM departments
-        LEFT JOIN (
-        SELECT department_id, COUNT(*) as personnel_count
-        FROM personnel
         WHERE deleted_at IS NULL
-        GROUP BY department_id
-        ) pc ON departments.id = pc.department_id
-        LEFT JOIN regions ON departments.region_id = regions.id
-        LEFT JOIN departments pd ON departments.parent_id = pd.id
-        WHERE departments.deleted_at IS NULL
-        <if test="keyword != null and keyword != ''">
-            AND (departments.name LIKE CONCAT('%', #{keyword}, '%')
-            OR departments.duty LIKE CONCAT('%', #{keyword}, '%'))
+        <if test="name != null and name != ''">
+            AND (name LIKE CONCAT('%', #{name}, '%'))
         </if>
         <if test="isActive != null">
-            AND departments.is_active = #{isActive}
+            AND is_active = #{isActive}
         </if>
-        ORDER BY departments.created_at DESC
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 查询部门人员数量 -->
+    <select id="selectPersonnelCountByDepartmentId" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM personnel
+        WHERE department_id = #{departmentId} AND deleted_at IS NULL
+    </select>
+
+    <!-- 查询父部门名称 -->
+    <select id="selectParentNameByDepartmentId" resultType="java.lang.String">
+        SELECT pd.name
+        FROM departments d
+        LEFT JOIN departments pd ON d.parent_id = pd.id
+        WHERE d.id = #{departmentId} AND pd.deleted_at IS NULL
+    </select>
+
+    <!-- 查询区域名称 -->
+    <select id="selectRegionNameByDepartmentId" resultType="java.lang.String">
+        SELECT r.name
+        FROM departments d
+        LEFT JOIN regions r ON d.region_id = r.id
+        WHERE d.id = #{departmentId}
     </select>
 
     <!-- 检查部门名称是否已存在（同级部门下） -->

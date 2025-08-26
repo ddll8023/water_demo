@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.monitoring.RainfallChartDataResponseDTO;
 import com.example.demo.pojo.DTO.monitoring.RainfallDataImportDTO;
 import com.example.demo.pojo.DTO.monitoring.RainfallMonitoringDataQueryDTO;
@@ -63,7 +63,7 @@ public class RainfallMonitoringDataController {
     @GetMapping("/rainfall-data")
     
     @Operation(summary = "分页查询雨情监测数据", description = "支持按站点、时间范围、数据质量等条件筛选")
-    public ResponseEntity<ApiResponse<PageResponseDTO<RainfallMonitoringDataResponseDTO>>> getRainfallMonitoringData(
+    public ResponseEntity<ApiResponse<PageResult<RainfallMonitoringDataResponseDTO>>> getRainfallMonitoringData(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) Long stationId,
@@ -90,7 +90,7 @@ public class RainfallMonitoringDataController {
         queryDTO.setSort(sort);
 
         // 调用服务获取分页数据
-        PageResponseDTO<RainfallMonitoringDataResponseDTO> result =
+        PageResult<RainfallMonitoringDataResponseDTO> result =
                 rainfallMonitoringDataService.getRainfallMonitoringDataPage(queryDTO);
         
         return ResponseEntity.ok(ApiResponse.success("查询成功", result));

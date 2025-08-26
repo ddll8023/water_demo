@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.facility.WaterPlantCreateDTO;
 import com.example.demo.pojo.DTO.facility.WaterPlantQueryDTO;
 import com.example.demo.pojo.DTO.facility.WaterPlantResponseDTO;
@@ -44,7 +44,7 @@ public class WaterPlantController {
     @Operation(summary = "分页查询水厂列表", description = "根据条件分页查询水厂信息")
     @GetMapping
     
-    public ResponseEntity<ApiResponse<PageResponseDTO<WaterPlantResponseDTO>>> getWaterPlantPage(
+    public ResponseEntity<ApiResponse<PageResult<WaterPlantResponseDTO>>> getWaterPlantPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String keyword) {
@@ -56,7 +56,7 @@ public class WaterPlantController {
             queryDTO.setKeyword(keyword);
 
             // 调用服务层方法获取分页数据
-            PageResponseDTO<WaterPlantResponseDTO> result = waterPlantService.getWaterPlantPage(queryDTO);
+            PageResult<WaterPlantResponseDTO> result = waterPlantService.getWaterPlantPage(queryDTO);
             return ResponseEntity.ok(ApiResponse.success("查询成功", result));
         } catch (Exception e) {
             return ResponseEntity.badRequest()

@@ -2,7 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.pojo.DTO.system.PermissionResponseDTO;
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.service.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -47,13 +47,13 @@ public class PermissionController {
     @GetMapping
     
     @Operation(summary = "分页查询权限列表", description = "根据条件分页查询权限信息")
-    public ResponseEntity<ApiResponse<PageResponseDTO<PermissionResponseDTO>>> getPermissions(
+    public ResponseEntity<ApiResponse<PageResult<PermissionResponseDTO>>> getPermissions(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String type) {
         try {
-            PageResponseDTO<PermissionResponseDTO> result =
+            PageResult<PermissionResponseDTO> result =
                 permissionService.getPermissions(page, size, keyword, type);
             return ResponseEntity.ok(ApiResponse.success("查询成功", result));
         } catch (Exception e) {

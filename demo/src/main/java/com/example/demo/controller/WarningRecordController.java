@@ -4,7 +4,7 @@ import com.example.demo.pojo.DTO.warning.WarningRecordCreateDTO;
 import com.example.demo.pojo.DTO.warning.WarningRecordResponseDTO;
 import com.example.demo.pojo.DTO.warning.WarningResolveDTO;
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.service.WarningRecordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -55,7 +55,7 @@ public class WarningRecordController {
     @GetMapping
     
     @Operation(summary = "分页查询预警记录列表", description = "根据条件分页查询预警记录信息")
-    public ResponseEntity<ApiResponse<PageResponseDTO<WarningRecordResponseDTO>>> getWarningRecords(
+    public ResponseEntity<ApiResponse<PageResult<WarningRecordResponseDTO>>> getWarningRecords(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String warningLocation,
@@ -67,7 +67,7 @@ public class WarningRecordController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime,
             @RequestParam(required = false) String sort) {
 
-        PageResponseDTO<WarningRecordResponseDTO> result = warningRecordService.getWarningRecords(
+        PageResult<WarningRecordResponseDTO> result = warningRecordService.getWarningRecords(
             page, size, warningLocation, warningType, warningLevel, warningStatus,
             projectName, startTime, endTime, sort);
 

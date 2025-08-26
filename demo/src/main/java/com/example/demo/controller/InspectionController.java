@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.inspection.*;
 import com.example.demo.pojo.entity.inspection.InspectionAttachment;
 import com.example.demo.service.InspectionService;
@@ -29,10 +29,10 @@ public class InspectionController {
     @GetMapping("/tasks")
     
     @Operation(summary = "获取巡检任务分页数据", description = "支持按任务状态、时间范围等条件筛选")
-    public ResponseEntity<ApiResponse<PageResponseDTO<InspectionTaskResponseDTO>>> getTasks(
+    public ResponseEntity<ApiResponse<PageResult<InspectionTaskResponseDTO>>> getTasks(
             @Valid InspectionTaskQueryDTO queryDTO) {
         try {
-            PageResponseDTO<InspectionTaskResponseDTO> result = inspectionService.getTaskPage(queryDTO);
+            PageResult<InspectionTaskResponseDTO> result = inspectionService.getTaskPage(queryDTO);
             return ResponseEntity.ok(ApiResponse.success("查询成功", result));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(ApiResponse.error(400, e.getMessage()));
@@ -108,9 +108,9 @@ public class InspectionController {
     @GetMapping("/records")
     
     @Operation(summary = "获取巡检记录分页数据", description = "支持按任务、时间范围等条件筛选")
-    public ResponseEntity<ApiResponse<PageResponseDTO<InspectionRecordResponseDTO>>> getRecords(@Valid InspectionRecordQueryDTO queryDTO) {
+    public ResponseEntity<ApiResponse<PageResult<InspectionRecordResponseDTO>>> getRecords(@Valid InspectionRecordQueryDTO queryDTO) {
         try {
-            PageResponseDTO<InspectionRecordResponseDTO> result = inspectionService.getRecordPage(queryDTO);
+            PageResult<InspectionRecordResponseDTO> result = inspectionService.getRecordPage(queryDTO);
             return ResponseEntity.ok(ApiResponse.success("查询成功", result));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(ApiResponse.error(400, e.getMessage()));

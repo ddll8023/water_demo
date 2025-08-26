@@ -3,7 +3,7 @@ package com.example.demo.service;
 import com.example.demo.pojo.DTO.system.RoleCreateDTO;
 import com.example.demo.pojo.DTO.system.RoleResponseDTO;
 import com.example.demo.pojo.DTO.system.RoleUpdateDTO;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.entity.system.Permission;
 import com.example.demo.pojo.entity.system.Role;
 import com.example.demo.pojo.entity.system.RolePermission;
@@ -34,7 +34,7 @@ public class RoleService {
     /**
      * 分页查询角色列表
      */
-    public PageResponseDTO<RoleResponseDTO> getRoles(int page, int size, String name) {
+    public PageResult<RoleResponseDTO> getRoles(int page, int size, String name) {
         // 使用PageHelper分页
         PageHelper.startPage(page, size);
         
@@ -49,7 +49,7 @@ public class RoleService {
             .map(this::convertToResponseDTO)
             .collect(Collectors.toList());
 
-        return new PageResponseDTO<>(
+        return new PageResult<>(
             roleDTOs,
             (int) pageInfo.getTotal(),
             pageInfo.getPageNum(),

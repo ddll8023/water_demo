@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -14,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(name = "UserInfoVO", description = "用户信息视图对象")
-public class UserInfoVO {
+public class UserInfoVO implements Serializable {
     
     /**
      * 用户ID

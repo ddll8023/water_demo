@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.facility.FloatingBoatCreateDTO;
 import com.example.demo.pojo.DTO.facility.FloatingBoatQueryDTO;
 import com.example.demo.pojo.DTO.facility.FloatingBoatResponseDTO;
@@ -43,7 +43,7 @@ public class FloatingBoatController {
     @GetMapping
     
     @Operation(summary = "获取浮船信息分页数据", description = "支持关键词搜索（浮船名称）和条件筛选（抽水状态）")
-    public ResponseEntity<ApiResponse<PageResponseDTO<FloatingBoatResponseDTO>>> getFloatingBoatPage(
+    public ResponseEntity<ApiResponse<PageResult<FloatingBoatResponseDTO>>> getFloatingBoatPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String keyword,
@@ -55,7 +55,7 @@ public class FloatingBoatController {
             queryDTO.setKeyword(keyword);
             queryDTO.setPumpingStatus(pumpingStatus);
 
-            PageResponseDTO<FloatingBoatResponseDTO> result = floatingBoatService.getFloatingBoatPage(queryDTO);
+            PageResult<FloatingBoatResponseDTO> result = floatingBoatService.getFloatingBoatPage(queryDTO);
             return ResponseEntity.ok(ApiResponse.success("查询成功", result));
         } catch (Exception e) {
             return ResponseEntity.badRequest()

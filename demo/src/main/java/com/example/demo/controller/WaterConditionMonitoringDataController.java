@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.monitoring.WaterConditionMonitoringDataQueryDTO;
 import com.example.demo.pojo.DTO.monitoring.WaterConditionMonitoringDataResponseDTO;
 import com.example.demo.service.WaterConditionMonitoringDataService;
@@ -47,8 +47,8 @@ public class WaterConditionMonitoringDataController {
      */
     @GetMapping
     @Operation(summary = "分页查询水情监测数据", description = "根据条件分页获取水情监测数据")
-    public ApiResponse<PageResponseDTO<WaterConditionMonitoringDataResponseDTO>> pageWaterConditionMonitoringData(WaterConditionMonitoringDataQueryDTO queryDTO) {
-        PageResponseDTO<WaterConditionMonitoringDataResponseDTO> page = waterConditionMonitoringDataService.pageWaterConditionMonitoringData(queryDTO);
+    public ApiResponse<PageResult<WaterConditionMonitoringDataResponseDTO>> pageWaterConditionMonitoringData(WaterConditionMonitoringDataQueryDTO queryDTO) {
+        PageResult<WaterConditionMonitoringDataResponseDTO> page = waterConditionMonitoringDataService.pageWaterConditionMonitoringData(queryDTO);
         return ApiResponse.success("查询成功", page);
     }
 }

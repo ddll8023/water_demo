@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.facility.PumpingStationCreateDTO;
 import com.example.demo.pojo.DTO.facility.PumpingStationResponseDTO;
 import com.example.demo.pojo.DTO.facility.PumpingStationUpdateDTO;
@@ -32,7 +32,7 @@ public class PumpingStationService extends ServiceImpl<PumpingStationMapper, Pum
     /**
      * 分页查询泵站列表
      */
-    public PageResponseDTO<PumpingStationResponseDTO> getPumpingStationPage(
+    public PageResult<PumpingStationResponseDTO> getPumpingStationPage(
             int page, 
             int size, 
             String keyword, 
@@ -62,7 +62,7 @@ public class PumpingStationService extends ServiceImpl<PumpingStationMapper, Pum
         // 使用PageInfo包装查询结果
         PageInfo<PumpingStationResponseDTO> pageInfo = new PageInfo<>(pumpingStations);
 
-        return new PageResponseDTO<>(
+        return new PageResult<>(
                 pageInfo.getList(),
                 (int) pageInfo.getTotal(),
                 page,

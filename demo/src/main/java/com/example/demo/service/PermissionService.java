@@ -2,7 +2,7 @@ package com.example.demo.service;
 
 
 import com.example.demo.pojo.DTO.system.PermissionResponseDTO;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.entity.system.Permission;
 import com.example.demo.mapper.PermissionMapper;
 import com.example.demo.mapper.RoleMapper;
@@ -33,7 +33,7 @@ public class PermissionService {
     /**
      * 分页查询权限列表
      */
-    public PageResponseDTO<PermissionResponseDTO> getPermissions(int page, int size, String keyword, String type) {
+    public PageResult<PermissionResponseDTO> getPermissions(int page, int size, String keyword, String type) {
         // 参数验证
         if (page < 1) page = 1;
         if (size < 1) size = 10;
@@ -52,7 +52,7 @@ public class PermissionService {
             .map(this::convertToResponseDTO)
             .collect(Collectors.toList());
 
-        return new PageResponseDTO<>(
+        return new PageResult<>(
             permissionDTOs,
             (int) pageInfo.getTotal(),
             page,

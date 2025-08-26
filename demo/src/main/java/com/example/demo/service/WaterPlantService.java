@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.facility.WaterPlantCreateDTO;
 import com.example.demo.pojo.DTO.facility.WaterPlantQueryDTO;
 import com.example.demo.pojo.DTO.facility.WaterPlantResponseDTO;
@@ -35,7 +35,7 @@ public class WaterPlantService extends ServiceImpl<WaterPlantMapper, WaterPlant>
     /**
      * 分页查询水厂列表
      */
-    public PageResponseDTO<WaterPlantResponseDTO> getWaterPlantPage(WaterPlantQueryDTO queryDTO) {
+    public PageResult<WaterPlantResponseDTO> getWaterPlantPage(WaterPlantQueryDTO queryDTO) {
         // 参数验证
         if (queryDTO.getPage() == null || queryDTO.getPage() < 1) {
             queryDTO.setPage(1);
@@ -54,7 +54,7 @@ public class WaterPlantService extends ServiceImpl<WaterPlantMapper, WaterPlant>
         PageInfo<WaterPlantResponseDTO> pageInfo = new PageInfo<>(list);
 
         // 返回分页数据
-        return new PageResponseDTO<>(
+        return new PageResult<>(
                 pageInfo.getList(),
                 (int) pageInfo.getTotal(),
                 queryDTO.getPage(),

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
  */
 @Data
 @Schema(name = "LoginUserVO", description = "登录用户视图对象")
-public class LoginUserVO {
+public class LoginUserVO implements Serializable {
 
     @Schema(name = "id", description = "用户ID")
     private Long id;

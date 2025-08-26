@@ -3,7 +3,7 @@ package com.example.demo.service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.monitoring.RainfallChartDataResponseDTO;
 import com.example.demo.pojo.DTO.monitoring.RainfallDataImportDTO;
 import com.example.demo.pojo.DTO.monitoring.RainfallMonitoringDataQueryDTO;
@@ -44,7 +44,7 @@ public class RainfallMonitoringDataService extends ServiceImpl<RainfallMonitorin
      * @param queryDTO 查询条件DTO
      * @return 分页查询结果
      */
-    public PageResponseDTO<RainfallMonitoringDataResponseDTO> getRainfallMonitoringDataPage(RainfallMonitoringDataQueryDTO queryDTO) {
+    public PageResult<RainfallMonitoringDataResponseDTO> getRainfallMonitoringDataPage(RainfallMonitoringDataQueryDTO queryDTO) {
         // 参数验证和默认值设置
         int page = queryDTO.getPage() != null ? queryDTO.getPage() : 1;
         int size = queryDTO.getSize() != null ? queryDTO.getSize() : 10;
@@ -67,7 +67,7 @@ public class RainfallMonitoringDataService extends ServiceImpl<RainfallMonitorin
         PageInfo<RainfallMonitoringDataResponseDTO> pageInfo = new PageInfo<>(dataList);
         
         // 转换为统一的分页响应格式
-        return new PageResponseDTO<>(
+        return new PageResult<>(
             pageInfo.getList(),
             (int) pageInfo.getTotal(),
             pageInfo.getPageNum(),
@@ -167,7 +167,7 @@ public class RainfallMonitoringDataService extends ServiceImpl<RainfallMonitorin
             }
 
             // 获取要导出的数据
-            PageResponseDTO<RainfallMonitoringDataResponseDTO> dataPage = getRainfallMonitoringDataPage(queryDTO);
+            PageResult<RainfallMonitoringDataResponseDTO> dataPage = getRainfallMonitoringDataPage(queryDTO);
             List<RainfallMonitoringDataResponseDTO> dataList = dataPage.getItems();
 
             // 创建CSV内容

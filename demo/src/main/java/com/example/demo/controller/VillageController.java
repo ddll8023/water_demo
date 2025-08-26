@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.facility.VillageCreateDTO;
 import com.example.demo.pojo.DTO.facility.VillageQueryDTO;
 import com.example.demo.pojo.DTO.facility.VillageResponseDTO;
@@ -47,7 +47,7 @@ public class VillageController {
     @Operation(summary = "分页查询村庄列表", description = "根据条件分页查询村庄信息")
     @GetMapping
     
-    public ResponseEntity<ApiResponse<PageResponseDTO<VillageResponseDTO>>> getVillagePage(
+    public ResponseEntity<ApiResponse<PageResult<VillageResponseDTO>>> getVillagePage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String keyword) {
@@ -57,7 +57,7 @@ public class VillageController {
             queryDTO.setSize(size);
             queryDTO.setKeyword(keyword);
 
-            PageResponseDTO<VillageResponseDTO> result = villageService.getVillagePage(queryDTO);
+            PageResult<VillageResponseDTO> result = villageService.getVillagePage(queryDTO);
             return ResponseEntity.ok(ApiResponse.success("查询成功", result));
         } catch (Exception e) {
             return ResponseEntity.badRequest()

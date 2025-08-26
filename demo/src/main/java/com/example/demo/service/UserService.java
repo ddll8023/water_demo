@@ -3,13 +3,14 @@ package com.example.demo.service;
 import com.example.demo.pojo.DTO.system.UserCreateDTO;
 import com.example.demo.pojo.DTO.system.UserResponseDTO;
 import com.example.demo.pojo.DTO.system.UserUpdateDTO;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.entity.system.Role;
 import com.example.demo.pojo.entity.system.User;
 import com.example.demo.pojo.VO.UserVO;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.mapper.RoleMapper;
 import com.example.demo.utils.BaseContext;
+import com.example.demo.constant.CommonConstant;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
@@ -45,8 +46,8 @@ public class UserService {
     /**
      * 分页查询用户列表
      */
-    public PageResponseDTO<UserResponseDTO> getUsers(int page, int size,
-                                                     String username, Long roleId, Boolean isActive) {
+    public PageResult<UserResponseDTO> getUsers(int page, int size,
+                                                String username, Long roleId, Boolean isActive) {
         // 使用PageHelper进行分页
         PageHelper.startPage(page, size);
 
@@ -62,7 +63,7 @@ public class UserService {
             .map(this::convertToResponseDTO)
             .collect(Collectors.toList());
 
-        return new PageResponseDTO<>(
+        return new PageResult<>(
             userDTOs,
             (int) pageInfo.getTotal(),
             pageInfo.getPageNum(),
@@ -96,7 +97,7 @@ public class UserService {
 
         // 加密密码
         user.setPassword(encodePassword(createDTO.getPassword()));
-        user.setIsActive("1");
+        user.setIsActive(CommonConstant.ACTIVE_STATUS_ENABLED);
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
 
@@ -126,7 +127,7 @@ public class UserService {
         BeanUtils.copyProperties(updateDTO, existingUser);
         
         // 安全检查：禁止用户禁用自己
-        if (updateDTO.getIsActive() != null && "0".equals(updateDTO.getIsActive())) {
+        if (updateDTO.getIsActive() != null && CommonConstant.ACTIVE_STATUS_DISABLED.equals(updateDTO.getIsActive())) {
             // 检查是否是当前登录用户
             if (currentUser != null && currentUser.getId().equals(id)) {
                 throw new RuntimeException("不能禁用自己的账号");
@@ -162,9 +163,9 @@ public class UserService {
                 }
             }
             
-            existingUser.setIsActive("0");
+            existingUser.setIsActive(CommonConstant.ACTIVE_STATUS_DISABLED);
         } else if (updateDTO.getIsActive() != null) {
-            existingUser.setIsActive("1");
+            existingUser.setIsActive(CommonConstant.ACTIVE_STATUS_ENABLED);
         }
 
         existingUser.setUpdatedAt(LocalDateTime.now());

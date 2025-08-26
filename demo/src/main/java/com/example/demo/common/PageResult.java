@@ -1,4 +1,4 @@
-package com.example.demo.pojo.DTO.common;
+package com.example.demo.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PageResponseDTO<T> {
+public class PageResult<T> {
 
     /**
      * 数据列表
@@ -65,7 +65,7 @@ public class PageResponseDTO<T> {
      * @param page 当前页码
      * @param size 每页大小
      */
-    public PageResponseDTO(List<T> items, int total, int page, int size) {
+    public PageResult(List<T> items, int total, int page, int size) {
         this.items = items;
         this.total = total;
         this.page = page;
@@ -73,5 +73,23 @@ public class PageResponseDTO<T> {
         this.totalPages = (long) Math.ceil((double) total / size);
         this.hasPrevious = page > 1;
         this.hasNext = page < totalPages;
+    }
+
+    /**
+     * 构造函数（参考代码兼容版本）
+     * 用于支持 new PageResult(total, records) 的调用方式
+     * 
+     * @param total 总记录数
+     * @param items 数据项列表
+     */
+    public PageResult(long total, List<T> items) {
+        this.total = (int) total;
+        this.items = items;
+        // 对于此构造函数，分页信息设为默认值
+        this.page = 1;
+        this.size = items != null ? items.size() : 0;
+        this.totalPages = this.size > 0 ? (long) Math.ceil((double) total / this.size) : 0L;
+        this.hasPrevious = false;
+        this.hasNext = this.totalPages > 1;
     }
 }

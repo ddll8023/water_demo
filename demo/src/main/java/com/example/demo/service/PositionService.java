@@ -3,7 +3,7 @@ package com.example.demo.service;
 import com.example.demo.pojo.DTO.system.PositionCreateDTO;
 import com.example.demo.pojo.DTO.system.PositionResponseDTO;
 import com.example.demo.pojo.DTO.system.PositionUpdateDTO;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.entity.system.Position;
 import com.example.demo.mapper.PositionMapper;
 import com.github.pagehelper.PageHelper;
@@ -32,7 +32,7 @@ public class PositionService {
     /**
      * 分页查询岗位列表
      */
-    public PageResponseDTO<PositionResponseDTO> getPositionPage(int page, int size, String keyword) {
+    public PageResult<PositionResponseDTO> getPositionPage(int page, int size, String keyword) {
         // 参数验证
         if (page < 1) page = 1;
         if (size < 1 || size > 100) size = 10;
@@ -47,7 +47,7 @@ public class PositionService {
                 .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
 
-        return new PageResponseDTO<>(records, (int) pageInfo.getTotal(), page, size);
+        return new PageResult<>(records, (int) pageInfo.getTotal(), page, size);
     }
 
     /**

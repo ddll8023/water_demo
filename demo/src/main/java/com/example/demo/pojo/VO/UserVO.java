@@ -5,6 +5,7 @@ import com.example.demo.pojo.entity.system.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
  */
 @Data
 @Schema(name = "UserVO", description = "用户视图对象")
-public class UserVO {
+public class UserVO implements Serializable {
 
     @Schema(name = "id", description = "用户ID")
     private Long id;

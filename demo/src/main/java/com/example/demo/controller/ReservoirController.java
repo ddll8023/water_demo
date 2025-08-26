@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.facility.ReservoirCreateDTO;
 import com.example.demo.pojo.DTO.facility.ReservoirQueryDTO;
 import com.example.demo.pojo.DTO.facility.ReservoirResponseDTO;
@@ -45,7 +45,7 @@ public class ReservoirController {
     @GetMapping
     
     @Operation(summary = "分页查询水库列表", description = "根据条件分页查询水库信息")
-    public ResponseEntity<ApiResponse<PageResponseDTO<ReservoirResponseDTO>>> getReservoirPage(
+    public ResponseEntity<ApiResponse<PageResult<ReservoirResponseDTO>>> getReservoirPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String keyword,
@@ -57,7 +57,7 @@ public class ReservoirController {
             queryDTO.setKeyword(keyword);
             queryDTO.setEngineeringGrade(reservoirLevel);
 
-            PageResponseDTO<ReservoirResponseDTO> result = reservoirService.getReservoirPage(queryDTO);
+            PageResult<ReservoirResponseDTO> result = reservoirService.getReservoirPage(queryDTO);
             return ResponseEntity.ok(ApiResponse.success("查询成功", result));
         } catch (Exception e) {
             return ResponseEntity.badRequest()

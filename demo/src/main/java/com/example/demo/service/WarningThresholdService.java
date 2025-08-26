@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
 
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.warning.WarningThresholdCreateDTO;
 import com.example.demo.pojo.DTO.warning.WarningThresholdResponseDTO;
 import com.example.demo.pojo.DTO.warning.WarningThresholdUpdateDTO;
@@ -31,8 +31,8 @@ public class WarningThresholdService {
     /**
      * 分页查询预警指标列表
      */
-    public PageResponseDTO<WarningThresholdResponseDTO> getWarningThresholds(int page, int size, String keyword,
-                                                                             String stationName, String monitoringItem, String sort) {
+    public PageResult<WarningThresholdResponseDTO> getWarningThresholds(int page, int size, String keyword,
+                                                                        String stationName, String monitoringItem, String sort) {
         // 参数验证
         if (page < 1) page = 1;
         if (size < 1) size = 10;
@@ -47,7 +47,7 @@ public class WarningThresholdService {
         // 获取分页信息
         PageInfo<WarningThresholdResponseDTO> pageInfo = new PageInfo<>(warningThresholds);
 
-        return new PageResponseDTO<>(
+        return new PageResult<>(
             warningThresholds,
             (int) pageInfo.getTotal(),
             page,

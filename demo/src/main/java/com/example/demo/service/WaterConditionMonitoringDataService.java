@@ -3,7 +3,7 @@ package com.example.demo.service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.pojo.DTO.monitoring.WaterConditionMonitoringDataQueryDTO;
 import com.example.demo.pojo.DTO.monitoring.WaterConditionMonitoringDataResponseDTO;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.entity.monitoring.ReservoirMonitoringData;
 import com.example.demo.mapper.WaterConditionMonitoringDataMapper;
 import com.github.pagehelper.PageHelper;
@@ -27,7 +27,7 @@ public class WaterConditionMonitoringDataService extends ServiceImpl<WaterCondit
      * @param queryDTO 查询条件
      * @return 分页结果
      */
-    public PageResponseDTO<WaterConditionMonitoringDataResponseDTO> pageWaterConditionMonitoringData(WaterConditionMonitoringDataQueryDTO queryDTO) {
+    public PageResult<WaterConditionMonitoringDataResponseDTO> pageWaterConditionMonitoringData(WaterConditionMonitoringDataQueryDTO queryDTO) {
         // 参数验证和默认值设置
         if (queryDTO.getPage() == null || queryDTO.getPage() < 1) {
             queryDTO.setPage(1);
@@ -55,7 +55,7 @@ public class WaterConditionMonitoringDataService extends ServiceImpl<WaterCondit
         PageInfo<WaterConditionMonitoringDataResponseDTO> pageInfo = new PageInfo<>(list);
         
         // 返回分页数据
-        return new PageResponseDTO<>(
+        return new PageResult<>(
                 pageInfo.getList(),
                 (int) pageInfo.getTotal(),
                 queryDTO.getPage(),

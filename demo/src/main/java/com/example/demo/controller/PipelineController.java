@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.ApiResponse;
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.facility.PipelineCreateDTO;
 import com.example.demo.pojo.DTO.facility.PipelineQueryDTO;
 import com.example.demo.pojo.DTO.facility.PipelineResponseDTO;
@@ -59,7 +59,7 @@ public class PipelineController {
     @Operation(summary = "分页查询管道信息", description = "根据条件分页查询管道信息")
     @GetMapping
     
-    public ResponseEntity<ApiResponse<PageResponseDTO<PipelineResponseDTO>>> getPipelinePage(
+    public ResponseEntity<ApiResponse<PageResult<PipelineResponseDTO>>> getPipelinePage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String keyword,
@@ -79,7 +79,7 @@ public class PipelineController {
             queryDTO.setOperationStatus(operationStatus);
 
             // 调用服务层获取分页数据
-            PageResponseDTO<PipelineResponseDTO> result = pipelineService.getPipelinePage(queryDTO);
+            PageResult<PipelineResponseDTO> result = pipelineService.getPipelinePage(queryDTO);
             return ResponseEntity.ok(ApiResponse.success("查询成功", result));
         } catch (Exception e) {
             // 异常处理

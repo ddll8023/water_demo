@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.system.DictDataResponseDTO;
 import com.example.demo.pojo.DTO.warning.WarningRecordCreateDTO;
 import com.example.demo.pojo.DTO.warning.WarningRecordResponseDTO;
@@ -171,9 +171,9 @@ public class WarningRecordService {
      * 分页查询预警记录列表
      * 包含字典翻译和持续时长计算功能
      */
-    public PageResponseDTO<WarningRecordResponseDTO> getWarningRecords(int page, int size,
-                                                                       String warningLocation, String warningType, String warningLevel, String warningStatus,
-                                                                       String projectName, LocalDateTime startTime, LocalDateTime endTime, String sort) {
+    public PageResult<WarningRecordResponseDTO> getWarningRecords(int page, int size,
+                                                                  String warningLocation, String warningType, String warningLevel, String warningStatus,
+                                                                  String projectName, LocalDateTime startTime, LocalDateTime endTime, String sort) {
         log.info("分页查询预警记录: page={}, size={}, warningType={}, warningLevel={}, warningStatus={}, sort={}", 
                 page, size, warningType, warningLevel, warningStatus, sort);
         
@@ -217,7 +217,7 @@ public class WarningRecordService {
             }
         }
 
-        return new PageResponseDTO<>(
+        return new PageResult<>(
             warningRecords,
             (int) pageInfo.getTotal(),
             page,

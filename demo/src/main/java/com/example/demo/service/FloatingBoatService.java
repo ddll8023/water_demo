@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.pojo.DTO.common.PageResponseDTO;
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.facility.FloatingBoatCreateDTO;
 import com.example.demo.pojo.DTO.facility.FloatingBoatQueryDTO;
 import com.example.demo.pojo.DTO.facility.FloatingBoatResponseDTO;
@@ -28,7 +28,7 @@ public class FloatingBoatService {
     /**
      * 分页查询浮船信息列表
      */
-    public PageResponseDTO<FloatingBoatResponseDTO> getFloatingBoatPage(FloatingBoatQueryDTO queryDTO) {
+    public PageResult<FloatingBoatResponseDTO> getFloatingBoatPage(FloatingBoatQueryDTO queryDTO) {
         PageHelper.startPage(queryDTO.getPage(), queryDTO.getSize());
         List<FloatingBoatResponseDTO> result = floatingBoatMapper.selectFloatingBoatPage(
             queryDTO.getKeyword(),
@@ -36,7 +36,7 @@ public class FloatingBoatService {
         );
         PageInfo<FloatingBoatResponseDTO> pageInfo = new PageInfo<>(result);
 
-        return new PageResponseDTO<>(
+        return new PageResult<>(
             pageInfo.getList(),
             (int) pageInfo.getTotal(),
             pageInfo.getPageNum(),
