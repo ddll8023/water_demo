@@ -44,4 +44,7 @@ public class MessageConstant {
     public static final String DICT_DATA_UPDATE_FAILED = "字典数据更新失败";
     public static final String DICT_DATA_DELETE_FAILED = "字典数据删除失败";
 
+    // 权限相关常量
+    public static final String PERMISSION_QUERY_FAILED = "权限查询失败";
+
 }

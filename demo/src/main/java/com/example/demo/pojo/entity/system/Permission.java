@@ -1,8 +1,10 @@
 package com.example.demo.pojo.entity.system;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -11,7 +13,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @Schema(name = "Permission", description = "权限表实体类")
-public class Permission {
+public class Permission implements Serializable {
 
     @Schema(name = "id", description = "权限ID")
     private Long id;
@@ -34,15 +36,19 @@ public class Permission {
     @Schema(name = "sortOrder", description = "排序值")
     private Integer sortOrder = 0;
 
+    @Schema(name = "isActive", description = "状态")
+    private String isActive;
+
     @Schema(name = "createdAt", description = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
     @Schema(name = "updatedAt", description = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 
-
     @Schema(name = "deletedAt", description = "软删除时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime deletedAt;
-
 
 }
