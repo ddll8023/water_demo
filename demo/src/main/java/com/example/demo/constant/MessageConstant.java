@@ -8,6 +8,22 @@ public class MessageConstant {
     public static final String USER_DISABLED = "用户已被禁用";
     public static final String TOKEN_INVALID = "Token无效";
     
+    // 用户管理相关常量
+    public static final String USER_NOT_EXIST = "用户不存在";
+    public static final String USER_USERNAME_DUPLICATE = "用户名已存在";
+    public static final String USER_CREATE_SUCCESS = "用户创建成功";
+    public static final String USER_CREATE_FAILED = "用户创建失败";
+    public static final String USER_UPDATE_SUCCESS = "用户更新成功";
+    public static final String USER_UPDATE_FAILED = "用户更新失败";
+    public static final String USER_DELETE_SUCCESS = "用户删除成功";
+    public static final String USER_DELETE_FAILED = "用户删除失败";
+    public static final String USER_CANNOT_DISABLE_SELF = "不能禁用自己的账号";
+    public static final String USER_CANNOT_DISABLE_SUPER_ADMIN = "不允许禁用超级管理员账号";
+    public static final String USER_ROLE_ASSIGN_SUCCESS = "用户角色分配成功";
+    public static final String USER_ROLE_ASSIGN_FAILED = "用户角色分配失败";
+    public static final String ROLE_NOT_EXIST_OR_DISABLED = "角色不存在或已禁用";
+    public static final String USER_GET_CURRENT_USER_FAILED = "无法获取当前用户信息";
+    
     // 部门相关常量
     public static final String DEPARTMENT_NAME_AVAILABLE = "部门名称可用";
     public static final String DEPARTMENT_NAME_DUPLICATE_IN_SAME_LEVEL = "同级部门中已存在相同名称";

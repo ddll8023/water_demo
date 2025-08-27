@@ -2,57 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.demo.mapper.UserMapper">
 
-    <!-- 结果映射：用户实体 -->
-    <resultMap id="UserMap" type="com.example.demo.pojo.entity.system.User">
-        <id property="id" column="id"/>
-        <result property="username" column="username"/>
-        <result property="password" column="password"/>
-        <result property="roleId" column="role_id"/>
-        <result property="isActive" column="is_active"/>
-        <result property="lastLogin" column="last_login"/>
-        <result property="createdAt" column="created_at"/>
-        <result property="updatedAt" column="updated_at"/>
-        <result property="deletedAt" column="deleted_at"/>
-    </resultMap>
-
-    <!-- 结果映射：用户视图对象（包含关联信息） -->
-    <resultMap id="UserVOMap" type="com.example.demo.pojo.VO.UserVO">
-        <id property="id" column="id"/>
-        <result property="username" column="username"/>
-        <result property="password" column="password"/>
-        <result property="roleId" column="role_id"/>
-        <result property="roleName" column="role_name"/>
-        <result property="isActive" column="is_active"/>
-        <result property="lastLogin" column="last_login"/>
-        <result property="createdAt" column="created_at"/>
-        <result property="updatedAt" column="updated_at"/>
-        <result property="deletedAt" column="deleted_at"/>
-    </resultMap>
-
-    <!-- 结果映射：权限实体 -->
-    <resultMap id="PermissionMap" type="com.example.demo.pojo.entity.system.Permission">
-        <id property="id" column="id"/>
-        <result property="name" column="name"/>
-        <result property="code" column="code"/>
-        <result property="description" column="description"/>
-        <result property="sortOrder" column="sort_order"/>
-        <result property="createdAt" column="created_at"/>
-        <result property="updatedAt" column="updated_at"/>
-        <result property="deletedAt" column="deleted_at"/>
-    </resultMap>
-
-    <!-- 结果映射：角色实体 -->
-    <resultMap id="RoleMap" type="com.example.demo.pojo.entity.system.Role">
-        <id property="id" column="id"/>
-        <result property="name" column="name"/>
-        <result property="description" column="description"/>
-        <result property="sortOrder" column="sort_order"/>
-        <result property="isActive" column="is_active"/>
-        <result property="createdAt" column="created_at"/>
-        <result property="updatedAt" column="updated_at"/>
-        <result property="deletedAt" column="deleted_at"/>
-    </resultMap>
-
     <!-- 根据用户ID查询用户权限列表 -->
     <select id="selectPermissionsByUserId" resultType="com.example.demo.pojo.entity.system.Permission">
         SELECT DISTINCT permissions.*
@@ -71,28 +20,26 @@
 
     <!-- 根据用户名查询用户（简单查询） -->
     <select id="selectByUsername" resultType="com.example.demo.pojo.entity.system.User">
-        SELECT * FROM users WHERE username = #{username} AND is_active = 1 AND deleted_at IS NULL
+        SELECT *
+        FROM users
+        WHERE username = #{username}
+          AND is_active = 1
+          AND deleted_at IS NULL
     </select>
 
 
     <!-- 检查用户名是否已存在 -->
     <select id="countByUsername" resultType="int">
-        SELECT COUNT(1) FROM users WHERE username = #{username} AND deleted_at IS NULL
-    </select>
-
-    <!-- 根据用户ID查询用户详细信息（包含角色信息） -->
-    <select id="selectUserDetailById" resultMap="UserVOMap">
-        SELECT users.*,
-               roles.name as role_name
+        SELECT COUNT(1)
         FROM users
-        LEFT JOIN roles ON users.role_id = roles.id
-        WHERE users.id = #{userId} AND users.deleted_at IS NULL
+        WHERE username = #{username}
+          AND deleted_at IS NULL
     </select>
 
     <!-- 分页查询用户列表（包含关联信息） -->
-    <select id="selectUserPageWithDetails" resultMap="UserVOMap">
+    <select id="selectUserPageWithDetails" resultType="com.example.demo.pojo.entity.system.User">
         SELECT users.*,
-               roles.name as role_name
+        roles.name as role_name
         FROM users
         LEFT JOIN roles ON users.role_id = roles.id
         WHERE users.deleted_at IS NULL
@@ -111,55 +58,56 @@
     <!-- 插入用户记录 -->
     <insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO users(username, password, role_id, is_active, created_at, updated_at)
-        VALUES(#{username}, #{password}, #{roleId}, #{isActive}, #{createdAt}, #{updatedAt})
+        VALUES (#{username}, #{password}, #{roleId}, #{isActive}, #{createdAt}, #{updatedAt})
     </insert>
 
     <!-- 根据ID查询用户 -->
-    <select id="selectById" resultMap="UserMap">
-        SELECT * FROM users WHERE id = #{id} AND deleted_at IS NULL
+    <select id="selectById" resultType="com.example.demo.pojo.entity.system.User">
+        SELECT *
+        FROM users
+        WHERE id = #{id}
+          AND deleted_at IS NULL
     </select>
 
     <!-- 根据ID更新用户 -->
     <update id="updateById">
         UPDATE users
-        SET username = #{username},
-            role_id = #{roleId},
-            is_active = #{isActive},
+        SET username   = #{username},
+            role_id    = #{roleId},
+            is_active  = #{isActive},
             last_login = #{lastLogin},
             updated_at = #{updatedAt}
-        WHERE id = #{id} AND deleted_at IS NULL
+        WHERE id = #{id}
+          AND deleted_at IS NULL
     </update>
-    
-    <!-- 获取用户的角色列表 -->
-    <select id="selectUserRoles" resultMap="RoleMap">
-        SELECT r.id, r.name, r.description, r.sort_order, r.is_active, r.created_at, r.updated_at, r.deleted_at
-        FROM roles r
-        INNER JOIN user_roles ur ON r.id = ur.role_id
-        WHERE ur.user_id = #{userId}
-        AND r.deleted_at IS NULL
-        ORDER BY r.sort_order ASC
+
+    <!-- 根据用户ID查询用户的角色信息（单个角色） -->
+    <select id="selectUserRole" resultType="com.example.demo.pojo.entity.system.Role">
+        SELECT roles.*
+        FROM roles
+        INNER JOIN users ON users.role_id = roles.id
+        WHERE users.id = #{userId}
+          AND users.deleted_at IS NULL
+          AND roles.deleted_at IS NULL
     </select>
-    
-    <!-- 删除用户的所有角色关联 -->
-    <delete id="deleteUserRoles">
-        DELETE FROM user_roles WHERE user_id = #{userId}
-    </delete>
-    
-    <!-- 为用户添加角色关联 -->
-    <insert id="insertUserRole">
-        INSERT INTO user_roles (user_id, role_id, created_at)
-        VALUES (#{userId}, #{roleId}, NOW())
-    </insert>
-    
-    <!-- 统计系统中超级管理员的数量 -->
-    <select id="countSuperAdmins" resultType="int">
-        SELECT COUNT(DISTINCT u.id)
-        FROM users u
-        INNER JOIN user_roles ur ON u.id = ur.user_id
-        INNER JOIN roles r ON ur.role_id = r.id
-        WHERE r.name = '超级管理员'
-        AND u.is_active = 1
-        AND u.deleted_at IS NULL
-        AND r.deleted_at IS NULL
+
+    <!-- 根据用户ID查询角色名称 -->
+    <select id="selectRoleNameByUserId" resultType="java.lang.String">
+        SELECT roles.name
+        FROM roles
+        INNER JOIN users ON users.role_id = roles.id
+        WHERE users.id = #{userId}
+          AND users.deleted_at IS NULL
+          AND roles.deleted_at IS NULL
+    </select>
+
+    <!-- 根据用户ID查询用户角色列表 -->
+    <select id="selectRolesByUserId" resultType="com.example.demo.pojo.entity.system.Role">
+        SELECT roles.*
+        FROM roles
+        INNER JOIN users ON users.role_id = roles.id
+        WHERE users.id = #{userId}
+          AND users.deleted_at IS NULL
+          AND roles.deleted_at IS NULL
     </select>
 </mapper>

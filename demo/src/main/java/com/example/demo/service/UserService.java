@@ -1,22 +1,27 @@
 package com.example.demo.service;
 
-import com.example.demo.pojo.DTO.system.UserCreateDTO;
-import com.example.demo.pojo.DTO.system.UserResponseDTO;
-import com.example.demo.pojo.DTO.system.UserUpdateDTO;
 import com.example.demo.common.PageResult;
+import com.example.demo.constant.CommonConstant;
+import com.example.demo.constant.MessageConstant;
+import com.example.demo.exception.UserCreateException;
+import com.example.demo.exception.UserNotExistException;
+import com.example.demo.exception.UserSelfDisableException;
+import com.example.demo.exception.UsernameDuplicateException;
+import com.example.demo.mapper.RoleMapper;
+import com.example.demo.mapper.UserMapper;
+import com.example.demo.pojo.DTO.system.UserCreateDTO;
+import com.example.demo.pojo.DTO.system.UserQueryDTO;
+import com.example.demo.pojo.DTO.system.UserUpdateDTO;
+import com.example.demo.pojo.VO.UserVO;
 import com.example.demo.pojo.entity.system.Role;
 import com.example.demo.pojo.entity.system.User;
-import com.example.demo.pojo.VO.UserVO;
-import com.example.demo.mapper.UserMapper;
-import com.example.demo.mapper.RoleMapper;
 import com.example.demo.utils.BaseContext;
-import com.example.demo.constant.CommonConstant;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
 import java.time.LocalDateTime;
@@ -27,6 +32,7 @@ import java.util.stream.Collectors;
  * 用户管理服务
  * 专注于系统用户账号管理，采用标准RBAC模型
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -35,136 +41,119 @@ public class UserService {
     private final RoleMapper roleMapper;
 
     /**
-     * 密码加密处理（简化版本）
-     * 实际项目中应使用BCrypt等安全加密方式
-     */
-    private String encodePassword(String rawPassword) {
-        // 使用MD5加密密码，实际项目中应使用更安全的加密方式
-        return DigestUtils.md5DigestAsHex(rawPassword.getBytes());
-    }
-
-    /**
      * 分页查询用户列表
      */
-    public PageResult<UserResponseDTO> getUsers(int page, int size,
-                                                String username, Long roleId, String isActive) {
+    public PageResult<UserVO> getUsers(UserQueryDTO userQueryDTO) {
+        log.info("开始查询用户分页数据，查询条件: {}", userQueryDTO);
+
         // 使用PageHelper进行分页
-        PageHelper.startPage(page, size);
+        PageHelper.startPage(userQueryDTO.getPage(), userQueryDTO.getSize());
 
         // 执行查询（返回UserVO包含关联信息）
-        List<UserVO> users = userMapper.selectUserPageWithDetails(
-            null, username, roleId, isActive, null);
+        Page<User> users = userMapper.selectUserPageWithDetails(
+                userQueryDTO);
 
-        // 获取分页信息
-        PageInfo<UserVO> pageInfo = new PageInfo<>(users);
+        long total = users.getTotal();
+        List<User> records = users.getResult();
 
-        // 转换为DTO
-        List<UserResponseDTO> userDTOs = pageInfo.getList().stream()
-            .map(this::convertToResponseDTO)
-            .collect(Collectors.toList());
+        List<UserVO> userVOList = records.stream().map(this::convertToUserVO).collect(Collectors.toList());
+
+        log.info("查询完成，返回 {} 条记录", total);
 
         return new PageResult<>(
-            userDTOs,
-            (int) pageInfo.getTotal(),
-            pageInfo.getPageNum(),
-            pageInfo.getPageSize()
+                total,userVOList
         );
-    }
-
-    /**
-     * 根据ID查询用户
-     */
-    public UserResponseDTO getUserById(Long id) {
-        UserVO user = userMapper.selectUserDetailById(id);
-        if (user == null) {
-            throw new RuntimeException("用户不存在");
-        }
-        return convertToResponseDTO(user);
     }
 
     /**
      * 创建用户
      */
-    public UserResponseDTO createUser(UserCreateDTO createDTO) {
+    public void createUser(UserCreateDTO userCreateDTO) {
+        log.info("开始创建用户:{}",userCreateDTO);
+        
         // 检查用户名是否已存在
-        if (userMapper.countByUsername(createDTO.getUsername()) > 0) {
-            throw new RuntimeException("用户名已存在");
+        if (userMapper.countByUsername(userCreateDTO.getUsername()) > 0) {
+            log.error("用户创建失败，用户名已存在: {}", userCreateDTO.getUsername());
+            throw new UsernameDuplicateException(MessageConstant.USER_USERNAME_DUPLICATE);
+        }
+
+        // 验证角色是否存在和有效
+        if (!roleMapper.isRoleActive(userCreateDTO.getRoleId())) {
+            log.error("用户创建失败，角色不存在或已禁用，角色ID: {}", userCreateDTO.getRoleId());
+            throw new UserCreateException(MessageConstant.ROLE_NOT_EXIST_OR_DISABLED);
         }
 
         // 创建用户实体
         User user = new User();
-        BeanUtils.copyProperties(createDTO, user);
+        BeanUtils.copyProperties(userCreateDTO, user);
 
         // 加密密码
-        user.setPassword(encodePassword(createDTO.getPassword()));
-        user.setIsActive(CommonConstant.ACTIVE_STATUS_ENABLED);
+        String password = DigestUtils.md5DigestAsHex(userCreateDTO.getPassword().getBytes());
+        user.setPassword(password);
+        user.setIsActive(userCreateDTO.getIsActive() != null ? userCreateDTO.getIsActive() : CommonConstant.ACTIVE_STATUS_ENABLED);
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
 
         // 保存用户
         userMapper.insertUser(user);
-
-        return getUserById(user.getId());
+        
+        log.info("用户创建成功");
     }
 
     /**
      * 更新用户
      */
-    public UserResponseDTO updateUser(Long id, UserUpdateDTO updateDTO) {
+    public void updateUser(Long id, UserUpdateDTO userUpdateDTO) {
+        log.info("开始更新用户:{}",userUpdateDTO);
         User existingUser = userMapper.selectById(id);
+        // 检查用户是否存在
         if (existingUser == null) {
-            throw new RuntimeException("用户不存在");
+            log.error("用户更新失败，用户不存在: {}", id);
+            throw new UserNotExistException(MessageConstant.ACCOUNT_NOT_EXIST);
         }
 
         // 获取当前登录用户信息
         Long currentUserId = BaseContext.getCurrentId();
         if (currentUserId == null) {
-            throw new RuntimeException("无法获取当前用户信息");
+            log.error("用户更新失败，获取当前用户失败");
+            throw new UserCreateException(MessageConstant.USER_GET_CURRENT_USER_FAILED);
         }
         User currentUser = userMapper.selectById(currentUserId);
-        
+
+        // 检查用户名是否重复（排除自身）
+        if (userUpdateDTO.getUsername() != null && !userUpdateDTO.getUsername().equals(existingUser.getUsername())) {
+            if (userMapper.countByUsername(userUpdateDTO.getUsername()) > 0) {
+                log.error("用户更新失败，用户名已存在: {}", userUpdateDTO.getUsername());
+                throw new UsernameDuplicateException(MessageConstant.USER_USERNAME_DUPLICATE);
+            }
+        }
+
         // 更新用户信息（排除不可更新的字段）
-        BeanUtils.copyProperties(updateDTO, existingUser);
+        User newUser = new User();
+        BeanUtils.copyProperties(userUpdateDTO, newUser);
         
+        // 如果提供了密码，则加密后更新
+        if (userUpdateDTO.getPassword() != null && !userUpdateDTO.getPassword().trim().isEmpty()) {
+            newUser.setPassword(DigestUtils.md5DigestAsHex(userUpdateDTO.getPassword().getBytes()));
+        }
+
         // 安全检查：禁止用户禁用自己
-        if (updateDTO.getIsActive() != null && CommonConstant.ACTIVE_STATUS_DISABLED.equals(updateDTO.getIsActive())) {
+        if (userUpdateDTO.getIsActive() != null && CommonConstant.ACTIVE_STATUS_DISABLED.equals(userUpdateDTO.getIsActive())) {
             // 检查是否是当前登录用户
             if (currentUser != null && currentUser.getId().equals(id)) {
-                throw new RuntimeException("不能禁用自己的账号");
-            }
-            
-            // 获取当前用户角色
-            List<Role> currentUserRoles = userMapper.selectUserRoles(currentUser.getId());
-            boolean isCurrentUserSuperAdmin = false;
-            for (Role role : currentUserRoles) {
-                String roleName = role.getName();
-                if (roleName != null && roleName.equals("超级管理员")) {
-                    isCurrentUserSuperAdmin = true;
-                    break;
-                }
+                log.error("用户更新失败，当前用户不能禁用自己");
+                throw new UserSelfDisableException(MessageConstant.USER_CANNOT_DISABLE_SELF);
             }
 
-            // 检查目标用户是否是超级管理员
-            List<Role> userRoles = userMapper.selectUserRoles(id);
-            for (Role role : userRoles) {
-                String roleName = role.getName();
-                if (roleName != null && roleName.equals("超级管理员")) {
-                    // 检查系统中超级管理员数量，确保至少保留一个
-                    int superAdminCount = userMapper.countSuperAdmins();
-                    if (superAdminCount <= 1) {
-                        throw new RuntimeException("不能禁用系统唯一的超级管理员账号");
-                    }
-                    
-                    // 如果当前用户不是超级管理员，则不能禁用任何超级管理员
-                    if (!isCurrentUserSuperAdmin) {
-                        throw new RuntimeException("只有超级管理员才能禁用其他超级管理员账号");
-                    }
-                    break;
-                }
+            // 检查目标用户是否是超级管理员，如果是则直接禁止
+            Role targetUserRole = userMapper.selectUserRole(id);
+            if (targetUserRole != null && CommonConstant.ROLE_SUPER_ADMIN.equals(targetUserRole.getName())) {
+                log.error("用户更新失败，不允许禁用超级管理员账号，用户ID: {}", id);
+                throw new UserSelfDisableException(MessageConstant.USER_CANNOT_DISABLE_SUPER_ADMIN);
             }
-            
+
             existingUser.setIsActive(CommonConstant.ACTIVE_STATUS_DISABLED);
-        } else if (updateDTO.getIsActive() != null) {
+        } else if (userUpdateDTO.getIsActive() != null) {
             existingUser.setIsActive(CommonConstant.ACTIVE_STATUS_ENABLED);
         }
 
@@ -172,78 +161,34 @@ public class UserService {
 
         // 保存更新
         userMapper.updateById(existingUser);
-
-        return getUserById(id);
+        log.info("用户更新成功" );
     }
 
     /**
      * 删除用户（软删除）
      */
     public void deleteUser(Long id) {
+        log.info("开始删除用户:{}",id);
         User user = userMapper.selectById(id);
         if (user == null) {
-            throw new RuntimeException("用户不存在");
+            log.error("用户删除失败，用户不存在: {}", id);
+            throw new UserNotExistException(MessageConstant.ACCOUNT_NOT_EXIST);
         }
 
         // 执行软删除
         user.setDeletedAt(LocalDateTime.now());
         userMapper.updateById(user);
+        log.info("用户删除成功");
     }
 
-    /**
-     * 获取用户的角色列表
-     * @param userId 用户ID
-     * @return 角色列表
-     */
-    public List<Role> getUserRoles(Long userId) {
-        // 验证用户是否存在
-        User user = userMapper.selectById(userId);
-        if (user == null) {
-            throw new RuntimeException("用户不存在");
-        }
+    private UserVO convertToUserVO(User user){
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(user, userVO);
         
-        // 获取用户当前角色
-        return userMapper.selectUserRoles(userId);
-    }
-    
-    /**
-     * 为用户分配角色
-     * @param userId 用户ID
-     * @param roleIds 角色ID列表
-     */
-    @Transactional
-    public void assignUserRoles(Long userId, List<Long> roleIds) {
-        // 验证用户是否存在
-        User user = userMapper.selectById(userId);
-        if (user == null) {
-            throw new RuntimeException("用户不存在");
-        }
+        // 查询并设置关联信息
+        userVO.setRoleName(userMapper.selectRoleNameByUserId(user.getId()));
+        userVO.setRoles(userMapper.selectRolesByUserId(user.getId()));
         
-        // 先删除用户当前的所有角色关联
-        userMapper.deleteUserRoles(userId);
-        
-        // 如果角色ID列表不为空，则添加新的角色关联
-        if (roleIds != null && !roleIds.isEmpty()) {
-            for (Long roleId : roleIds) {
-                // 验证角色是否存在和有效
-                if (!roleMapper.isRoleActive(roleId)) {
-                    throw new RuntimeException("角色不存在或已禁用");
-                }
-                userMapper.insertUserRole(userId, roleId);
-            }
-        }
-    }
-
-    /**
-     * 转换为响应DTO
-     */
-    private UserResponseDTO convertToResponseDTO(UserVO user) {
-        UserResponseDTO dto = new UserResponseDTO();
-        BeanUtils.copyProperties(user, dto);
-
-        // 设置角色名称
-        dto.setRoleName(user.getRoleName());
-
-        return dto;
+        return userVO;
     }
 }

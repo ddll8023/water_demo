@@ -20,19 +20,6 @@ export function getUserList(params) {
 		params,
 	});
 }
-
-/**
- * 查询用户详情
- * @param {number} id 用户ID
- * @returns {Promise} 用户详情
- */
-export function getUserDetail(id) {
-	return request({
-		url: `/users/${id}`,
-		method: "get",
-	});
-}
-
 /**
  * 创建用户
  * @param {Object} data 用户数据
@@ -45,7 +32,7 @@ export function getUserDetail(id) {
  */
 export function createUser(data) {
 	return request({
-		url: "/users",
+		url: "/users/create",
 		method: "post",
 		data,
 	});
@@ -79,31 +66,5 @@ export function deleteUser(id) {
 	return request({
 		url: `/users/${id}`,
 		method: "delete",
-	});
-}
-
-/**
- * 获取用户的角色列表
- * @param {number} id 用户ID
- * @returns {Promise} 用户角色列表
- */
-export function getUserRoles(id) {
-	return request({
-		url: `/users/${id}/roles`,
-		method: "get",
-	});
-}
-
-/**
- * 为用户分配角色
- * @param {number} id 用户ID
- * @param {Array<number>} roleIds 角色ID数组
- * @returns {Promise} 分配结果
- */
-export function assignUserRoles(id, roleIds) {
-	return request({
-		url: `/users/${id}/roles`,
-		method: "put",
-		data: roleIds,
 	});
 }

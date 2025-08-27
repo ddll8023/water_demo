@@ -101,6 +101,7 @@ public class AuthService {
 
         // 更新最后登录时间
         user.setLastLogin(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
         userMapper.updateById(user);
 
         loginUserVO.setLastLogin(user.getLastLogin());

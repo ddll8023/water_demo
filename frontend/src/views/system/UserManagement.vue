@@ -116,7 +116,6 @@ import CustomPagination from '@/components/Common/CustomPagination.vue'
 import { useUserStore } from '@/stores/modules/user'
 import { useAuthStore } from '@/stores/modules/auth'
 import { getRoleOptions } from '@/api/role'
-import { getUserRoles, assignUserRoles } from '@/api/user'
 import { useDictionary, DICT_TYPES } from '@/composables/useDictionary'
 
 /**
@@ -407,20 +406,11 @@ const handleAdd = async () => {
 const handleEdit = async (row) => {
   try {
     isEdit.value = true
-    // 复制用户基本信息
+    // 复制用户基本信息，直接使用roleId字段
     currentUser.value = { ...row }
 
     // 确保选项数据已加载
     await loadRoleOptions()
-
-    // 加载用户当前角色
-    const userRoles = await getUserRoles(row.id)
-    if (userRoles && Array.isArray(userRoles) && userRoles.length > 0) {
-      // 只取第一个角色
-      currentUser.value.roleId = userRoles[0].id
-    } else {
-      currentUser.value.roleId = null
-    }
 
     formDialogVisible.value = true
   } catch (error) {
@@ -442,21 +432,11 @@ const handleSaveUser = async () => {
     // 准备提交的用户数据
     const userData = { ...currentUser.value }
 
-    let saveResult = null
-
     if (isEdit.value) {
-      saveResult = await userStore.updateUser(userData.id, userData)
-      // 分配角色
-      if (saveResult && userData.roleId) {
-        await assignUserRoles(userData.id, [userData.roleId])
-      }
+      await userStore.updateUser(userData.id, userData)
       ElMessage.success('用户信息更新成功')
     } else {
-      saveResult = await userStore.createUser(userData)
-      // 分配角色（如果是新创建的用户）
-      if (saveResult && saveResult.id && userData.roleId) {
-        await assignUserRoles(saveResult.id, [userData.roleId])
-      }
+      await userStore.createUser(userData)
       ElMessage.success('用户创建成功')
     }
 
