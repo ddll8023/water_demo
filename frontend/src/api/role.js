@@ -37,11 +37,13 @@ export function getRoleDetail(id) {
  * @param {string} data.name 角色名称
  * @param {string} data.description 角色描述
  * @param {number} data.sortOrder 排序顺序
+ * @param {string} data.remark 备注信息
+ * @param {Array<number>} data.permissionIds 权限ID数组
  * @returns {Promise} 创建结果
  */
 export function createRole(data) {
 	return request({
-		url: "/roles",
+		url: "/roles/create",
 		method: "post",
 		data,
 	});
@@ -51,6 +53,11 @@ export function createRole(data) {
  * 更新角色信息
  * @param {number} id 角色ID
  * @param {Object} data 更新数据
+ * @param {string} data.name 角色名称
+ * @param {string} data.description 角色描述
+ * @param {number} data.sortOrder 排序顺序
+ * @param {string} data.remark 备注信息
+ * @param {Array<number>} data.permissionIds 权限ID数组
  * @returns {Promise} 更新结果
  */
 export function updateRole(id, data) {

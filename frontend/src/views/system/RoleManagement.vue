@@ -86,7 +86,7 @@ import CustomButton from '@/components/Common/CustomButton.vue'
 import CustomDialog from '@/components/Common/CustomDialog.vue'
 import CommonForm from '@/components/Common/CommonForm.vue'
 import CustomPagination from '@/components/Common/CustomPagination.vue'
-import { getRoleList, getRoleDetail, createRole, updateRole, deleteRole, checkRoleNameAvailable, getRolePermissions, assignRolePermissions } from '@/api/role'
+import { getRoleList, getRoleDetail, createRole, updateRole, deleteRole, checkRoleNameAvailable, getRolePermissions } from '@/api/role'
 import { getPermissionTree } from '@/api/permission'
 import PageHeader from '@/components/Common/PageHeader.vue'
 
@@ -231,7 +231,8 @@ const validateRoleName = async (rule, value, callback) => {
     }
   } catch (error) {
     console.error('验证角色名称失败:', error)
-    callback()
+    ElMessage.error('验证角色名称失败，请稍后重试')
+    callback(new Error('验证失败，请稍后重试'))
   }
 }
 
@@ -373,20 +374,7 @@ const getPermissionIcon = (type) => {
   }
 }
 
-// 保存权限分配
-const savePermissions = async (roleId) => {
-  if (!roleId) return
 
-  try {
-    const checkedKeys = permissionTreeRef.value.getCheckedKeys()
-    await assignRolePermissions(roleId, checkedKeys)
-    return true
-  } catch (error) {
-    console.error('权限分配失败:', error)
-    ElMessage.error('权限分配失败')
-    return false
-  }
-}
 
 /**
  * ===========================
@@ -438,13 +426,18 @@ const handleSaveRole = async () => {
 
     saving.value = true
 
+    // 获取选中的权限ID
+    const checkedKeys = permissionTreeRef.value ? permissionTreeRef.value.getCheckedKeys() : []
+    const roleData = {
+      ...currentRole.value,
+      permissionIds: checkedKeys
+    }
+
     if (isEdit.value) {
-      await updateRole(currentRole.value.id, currentRole.value)
-      // 如果是编辑模式，同时保存权限
-      await savePermissions(currentRole.value.id)
+      await updateRole(currentRole.value.id, roleData)
       ElMessage.success('角色更新成功')
     } else {
-      await createRole(currentRole.value)
+      await createRole(roleData)
       ElMessage.success('角色创建成功')
     }
 

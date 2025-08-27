@@ -53,4 +53,11 @@ public class MessageConstant {
     public static final String POSITION_HAS_PERSONNEL = "该岗位下还有人员，无法删除";
     public static final String POSITION_NAME_EMPTY = "岗位名称不能为空";
 
+    // 角色相关常量
+    public static final String ROLE_NOT_EXIST = "角色不存在";
+    public static final String ROLE_NAME_DUPLICATE = "角色名称已存在";
+    public static final String ROLE_NAME_AVAILABLE = "角色名称可用";
+    public static final String ROLE_NAME_EMPTY = "角色名称不能为空";
+    public static final String ROLE_HAS_USERS = "该角色下还有用户，无法删除";
+
 }

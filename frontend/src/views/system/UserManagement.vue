@@ -289,12 +289,12 @@ const roleTableColumns = [
 // 转换角色选项数据格式
 const roleSelectOptions = computed(() => {
   return roleOptions.value.map(role => {
-            // 如果is_active不存在，默认为"1"（启用状态）
-        const isActive = role.is_active !== undefined ? role.is_active : "1"
+            // 如果isActive不存在，默认为"1"（启用状态）
+        const isActive = role.isActive !== undefined ? role.isActive : "1"
     return {
       value: role.id,
       label: role.name,
-      disabled: !isActive // 只有明确设置为false时才禁用
+      disabled: isActive !== "1" // 只有当状态不是"1"时才禁用
     }
   })
 })
