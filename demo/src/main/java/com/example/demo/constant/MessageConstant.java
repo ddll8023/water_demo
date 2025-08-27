@@ -47,4 +47,10 @@ public class MessageConstant {
     // 权限相关常量
     public static final String PERMISSION_QUERY_FAILED = "权限查询失败";
 
+    // 岗位相关常量
+    public static final String POSITION_NOT_EXIST = "岗位不存在";
+    public static final String POSITION_NAME_DUPLICATE = "岗位名称已存在";
+    public static final String POSITION_HAS_PERSONNEL = "该岗位下还有人员，无法删除";
+    public static final String POSITION_NAME_EMPTY = "岗位名称不能为空";
+
 }

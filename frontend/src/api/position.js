@@ -32,7 +32,7 @@ export function getPositionList(params) {
  */
 export function createPosition(data) {
 	return request({
-		url: "/positions",
+		url: "/positions/create",
 		method: "post",
 		data,
 	});
@@ -63,34 +63,6 @@ export function deletePosition(id) {
 		method: "delete",
 	});
 }
-
-/**
- * 获取岗位下用户列表
- * @param {number} id 岗位ID
- * @param {Object} params 查询参数
- * @param {number} params.page 页码（可选）
- * @param {number} params.size 每页大小（可选）
- * @returns {Promise} 用户列表
- */
-export function getPositionUsers(id, params = {}) {
-	return request({
-		url: `/positions/${id}/users`,
-		method: "get",
-		params,
-	});
-}
-
-/**
- * 获取岗位统计信息
- * @returns {Promise} 统计信息
- */
-export function getPositionStatistics() {
-	return request({
-		url: "/positions/statistics",
-		method: "get",
-	});
-}
-
 /**
  * 检查岗位名称是否可用
  * @param {string} name 岗位名称

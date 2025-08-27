@@ -231,7 +231,11 @@ onMounted(() => {
 // =============================================
 
 // 搜索处理
-const handleSearch = () => {
+const handleSearch = (searchData) => {
+  // 如果传递了搜索数据，则更新searchForm
+  if (searchData) {
+    Object.assign(searchForm, searchData)
+  }
   pagination.currentPage = 1
   loadPositionList()
 }
