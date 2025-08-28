@@ -1,39 +1,17 @@
 <template>
-  <div class="resource-management">
+  <div class="page-container">
     <!-- 使用页面头部组件 -->
-    <PageHeader title="资源管理" icon="fa-files-o" description="管理系统中的文档、图片、视频等资源文件" />
+    <PageHeader title="资源管理" icon="fa-cogs" description="系统资源配置和管理中心，统一管理各类系统资源" />
 
-    <!-- 功能开发中提示 -->
-    <div class="development-notice">
-      <el-card class="notice-card">
-        <div class="notice-content">
-          <div class="notice-icon">
-            <i class="fa fa-cloud-upload"></i>
-          </div>
-          <div class="notice-text">
-            <h3>功能开发中</h3>
-            <p>资源管理功能正在开发中，敬请期待...</p>
-            <div class="notice-features">
-              <span class="feature-item">
-                <i class="fa fa-upload"></i>
-                文件上传下载
-              </span>
-              <span class="feature-item">
-                <i class="fa fa-folder-open"></i>
-                文件夹管理
-              </span>
-              <span class="feature-item">
-                <i class="fa fa-eye"></i>
-                文件预览
-              </span>
-              <span class="feature-item">
-                <i class="fa fa-search"></i>
-                文件搜索
-              </span>
-            </div>
-          </div>
-        </div>
-      </el-card>
+    <!-- 功能选项卡 -->
+    <TabSection v-model="activeTab" :tabs="tabOptions" />
+
+    <!-- Tab内容容器 -->
+    <div class="tab-content-wrapper">
+      <!-- 工程服务Tab配置 -->
+      <div v-if="activeTab === 'engineering-tab-config'" class="content-section">
+        <EngineeringTabManagement />
+      </div>
     </div>
   </div>
 </template>
@@ -41,117 +19,111 @@
 <script setup>
 import { ref } from 'vue'
 import PageHeader from '@/components/Common/PageHeader.vue'
+import TabSection from '@/components/Common/TabSection.vue'
+import EngineeringTabManagement from '@/components/System/EngineeringTabManagement.vue'
 
-// 页面基础配置
-const loading = ref(false)
+// ================================
+// 响应式数据
+// ================================
+
+// 当前激活的标签页
+const activeTab = ref('engineering-tab-config')
+
+// 标签选项配置
+const tabOptions = [
+  {
+    name: 'engineering-tab-config',
+    label: '工程服务Tab配置',
+    icon: 'fa-cogs'
+  }
+]
 </script>
 
 <style scoped lang="scss">
-// ===========================
-// 页面整体布局
-// ===========================
-.resource-management {
-  background-color: #f5f5f5;
+@use "@/assets/styles/index.scss" as *;
+
+.page-container {
+  padding: var(--spacing-lg);
+  background-color: var(--bg-secondary);
   min-height: calc(100vh - var(--header-height));
 
-  /**
-   * ===================================
-   * 开发中提示样式
-   * ===================================
-   */
-  .development-notice {
-    margin-top: var(--spacing-40);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  .tab-content-wrapper {
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-light);
+    overflow: hidden;
   }
 
-  .notice-card {
-    max-width: var(--panel-width-default);
-    width: 100%;
-    border: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  .content-section {
+    padding: var(--spacing-lg);
   }
 
-  .notice-content {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    padding: var(--card-padding);
-  }
+  .coming-soon {
+    @include flex-center;
+    min-height: 400px;
 
-  .notice-icon {
-    font-size: var(--font-size-icon-notice);
-    color: #409eff;
-    opacity: var(--opacity-high);
-  }
-
-  .notice-text {
-    flex: 1;
-
-    h3 {
-      font-size: 24px;
-      color: #303133;
-      margin: 0 0 8px 0;
-      font-weight: 600;
-    }
-
-    p {
-      font-size: 16px;
-      color: #606266;
-      margin: 0 0 16px 0;
-      line-height: 1.5;
-    }
-  }
-
-  .notice-features {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .feature-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    background: var(--hover-bg-light);
-    color: #409eff;
-    border-radius: var(--border-radius-feature-tag);
-    font-size: 14px;
-    border: 1px solid var(--hover-border-light);
-
-    i {
-      font-size: 12px;
-    }
-  }
-
-  /**
-   * ===================================
-   * 响应式设计
-   * ===================================
-   */
-  @media (max-width: 768px) {
-    .notice-content {
+    .coming-soon-content {
+      @include flex-center;
       flex-direction: column;
       text-align: center;
-      gap: 16px;
+      color: var(--text-secondary);
+
+      .fa {
+        font-size: var(--font-size-icon-notice);
+        margin-bottom: var(--spacing-lg);
+        color: var(--primary-color);
+        opacity: var(--opacity-medium);
+      }
+
+      h3 {
+        font-size: var(--font-size-xl);
+        font-weight: var(--font-weight-medium);
+        color: var(--text-primary);
+        margin: 0 0 var(--spacing-md) 0;
+      }
+
+      p {
+        font-size: var(--font-size-base);
+        color: var(--text-secondary);
+        margin: 0;
+      }
+    }
+  }
+
+  @include respond-to(md) {
+    padding: var(--spacing-md);
+
+    .content-section {
+      padding: var(--spacing-md);
+    }
+  }
+
+  @include respond-to(sm) {
+    padding: var(--spacing-sm);
+
+    .content-section {
+      padding: var(--spacing-sm);
     }
 
-    .notice-icon {
-      font-size: var(--icon-size-xxl);
-    }
+    .coming-soon {
+      min-height: 300px;
 
-    .notice-text h3 {
-      font-size: 20px;
-    }
+      .coming-soon-content {
+        .fa {
+          font-size: var(--font-size-icon-large);
+          margin-bottom: var(--spacing-md);
+        }
 
-    .notice-text p {
-      font-size: 14px;
-    }
+        h3 {
+          font-size: var(--font-size-lg);
+          margin-bottom: var(--spacing-sm);
+        }
 
-    .notice-features {
-      justify-content: center;
+        p {
+          font-size: var(--font-size-sm);
+        }
+      }
     }
   }
 }

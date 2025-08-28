@@ -130,7 +130,7 @@
             CONCAT('DEPT', LPAD(d.id, 4, '0')) as department_code,
             '管理部门' as department_type,
             p.id as personnel_id,
-            p.full_name as personnel_name,
+            p.name as personnel_name,
             p.position_id as personnel_position_id,
             pos.name as personnel_position,
             p.phone as contact_phone,

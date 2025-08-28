@@ -9,8 +9,17 @@
 
     <!-- Tab内容容器 -->
     <div class="tab-content-wrapper">
+      <!-- 空状态提示 -->
+      <div v-if="tabOptions.length === 0" class="empty-state">
+        <div class="empty-content">
+          <i class="fa fa-cog"></i>
+          <p>暂无可用的工程服务模块</p>
+          <p class="empty-tip">请联系管理员配置工程服务标签</p>
+        </div>
+      </div>
+
       <!-- 监测站点 -->
-      <div v-if="activeTab === 'monitoring-stations'" class="content-section">
+      <div v-else-if="activeTab === 'monitoring-stations'" class="content-section">
         <FacilityManagement ref="monitoringStationRef" :facility-type="'monitoring-stations'" :facility-name="'监测站点'"
           :search-fields="monitoringStationSearchFields" :table-columns="monitoringStationColumns"
           :form-fields="monitoringStationFormFields" :api-functions="monitoringStationApi"
@@ -73,10 +82,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import FacilityManagement from '@/components/Engineering/FacilityManagement.vue'
 import * as engineeringApi from '@/api/engineering-service'
+import { getVisibleEngineeringServiceTabs } from '@/api/engineering-service-tab'
 import { useDictionary } from '@/composables/useDictionary'
 import { useFacilityTypes } from '@/composables/useFacilityTypes'
 import PageHeader from '@/components/Common/PageHeader.vue'
@@ -91,20 +101,25 @@ import TabSection from '@/components/Common/TabSection.vue'
 const { getDictData } = useDictionary()
 const { getFacilityTypeOptions } = useFacilityTypes()
 
-// 当前激活的标签页
-const activeTab = ref('monitoring-stations')
+// 当前激活的标签页（初始值为空，由数据动态设置）
+const activeTab = ref('')
 
-// 标签选项配置
-const tabOptions = [
-  { name: 'monitoring-stations', label: '监测站点', icon: 'fa-map-marker' },
-  { name: 'pumping-stations', label: '泵站信息', icon: 'fa-tint' },
-  { name: 'reservoirs', label: '水库信息', icon: 'fa-database' },
-  { name: 'water-plants', label: '水厂信息', icon: 'fa-building' },
-  { name: 'villages', label: '村庄信息', icon: 'fa-home' },
-  { name: 'floating-boats', label: '浮船信息', icon: 'fa-ship' },
-  { name: 'disinfection-materials', label: '消毒药材', icon: 'fa-flask' },
-  { name: 'pipelines', label: '管道信息', icon: 'fa-exchange' }
-]
+// 工程服务标签配置
+const engineeringServiceTabs = ref([])
+const tabsLoading = ref(false)
+
+// 标签选项配置（从API获取）
+const tabOptions = computed(() => {
+  const visibleTabs = engineeringServiceTabs.value
+    .filter((tab) => tab.isVisible === "1")
+    .map((config) => ({
+      name: config.tabKey,
+      label: config.tabName,
+      icon: config.tabIcon,
+    }))
+
+  return visibleTabs
+})
 
 // 各个设施类型的引用
 const pumpingStationRef = ref(null)
@@ -1147,10 +1162,73 @@ const disinfectionMaterialApi = {
  * ----------------------------------------
  */
 // 组件挂载后执行
-onMounted(() => {
-  // 初始化数据
+onMounted(async () => {
+  // 加载工程服务标签配置
+  await loadEngineeringServiceTabs()
+  // 初始化下拉选项数据
   loadSelectOptions()
+  // 检查当前激活的tab是否有效
+  validateActiveTab()
 })
+
+// 监听标签配置变化
+watch(
+  () => engineeringServiceTabs.value,
+  (newTabs) => {
+    const visibleCount = newTabs.filter(tab => tab.isVisible === "1").length
+    console.log('标签配置更新:', visibleCount, '个可见标签')
+    // 当tab配置发生变化时，重新验证和设置激活标签
+    validateActiveTab()
+  },
+  { deep: true }
+)
+
+// 验证当前激活的标签是否有效
+const validateActiveTab = () => {
+  const availableTabs = tabOptions.value
+  const activeTabExists = availableTabs.some(tab => tab.name === activeTab.value)
+
+  // 如果没有激活的tab或当前tab不存在，设置为第一个可用的tab
+  if ((!activeTab.value || !activeTabExists) && availableTabs.length > 0) {
+    activeTab.value = availableTabs[0].name
+    console.log('设置默认激活标签:', activeTab.value)
+  } else if (availableTabs.length === 0) {
+    // 如果没有可用的tabs，清空激活标签
+    activeTab.value = ''
+    console.log('没有可用的标签配置')
+  }
+}
+
+/**
+ * ----------------------------------------
+ * Tab配置动态加载
+ * ----------------------------------------
+ */
+// 加载工程服务标签配置
+const loadEngineeringServiceTabs = async () => {
+  if (tabsLoading.value) return
+
+  try {
+    tabsLoading.value = true
+    const response = await getVisibleEngineeringServiceTabs()
+
+    // 响应拦截器已处理成功响应，直接检查是否为有效数组
+    if (Array.isArray(response) && response.length >= 0) {
+      engineeringServiceTabs.value = response
+      console.log('成功加载工程服务标签配置:', response.length, '个标签')
+    } else {
+      console.warn('获取工程服务标签配置失败，响应格式不正确:', response)
+      // 如果获取失败，清空配置以使用默认配置
+      engineeringServiceTabs.value = []
+    }
+  } catch (error) {
+    console.error('加载工程服务标签配置失败:', error)
+    // 发生错误时清空配置以使用默认配置
+    engineeringServiceTabs.value = []
+  } finally {
+    tabsLoading.value = false
+  }
+}
 
 // 加载下拉选项数据
 const loadSelectOptions = async () => {
@@ -1494,6 +1572,33 @@ const getValidationRules = () => {
 
   .content-section {
     padding: var(--spacing-md);
+  }
+
+  .empty-state {
+    @include flex-center;
+    min-height: 400px;
+    padding: var(--spacing-xxl);
+
+    .empty-content {
+      text-align: center;
+      color: var(--text-secondary);
+
+      .fa {
+        font-size: 48px;
+        margin-bottom: var(--spacing-lg);
+        opacity: var(--opacity-medium);
+      }
+
+      p {
+        margin: var(--spacing-sm) 0;
+        font-size: var(--font-size-base);
+
+        &.empty-tip {
+          font-size: var(--font-size-sm);
+          opacity: var(--opacity-medium);
+        }
+      }
+    }
   }
 
   @include respond-to(md) {

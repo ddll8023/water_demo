@@ -218,7 +218,7 @@ watch(() => props.modelValue, (newValue) => {
       width: 40px;
       height: var(--spacing-large);
       background-color: var(--border-color);
-      border-radius: var(--border-radius-round);
+      border-radius: var(--border-radius-feature-tag);
       transition: var(--transition-base);
 
       .switch-thumb {
@@ -230,7 +230,7 @@ watch(() => props.modelValue, (newValue) => {
         background-color: var(--bg-primary);
         border-radius: var(--border-radius-round);
         transition: var(--transition-base);
-        box-shadow: var(--shadow-light);
+        box-shadow: var(--box-shadow-light);
       }
     }
 

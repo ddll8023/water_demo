@@ -258,3 +258,39 @@ VALUES
 ((SELECT id FROM monitoring_stations WHERE name = '杨树堰水库-雨情监测 (新站)' LIMIT 1), '2025-07-06 00:00:00', 2.8, 2.8, 50.4, 1, 'AUTO', 'ULTRASONIC', NULL, NOW(), NOW()),
 ((SELECT id FROM monitoring_stations WHERE name = '杨树堰水库-雨情监测 (新站)' LIMIT 1), '2025-07-06 01:00:00', 1.5, 1.5, 51.9, 1, 'AUTO', 'ULTRASONIC', NULL, NOW(), NOW()),
 ((SELECT id FROM monitoring_stations WHERE name = '杨树堰水库-雨情监测 (新站)' LIMIT 1), '2025-07-06 02:00:00', 0.8, 0.8, 52.7, 1, 'AUTO', 'ULTRASONIC', NULL, NOW(), NOW());
+
+-- ======================== 工程信息服务Tab配置初始数据 ========================
+
+-- 工程信息服务Tab配置初始数据
+-- 对应EngineeringService.vue中现有的8个tab
+INSERT INTO engineering_service_tabs (tab_key, tab_name, tab_icon, sort_order, is_visible, created_at, updated_at)
+SELECT 'monitoring-stations', '监测站点', 'fa-map-marker', 1, '1', NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM engineering_service_tabs WHERE tab_key = 'monitoring-stations');
+
+INSERT INTO engineering_service_tabs (tab_key, tab_name, tab_icon, sort_order, is_visible, created_at, updated_at)
+SELECT 'pumping-stations', '泵站信息', 'fa-tint', 2, '1', NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM engineering_service_tabs WHERE tab_key = 'pumping-stations');
+
+INSERT INTO engineering_service_tabs (tab_key, tab_name, tab_icon, sort_order, is_visible, created_at, updated_at)
+SELECT 'reservoirs', '水库信息', 'fa-database', 3, '1', NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM engineering_service_tabs WHERE tab_key = 'reservoirs');
+
+INSERT INTO engineering_service_tabs (tab_key, tab_name, tab_icon, sort_order, is_visible, created_at, updated_at)
+SELECT 'water-plants', '水厂信息', 'fa-building', 4, '1', NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM engineering_service_tabs WHERE tab_key = 'water-plants');
+
+INSERT INTO engineering_service_tabs (tab_key, tab_name, tab_icon, sort_order, is_visible, created_at, updated_at)
+SELECT 'villages', '村庄信息', 'fa-home', 5, '1', NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM engineering_service_tabs WHERE tab_key = 'villages');
+
+INSERT INTO engineering_service_tabs (tab_key, tab_name, tab_icon, sort_order, is_visible, created_at, updated_at)
+SELECT 'floating-boats', '浮船信息', 'fa-ship', 6, '1', NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM engineering_service_tabs WHERE tab_key = 'floating-boats');
+
+INSERT INTO engineering_service_tabs (tab_key, tab_name, tab_icon, sort_order, is_visible, created_at, updated_at)
+SELECT 'disinfection-materials', '消毒药材', 'fa-flask', 7, '1', NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM engineering_service_tabs WHERE tab_key = 'disinfection-materials');
+
+INSERT INTO engineering_service_tabs (tab_key, tab_name, tab_icon, sort_order, is_visible, created_at, updated_at)
+SELECT 'pipelines', '管道信息', 'fa-exchange', 8, '1', NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM engineering_service_tabs WHERE tab_key = 'pipelines');

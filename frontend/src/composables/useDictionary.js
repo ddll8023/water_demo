@@ -111,6 +111,8 @@ export function useDictionary() {
 		// 方法
 		getDictData,
 		getDictLabel,
+		// 导出缓存供外部同步访问
+		dictCache,
 	};
 }
 

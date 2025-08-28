@@ -196,6 +196,22 @@ CREATE TABLE IF NOT EXISTS `dict_data` (
   KEY `idx_dict_data_sort_order` (`sort_order`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='字典数据表';
 
+-- engineering_service_tabs (工程信息服务Tab配置表)
+CREATE TABLE IF NOT EXISTS `engineering_service_tabs` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `tab_key` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Tab标识键',
+  `tab_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Tab显示名称',
+  `tab_icon` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Tab图标类名',
+  `sort_order` int DEFAULT 0 COMMENT '排序顺序',
+  `is_visible` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT '1' COMMENT '是否显示',
+  `created_at` datetime NOT NULL COMMENT '创建时间',
+  `updated_at` datetime NOT NULL COMMENT '更新时间',
+  `deleted_at` datetime DEFAULT NULL COMMENT '软删除时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_tab_key` (`tab_key`),
+  KEY `idx_engineering_tabs_sort_order` (`sort_order`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='工程信息服务Tab配置表';
+
 -- --------------------------------------------------------------------------------
 -- 模块: 工程信息服务 (新增功能)
 -- --------------------------------------------------------------------------------

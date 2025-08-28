@@ -28,7 +28,7 @@
     <select id="selectTaskPage" resultMap="InspectionTaskResponseDTOMap">
         SELECT 
             t.*, 
-            p.full_name AS assignee_name,
+            p.name AS assignee_name,
             COALESCE(dict_status.data_label, '未知') as status_text,
             COALESCE(dict_frequency.data_label, '未知') as frequency_text,
             /* 统一工程名称 */
@@ -67,7 +67,7 @@
         </if>
         <if test="keyword != null and keyword != ''">
             AND (
-                p.full_name LIKE CONCAT('%', #{keyword}, '%')
+                p.name LIKE CONCAT('%', #{keyword}, '%')
                 OR (
                     CASE 
                         WHEN t.facility_type = 'pumping_station' THEN (SELECT name FROM pumping_stations ps WHERE ps.id = t.facility_id AND ps.deleted_at IS NULL)
@@ -109,7 +109,7 @@
 
     <select id="selectTaskById" resultMap="InspectionTaskResponseDTOMap">
         SELECT t.*, 
-               p.full_name AS assignee_name,
+               p.name AS assignee_name,
                COALESCE(dict_status.data_label, '未知') as status_text,
                COALESCE(dict_frequency.data_label, '未知') as frequency_text
         FROM inspection_tasks t

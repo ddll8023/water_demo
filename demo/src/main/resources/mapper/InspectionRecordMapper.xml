@@ -22,7 +22,7 @@
     </resultMap>
 
     <sql id="RecordBaseSelect">
-        SELECT r.*, p.full_name AS inspector_name,
+        SELECT r.*, p.name AS inspector_name,
                dict_data.data_label as device_status_name,
                (
                    SELECT ia.file_path

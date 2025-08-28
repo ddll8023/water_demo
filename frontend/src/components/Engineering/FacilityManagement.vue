@@ -114,7 +114,7 @@ const props = defineProps({
 const emit = defineEmits(['refresh'])
 
 // 字典功能
-const { getDictData } = useDictionary()
+const { getDictData, dictCache } = useDictionary()
 
 // 响应式数据
 const loading = ref(false)
@@ -446,19 +446,30 @@ const handleSubmit = async () => {
 // 辅助工具模块
 // ===========================
 /**
- * 获取字典标签
+ * 获取字典标签 (同步版本)
+ * 直接从缓存中获取字典数据，避免异步调用
  */
 const getDictLabelSync = (dictType, value) => {
   if (!value || !dictType) {
     return value || ''
   }
 
-  // 直接从字典组合函数获取数据
-  const dictData = getDictData(dictType)
-  if (!dictData) return value
-
-  const item = dictData.find(item => String(item.value) === String(value))
-  return item ? item.label : value
+  try {
+    // 直接访问字典缓存
+    const cached = dictCache[dictType]
+    
+    // 检查缓存是否存在且有数据
+    if (cached && cached.data && Array.isArray(cached.data)) {
+      const item = cached.data.find(item => String(item.value) === String(value))
+      return item ? item.label : value
+    }
+    
+    // 如果缓存中没有数据，返回原值
+    return value
+  } catch (error) {
+    console.warn('获取字典标签失败:', error)
+    return value || ''
+  }
 }
 </script>
 

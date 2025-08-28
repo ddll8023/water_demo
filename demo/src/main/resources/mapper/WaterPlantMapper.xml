@@ -31,7 +31,7 @@
     <select id="selectWaterPlantPage" resultMap="WaterPlantResponseDTOMap">
         SELECT wp.*,
                d.name as department_name,
-               p.full_name as manager_name,
+               p.name as manager_name,
                p.phone as manager_phone
         FROM water_plants wp
         LEFT JOIN departments d ON wp.department_id = d.id AND d.deleted_at IS NULL
@@ -47,7 +47,7 @@
     <select id="selectWaterPlantById" resultMap="WaterPlantResponseDTOMap">
         SELECT wp.*,
                d.name as department_name,
-               p.full_name as manager_name,
+               p.name as manager_name,
                p.phone as manager_phone
         FROM water_plants wp
         LEFT JOIN departments d ON wp.department_id = d.id AND d.deleted_at IS NULL

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.EngineeringServiceTabMapper">
+
+    <!-- 分页查询Tab配置列表 -->
+    <select id="selectTabPageWithDetails" resultType="com.example.demo.pojo.entity.system.EngineeringServiceTab">
+        SELECT *
+        FROM engineering_service_tabs
+        WHERE deleted_at IS NULL
+        <if test="tabKey != null and tabKey != ''">
+            AND tab_key = #{tabKey}
+        </if>
+        <if test="tabName != null and tabName != ''">
+            AND tab_name LIKE CONCAT('%', #{tabName}, '%')
+        </if>
+        <if test="isVisible != null and isVisible != ''">
+            AND is_visible = #{isVisible}
+        </if>
+        <choose>
+            <when test="sortBy != null and sortBy == 'createdAt'">
+                ORDER BY created_at
+                <if test="sortDirection != null and sortDirection == 'DESC'">DESC</if>
+                <if test="sortDirection == null or sortDirection == 'ASC'">ASC</if>
+            </when>
+            <when test="sortBy != null and sortBy == 'tabName'">
+                ORDER BY tab_name
+                <if test="sortDirection != null and sortDirection == 'DESC'">DESC</if>
+                <if test="sortDirection == null or sortDirection == 'ASC'">ASC</if>
+            </when>
+            <otherwise>
+                ORDER BY sort_order ASC, id ASC
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 根据ID查询Tab配置 -->
+    <select id="selectById" resultType="com.example.demo.pojo.entity.system.EngineeringServiceTab">
+        SELECT *
+        FROM engineering_service_tabs
+        WHERE id = #{id}
+          AND deleted_at IS NULL
+    </select>
+
+    <!-- 根据tabKey查询Tab配置 -->
+    <select id="selectByTabKey" resultType="com.example.demo.pojo.entity.system.EngineeringServiceTab">
+        SELECT *
+        FROM engineering_service_tabs
+        WHERE tab_key = #{tabKey}
+          AND deleted_at IS NULL
+    </select>
+
+    <!-- 检查tabKey是否已存在 -->
+    <select id="countByTabKey" resultType="int">
+        SELECT COUNT(1)
+        FROM engineering_service_tabs
+        WHERE tab_key = #{tabKey}
+          AND deleted_at IS NULL
+    </select>
+
+    <!-- 插入Tab配置记录 -->
+    <insert id="insertTab" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO engineering_service_tabs(tab_key, tab_name, tab_icon, sort_order, is_visible, created_at, updated_at)
+        VALUES (#{tabKey}, #{tabName}, #{tabIcon}, #{sortOrder}, #{isVisible}, #{createdAt}, #{updatedAt})
+    </insert>
+
+    <!-- 根据ID更新Tab配置 -->
+    <update id="updateById">
+        UPDATE engineering_service_tabs
+        SET tab_name = #{tabName},
+            tab_icon = #{tabIcon},
+            sort_order = #{sortOrder},
+            is_visible = #{isVisible},
+            updated_at = #{updatedAt}
+        WHERE id = #{id}
+          AND deleted_at IS NULL
+    </update>
+
+    <!-- 根据ID删除Tab配置（软删除） -->
+    <update id="deleteById">
+        UPDATE engineering_service_tabs
+        SET deleted_at = NOW()
+        WHERE id = #{id}
+          AND deleted_at IS NULL
+    </update>
+
+    <!-- 获取所有可见的Tab配置 -->
+    <select id="selectVisibleTabs" resultType="com.example.demo.pojo.entity.system.EngineeringServiceTab">
+        SELECT *
+        FROM engineering_service_tabs
+        WHERE is_visible = '1'
+          AND deleted_at IS NULL
+        ORDER BY sort_order ASC, id ASC
+    </select>
+
+    <!-- 批量更新Tab配置的排序顺序 -->
+    <update id="batchUpdateSortOrder">
+        UPDATE engineering_service_tabs
+        SET sort_order = CASE id
+        <foreach collection="tabs" item="tab">
+            WHEN #{tab.id} THEN #{tab.sortOrder}
+        </foreach>
+        END,
+        updated_at = NOW()
+        WHERE id IN
+        <foreach collection="tabs" item="tab" open="(" separator="," close=")">
+            #{tab.id}
+        </foreach>
+        AND deleted_at IS NULL
+    </update>
+
+    <!-- 获取最大排序顺序值 -->
+    <select id="selectMaxSortOrder" resultType="java.lang.Integer">
+        SELECT IFNULL(MAX(sort_order), 0)
+        FROM engineering_service_tabs
+        WHERE deleted_at IS NULL
+    </select>
+
+    <!-- 根据tabKey更新显示状态 -->
+    <update id="updateVisibilityByTabKey">
+        UPDATE engineering_service_tabs
+        SET is_visible = #{isVisible}, updated_at = NOW()
+        WHERE tab_key = #{tabKey}
+          AND deleted_at IS NULL
+    </update>
+
+</mapper> 
