@@ -274,8 +274,8 @@ import CustomCard from '@/components/Common/CustomCard.vue'
 import {
   getDepartmentList,
   deleteDepartment,
-  createDepartment,
-  updateDepartment
+  createDepartment
+
 } from '@/api/department'
 import {
   getPersonnelList,
@@ -283,7 +283,8 @@ import {
   updatePersonnel,
   deletePersonnel,
   batchDeletePersonnel,
-  getDepartmentTree
+  getDepartmentTree,
+  updateDepartment
 } from '@/api/management-info'
 import { getPositionList } from '@/api/position'
 import { formatDateTime, formatLocalTimeForAPI } from '@/utils/shared/common'
@@ -537,7 +538,7 @@ const personnelSearchFields = [
 
 // 部门人员表格列配置
 const personnelColumns = [
-  { prop: 'fullName', label: '姓名', width: 120 },
+  { prop: 'name', label: '姓名', width: 120 },
   { prop: 'positionName', label: '职责', width: 120 },
   { prop: 'phone', label: '联系方式', width: 140 },
   { prop: 'hireDate', label: '入职日期', width: 120 },
@@ -560,7 +561,7 @@ const subDepartmentColumns = [
 
 // 全局人员表格列配置
 const allPersonnelColumns = [
-  { prop: 'fullName', label: '姓名', width: 120 },
+  { prop: 'name', label: '姓名', width: 120 },
   { prop: 'positionName', label: '职责', width: 120 },
   { prop: 'phone', label: '联系方式', width: 140 },
   { prop: 'hireDate', label: '入职日期', width: 120 },
@@ -570,7 +571,7 @@ const allPersonnelColumns = [
 // 人员表单配置项
 const personnelFormItems = [
   {
-    prop: 'fullName',
+    prop: 'name',
     label: '姓名',
     type: 'input',
     placeholder: '请输入姓名',
@@ -646,7 +647,7 @@ const validatePhone = (rule, value, callback) => {
 
 // 人员表单验证规则
 const personnelFormRules = {
-  fullName: [
+  name: [
     { required: true, message: '请输入姓名', trigger: 'blur' },
     { max: 100, message: '姓名长度不能超过100个字符', trigger: 'blur' }
   ],
@@ -881,7 +882,7 @@ const handleAddPersonnel = async () => {
 
   isEditPersonnel.value = false
   currentPersonnel.value = {
-    fullName: '',
+    name: '',
     phone: '',
     departmentId: null,
     positionId: null,
@@ -900,7 +901,7 @@ const handleEditPersonnel = async (row) => {
   isEditPersonnel.value = true
   currentPersonnel.value = {
     id: row.id,
-    fullName: row.fullName,
+    name: row.name,
     phone: row.phone,
     departmentId: row.departmentId,
     positionId: row.positionId,
@@ -922,7 +923,7 @@ const handleSavePersonnel = async () => {
     if (isEditPersonnel.value) {
       // 编辑人员
       await updatePersonnel(currentPersonnel.value.id, {
-        fullName: currentPersonnel.value.fullName,
+        name: currentPersonnel.value.name,
         phone: currentPersonnel.value.phone,
         departmentId: currentPersonnel.value.departmentId,
         positionId: currentPersonnel.value.positionId,
@@ -933,7 +934,7 @@ const handleSavePersonnel = async () => {
     } else {
       // 新增人员
       await createPersonnel({
-        fullName: currentPersonnel.value.fullName,
+        name: currentPersonnel.value.name,
         phone: currentPersonnel.value.phone,
         departmentId: currentPersonnel.value.departmentId,
         positionId: currentPersonnel.value.positionId,
@@ -991,7 +992,7 @@ const refreshAfterDelete = async () => {
 // 人员删除处理
 const handleDeletePersonnel = async (row) => {
   try {
-    const confirmed = await showDeleteConfirm(`确定要删除人员"${row.fullName}"吗？`)
+    const confirmed = await showDeleteConfirm(`确定要删除人员"${row.name}"吗？`)
     if (!confirmed) return
 
     await deletePersonnel(row.id)

@@ -145,7 +145,7 @@ INSERT INTO departments (name, duty, contact, region_id, is_active, created_at, 
 SELECT '测试部门', '负责水务管理工作', '027-12345678', 1, '1', NOW(), NOW()
 WHERE NOT EXISTS (SELECT 1 FROM departments WHERE name = '测试部门');
 
-INSERT INTO personnel (full_name, phone, email, position_id, department_id, employee_no, hire_date, created_at, updated_at)
+INSERT INTO personnel (name, phone, email, position_id, department_id, employee_no, hire_date, created_at, updated_at)
 SELECT '测试1', '13545627895', 'user1@example.com',
        (SELECT id FROM positions WHERE name = '业务管理员' LIMIT 1),
        (SELECT id FROM departments WHERE name = '测试部门' LIMIT 1),

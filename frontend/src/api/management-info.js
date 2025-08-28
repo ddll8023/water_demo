@@ -24,7 +24,7 @@ export function getPersonnelList(params) {
 /**
  * 创建人员信息
  * @param {Object} data 人员信息数据
- * @param {string} data.fullName 姓名
+ * @param {string} data.name 姓名
  * @param {string} data.phone 联系电话
  * @param {string} data.email 电子邮箱（可选）
  * @param {number} data.positionId 岗位ID
@@ -45,7 +45,7 @@ export function createPersonnel(data) {
  * 更新人员信息
  * @param {number} id 人员ID
  * @param {Object} data 人员信息数据
- * @param {string} data.fullName 姓名
+ * @param {string} data.name 姓名
  * @param {string} data.phone 联系电话
  * @param {string} data.email 电子邮箱（可选）
  * @param {number} data.positionId 岗位ID

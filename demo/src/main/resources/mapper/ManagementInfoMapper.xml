@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.demo.mapper.ManagementInfoMapper">
-    
+
     <!-- 部门结果映射 -->
     <resultMap id="DepartmentMap" type="com.example.demo.pojo.entity.system.Department">
         <id property="id" column="id"/>
@@ -15,11 +15,11 @@
         <result property="updatedAt" column="updated_at"/>
         <result property="deletedAt" column="deleted_at"/>
     </resultMap>
-    
+
     <!-- 人员结果映射 -->
     <resultMap id="PersonnelMap" type="com.example.demo.pojo.entity.system.Personnel">
         <id property="id" column="id"/>
-        <result property="fullName" column="full_name"/>
+        <result property="name" column="name"/>
         <result property="phone" column="phone"/>
         <result property="email" column="email"/>
         <result property="positionId" column="position_id"/>
@@ -38,212 +38,180 @@
     </resultMap>
 
     <!-- 获取部门树形结构 -->
-    <select id="selectDepartmentTree" resultMap="DepartmentMap">
-        SELECT departments.id,
-               departments.name,
-               departments.parent_id,
-               departments.duty,
-               departments.contact,
-               departments.region_id,
-               departments.is_active,
-               departments.created_at,
-               departments.updated_at,
-               departments.deleted_at
+    <select id="selectDepartmentTree" resultType="com.example.demo.pojo.entity.system.Department">
+        SELECT *
         FROM departments
-        WHERE departments.deleted_at IS NULL
-        ORDER BY departments.parent_id ASC, departments.created_at ASC
+        WHERE deleted_at IS NULL
+        ORDER BY parent_id ASC, created_at ASC
     </select>
-    
+
     <!-- 根据ID查询部门详情（基础信息） -->
-    <select id="selectDepartmentWithDetails" resultMap="DepartmentMap">
-        SELECT departments.id,
-               departments.name,
-               departments.parent_id,
-               departments.duty,
-               departments.contact,
-               departments.region_id,
-               departments.is_active,
-               departments.created_at,
-               departments.updated_at,
-               departments.deleted_at
+    <select id="selectDepartmentWithDetails" resultType="com.example.demo.pojo.entity.system.Department">
+        SELECT *
         FROM departments
-        WHERE departments.id = #{id} AND departments.deleted_at IS NULL
+        WHERE id = #{id}
+          AND deleted_at IS NULL
     </select>
 
     <!-- 查询父部门名称 -->
     <select id="selectParentNameByDepartmentId" resultType="java.lang.String">
         SELECT pd.name
         FROM departments d
-        LEFT JOIN departments pd ON d.parent_id = pd.id
-        WHERE d.id = #{departmentId} AND pd.deleted_at IS NULL
+                 LEFT JOIN departments pd ON d.parent_id = pd.id
+        WHERE d.id = #{departmentId}
+          AND pd.deleted_at IS NULL
     </select>
 
     <!-- 查询区域名称 -->
     <select id="selectRegionNameByDepartmentId" resultType="java.lang.String">
         SELECT r.name
         FROM departments d
-        LEFT JOIN regions r ON d.region_id = r.id
+                 LEFT JOIN regions r ON d.region_id = r.id
         WHERE d.id = #{departmentId}
     </select>
-    
+
     <!-- 获取子部门列表 -->
     <select id="selectChildDepartments" resultMap="DepartmentMap">
-        SELECT * FROM departments
-        WHERE parent_id = #{parentId} AND deleted_at IS NULL
+        SELECT *
+        FROM departments
+        WHERE parent_id = #{parentId}
+          AND deleted_at IS NULL
         ORDER BY created_at ASC
     </select>
-    
+
     <!-- 分页查询人员信息列表 -->
-    <select id="selectPersonnelPage" resultMap="PersonnelMap">
-        SELECT 
-            p.*,
-            d.name as department_name,
-            pos.name as position_name,
-            u.username as username
-        FROM 
-            personnel p
-        LEFT JOIN 
-            departments d ON p.department_id = d.id
-        LEFT JOIN 
-            positions pos ON p.position_id = pos.id
-        LEFT JOIN 
-            users u ON p.user_id = u.id
-        WHERE 
-            p.deleted_at IS NULL
-            <if test="name != null and name != ''">
-                AND p.full_name LIKE CONCAT('%', #{name}, '%')
-            </if>
-            <if test="departmentId != null">
-                AND p.department_id = #{departmentId}
-            </if>
-            <if test="positionId != null">
-                AND p.position_id = #{positionId}
-            </if>
-        ORDER BY 
-            <choose>
-                <when test="sort != null and sort != ''">
-                    ${sort}
-                </when>
-                <otherwise>
-                    p.created_at DESC
-                </otherwise>
-            </choose>
-        LIMIT #{offset}, #{limit}
+    <select id="selectPersonnelPage" resultType="com.example.demo.pojo.entity.system.Personnel">
+        SELECT * FROM personnel
+        WHERE deleted_at IS NULL
+        <if test="name != null and name != ''">
+            AND name LIKE CONCAT('%', #{name}, '%')
+        </if>
+        <if test="departmentId != null">
+            AND department_id = #{departmentId}
+        </if>
+        <if test="positionId != null">
+            AND position_id = #{positionId}
+        </if>
+        ORDER BY created_at DESC
     </select>
-    
+
     <!-- 查询符合条件的人员记录总数 -->
     <select id="countPersonnel" resultType="int">
-        SELECT 
-            COUNT(1)
-        FROM 
-            personnel p
-        WHERE 
-            p.deleted_at IS NULL
-            <if test="name != null and name != ''">
-                AND p.full_name LIKE CONCAT('%', #{name}, '%')
-            </if>
-            <if test="departmentId != null">
-                AND p.department_id = #{departmentId}
-            </if>
-            <if test="positionId != null">
-                AND p.position_id = #{positionId}
-            </if>
+        SELECT
+        COUNT(1)
+        FROM
+        personnel p
+        WHERE
+        p.deleted_at IS NULL
+        <if test="name != null and name != ''">
+            AND p.name LIKE CONCAT('%', #{name}, '%')
+        </if>
+        <if test="departmentId != null">
+            AND p.department_id = #{departmentId}
+        </if>
+        <if test="positionId != null">
+            AND p.position_id = #{positionId}
+        </if>
     </select>
-    
+
     <!-- 插入人员记录 -->
     <insert id="insertPersonnel" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO personnel (
-            full_name, 
-            phone, 
-            email, 
-            position_id, 
-            department_id, 
-            user_id, 
-            employee_no, 
-            hire_date, 
-            work_responsibilities,
-            created_at,
-            updated_at
-        ) VALUES (
-            #{fullName},
-            #{phone},
-            #{email},
-            #{positionId},
-            #{departmentId},
-            #{userId},
-            #{employeeNo},
-            #{hireDate},
-            #{workResponsibilities},
-            NOW(),
-            NOW()
-        )
+        INSERT INTO personnel (name,
+                               phone,
+                               email,
+                               position_id,
+                               department_id,
+                               user_id,
+                               employee_no,
+                               hire_date,
+                               work_responsibilities,
+                               created_at,
+                               updated_at)
+        VALUES (#{name},
+                #{phone},
+                #{email},
+                #{positionId},
+                #{departmentId},
+                #{userId},
+                #{employeeNo},
+                #{hireDate},
+                #{workResponsibilities},
+                #{createdAt},
+                #{updatedAt})
     </insert>
-    
+
     <!-- 更新人员记录 -->
     <update id="updatePersonnel">
         UPDATE personnel
-        SET 
-            <if test="fullName != null">full_name = #{fullName},</if>
-            <if test="phone != null">phone = #{phone},</if>
-            <if test="email != null">email = #{email},</if>
-            <if test="positionId != null">position_id = #{positionId},</if>
-            <if test="departmentId != null">department_id = #{departmentId},</if>
-            <if test="userId != null">user_id = #{userId},</if>
-            <if test="employeeNo != null">employee_no = #{employeeNo},</if>
-            <if test="hireDate != null">hire_date = #{hireDate},</if>
-            <if test="workResponsibilities != null">work_responsibilities = #{workResponsibilities},</if>
-            updated_at = NOW()
-        WHERE 
-            id = #{id} AND deleted_at IS NULL
+        SET
+        <if test="name != null">name = #{name},</if>
+        <if test="phone != null">phone = #{phone},</if>
+        <if test="email != null">email = #{email},</if>
+        <if test="positionId != null">position_id = #{positionId},</if>
+        <if test="departmentId != null">department_id = #{departmentId},</if>
+        <if test="userId != null">user_id = #{userId},</if>
+        <if test="employeeNo != null">employee_no = #{employeeNo},</if>
+        <if test="hireDate != null">hire_date = #{hireDate},</if>
+        <if test="workResponsibilities != null">work_responsibilities = #{workResponsibilities},</if>
+        <if test="updatedAt != null">updated_at = #{updatedAt}</if>
+        WHERE
+        id = #{id} AND deleted_at IS NULL
     </update>
-    
+
     <!-- 根据ID查询人员信息 -->
-    <select id="selectPersonnelById" resultMap="PersonnelMap">
-        SELECT 
-            p.*,
-            d.name as department_name,
-            pos.name as position_name,
-            u.username as username
-        FROM 
-            personnel p
-        LEFT JOIN 
-            departments d ON p.department_id = d.id
-        LEFT JOIN 
-            positions pos ON p.position_id = pos.id
-        LEFT JOIN 
-            users u ON p.user_id = u.id
-        WHERE 
-            p.id = #{id} AND p.deleted_at IS NULL
+    <select id="selectPersonnelById" resultType="com.example.demo.pojo.entity.system.Personnel">
+        SELECT *
+        FROM personnel
+        WHERE id = #{id}
+          AND deleted_at IS NULL
     </select>
 
     <!-- 根据用户ID查询人员ID（用于绑定巡检记录inspector_id） -->
     <select id="selectPersonnelIdByUserId" resultType="long">
-        SELECT id FROM personnel WHERE user_id = #{userId} AND deleted_at IS NULL LIMIT 1
+        SELECT id
+        FROM personnel
+        WHERE user_id = #{userId}
+          AND deleted_at IS NULL
+        LIMIT 1
     </select>
-    
+
     <!-- 统计部门下的人员数量 -->
     <select id="countPersonnelByDepartmentId" resultType="int">
-        SELECT 
-            COUNT(1)
-        FROM 
-            personnel
-        WHERE 
-            department_id = #{departmentId} AND deleted_at IS NULL
+        SELECT COUNT(1)
+        FROM personnel
+        WHERE department_id = #{departmentId}
+          AND deleted_at IS NULL
     </select>
-    
+    <select id="selectDpartmentNameById" resultType="java.lang.String">
+        select name
+        from departments
+        where id = #{departmentId}
+    </select>
+    <select id="selectPositionNameById" resultType="java.lang.String">
+        select name
+        from positions
+        where id = #{positionId}
+    </select>
+    <select id="selectPersionnelByName" resultType="com.example.demo.pojo.entity.system.Personnel">
+        select *
+        from personnel
+        where name = #{name}
+          and deleted_at IS NULL
+    </select>
+
     <!-- 更新部门信息 -->
     <update id="updateDepartment">
         UPDATE departments
-        SET 
-            <if test="name != null">name = #{name},</if>
-            parent_id = #{parentId},
-            <if test="duty != null">duty = #{duty},</if>
-            <if test="contact != null">contact = #{contact},</if>
-            <if test="regionId != null">region_id = #{regionId},</if>
-            <if test="isActive != null">is_active = #{isActive},</if>
-            <if test="createdAt != null">created_at = #{createdAt},</if>
-            updated_at = NOW()
-        WHERE 
-            id = #{id} AND deleted_at IS NULL
+        SET
+        <if test="name != null">name = #{name},</if>
+        parent_id = #{parentId},
+        <if test="duty != null">duty = #{duty},</if>
+        <if test="contact != null">contact = #{contact},</if>
+        <if test="regionId != null">region_id = #{regionId},</if>
+        <if test="isActive != null">is_active = #{isActive},</if>
+        <if test="createdAt != null">created_at = #{createdAt},</if>
+        <if test="updatedAt != null">updated_at = #{updatedAt}</if>
+        WHERE
+        id = #{id} AND deleted_at IS NULL
     </update>
 </mapper> 

@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS `user_roles` (
 -- personnel (人员信息表)
 CREATE TABLE IF NOT EXISTS `personnel` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '人员 ID',
-  `full_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '姓名',
+  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '姓名',
   `phone` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '联系电话',
   `email` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '电子邮箱',
   `position_id` bigint DEFAULT NULL COMMENT '岗位 ID',

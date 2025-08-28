@@ -76,4 +76,13 @@ public class MessageConstant {
     public static final String ROLE_NAME_EMPTY = "角色名称不能为空";
     public static final String ROLE_HAS_USERS = "该角色下还有用户，无法删除";
 
+    // 人员相关常量
+    public static final String PERSONNEL_NAME_DUPLICATE = "人员已存在";
+    public static final String PERSONNEL_NOT_EXIST = "人员不存在";
+    public static final String PERSONNEL_NAME_EMPTY = "人员姓名不能为空";
+    public static final String PERSONNEL_NAME_MAX_LENGTH = "人员姓名长度不能超过100个字符";
+    public static final String PERSONNEL_PHONE_MAX_LENGTH = "人员联系电话长度不能超过50个字符";
+    public static final String PERSONNEL_EMAIL_MAX_LENGTH = "人员邮箱长度不能超过100个字符";
+    public static final String PERSONNEL_EMPLOYEE_NO_MAX_LENGTH = "人员工号长度不能超过50个字符";
+    public static final String PERSONNEL_HIRE_DATE_MAX_LENGTH = "人员入职日期长度不能超过100个字符";
 }

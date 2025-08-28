@@ -1,7 +1,9 @@
 package com.example.demo.mapper;
 
+import com.example.demo.pojo.DTO.management.PersonnelInfoQueryDTO;
 import com.example.demo.pojo.entity.system.Department;
 import com.example.demo.pojo.entity.system.Personnel;
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -24,13 +26,13 @@ public interface ManagementInfoMapper {
      * 返回完整的部门层级结构，用于展示组织架构图
      */
     List<Department> selectDepartmentTree();
-    
+
     /**
      * 根据ID查询部门详情（包含父部门名称）
      * 用于管理信息服务展示部门详细信息
      */
     Department selectDepartmentWithDetails(@Param("id") Long id);
-    
+
     /**
      * 获取子部门列表
      * 用于管理信息服务展示部门层级结构
@@ -46,72 +48,86 @@ public interface ManagementInfoMapper {
      * 查询区域名称
      */
     String selectRegionNameByDepartmentId(@Param("departmentId") Long departmentId);
-    
+
     /**
      * 更新部门信息
-     * 
+     *
      * @param department 部门信息
      * @return 影响的行数
      */
     int updateDepartment(Department department);
-    
+
     /**
      * 分页查询人员信息
-     * @param offset 偏移量
-     * @param limit 查询数量限制
-     * @param name 姓名关键词
-     * @param departmentId 部门ID
-     * @param positionId 岗位ID
-     * @param sort 排序条件
+     *
+     * @param personnelInfoQueryDTO 查询参数
      * @return 人员列表
      */
-    List<Personnel> selectPersonnelPage(@Param("offset") int offset,
-                                       @Param("limit") int limit,
-                                       @Param("name") String name,
-                                       @Param("departmentId") Long departmentId,
-                                       @Param("positionId") Long positionId,
-                                       @Param("sort") String sort);
-            
+    Page<Personnel> selectPersonnelPage(PersonnelInfoQueryDTO personnelInfoQueryDTO);
+
     /**
      * 查询符合条件的人员记录总数
-     * @param name 姓名关键词
+     *
+     * @param name         姓名关键词
      * @param departmentId 部门ID
-     * @param positionId 岗位ID
+     * @param positionId   岗位ID
      * @return 记录总数
      */
-    int countPersonnel(@Param("name") String name,
-                      @Param("departmentId") Long departmentId,
-                      @Param("positionId") Long positionId);
-            
+    int countPersonnel(@Param("name") String name, @Param("departmentId") Long departmentId, @Param("positionId") Long positionId);
+
     /**
      * 插入人员记录
-     * 
+     *
      * @param personnel 人员信息
      * @return 影响的行数
      */
     int insertPersonnel(Personnel personnel);
-    
+
     /**
      * 更新人员记录
-     * 
+     *
      * @param personnel 人员信息
      * @return 影响的行数
      */
     int updatePersonnel(Personnel personnel);
-    
+
     /**
      * 根据ID查询人员信息
-     * 
+     *
      * @param id 人员ID
      * @return 人员信息
      */
     Personnel selectPersonnelById(@Param("id") Long id);
-    
+
     /**
      * 统计部门下的人员数量
-     * 
+     *
      * @param departmentId 部门ID
      * @return 人员数量
      */
     int countPersonnelByDepartmentId(@Param("departmentId") Long departmentId);
-} 
+
+    /**
+     * 根据部门ID查询部门名称
+     *
+     * @param departmentId 部门ID
+     * @return 部门名称
+     */
+    String selectDpartmentNameById(@Param("departmentId") Long departmentId);
+
+    /**
+     * 根据岗位ID查询岗位名称
+     *
+     * @param positionId 岗位ID
+     * @return 岗位名称
+     */
+    String selectPositionNameById(@Param("positionId") Long positionId);
+
+    /**
+     * 根据人员姓名查询人员信息
+     *
+     * @param name 人员姓名
+     * @return 人员信息
+     */
+    Personnel selectPersionnelByName(@Param("name") String name);
+}
