@@ -1,4 +1,6 @@
-package com.example.demo.exception;
+package com.example.demo.exception.system;
+
+import com.example.demo.exception.BaseException;
 
 /**
  * 父部门不存在异常

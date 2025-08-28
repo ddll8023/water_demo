@@ -3,7 +3,7 @@ package com.example.demo.service;
 import com.example.demo.common.PageResult;
 import com.example.demo.constant.CommonConstant;
 import com.example.demo.constant.MessageConstant;
-import com.example.demo.exception.*;
+import com.example.demo.exception.system.*;
 import com.example.demo.mapper.DictionaryMapper;
 import com.example.demo.pojo.DTO.system.*;
 import com.example.demo.pojo.VO.DictDataVO;

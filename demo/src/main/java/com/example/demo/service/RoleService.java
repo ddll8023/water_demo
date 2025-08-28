@@ -2,9 +2,9 @@ package com.example.demo.service;
 
 import com.example.demo.common.PageResult;
 import com.example.demo.constant.MessageConstant;
-import com.example.demo.exception.RoleAlreadyExistException;
-import com.example.demo.exception.RoleHasUsersException;
-import com.example.demo.exception.RoleNotExistException;
+import com.example.demo.exception.system.RoleAlreadyExistException;
+import com.example.demo.exception.system.RoleHasUsersException;
+import com.example.demo.exception.system.RoleNotExistException;
 import com.example.demo.mapper.RoleMapper;
 import com.example.demo.pojo.DTO.system.RoleCreateDTO;
 import com.example.demo.pojo.DTO.system.RoleQueryDTO;

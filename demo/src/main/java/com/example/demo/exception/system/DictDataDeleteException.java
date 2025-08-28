@@ -1,4 +1,6 @@
-package com.example.demo.exception;
+package com.example.demo.exception.system;
+
+import com.example.demo.exception.BaseException;
 
 /**
  * 字典数据删除异常

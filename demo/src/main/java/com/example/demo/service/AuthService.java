@@ -2,18 +2,17 @@ package com.example.demo.service;
 
 import com.example.demo.constant.CommonConstant;
 import com.example.demo.constant.MessageConstant;
-import com.example.demo.exception.AccountNotExistException;
+import com.example.demo.exception.system.AccountNotExistException;
 import com.example.demo.exception.BaseException;
-import com.example.demo.exception.PasswordErrorException;
-import com.example.demo.exception.TokenInvalidException;
-import com.example.demo.exception.UserDisabledException;
+import com.example.demo.exception.system.PasswordErrorException;
+import com.example.demo.exception.system.TokenInvalidException;
+import com.example.demo.exception.system.UserDisabledException;
 import com.example.demo.mapper.RoleMapper;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.pojo.DTO.auth.LoginDTO;
 
 import com.example.demo.pojo.VO.UserInfoVO;
 import com.example.demo.pojo.VO.LoginUserVO;
-import com.example.demo.pojo.VO.UserVO;
 import com.example.demo.pojo.entity.system.Permission;
 import com.example.demo.pojo.entity.system.Role;
 import com.example.demo.pojo.entity.system.User;

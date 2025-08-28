@@ -1,4 +1,6 @@
-package com.example.demo.exception;
+package com.example.demo.exception.system;
+
+import com.example.demo.exception.BaseException;
 
 /**
  * 角色已存在异常
