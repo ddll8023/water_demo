@@ -4,9 +4,7 @@ import com.example.demo.common.ApiResponse;
 import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.system.UserCreateDTO;
 import com.example.demo.pojo.DTO.system.UserQueryDTO;
-import com.example.demo.pojo.DTO.system.UserResponseDTO;
 import com.example.demo.pojo.DTO.system.UserUpdateDTO;
-import com.example.demo.pojo.entity.system.Role;
 import com.example.demo.pojo.VO.UserVO;
 import com.example.demo.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 /**
  * 用户管理控制器
@@ -43,8 +40,7 @@ public class UserController {
      */
     @Operation(summary = "分页查询用户列表", description = "根据条件分页查询用户信息")
     @GetMapping("")
-    public ResponseEntity<ApiResponse<PageResult<UserVO>>> getUsers(
-            @Valid UserQueryDTO userQueryDTO) {
+    public ResponseEntity<ApiResponse<PageResult<UserVO>>> getUsers(@Valid UserQueryDTO userQueryDTO) {
         PageResult<UserVO> result = userService.getUsers(userQueryDTO);
         return ResponseEntity.ok(ApiResponse.success("查询成功", result));
     }
@@ -57,8 +53,7 @@ public class UserController {
      */
     @Operation(summary = "创建新用户", description = "创建新用户")
     @PostMapping("/create")
-    public ResponseEntity<ApiResponse<Void>> createUser(
-            @Valid @RequestBody UserCreateDTO userCreateDTO) {
+    public ResponseEntity<ApiResponse<Void>> createUser(@Valid @RequestBody UserCreateDTO userCreateDTO) {
         userService.createUser(userCreateDTO);
         return ResponseEntity.ok(ApiResponse.success("创建成功", null));
     }
@@ -72,9 +67,7 @@ public class UserController {
      */
     @Operation(summary = "更新用户信息", description = "根据用户ID更新用户信息")
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> updateUser(
-            @PathVariable Long id,
-            @Valid @RequestBody UserUpdateDTO updateDTO) {
+    public ResponseEntity<ApiResponse<Void>> updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateDTO updateDTO) {
         userService.updateUser(id, updateDTO);
         return ResponseEntity.ok(ApiResponse.success("更新成功"));
     }
@@ -87,8 +80,7 @@ public class UserController {
      */
     @Operation(summary = "删除用户", description = "根据用户ID删除用户")
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteUser(
-            @PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.ok(ApiResponse.success("删除成功"));
     }

@@ -1,28 +1,18 @@
 package com.example.demo.pojo.DTO.facility;
 
+import com.example.demo.pojo.DTO.common.BaseQueryDTO;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
  * 水厂查询DTO
- * 用于水厂列表查询的条件参数
+ * 用于水厂分页查询的请求参数
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-public class WaterPlantQueryDTO {
-
-    /**
-     * 关键字搜索（水厂名称）
-     */
-    private String keyword;
-
-    /**
-     * 页码（从1开始）
-     */
-    private Integer page = 1;
-
-    /**
-     * 每页大小
-     */
-    private Integer size = 10;
+@EqualsAndHashCode(callSuper = true)
+@Schema(name = "WaterPlantQueryDTO", description = "水厂查询DTO")
+public class WaterPlantQueryDTO extends BaseQueryDTO {
+    // 水厂特有的查询字段可以在此添加
+    // 通用的分页、排序、搜索字段已由BaseQueryDTO提供
 }

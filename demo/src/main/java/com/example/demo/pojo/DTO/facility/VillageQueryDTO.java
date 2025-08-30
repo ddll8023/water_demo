@@ -1,30 +1,18 @@
 package com.example.demo.pojo.DTO.facility;
 
+import com.example.demo.pojo.DTO.common.BaseQueryDTO;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
- * 村庄信息查询条件DTO
- * 用于构建村庄信息列表查询条件
+ * 村庄查询DTO
+ * 用于村庄分页查询的请求参数
  */
 @Data
-public class VillageQueryDTO {
-
-    /**
-     * 页码
-     * 默认值为1
-     */
-    private int page = 1;
-
-    /**
-     * 每页记录数
-     * 默认值为10
-     */
-    private int size = 10;
-
-    /**
-     * 搜索关键词
-     * 用于按村庄名称进行模糊查询
-     * 例如：张家村
-     */
-    private String keyword;
+@EqualsAndHashCode(callSuper = true)
+@Schema(name = "VillageQueryDTO", description = "村庄查询DTO")
+public class VillageQueryDTO extends BaseQueryDTO {
+    // 村庄特有的查询字段可以在此添加
+    // 通用的分页、排序、搜索字段已由BaseQueryDTO提供
 }

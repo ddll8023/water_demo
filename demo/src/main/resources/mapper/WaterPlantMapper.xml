@@ -2,57 +2,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.demo.mapper.WaterPlantMapper">
 
-    <!-- 结果映射：水厂响应DTO -->
-    <resultMap id="WaterPlantResponseDTOMap" type="com.example.demo.pojo.DTO.facility.WaterPlantResponseDTO">
-        <id property="id" column="id"/>
-        <result property="plantCode" column="plant_code"/>
-        <result property="name" column="name"/>
-        <result property="waterProject" column="water_project"/>
-        <result property="departmentId" column="department_id"/>
-        <result property="departmentName" column="department_name"/>
-        <result property="managerId" column="manager_id"/>
-        <result property="managerName" column="manager_name"/>
-        <result property="managerPhone" column="manager_phone"/>
-        <result property="address" column="address"/>
-        <result property="managementUnit" column="management_unit"/>
-        <result property="longitude" column="longitude"/>
-        <result property="latitude" column="latitude"/>
-        <result property="designScale" column="design_scale"/>
-        <result property="supplyArea" column="supply_area"/>
-        <result property="supplyLoadRatio" column="supply_load_ratio"/>
-        <result property="supplyPopulation" column="supply_population"/>
-        <result property="contactPhone" column="contact_phone"/>
-        <result property="establishmentDate" column="establishment_date"/>
-        <result property="createdAt" column="created_at"/>
-        <result property="updatedAt" column="updated_at"/>
-    </resultMap>
-
-    <!-- 分页查询水厂列表（包含关联信息） -->
-    <select id="selectWaterPlantPage" resultMap="WaterPlantResponseDTOMap">
-        SELECT wp.*,
-               d.name as department_name,
-               p.name as manager_name,
-               p.phone as manager_phone
-        FROM water_plants wp
-        LEFT JOIN departments d ON wp.department_id = d.id AND d.deleted_at IS NULL
-        LEFT JOIN personnel p ON wp.manager_id = p.id AND p.deleted_at IS NULL
-        WHERE wp.deleted_at IS NULL
+    <!-- 分页查询水厂列表（基础信息）- 用于PageHelper分页 -->
+    <select id="selectWaterPlantPageByKeyword" resultType="com.example.demo.pojo.entity.facility.WaterPlant">
+        SELECT *
+        FROM water_plants
+        WHERE deleted_at IS NULL
         <if test="keyword != null and keyword != ''">
-            AND wp.name LIKE CONCAT('%', #{keyword}, '%')
+            AND name LIKE CONCAT('%', #{keyword}, '%')
         </if>
-        ORDER BY wp.created_at DESC
+        ORDER BY created_at DESC
     </select>
 
-    <!-- 根据ID查询水厂详情（包含关联信息） -->
-    <select id="selectWaterPlantById" resultMap="WaterPlantResponseDTOMap">
-        SELECT wp.*,
-               d.name as department_name,
-               p.name as manager_name,
-               p.phone as manager_phone
-        FROM water_plants wp
-        LEFT JOIN departments d ON wp.department_id = d.id AND d.deleted_at IS NULL
-        LEFT JOIN personnel p ON wp.manager_id = p.id AND p.deleted_at IS NULL
-        WHERE wp.id = #{id} AND wp.deleted_at IS NULL
+    <!-- 根据ID查询水厂基础信息 -->
+    <select id="selectById" resultType="com.example.demo.pojo.entity.facility.WaterPlant">
+        SELECT * FROM water_plants WHERE id = #{id} AND deleted_at IS NULL
     </select>
 
     <!-- 检查水厂编码是否存在 -->
@@ -92,6 +55,30 @@
     <!-- 根据管理单位统计水厂数量 -->
     <select id="countByManagementUnit" resultType="long">
         SELECT COUNT(1) FROM water_plants WHERE management_unit = #{managementUnit} AND deleted_at IS NULL
+    </select>
+
+    <!-- 查询部门名称 -->
+    <select id="selectDepartmentNameByWaterPlantId" resultType="java.lang.String">
+        SELECT d.name
+        FROM water_plants wp
+        LEFT JOIN departments d ON wp.department_id = d.id
+        WHERE wp.id = #{waterPlantId} AND d.deleted_at IS NULL
+    </select>
+
+    <!-- 查询负责人姓名 -->
+    <select id="selectManagerNameByWaterPlantId" resultType="java.lang.String">
+        SELECT p.name
+        FROM water_plants wp
+        LEFT JOIN personnel p ON wp.manager_id = p.id
+        WHERE wp.id = #{waterPlantId} AND p.deleted_at IS NULL
+    </select>
+
+    <!-- 查询负责人电话 -->
+    <select id="selectManagerPhoneByWaterPlantId" resultType="java.lang.String">
+        SELECT p.phone
+        FROM water_plants wp
+        LEFT JOIN personnel p ON wp.manager_id = p.id
+        WHERE wp.id = #{waterPlantId} AND p.deleted_at IS NULL
     </select>
 
 </mapper>

@@ -3,6 +3,7 @@ package com.example.demo.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.demo.pojo.DTO.facility.PipelineResponseDTO;
 import com.example.demo.pojo.entity.facility.Pipeline;
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -16,19 +17,22 @@ import java.util.List;
 public interface PipelineMapper extends BaseMapper<Pipeline> {
 
     /**
-     * 分页查询管道信息列表（包含关联信息）
+     * 分页查询管道信息列表（基础信息）- 用于PageHelper分页
      */
-    List<PipelineResponseDTO> selectPipelinePage(
+    Page<Pipeline> selectPipelinePage(
         @Param("keyword") String keyword,
-        @Param("pipelineType") String pipelineType,
-        @Param("material") String material,
-        @Param("operationStatus") String operationStatus
+        @Param("pipelineType") String pipelineType
     );
 
     /**
-     * 根据ID查询管道信息详情（包含关联信息）
+     * 根据ID查询管道信息详情（基础信息）
      */
-    PipelineResponseDTO selectPipelineById(@Param("id") Long id);
+    Pipeline selectPipelineById(@Param("id") Long id);
+
+    /**
+     * 查询管道类型名称
+     */
+    String selectPipelineTypeNameByPipelineId(@Param("pipelineId") Long pipelineId);
 
     /**
      * 检查管道编码是否存在

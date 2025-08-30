@@ -3,6 +3,31 @@
 
 import request from "./request";
 
+// ==================== 设施类型管理 ====================
+
+/**
+ * 获取所有设施类型枚举
+ * @returns {Promise} 设施类型列表
+ * @returns {Promise} 设施类型列表
+ */
+export function getFacilityTypes() {
+	return request({
+		url: "/engineering-service/facility-types",
+		method: "get",
+	});
+}
+
+/**
+ * 获取设施类型映射
+ * @returns {Promise} 设施类型映射
+ */
+export function getFacilityTypeMap() {
+	return request({
+		url: "/engineering-service/facility-type-map",
+		method: "get",
+	});
+}
+
 // ==================== 泵站管理 ====================
 
 /**
@@ -651,9 +676,9 @@ export function batchDeleteDisinfectionMaterials(ids) {
  */
 export function getAllFacilityNames() {
 	return Promise.all([
-		getPumpingStationList({ size: 1000 }), // 获取所有泵站
-		getWaterPlantList({ size: 1000 }), // 获取所有水厂
-		getReservoirList({ size: 1000 }), // 获取所有水库
+		getPumpingStationList({ size: 100 }), // 获取所有泵站
+		getWaterPlantList({ size: 100 }), // 获取所有水厂
+		getReservoirList({ size: 100 }), // 获取所有水库
 	]).then(([pumpingStations, waterPlants, reservoirs]) => {
 		const facilities = [];
 
@@ -702,7 +727,7 @@ export function getAvailablePumpingStations() {
 	return request({
 		url: "/engineering-service/pumping-stations",
 		method: "get",
-		params: { page: 1, size: 1000 },
+		params: { page: 1, size: 100 },
 	}).then((data) => data?.items || data?.records || []);
 }
 
@@ -726,72 +751,4 @@ export function getAvailableReservoirs() {
 		url: "/engineering-service/reservoirs/available",
 		method: "get",
 	}).then((resp) => resp?.data || resp);
-}
-
-/**
- * 导出数据
- * @param {string} type 数据类型 (pumping-stations, water-plants, reservoirs, etc.)
- * @param {Object} params 查询参数
- * @returns {Promise} 导出结果
- */
-export function exportData(type, params) {
-	return request({
-		url: `/engineering-service/${type}/export`,
-		method: "get",
-		params,
-		responseType: "blob",
-	});
-}
-
-/**
- * 导入数据
- * @param {string} type 数据类型
- * @param {FormData} formData 包含文件的表单数据
- * @returns {Promise} 导入结果
- */
-export function importData(type, formData) {
-	return request({
-		url: `/engineering-service/${type}/import`,
-		method: "post",
-		data: formData,
-		headers: {
-			"Content-Type": "multipart/form-data",
-		},
-	});
-}
-
-/**
- * 获取下拉选项数据
- * @param {string} type 选项类型 (departments, managers, station-types, etc.)
- * @returns {Promise} 选项数据
- */
-export function getSelectOptions(type) {
-	return request({
-		url: `/engineering-service/options/${type}`,
-		method: "get",
-	});
-}
-
-// ==================== 设施类型管理 ====================
-
-/**
- * 获取所有设施类型枚举
- * @returns {Promise} 设施类型列表
- */
-export function getFacilityTypes() {
-	return request({
-		url: "/engineering-service/facility-types",
-		method: "get",
-	});
-}
-
-/**
- * 获取设施类型映射
- * @returns {Promise} 设施类型映射
- */
-export function getFacilityTypeMap() {
-	return request({
-		url: "/engineering-service/facility-type-map",
-		method: "get",
-	});
 }

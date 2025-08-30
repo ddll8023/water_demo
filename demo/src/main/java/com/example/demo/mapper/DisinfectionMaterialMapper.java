@@ -3,6 +3,7 @@ package com.example.demo.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.demo.pojo.DTO.facility.DisinfectionMaterialResponseDTO;
 import com.example.demo.pojo.entity.facility.DisinfectionMaterial;
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -16,17 +17,21 @@ import java.util.List;
 public interface DisinfectionMaterialMapper extends BaseMapper<DisinfectionMaterial> {
 
     /**
-     * 分页查询消毒药材列表（包含关联信息）
+     * 分页查询消毒药材列表（基础信息）
      */
-    List<DisinfectionMaterialResponseDTO> selectDisinfectionMaterialPage(
-            @Param("keyword") String keyword,
-            @Param("waterPlantId") Long waterPlantId
+    Page<DisinfectionMaterial> selectDisinfectionMaterialPage(
+            @Param("keyword") String keyword
     );
 
     /**
      * 根据ID查询消毒药材详情（包含关联信息）
      */
     DisinfectionMaterialResponseDTO selectDisinfectionMaterialById(@Param("id") Long id);
+
+    /**
+     * 根据消毒药材ID查询水厂名称
+     */
+    String selectWaterPlantNameByMaterialId(@Param("materialId") Long materialId);
 
     /**
      * 检查药材名称是否存在

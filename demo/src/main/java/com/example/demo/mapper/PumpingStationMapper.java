@@ -1,12 +1,10 @@
 package com.example.demo.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.demo.pojo.DTO.facility.PumpingStationResponseDTO;
 import com.example.demo.pojo.entity.facility.PumpingStation;
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 /**
  * 泵站Mapper接口
@@ -16,18 +14,19 @@ import java.util.List;
 public interface PumpingStationMapper extends BaseMapper<PumpingStation> {
 
     /**
-     * 分页查询泵站列表（包含关联信息）
+     * 分页查询泵站列表（基础信息）- 用于PageHelper分页
      */
-    List<PumpingStationResponseDTO> selectPumpingStationPage(@Param("keyword") String keyword,
-                                                           @Param("name") String name,
-                                                           @Param("stationType") String stationType,
-                                                           @Param("waterProject") String waterProject,
-                                                           @Param("operationMode") String operationMode);
+    Page<PumpingStation> selectPumpingStationPage(@Param("keyword") String keyword);
 
     /**
-     * 根据ID查询泵站详情（包含关联信息）
+     * 查询运行模式名称
      */
-    PumpingStationResponseDTO selectPumpingStationById(@Param("id") Long id);
+    String selectOperationModeNameByStationId(@Param("stationId") Long stationId);
+
+    /**
+     * 根据ID查询泵站详情（基础信息）
+     */
+    PumpingStation selectPumpingStationById(@Param("id") Long id);
 
     /**
      * 检查泵站编码是否存在

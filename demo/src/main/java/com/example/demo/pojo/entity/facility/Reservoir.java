@@ -1,9 +1,10 @@
 package com.example.demo.pojo.entity.facility;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,130 +14,62 @@ import java.time.LocalDateTime;
  * 对应数据库表: reservoirs
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@TableName("reservoirs")
-public class Reservoir {
+@Schema(name = "Reservoir", description = "水库信息实体")
+public class Reservoir implements Serializable {
 
-    /**
-     * 主键ID
-     */
-    @TableId(value = "id", type = IdType.AUTO)
+    private static final long serialVersionUID = 1L;
+
+    @Schema(name = "id", description = "主键ID")
     private Long id;
 
-    /**
-     * 水库编码
-     */
-    @TableField("reservoir_code")
+    @Schema(name = "reservoirCode", description = "水库编码")
     private String reservoirCode;
 
-    /**
-     * 水库名称
-     */
-    @TableField("name")
+    @Schema(name = "name", description = "水库名称")
     private String name;
 
-    /**
-     * 所属水利工程
-     */
-    @TableField("water_project")
+    @Schema(name = "waterProject", description = "所属水利工程")
     private String waterProject;
 
-    /**
-     * 经度
-     */
-    @TableField("longitude")
+    @Schema(name = "longitude", description = "经度")
     private BigDecimal longitude;
 
-    /**
-     * 纬度
-     */
-    @TableField("latitude")
+    @Schema(name = "latitude", description = "纬度")
     private BigDecimal latitude;
 
-    /**
-     * 水库所在位置
-     */
-    @TableField("location")
-    private String location;
-
-    /**
-     * 水库注册登记号
-     */
-    @TableField("registration_no")
+    @Schema(name = "registrationNo", description = "水库注册登记号")
     private String registrationNo;
 
-    /**
-     * 所属行政区划（关联regions.code）
-     */
-    @TableField("admin_region_code")
+    @Schema(name = "adminRegionCode", description = "所属行政区划（关联regions.code）")
     private String adminRegionCode;
 
-    /**
-     * 工程等级（关联dict_data.data_value，type_code=engineering_grade）
-     */
-    @TableField("engineering_grade")
+    @Schema(name = "engineeringGrade", description = "工程等级（关联dict_data.data_value，type_code=engineering_grade）")
     private String engineeringGrade;
 
-    /**
-     * 工程规模（关联dict_data.data_value，type_code=engineering_scale）
-     */
-    @TableField("engineering_scale")
+    @Schema(name = "engineeringScale", description = "工程规模（关联dict_data.data_value，type_code=engineering_scale）")
     private String engineeringScale;
 
-    /**
-     * 总库容（万m³）
-     */
-    @TableField("total_capacity")
+    @Schema(name = "totalCapacity", description = "总库容（万m³）")
     private BigDecimal totalCapacity;
 
-    /**
-     * 调节库容（万m³）
-     */
-    @TableField("regulating_capacity")
+    @Schema(name = "regulatingCapacity", description = "调节库容（万m³）")
     private BigDecimal regulatingCapacity;
 
-    /**
-     * 死库容（万m³）
-     */
-    @TableField("dead_capacity")
+    @Schema(name = "deadCapacity", description = "死库容（万m³）")
     private BigDecimal deadCapacity;
 
-    /**
-     * 建库年月
-     */
-    @TableField("establishment_date")
+    @Schema(name = "establishmentDate", description = "建库年月")
     private LocalDate establishmentDate;
 
-    /**
-     * 创建时间
-     */
-    @TableField(value = "created_at", fill = FieldFill.INSERT)
+    @Schema(name = "createdAt", description = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
-    /**
-     * 更新时间
-     */
-    @TableField(value = "updated_at", fill = FieldFill.INSERT_UPDATE)
+    @Schema(name = "updatedAt", description = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 
-    /**
-     * 软删除标记
-     */
-    @TableLogic
-    @TableField("deleted_at")
+    @Schema(name = "deletedAt", description = "软删除标记")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime deletedAt;
-
-    // ========== 关联信息字段（非数据库字段，用于存储关联查询结果） ==========
-
-    /**
-     * 工程等级名称（非数据库字段）
-     */
-    @TableField(exist = false)
-    private String engineeringGradeName;
-
-    /**
-     * 工程规模名称（非数据库字段）
-     */
-    @TableField(exist = false)
-    private String engineeringScaleName;
 }

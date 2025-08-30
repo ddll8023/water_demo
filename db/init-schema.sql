@@ -213,8 +213,30 @@ CREATE TABLE IF NOT EXISTS `engineering_service_tabs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='工程信息服务Tab配置表';
 
 -- --------------------------------------------------------------------------------
--- 模块: 工程信息服务 (新增功能)
+-- 模块: 工程信息服务 (新增完整功能)
 -- --------------------------------------------------------------------------------
+
+-- facility_types (设施类型管理表)
+CREATE TABLE IF NOT EXISTS `facility_types` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '设施类型ID',
+  `type_code` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '设施类型编码',
+  `type_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '设施类型名称',
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '设施类型描述',
+  `entity_table` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '对应数据表名',
+  `entity_class` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '对应实体类名',
+  `api_path` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'API路径标识',
+  `icon_class` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '图标样式类',
+  `map_icon` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '地图图标标识',
+  `sort_order` int DEFAULT 0 COMMENT '排序值，数值越小优先级越高',
+  `is_active` varchar(50) DEFAULT '1' COMMENT '是否启用(1:启用,0:禁用)',
+  `created_at` datetime NOT NULL COMMENT '创建时间',
+  `updated_at` datetime NOT NULL COMMENT '更新时间',
+  `deleted_at` datetime DEFAULT NULL COMMENT '软删除标记',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `type_code` (`type_code`),
+  KEY `idx_sort_order` (`sort_order`),
+  KEY `idx_is_active` (`is_active`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='设施类型管理表';
 
 -- pumping_stations (泵站信息表)
 CREATE TABLE IF NOT EXISTS `pumping_stations` (

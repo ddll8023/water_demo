@@ -139,10 +139,10 @@ const disinfectionMaterialRef = ref(null)
 // 泵站信息搜索字段
 const pumpingStationSearchFields = reactive([
   {
-    prop: 'name',
-    label: '泵站名称',
+    prop: 'keyword',
+    label: '关键词',
     type: 'input',
-    placeholder: '请输入泵站名称',
+    placeholder: '请输入泵站名称或编码',
     width: '240px',
     labelWidth: 'var(--form-label-width-standard)',
     clearable: true
@@ -1249,7 +1249,7 @@ const loadSelectOptions = async () => {
 
     // 加载监测站点名称选项
     try {
-      const stationResponse = await engineeringApi.getMonitoringStationList({ page: 1, size: 1000 })
+      const stationResponse = await engineeringApi.getMonitoringStationList({ page: 1, size: 100 })
       const stations = stationResponse.items || []
 
       // 去重处理：使用Set去除重复的站点名称

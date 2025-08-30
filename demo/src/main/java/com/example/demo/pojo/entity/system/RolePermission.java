@@ -1,9 +1,7 @@
 package com.example.demo.pojo.entity.system;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-
-import com.baomidou.mybatisplus.annotation.*;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
 /**
@@ -11,48 +9,26 @@ import java.time.LocalDateTime;
  * 对应数据库表: role_permissions
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@TableName("role_permissions")
+ @Schema(name = "RolePermission", description = "角色权限关联表实体类")
 public class RolePermission {
 
-    /**
-     * 关联 ID
-     */
-    @TableId(value = "id", type = IdType.AUTO)
+    @Schema(description = "关联 ID")
     private Long id;
 
-    /**
-     * 角色 ID
-     */
-    @TableField("role_id")
+    @Schema(description = "角色 ID")
     private Long roleId;
 
-    /**
-     * 权限 ID
-     */
-    @TableField("permission_id")
+    @Schema(description = "权限 ID")
     private Long permissionId;
 
-    /**
-     * 创建时间
-     */
-    @TableField(value = "created_at", fill = FieldFill.INSERT)
+    @Schema(description = "创建时间")
     private LocalDateTime createdAt;
 
-    /**
-     * 更新时间
-     */
-    @TableField(value = "updated_at", fill = FieldFill.INSERT_UPDATE)
+    @Schema(description = "更新时间")
     private LocalDateTime updatedAt;
 
-    /**
-     * 软删除标记
-     */
-    @TableLogic
-    @TableField("deleted_at")
+    @Schema(description = "软删除标记")
     private LocalDateTime deletedAt;
 
-    // 注意：角色和权限关联通过Service层处理
-    // - 角色信息：通过roleId查询Role表
-    // - 权限信息：通过permissionId查询Permission表
+
 }

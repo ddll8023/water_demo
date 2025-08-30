@@ -2,12 +2,16 @@ package com.example.demo.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.demo.common.PageResult;
+import com.example.demo.mapper.WaterPlantMapper;
 import com.example.demo.pojo.DTO.facility.WaterPlantCreateDTO;
 import com.example.demo.pojo.DTO.facility.WaterPlantQueryDTO;
 import com.example.demo.pojo.DTO.facility.WaterPlantResponseDTO;
 import com.example.demo.pojo.DTO.facility.WaterPlantUpdateDTO;
+import com.example.demo.pojo.VO.WaterPlantVO;
 import com.example.demo.pojo.entity.facility.WaterPlant;
-import com.example.demo.mapper.WaterPlantMapper;
+import com.example.demo.service.base.FacilityService;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -18,79 +22,81 @@ import org.springframework.util.StringUtils;
 import java.time.LocalDateTime;
 import java.util.List;
 
-// 导入必要的类
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
-
 /**
  * 水厂服务实现类
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class WaterPlantService extends ServiceImpl<WaterPlantMapper, WaterPlant> {
+public class WaterPlantService extends ServiceImpl<WaterPlantMapper, WaterPlant> implements FacilityService<WaterPlant, WaterPlantResponseDTO, WaterPlantQueryDTO, WaterPlantCreateDTO, WaterPlantUpdateDTO, WaterPlantVO> {
 
     private final WaterPlantMapper waterPlantMapper;
 
     /**
      * 分页查询水厂列表
+     * 实现统一接口方法：queryPage，返回VO格式
      */
-    public PageResult<WaterPlantResponseDTO> getWaterPlantPage(WaterPlantQueryDTO queryDTO) {
-        // 参数验证
-        if (queryDTO.getPage() == null || queryDTO.getPage() < 1) {
-            queryDTO.setPage(1);
-        }
-        if (queryDTO.getSize() == null || queryDTO.getSize() < 1 || queryDTO.getSize() > 100) {
-            queryDTO.setSize(10);
-        }
+    @Override
+    public PageResult<WaterPlantVO> queryPage(WaterPlantQueryDTO waterPlantQueryDTO) {
 
         // 使用PageHelper设置分页
-        PageHelper.startPage(queryDTO.getPage(), queryDTO.getSize());
-        
-        // 执行查询
-        List<WaterPlantResponseDTO> list = waterPlantMapper.selectWaterPlantPage(queryDTO.getKeyword());
-        
-        // 使用PageInfo包装查询结果
-        PageInfo<WaterPlantResponseDTO> pageInfo = new PageInfo<>(list);
+        PageHelper.startPage(waterPlantQueryDTO.getPage(), waterPlantQueryDTO.getSize());
+
+        // 查询基础水厂数据
+        Page<WaterPlant> waterPlants = waterPlantMapper.selectWaterPlantPageByKeyword(waterPlantQueryDTO.getKeyword());
+
+        // 获取分页信息
+        long total = waterPlants.getTotal();
+        List<WaterPlant> records = waterPlants.getResult();
+
+        // 转换为VO格式并补充关联信息
+        List<WaterPlantVO> voList = records.stream().map(this::convertToVO).collect(java.util.stream.Collectors.toList());
 
         // 返回分页数据
-        return new PageResult<>(
-                pageInfo.getList(),
-                (int) pageInfo.getTotal(),
-                queryDTO.getPage(),
-                queryDTO.getSize()
-        );
+        return new PageResult<>(total, voList);
     }
 
     /**
      * 根据ID查询水厂详情
+     * 实现统一接口方法：queryById
      */
-    public WaterPlantResponseDTO getWaterPlantById(Long id) {
+    @Override
+    public WaterPlantResponseDTO queryById(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("水厂ID不能为空");
         }
 
-        WaterPlantResponseDTO waterPlant = waterPlantMapper.selectWaterPlantById(id);
+        WaterPlant waterPlant = waterPlantMapper.selectById(id);
         if (waterPlant == null) {
             throw new RuntimeException("水厂不存在");
         }
-        return waterPlant;
+
+        // 构建响应DTO并补充关联信息
+        WaterPlantResponseDTO responseDTO = new WaterPlantResponseDTO();
+        BeanUtils.copyProperties(waterPlant, responseDTO);
+
+        // 补充关联信息
+        responseDTO.setDepartmentName(waterPlantMapper.selectDepartmentNameByWaterPlantId(id));
+        responseDTO.setManagerName(waterPlantMapper.selectManagerNameByWaterPlantId(id));
+        responseDTO.setManagerPhone(waterPlantMapper.selectManagerPhoneByWaterPlantId(id));
+
+        return responseDTO;
     }
 
     /**
      * 创建水厂
+     * 实现统一接口方法：create
      */
+    @Override
     @Transactional
-    public WaterPlantResponseDTO createWaterPlant(WaterPlantCreateDTO createDTO) {
+    public WaterPlantResponseDTO create(WaterPlantCreateDTO createDTO) {
         // 验证水厂名称是否已存在
-        if (StringUtils.hasText(createDTO.getName()) && 
-            waterPlantMapper.existsByName(createDTO.getName(), null)) {
+        if (StringUtils.hasText(createDTO.getName()) && waterPlantMapper.existsByName(createDTO.getName(), null)) {
             throw new RuntimeException("水厂名称已存在");
         }
 
         // 验证水厂编码是否已存在
-        if (StringUtils.hasText(createDTO.getPlantCode()) && 
-            waterPlantMapper.existsByPlantCode(createDTO.getPlantCode(), null)) {
+        if (StringUtils.hasText(createDTO.getPlantCode()) && waterPlantMapper.existsByPlantCode(createDTO.getPlantCode(), null)) {
             throw new RuntimeException("水厂编码已存在");
         }
 
@@ -102,14 +108,16 @@ public class WaterPlantService extends ServiceImpl<WaterPlantMapper, WaterPlant>
         waterPlantMapper.insert(waterPlant);
         log.info("创建水厂成功，水厂ID: {}, 水厂名称: {}", waterPlant.getId(), waterPlant.getName());
 
-        return getWaterPlantById(waterPlant.getId());
+        return queryById(waterPlant.getId());
     }
 
     /**
      * 更新水厂信息
+     * 实现统一接口方法：update
      */
+    @Override
     @Transactional
-    public WaterPlantResponseDTO updateWaterPlant(WaterPlantUpdateDTO updateDTO) {
+    public WaterPlantResponseDTO update(WaterPlantUpdateDTO updateDTO) {
         if (updateDTO.getId() == null) {
             throw new IllegalArgumentException("水厂ID不能为空");
         }
@@ -121,14 +129,12 @@ public class WaterPlantService extends ServiceImpl<WaterPlantMapper, WaterPlant>
         }
 
         // 验证水厂名称是否已存在（排除当前记录）
-        if (StringUtils.hasText(updateDTO.getName()) && 
-            waterPlantMapper.existsByName(updateDTO.getName(), updateDTO.getId())) {
+        if (StringUtils.hasText(updateDTO.getName()) && waterPlantMapper.existsByName(updateDTO.getName(), updateDTO.getId())) {
             throw new RuntimeException("水厂名称已存在");
         }
 
         // 验证水厂编码是否已存在（排除当前记录）
-        if (StringUtils.hasText(updateDTO.getPlantCode()) && 
-            waterPlantMapper.existsByPlantCode(updateDTO.getPlantCode(), updateDTO.getId())) {
+        if (StringUtils.hasText(updateDTO.getPlantCode()) && waterPlantMapper.existsByPlantCode(updateDTO.getPlantCode(), updateDTO.getId())) {
             throw new RuntimeException("水厂编码已存在");
         }
 
@@ -139,14 +145,16 @@ public class WaterPlantService extends ServiceImpl<WaterPlantMapper, WaterPlant>
         waterPlantMapper.updateById(waterPlant);
         log.info("更新水厂成功，水厂ID: {}, 水厂名称: {}", waterPlant.getId(), waterPlant.getName());
 
-        return getWaterPlantById(waterPlant.getId());
+        return queryById(updateDTO.getId());
     }
 
     /**
      * 删除水厂
+     * 实现统一接口方法：delete
      */
+    @Override
     @Transactional
-    public void deleteWaterPlant(Long id) {
+    public void delete(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("水厂ID不能为空");
         }
@@ -157,7 +165,7 @@ public class WaterPlantService extends ServiceImpl<WaterPlantMapper, WaterPlant>
             throw new RuntimeException("水厂不存在");
         }
 
-        // 软删除
+        // 软删除：设置删除时间
         WaterPlant waterPlant = new WaterPlant();
         waterPlant.setId(id);
         waterPlant.setDeletedAt(LocalDateTime.now());
@@ -172,26 +180,31 @@ public class WaterPlantService extends ServiceImpl<WaterPlantMapper, WaterPlant>
     @Transactional
     public void batchDeleteWaterPlants(List<Long> ids) {
         if (ids == null || ids.isEmpty()) {
-            throw new RuntimeException("删除ID列表不能为空");
+            throw new IllegalArgumentException("删除ID列表不能为空");
         }
 
         for (Long id : ids) {
-            deleteWaterPlant(id);
+            delete(id);
         }
     }
 
     /**
-     * 获取所有可用水厂（用于下拉选择）
+     * 获取可用水厂列表（用于下拉选择）
+     * 实现统一接口方法：queryAvailable
      */
-    public List<WaterPlant> getAvailableWaterPlants() {
-        return waterPlantMapper.selectAvailableWaterPlants();
+    @Override
+    public List<WaterPlantVO> queryAvailable() {
+        List<WaterPlant> waterPlants = list(); // 使用 MyBatis-Plus 的 list 方法获取所有记录
+        return waterPlants.stream().map(this::convertToVO).collect(java.util.stream.Collectors.toList());
     }
 
     /**
      * 统计水厂总数
+     * 实现统一接口方法：countTotal
      */
+    @Override
     public long countTotal() {
-        return waterPlantMapper.countTotal();
+        return count(); // 使用 MyBatis-Plus 的 count 方法
     }
 
     /**
@@ -222,5 +235,19 @@ public class WaterPlantService extends ServiceImpl<WaterPlantMapper, WaterPlant>
             return 0;
         }
         return waterPlantMapper.countByManagementUnit(managementUnit);
+    }
+
+    /**
+     * 将WaterPlant实体转换为VO，并补充关联信息
+     */
+    private WaterPlantVO convertToVO(WaterPlant waterPlant) {
+        WaterPlantVO vo = new WaterPlantVO();
+        BeanUtils.copyProperties(waterPlant, vo);
+
+        // 查询并设置关联信息
+        vo.setDepartmentName(waterPlantMapper.selectDepartmentNameByWaterPlantId(waterPlant.getId()));
+        vo.setManagerName(waterPlantMapper.selectManagerNameByWaterPlantId(waterPlant.getId()));
+
+        return vo;
     }
 }

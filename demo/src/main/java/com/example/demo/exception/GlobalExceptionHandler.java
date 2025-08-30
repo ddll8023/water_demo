@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     *
+     * 捕获SQL完整性约束违反异常
      * @param ex
      * @return
      */
@@ -40,6 +40,28 @@ public class GlobalExceptionHandler {
             return ApiResponse.error(msg);
         }
         return ApiResponse.error(ex.getMessage());
+    }
+
+    /**
+     * 捕获运行时异常
+     * @param ex
+     * @return
+     */
+    @ExceptionHandler
+    public ApiResponse<Void> exceptionHandler(RuntimeException ex){
+        log.error("运行时异常：{}", ex.getMessage(), ex);
+        return ApiResponse.error(ex.getMessage());
+    }
+
+    /**
+     * 捕获通用异常（兜底处理）
+     * @param ex
+     * @return
+     */
+    @ExceptionHandler
+    public ApiResponse<Void> exceptionHandler(Exception ex){
+        log.error("系统异常：{}", ex.getMessage(), ex);
+        return ApiResponse.error("系统内部错误");
     }
 
 }

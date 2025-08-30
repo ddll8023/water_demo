@@ -1,8 +1,8 @@
 package com.example.demo.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.demo.pojo.DTO.facility.WaterPlantResponseDTO;
 import com.example.demo.pojo.entity.facility.WaterPlant;
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -16,14 +16,29 @@ import java.util.List;
 public interface WaterPlantMapper extends BaseMapper<WaterPlant> {
 
     /**
-     * 分页查询水厂列表（包含关联信息）
+     * 分页查询水厂列表（基础信息）- 用于PageHelper分页
      */
-    List<WaterPlantResponseDTO> selectWaterPlantPage(@Param("keyword") String keyword);
+    Page<WaterPlant> selectWaterPlantPageByKeyword(@Param("keyword") String keyword);
 
     /**
-     * 根据ID查询水厂详情（包含关联信息）
+     * 根据ID查询水厂基础信息
      */
-    WaterPlantResponseDTO selectWaterPlantById(@Param("id") Long id);
+    WaterPlant selectById(@Param("id") Long id);
+
+    /**
+     * 查询部门名称
+     */
+    String selectDepartmentNameByWaterPlantId(@Param("waterPlantId") Long waterPlantId);
+
+    /**
+     * 查询负责人姓名
+     */
+    String selectManagerNameByWaterPlantId(@Param("waterPlantId") Long waterPlantId);
+
+    /**
+     * 查询负责人电话
+     */
+    String selectManagerPhoneByWaterPlantId(@Param("waterPlantId") Long waterPlantId);
 
     /**
      * 检查水厂编码是否存在

@@ -1,10 +1,12 @@
 package com.example.demo.pojo.entity.facility;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -12,83 +14,62 @@ import java.time.LocalDateTime;
  * 对应数据库表: floating_boats
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-public class FloatingBoat {
+@Schema(name = "FloatingBoat", description = "浮船信息实体")
+public class FloatingBoat implements Serializable {
 
-    /**
-     * 主键ID
-     */
-    @TableId(value = "id", type = IdType.AUTO)
+    private static final long serialVersionUID = 1L;
+
+    @Schema(name = "id", description = "主键ID")
     private Long id;
 
-    /**
-     * 浮船名称
-     */
-    @TableField("name")
+    @Schema(name = "boatCode", description = "浮船编码")
+    private String boatCode;
+
+    @Schema(name = "name", description = "浮船名称")
     private String name;
 
-    /**
-     * 经度
-     */
-    @TableField("longitude")
+    @Schema(name = "waterPlantId", description = "所属水厂ID（关联water_plants.id）")
+    private Long waterPlantId;
+
+    @Schema(name = "longitude", description = "经度")
     private BigDecimal longitude;
 
-    /**
-     * 纬度
-     */
-    @TableField("latitude")
+    @Schema(name = "latitude", description = "纬度")
     private BigDecimal latitude;
 
-    /**
-     * 抽水能力（m³/h）
-     */
-    @TableField("capacity")
+    @Schema(name = "length", description = "船长（m）")
+    private BigDecimal length;
+
+    @Schema(name = "width", description = "船宽（m）")
+    private BigDecimal width;
+
+    @Schema(name = "draft", description = "吃水深度（m）")
+    private BigDecimal draft;
+
+    @Schema(name = "capacity", description = "抽水能力（m³/h）")
     private BigDecimal capacity;
 
-    /**
-     * 功率（kW）
-     */
-    @TableField("power_consumption")
+    @Schema(name = "powerConsumption", description = "功率（kW）")
     private BigDecimal powerConsumption;
 
-    /**
-     * 抽水状态（关联dict_data.data_value，type_code=device_status）
-     */
-    @TableField("pumping_status")
+    @Schema(name = "pumpingStatus", description = "抽水状态（关联dict_data.data_value，type_code=device_status）")
     private String pumpingStatus;
 
+    @Schema(name = "maintenanceDate", description = "上次维护日期")
+    private LocalDate maintenanceDate;
 
-
-    /**
-     * 备注
-     */
-    @TableField("remark")
+    @Schema(name = "remark", description = "备注")
     private String remark;
 
-    /**
-     * 创建时间
-     */
-    @TableField(value = "created_at", fill = FieldFill.INSERT)
+    @Schema(name = "createdAt", description = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
-    /**
-     * 更新时间
-     */
-    @TableField(value = "updated_at", fill = FieldFill.INSERT_UPDATE)
+    @Schema(name = "updatedAt", description = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 
-    /**
-     * 软删除标记
-     */
-    @TableLogic
-    @TableField("deleted_at")
+    @Schema(name = "deletedAt", description = "软删除标记")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime deletedAt;
-
-    // ========== 关联信息字段（非数据库字段，用于存储关联查询结果） ==========
-
-    /**
-     * 抽水状态名称（非数据库字段）
-     */
-    @TableField(exist = false)
-    private String pumpingStatusName;
 }

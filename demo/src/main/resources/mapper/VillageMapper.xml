@@ -2,32 +2,19 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.demo.mapper.VillageMapper">
 
-    <!-- 结果映射：村庄信息响应DTO -->
-    <resultMap id="VillageResponseDTOMap" type="com.example.demo.pojo.DTO.facility.VillageResponseDTO">
-        <id property="id" column="id"/>
-        <result property="name" column="name"/>
-        <result property="longitude" column="longitude"/>
-        <result property="latitude" column="latitude"/>
-        <result property="administrativeCode" column="administrative_code"/>
-        <result property="currentPopulation" column="current_population"/>
-        <result property="remark" column="remark"/>
-        <result property="createdAt" column="created_at"/>
-        <result property="updatedAt" column="updated_at"/>
-    </resultMap>
-
-    <!-- 分页查询村庄信息列表 - MyBatis-Plus 方式 -->
-    <select id="selectVillagePage" resultMap="VillageResponseDTOMap">
-        SELECT villages.*
+    <!-- 分页查询村庄列表（基础信息）- 用于PageHelper分页 -->
+    <select id="selectVillagePageByKeyword" resultType="com.example.demo.pojo.entity.facility.Village">
+        SELECT *
         FROM villages
-        WHERE villages.deleted_at IS NULL
+        WHERE deleted_at IS NULL
         <if test="keyword != null and keyword != ''">
-            AND villages.name LIKE CONCAT('%', #{keyword}, '%')
+            AND name LIKE CONCAT('%', #{keyword}, '%')
         </if>
-        ORDER BY villages.created_at DESC
+        ORDER BY created_at DESC
     </select>
     
     <!-- 查询村庄信息列表 - PageHelper 方式 -->
-    <select id="selectVillageList" resultMap="VillageResponseDTOMap">
+    <select id="selectVillageList" resultType="com.example.demo.pojo.DTO.facility.VillageResponseDTO">
         SELECT villages.*
         FROM villages
         WHERE villages.deleted_at IS NULL
@@ -38,7 +25,7 @@
     </select>
 
     <!-- 根据ID查询村庄信息详情 -->
-    <select id="selectVillageById" resultMap="VillageResponseDTOMap">
+    <select id="selectVillageById" resultType="com.example.demo.pojo.DTO.facility.VillageResponseDTO">
         SELECT villages.*
         FROM villages
         WHERE villages.id = #{id} AND villages.deleted_at IS NULL
@@ -65,5 +52,37 @@
     <select id="countTotal" resultType="long">
         SELECT COUNT(*) FROM villages WHERE deleted_at IS NULL
     </select>
+
+    <!-- 插入村庄信息 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO villages (name, longitude, latitude, administrative_code, current_population, remark, created_at, updated_at)
+        VALUES (#{name}, #{longitude}, #{latitude}, #{administrativeCode}, #{currentPopulation}, #{remark}, #{createdAt}, #{updatedAt})
+    </insert>
+
+    <!-- 更新村庄信息 -->
+    <update id="updateById">
+        UPDATE villages
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="longitude != null">longitude = #{longitude},</if>
+            <if test="latitude != null">latitude = #{latitude},</if>
+            <if test="administrativeCode != null">administrative_code = #{administrativeCode},</if>
+            <if test="currentPopulation != null">current_population = #{currentPopulation},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updatedAt != null">updated_at = #{updatedAt},</if>
+            <if test="deletedAt != null">deleted_at = #{deletedAt}</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 根据ID查询村庄基础信息 -->
+    <select id="selectById" resultType="com.example.demo.pojo.entity.facility.Village">
+        SELECT * FROM villages WHERE id = #{id} AND deleted_at IS NULL
+    </select>
+
+    <!-- 删除村庄信息（软删除） -->
+    <update id="deleteById">
+        UPDATE villages SET deleted_at = NOW() WHERE id = #{id}
+    </update>
 
 </mapper>

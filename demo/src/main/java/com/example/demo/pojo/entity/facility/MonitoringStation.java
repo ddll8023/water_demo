@@ -1,9 +1,10 @@
 package com.example.demo.pojo.entity.facility;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,112 +14,47 @@ import java.time.LocalDateTime;
  * 对应数据库表: monitoring_stations
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@TableName("monitoring_stations")
-public class MonitoringStation {
+@Schema(name = "MonitoringStation", description = "监测站点信息实体")
+public class MonitoringStation implements Serializable {
 
-    /**
-     * 主键ID
-     */
-    @TableId(value = "id", type = IdType.AUTO)
+    private static final long serialVersionUID = 1L;
+
+    @Schema(name = "id", description = "主键ID")
     private Long id;
 
-    /**
-     * 监测站点编码
-     */
-    @TableField("station_code")
+    @Schema(name = "stationCode", description = "监测站点编码")
     private String stationCode;
 
-    /**
-     * 监测站点名称
-     */
-    @TableField("name")
+    @Schema(name = "name", description = "监测站点名称")
     private String name;
 
-    /**
-     * 水系名称
-     */
-    @TableField("water_system_name")
-    private String waterSystemName;
-
-    /**
-     * 河流名称
-     */
-    @TableField("river_name")
-    private String riverName;
-
-    /**
-     * 监测项目码（关联dict_data.data_value，type_code=monitoring_item）
-     */
-    @TableField("monitoring_item_code")
+    @Schema(name = "monitoringItemCode", description = "监测项目码（关联dict_data.data_value，type_code=monitoring_item）")
     private String monitoringItemCode;
 
-    /**
-     * 行政区划代码（关联regions.code）
-     */
-    @TableField("admin_region_code")
+    @Schema(name = "adminRegionCode", description = "行政区划代码（关联regions.code）")
     private String adminRegionCode;
 
-    /**
-     * 设站年月
-     */
-    @TableField("establishment_date")
+    @Schema(name = "establishmentDate", description = "设站年月")
     private LocalDate establishmentDate;
 
-    /**
-     * 经度
-     */
-    @TableField("longitude")
+    @Schema(name = "longitude", description = "经度")
     private BigDecimal longitude;
 
-    /**
-     * 纬度
-     */
-    @TableField("latitude")
+    @Schema(name = "latitude", description = "纬度")
     private BigDecimal latitude;
 
-    /**
-     * 备注
-     */
-    @TableField("remark")
+    @Schema(name = "remark", description = "备注")
     private String remark;
 
-    /**
-     * 创建时间
-     */
-    @TableField(value = "created_at", fill = FieldFill.INSERT)
+    @Schema(name = "createdAt", description = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
-    /**
-     * 更新时间
-     */
-    @TableField(value = "updated_at", fill = FieldFill.INSERT_UPDATE)
+    @Schema(name = "updatedAt", description = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 
-    /**
-     * 软删除标记
-     */
-    @TableLogic
-    @TableField("deleted_at")
+    @Schema(name = "deletedAt", description = "软删除标记")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime deletedAt;
-
-    // ========== 关联信息字段（非数据库字段，用于存储关联查询结果） ==========
-
-    /**
-     * 负责人姓名（非数据库字段）
-     */
-    @TableField(exist = false)
-    private String managerName;
-
-    /**
-     * 监测类型名称（非数据库字段）
-     */
-    @TableField(exist = false)
-    private String monitoringTypeName;
-
-    /**
-     * 运行状态名称（非数据库字段）
-     */
-    @TableField(exist = false)
-    private String operationStatusName;
 }

@@ -5,147 +5,206 @@ import com.example.demo.pojo.DTO.facility.FloatingBoatCreateDTO;
 import com.example.demo.pojo.DTO.facility.FloatingBoatQueryDTO;
 import com.example.demo.pojo.DTO.facility.FloatingBoatResponseDTO;
 import com.example.demo.pojo.DTO.facility.FloatingBoatUpdateDTO;
+import com.example.demo.pojo.VO.FloatingBoatVO;
 import com.example.demo.pojo.entity.facility.FloatingBoat;
 import com.example.demo.mapper.FloatingBoatMapper;
+import com.example.demo.service.base.FacilityService;
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import com.github.pagehelper.Page;
 
 /**
- * 浮船信息服务类
+ * 漂浮船只服务类
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
-public class FloatingBoatService {
+public class FloatingBoatService implements FacilityService<FloatingBoat, FloatingBoatResponseDTO, FloatingBoatQueryDTO, FloatingBoatCreateDTO, FloatingBoatUpdateDTO, FloatingBoatVO> {
 
     private final FloatingBoatMapper floatingBoatMapper;
 
     /**
-     * 分页查询浮船信息列表
+     * 分页查询漂浮船只列表
+     * 实现统一接口方法：queryPage
      */
-    public PageResult<FloatingBoatResponseDTO> getFloatingBoatPage(FloatingBoatQueryDTO queryDTO) {
-        PageHelper.startPage(queryDTO.getPage(), queryDTO.getSize());
-        List<FloatingBoatResponseDTO> result = floatingBoatMapper.selectFloatingBoatPage(
-            queryDTO.getKeyword(),
-            queryDTO.getPumpingStatus()
+    @Override
+    public PageResult<FloatingBoatVO> queryPage(FloatingBoatQueryDTO floatingBoatQueryDTO) {
+        PageHelper.startPage(floatingBoatQueryDTO.getPage(), floatingBoatQueryDTO.getSize());
+        Page<FloatingBoat> floatingBoats = floatingBoatMapper.selectFloatingBoatPage(
+                floatingBoatQueryDTO.getKeyword()
         );
-        PageInfo<FloatingBoatResponseDTO> pageInfo = new PageInfo<>(result);
+
+        // 获取分页信息
+        long total = floatingBoats.getTotal();
+        List<FloatingBoat> records = floatingBoats.getResult();
+
+        // 转换为VO格式并补充关联信息
+        List<FloatingBoatVO> voList = records.stream()
+            .map(this::convertToVO)
+            .collect(java.util.stream.Collectors.toList());
 
         return new PageResult<>(
-            pageInfo.getList(),
-            (int) pageInfo.getTotal(),
-            pageInfo.getPageNum(),
-            pageInfo.getPageSize()
+                total,
+                voList
         );
     }
 
     /**
-     * 根据ID查询浮船信息详情
+     * 根据ID查询漂浮船只详情
+     * 实现统一接口方法：queryById
      */
-    public FloatingBoatResponseDTO getFloatingBoatById(Long id) {
-        FloatingBoatResponseDTO result = floatingBoatMapper.selectFloatingBoatById(id);
-        if (result == null) {
-            throw new RuntimeException("浮船信息不存在，ID: " + id);
+    @Override
+    public FloatingBoatResponseDTO queryById(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("漂浮船只ID不能为空");
         }
-        return result;
+
+        FloatingBoat floatingBoat = floatingBoatMapper.selectFloatingBoatById(id);
+        if (floatingBoat == null) {
+            throw new RuntimeException("漂浮船只不存在");
+        }
+        
+        // 转换为ResponseDTO并补充关联信息
+        FloatingBoatResponseDTO responseDTO = new FloatingBoatResponseDTO();
+        BeanUtils.copyProperties(floatingBoat, responseDTO);
+        
+        // 查询并设置抽水状态名称
+        if (floatingBoat.getPumpingStatus() != null) {
+            String pumpingStatusName = floatingBoatMapper.selectPumpingStatusNameByBoatId(floatingBoat.getId());
+            responseDTO.setPumpingStatusName(pumpingStatusName);
+        }
+        
+        return responseDTO;
     }
 
     /**
-     * 创建浮船信息
+     * 创建漂浮船只
+     * 实现统一接口方法：create
      */
+    @Override
     @Transactional
-    public FloatingBoatResponseDTO createFloatingBoat(FloatingBoatCreateDTO createDTO) {
-        // 浮船编码字段已移除，无需检查编码重复
+    public FloatingBoatResponseDTO create(FloatingBoatCreateDTO createDTO) {
+        // 船只编码字段已移除，无需检查编码重复
 
-        // 创建实体对象
         FloatingBoat floatingBoat = new FloatingBoat();
         BeanUtils.copyProperties(createDTO, floatingBoat);
+        floatingBoat.setCreatedAt(LocalDateTime.now());
+        floatingBoat.setUpdatedAt(LocalDateTime.now());
 
-        // 保存到数据库
-        int result = floatingBoatMapper.insert(floatingBoat);
-        if (result <= 0) {
-            throw new RuntimeException("创建浮船信息失败");
-        }
+        floatingBoatMapper.insert(floatingBoat);
+        log.info("创建漂浮船只成功，船只ID: {}, 船只名称: {}", floatingBoat.getId(), floatingBoat.getName());
 
-        // 返回创建结果
-        return getFloatingBoatById(floatingBoat.getId());
+        return queryById(floatingBoat.getId());
     }
 
     /**
-     * 更新浮船信息
+     * 更新漂浮船只信息
+     * 实现统一接口方法：update
      */
+    @Override
     @Transactional
-    public FloatingBoatResponseDTO updateFloatingBoat(FloatingBoatUpdateDTO updateDTO) {
-        // 检查浮船信息是否存在
-        FloatingBoat existingFloatingBoat = floatingBoatMapper.selectById(updateDTO.getId());
-        if (existingFloatingBoat == null) {
-            throw new RuntimeException("浮船信息不存在，ID: " + updateDTO.getId());
+    public FloatingBoatResponseDTO update(FloatingBoatUpdateDTO updateDTO) {
+        if (updateDTO.getId() == null) {
+            throw new IllegalArgumentException("漂浮船只ID不能为空");
         }
 
-        // 浮船编码字段已移除，无需检查编码重复
+        // 检查船只是否存在
+        FloatingBoat existingBoat = floatingBoatMapper.selectById(updateDTO.getId());
+        if (existingBoat == null) {
+            throw new RuntimeException("漂浮船只不存在");
+        }
 
-        // 更新实体对象
+        // 船只编码字段已移除，无需检查编码重复
+
         FloatingBoat floatingBoat = new FloatingBoat();
         BeanUtils.copyProperties(updateDTO, floatingBoat);
+        floatingBoat.setUpdatedAt(LocalDateTime.now());
 
-        // 更新数据库
-        int result = floatingBoatMapper.updateById(floatingBoat);
-        if (result <= 0) {
-            throw new RuntimeException("更新浮船信息失败");
-        }
+        floatingBoatMapper.updateById(floatingBoat);
+        log.info("更新漂浮船只成功，船只ID: {}, 船只名称: {}", floatingBoat.getId(), floatingBoat.getName());
 
-        // 返回更新结果
-        return getFloatingBoatById(updateDTO.getId());
+        return queryById(updateDTO.getId());
     }
 
     /**
-     * 删除浮船信息
+     * 删除漂浮船只
+     * 实现统一接口方法：delete
      */
+    @Override
     @Transactional
-    public void deleteFloatingBoat(Long id) {
-        // 检查浮船信息是否存在
-        FloatingBoat existingFloatingBoat = floatingBoatMapper.selectById(id);
-        if (existingFloatingBoat == null) {
-            throw new RuntimeException("浮船信息不存在，ID: " + id);
+    public void delete(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("漂浮船只ID不能为空");
         }
 
-        // 软删除
-        int result = floatingBoatMapper.deleteById(id);
-        if (result <= 0) {
-            throw new RuntimeException("删除浮船信息失败");
+        // 检查船只是否存在
+        FloatingBoat existingBoat = floatingBoatMapper.selectById(id);
+        if (existingBoat == null) {
+            throw new RuntimeException("漂浮船只不存在");
         }
+
+        // 软删除：设置删除时间
+        FloatingBoat floatingBoat = new FloatingBoat();
+        floatingBoat.setId(id);
+        floatingBoat.setDeletedAt(LocalDateTime.now());
+        floatingBoatMapper.updateById(floatingBoat);
+
+        log.info("删除漂浮船只成功，船只ID: {}, 船只名称: {}", id, existingBoat.getName());
     }
 
     /**
-     * 批量删除浮船信息
+     * 批量删除漂浮船只
      */
     @Transactional
     public void batchDeleteFloatingBoats(List<Long> ids) {
         if (ids == null || ids.isEmpty()) {
-            throw new RuntimeException("删除ID列表不能为空");
+            throw new IllegalArgumentException("删除ID列表不能为空");
         }
 
         for (Long id : ids) {
-            deleteFloatingBoat(id);
+            delete(id);
         }
     }
 
     /**
-     * 获取所有可用浮船信息（用于下拉选择）
+     * 获取可用漂浮船只列表（用于下拉选择）
+     * 实现统一接口方法：queryAvailable
      */
-    public List<FloatingBoat> getAvailableFloatingBoats() {
-        return floatingBoatMapper.selectAvailableFloatingBoats();
+    @Override
+    public List<FloatingBoatVO> queryAvailable() {
+        List<FloatingBoat> floatingBoats = floatingBoatMapper.selectAvailableFloatingBoats();
+        return floatingBoats.stream().map(this::convertToVO).collect(java.util.stream.Collectors.toList());
     }
 
     /**
-     * 统计浮船信息总数
+     * 统计漂浮船只总数
+     * 实现统一接口方法：countTotal
      */
+    @Override
     public long countTotal() {
         return floatingBoatMapper.countTotal();
+    }
+
+    /**
+     * 将FloatingBoat实体转换为VO，并补充关联信息
+     */
+    private FloatingBoatVO convertToVO(FloatingBoat floatingBoat) {
+        FloatingBoatVO vo = new FloatingBoatVO();
+        BeanUtils.copyProperties(floatingBoat, vo);
+        
+        // 查询并设置抽水状态名称
+        if (floatingBoat.getPumpingStatus() != null) {
+            String pumpingStatusName = floatingBoatMapper.selectPumpingStatusNameByBoatId(floatingBoat.getId());
+            vo.setPumpingStatusLabel(pumpingStatusName);
+        }
+        
+        return vo;
     }
 }

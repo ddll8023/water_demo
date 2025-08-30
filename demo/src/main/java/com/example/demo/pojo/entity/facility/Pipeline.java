@@ -1,9 +1,10 @@
 package com.example.demo.pojo.entity.facility;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,125 +14,65 @@ import java.time.LocalDateTime;
  * 对应数据库表: pipelines
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@TableName("pipelines")
-public class Pipeline {
+@Schema(name = "Pipeline", description = "管道信息实体")
+public class Pipeline implements Serializable {
 
-    /**
-     * 主键ID
-     */
-    @TableId(value = "id", type = IdType.AUTO)
+    private static final long serialVersionUID = 1L;
+
+    @Schema(name = "id", description = "主键ID")
     private Long id;
 
-    /**
-     * 管道编码
-     */
-    @TableField("pipeline_code")
+    @Schema(name = "pipelineCode", description = "管道编码")
     private String pipelineCode;
 
-    /**
-     * 管道名称
-     */
-    @TableField("name")
+    @Schema(name = "name", description = "管道名称")
     private String name;
 
-    /**
-     * 管道类型（关联dict_data.data_value，type_code=pipeline_type）
-     */
-    @TableField("pipeline_type")
+    @Schema(name = "pipelineType", description = "管道类型（关联dict_data.data_value，type_code=pipeline_type）")
     private String pipelineType;
 
-    /**
-     * 起点经度
-     */
-    @TableField("start_longitude")
+    @Schema(name = "startLongitude", description = "起点经度")
     private BigDecimal startLongitude;
 
-    /**
-     * 起点纬度
-     */
-    @TableField("start_latitude")
+    @Schema(name = "startLatitude", description = "起点纬度")
     private BigDecimal startLatitude;
 
-    /**
-     * 终点经度
-     */
-    @TableField("end_longitude")
+    @Schema(name = "endLongitude", description = "终点经度")
     private BigDecimal endLongitude;
 
-    /**
-     * 终点纬度
-     */
-    @TableField("end_latitude")
+    @Schema(name = "endLatitude", description = "终点纬度")
     private BigDecimal endLatitude;
 
-    /**
-     * 管道长度（km）
-     */
-    @TableField("length")
+    @Schema(name = "length", description = "管道长度（km）")
     private BigDecimal length;
 
-    /**
-     * 管径（mm）
-     */
-    @TableField("diameter")
+    @Schema(name = "diameter", description = "管径（mm）")
     private BigDecimal diameter;
 
-    /**
-     * 设计压力（MPa）
-     */
-    @TableField("design_pressure")
+    @Schema(name = "designPressure", description = "设计压力（MPa）")
     private BigDecimal designPressure;
 
-    /**
-     * 设计流量（m³/h）
-     */
-    @TableField("design_flow")
+    @Schema(name = "designFlow", description = "设计流量（m³/h）")
     private BigDecimal designFlow;
 
-    /**
-     * 埋深（m）
-     */
-    @TableField("burial_depth")
+    @Schema(name = "burialDepth", description = "埋深（m）")
     private BigDecimal burialDepth;
 
-    /**
-     * 建设年月
-     */
-    @TableField("construction_date")
+    @Schema(name = "constructionDate", description = "建设年月")
     private LocalDate constructionDate;
 
-    /**
-     * 备注
-     */
-    @TableField("remark")
+    @Schema(name = "remark", description = "备注")
     private String remark;
 
-    /**
-     * 创建时间
-     */
-    @TableField(value = "created_at", fill = FieldFill.INSERT)
+    @Schema(name = "createdAt", description = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
-    /**
-     * 更新时间
-     */
-    @TableField(value = "updated_at", fill = FieldFill.INSERT_UPDATE)
+    @Schema(name = "updatedAt", description = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 
-    /**
-     * 软删除标记
-     */
-    @TableLogic
-    @TableField("deleted_at")
+    @Schema(name = "deletedAt", description = "软删除标记")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime deletedAt;
-
-    // ========== 关联信息字段（非数据库字段，用于存储关联查询结果） ==========
-
-    /**
-     * 管道类型名称（非数据库字段）
-     */
-    @TableField(exist = false)
-    private String pipelineTypeName;
-
 }

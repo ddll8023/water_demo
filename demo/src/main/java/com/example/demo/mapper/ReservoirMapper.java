@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.demo.pojo.DTO.facility.ReservoirResponseDTO;
 import com.example.demo.pojo.entity.facility.Reservoir;
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -26,16 +27,24 @@ public interface ReservoirMapper extends BaseMapper<Reservoir> {
                                                     @Param("reservoirLevel") String reservoirLevel);
 
     /**
-     * 查询水库列表（包含关联信息）
-     * 配合 PageHelper 使用
+     * 查询水库列表（基础信息）- 用于PageHelper分页
      */
-    List<ReservoirResponseDTO> selectReservoirList(@Param("keyword") String keyword,
-                                               @Param("reservoirLevel") String reservoirLevel);
+    Page<Reservoir> selectReservoirList(@Param("keyword") String keyword);
 
     /**
-     * 根据ID查询水库详情（包含关联信息）
+     * 查询工程等级名称
      */
-    ReservoirResponseDTO selectReservoirById(@Param("id") Long id);
+    String selectEngineeringGradeNameByReservoirId(@Param("reservoirId") Long reservoirId);
+
+    /**
+     * 查询工程规模名称
+     */
+    String selectEngineeringScaleNameByReservoirId(@Param("reservoirId") Long reservoirId);
+
+    /**
+     * 根据ID查询水库详情（基础信息）
+     */
+    Reservoir selectReservoirById(@Param("id") Long id);
 
     /**
      * 检查水库编码是否存在

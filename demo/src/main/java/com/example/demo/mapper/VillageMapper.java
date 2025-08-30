@@ -1,9 +1,8 @@
 package com.example.demo.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.demo.pojo.DTO.facility.VillageResponseDTO;
 import com.example.demo.pojo.entity.facility.Village;
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -11,23 +10,18 @@ import java.util.List;
 
 /**
  * 村庄信息Mapper接口
+ * 提供村庄信息相关的数据访问操作
  */
 @Mapper
-public interface VillageMapper extends BaseMapper<Village> {
+public interface VillageMapper {
 
     /**
-     * 分页查询村庄信息列表
-     * 已废弃，请使用 selectVillageList
+     * 分页查询村庄列表（基础信息）- 用于PageHelper分页
      */
-    @Deprecated
-    IPage<VillageResponseDTO> selectVillagePage(
-        IPage<VillageResponseDTO> page,
-        @Param("keyword") String keyword
-    );
+    Page<Village> selectVillagePageByKeyword(@Param("keyword") String keyword);
 
     /**
-     * 查询村庄信息列表
-     * 配合 PageHelper 使用
+     * 查询村庄信息列表 - PageHelper 方式
      */
     List<VillageResponseDTO> selectVillageList(@Param("keyword") String keyword);
 
@@ -39,9 +33,7 @@ public interface VillageMapper extends BaseMapper<Village> {
     /**
      * 检查村庄名称在同一行政区划下是否存在
      */
-    boolean existsByNameAndAdministrativeCode(@Param("name") String name,
-                                             @Param("administrativeCode") String administrativeCode,
-                                             @Param("excludeId") Long excludeId);
+    boolean existsByNameAndAdministrativeCode(@Param("name") String name, @Param("administrativeCode") String administrativeCode, @Param("excludeId") Long excludeId);
 
     /**
      * 获取所有可用的村庄信息（用于下拉选择）
@@ -52,4 +44,12 @@ public interface VillageMapper extends BaseMapper<Village> {
      * 统计村庄信息总数
      */
     long countTotal();
+
+    int insert(Village village);
+
+    int updateById(Village village);
+
+    Village selectById(Long id);
+
+    int deleteById(Long id);
 }

@@ -1,31 +1,18 @@
 package com.example.demo.pojo.DTO.facility;
 
+import com.example.demo.pojo.DTO.common.BaseQueryDTO;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
- * 消毒药材查询条件DTO
- * 用于查询消毒药材信息的筛选条件
+ * 消毒材料查询DTO
+ * 用于消毒材料分页查询的请求参数
  */
 @Data
-public class DisinfectionMaterialQueryDTO {
-
-    /**
-     * 页码，默认为1
-     */
-    private int page = 1;
-
-    /**
-     * 每页大小，默认为10
-     */
-    private int size = 10;
-
-    /**
-     * 搜索关键词（药材名称），用于按名称模糊查询
-     */
-    private String keyword;
-
-    /**
-     * 所属水厂ID，用于按水厂筛选
-     */
-    private Long waterPlantId;
+@EqualsAndHashCode(callSuper = true)
+@Schema(name = "DisinfectionMaterialQueryDTO", description = "消毒材料查询DTO")
+public class DisinfectionMaterialQueryDTO extends BaseQueryDTO {
+    // 消毒材料特有的查询字段可以在此添加
+    // 通用的分页、排序、搜索字段已由BaseQueryDTO提供
 }

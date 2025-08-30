@@ -2,7 +2,6 @@ package com.example.demo.controller;
 
 import com.example.demo.pojo.DTO.system.PositionCreateDTO;
 import com.example.demo.pojo.DTO.system.PositionQueryDTO;
-import com.example.demo.pojo.DTO.system.PositionResponseDTO;
 import com.example.demo.pojo.DTO.system.PositionUpdateDTO;
 import com.example.demo.pojo.VO.PositionVO;
 import com.example.demo.common.ApiResponse;
@@ -12,8 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -3,6 +3,7 @@ package com.example.demo.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.demo.pojo.DTO.facility.MonitoringStationResponseDTO;
 import com.example.demo.pojo.entity.facility.MonitoringStation;
+import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -16,11 +17,10 @@ import java.util.Map;
 public interface MonitoringStationMapper extends BaseMapper<MonitoringStation> {
 
     /**
-     * 分页查询监测站点列表（包含关联信息）
+     * 分页查询监测站点列表（基础信息）
      */
-    List<MonitoringStationResponseDTO> selectMonitoringStationPage(
-            @Param("keyword") String keyword,
-            @Param("monitoringType") String monitoringType
+    Page<MonitoringStation> selectMonitoringStationPage(
+            @Param("keyword") String keyword
     );
 
     /**
@@ -43,6 +43,11 @@ public interface MonitoringStationMapper extends BaseMapper<MonitoringStation> {
      * 根据监测类型获取可用的监测站点（用于下拉选择）
      */
     List<MonitoringStation> selectAvailableMonitoringStationsByType(@Param("monitoringItemCode") String monitoringItemCode);
+
+    /**
+     * 查询监测项目名称
+     */
+    String selectMonitoringItemNameById(@Param("monitoringItemCode") String monitoringItemCode);
 
     /**
      * 统计监测站点总数

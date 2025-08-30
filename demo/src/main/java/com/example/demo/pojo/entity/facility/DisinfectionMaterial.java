@@ -1,9 +1,10 @@
 package com.example.demo.pojo.entity.facility;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,88 +14,47 @@ import java.time.LocalDateTime;
  * 对应数据库表: disinfection_materials
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@TableName("disinfection_materials")
-public class DisinfectionMaterial {
+@Schema(name = "DisinfectionMaterial", description = "消毒药材实体")
+public class DisinfectionMaterial implements Serializable {
 
-    /**
-     * 主键ID
-     */
-    @TableId(value = "id", type = IdType.AUTO)
+    private static final long serialVersionUID = 1L;
+
+    @Schema(name = "id", description = "主键ID")
     private Long id;
 
-    /**
-     * 名称
-     */
-    @TableField("name")
+    @Schema(name = "name", description = "名称")
     private String name;
 
-    /**
-     * 所属水厂ID（关联water_plants.id）
-     */
-    @TableField("water_plant_id")
+    @Schema(name = "waterPlantId", description = "所属水厂ID（关联water_plants.id）")
     private Long waterPlantId;
 
-    /**
-     * 存储条件
-     */
-    @TableField("storage_condition")
+    @Schema(name = "storageCondition", description = "存储条件")
     private String storageCondition;
 
-    /**
-     * 生产日期
-     */
-    @TableField("production_date")
+    @Schema(name = "productionDate", description = "生产日期")
     private LocalDate productionDate;
 
-    /**
-     * 有效期
-     */
-    @TableField("validity_period")
+    @Schema(name = "validityPeriod", description = "有效期")
     private String validityPeriod;
 
-    /**
-     * 库存数量
-     */
-    @TableField("quantity")
+    @Schema(name = "quantity", description = "库存数量")
     private BigDecimal quantity;
 
-    /**
-     * 单位
-     */
-    @TableField("unit")
+    @Schema(name = "unit", description = "单位")
     private String unit;
 
-    /**
-     * 备注
-     */
-    @TableField("remark")
+    @Schema(name = "remark", description = "备注")
     private String remark;
 
-    /**
-     * 创建时间
-     */
-    @TableField(value = "created_at", fill = FieldFill.INSERT)
+    @Schema(name = "createdAt", description = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
-    /**
-     * 更新时间
-     */
-    @TableField(value = "updated_at", fill = FieldFill.INSERT_UPDATE)
+    @Schema(name = "updatedAt", description = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 
-    /**
-     * 软删除标记
-     */
-    @TableLogic
-    @TableField("deleted_at")
+    @Schema(name = "deletedAt", description = "软删除标记")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime deletedAt;
-
-    // ========== 关联信息字段（非数据库字段，用于存储关联查询结果） ==========
-
-    /**
-     * 所属水厂名称（非数据库字段）
-     */
-    @TableField(exist = false)
-    private String waterPlantName;
 }

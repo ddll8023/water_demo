@@ -38,24 +38,27 @@
         <result property="deletedAt" column="deleted_at"/>
     </resultMap>
 
-    <!-- 分页查询监测站点列表（包含关联信息） -->
-    <select id="selectMonitoringStationPage" resultMap="MonitoringStationResponseDTOMap">
-        SELECT monitoring_stations.*,
-               dict_data.data_label as monitoring_item_name
+    <!-- 分页查询监测站点列表（基础信息）- 用于PageHelper分页 -->
+    <select id="selectMonitoringStationPage" resultType="com.example.demo.pojo.entity.facility.MonitoringStation">
+        SELECT *
         FROM monitoring_stations
-        LEFT JOIN dict_data ON monitoring_stations.monitoring_item_code = dict_data.data_value
-        LEFT JOIN dict_types ON dict_data.type_id = dict_types.id AND dict_types.type_code = 'monitoring_item'
-        WHERE monitoring_stations.deleted_at IS NULL
+        WHERE deleted_at IS NULL
         <if test="keyword != null and keyword != ''">
-            AND (monitoring_stations.name LIKE CONCAT('%', #{keyword}, '%')
-            OR monitoring_stations.station_code LIKE CONCAT('%', #{keyword}, '%')
-            OR monitoring_stations.water_system_name LIKE CONCAT('%', #{keyword}, '%')
-            OR monitoring_stations.river_name LIKE CONCAT('%', #{keyword}, '%'))
+            AND (name LIKE CONCAT('%', #{keyword}, '%')
+            OR station_code LIKE CONCAT('%', #{keyword}, '%')
+            OR water_system_name LIKE CONCAT('%', #{keyword}, '%')
+            OR river_name LIKE CONCAT('%', #{keyword}, '%'))
         </if>
-        <if test="monitoringType != null and monitoringType != ''">
-            AND monitoring_stations.monitoring_item_code = #{monitoringType}
-        </if>
-        ORDER BY monitoring_stations.created_at DESC
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 查询监测项目名称 -->
+    <select id="selectMonitoringItemNameById" resultType="java.lang.String">
+        SELECT data_label
+        FROM dict_data 
+        WHERE data_value = #{monitoringItemCode}
+          AND type_id = (SELECT id FROM dict_types WHERE type_code = 'monitoring_item' AND deleted_at IS NULL)
+          AND deleted_at IS NULL
     </select>
 
     <!-- 根据ID查询监测站点详情（包含关联信息） -->

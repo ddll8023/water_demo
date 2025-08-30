@@ -85,4 +85,29 @@ public class MessageConstant {
     public static final String PERSONNEL_EMAIL_MAX_LENGTH = "人员邮箱长度不能超过100个字符";
     public static final String PERSONNEL_EMPLOYEE_NO_MAX_LENGTH = "人员工号长度不能超过50个字符";
     public static final String PERSONNEL_HIRE_DATE_MAX_LENGTH = "人员入职日期长度不能超过100个字符";
+
+    // 设施相关常量
+    public static final String FACILITY_TYPE_NOT_SUPPORTED = "不支持的设施类型";
+    public static final String FACILITY_NOT_EXIST = "设施不存在";
+    public static final String FACILITY_QUERY_FAILED = "设施查询失败";
+    public static final String FACILITY_CREATE_FAILED = "设施创建失败";
+    public static final String FACILITY_UPDATE_FAILED = "设施更新失败";
+    public static final String FACILITY_DELETE_FAILED = "设施删除失败";
+    public static final String FACILITY_COUNT_FAILED = "设施统计失败";
+    public static final String FACILITY_DTO_CONVERT_FAILED = "设施数据转换失败";
+    public static final String FACILITY_SERVICE_NOT_FOUND = "设施服务未找到";
+    
+    // 工程信息服务详细异常消息
+    public static final String FACILITY_TYPE_CONFIG_NOT_FOUND = "设施类型配置未找到";
+    public static final String FACILITY_SERVICE_NOT_REGISTERED = "设施服务未注册";
+    public static final String FACILITY_DTO_CLASS_NOT_FOUND = "设施DTO类不存在";
+    public static final String FACILITY_DTO_INSTANTIATE_FAILED = "设施DTO实例化失败";
+    public static final String FACILITY_PAGE_QUERY_FAILED = "设施分页查询失败";
+    public static final String FACILITY_DETAIL_QUERY_FAILED = "设施详情查询失败";
+    public static final String FACILITY_AVAILABLE_QUERY_FAILED = "可用设施查询失败";
+    public static final String FACILITY_CREATE_DTO_CONVERT_FAILED = "创建DTO转换失败";
+    public static final String FACILITY_UPDATE_DTO_CONVERT_FAILED = "更新DTO转换失败";
+    public static final String FACILITY_JSON_CONVERT_FAILED = "JSON转换失败";
+    public static final String FACILITY_BEAN_NOT_IMPLEMENT_INTERFACE = "服务Bean未实现FacilityService接口";
+    public static final String FACILITY_BEAN_LOAD_FAILED = "服务Bean加载失败";
 }

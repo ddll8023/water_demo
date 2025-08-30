@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.FacilityTypeMapper">
+
+    <!-- 根据排序查询设施类型 -->
+    <select id="selectActiveFacilityTypesSorted" resultType="com.example.demo.pojo.entity.facility.FacilityType">
+        SELECT *
+        FROM facility_types
+        WHERE deleted_at IS NULL
+        AND is_active = '1'
+        ORDER BY sort_order ASC, id ASC
+    </select>
+
+    <!-- 根据API路径查询设施类型配置 -->
+    <select id="selectByApiPath" resultType="com.example.demo.pojo.entity.facility.FacilityType">
+        SELECT *
+        FROM facility_types
+        WHERE api_path = #{apiPath}
+        AND deleted_at IS NULL
+        AND is_active = '1'
+        LIMIT 1
+    </select>
+
+</mapper> 

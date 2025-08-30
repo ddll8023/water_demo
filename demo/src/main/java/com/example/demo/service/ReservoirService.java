@@ -1,14 +1,16 @@
 package com.example.demo.service;
 
+import com.example.demo.common.PageResult;
 import com.example.demo.pojo.DTO.facility.ReservoirCreateDTO;
 import com.example.demo.pojo.DTO.facility.ReservoirQueryDTO;
 import com.example.demo.pojo.DTO.facility.ReservoirResponseDTO;
 import com.example.demo.pojo.DTO.facility.ReservoirUpdateDTO;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
-import com.example.demo.common.PageResult;
+import com.example.demo.pojo.VO.ReservoirVO;
 import com.example.demo.pojo.entity.facility.Reservoir;
 import com.example.demo.mapper.ReservoirMapper;
+import com.example.demo.service.base.FacilityService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -20,19 +22,21 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * 水库服务实现类
+ * 水库服务类
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ReservoirService {
+public class ReservoirService implements FacilityService<Reservoir, ReservoirResponseDTO, ReservoirQueryDTO, ReservoirCreateDTO, ReservoirUpdateDTO, ReservoirVO> {
 
     private final ReservoirMapper reservoirMapper;
 
     /**
      * 分页查询水库列表
+     * 实现统一接口方法：queryPage
      */
-    public PageResult<ReservoirResponseDTO> getReservoirPage(ReservoirQueryDTO queryDTO) {
+    @Override
+    public PageResult<ReservoirVO> queryPage(ReservoirQueryDTO queryDTO) {
         // 参数验证
         if (queryDTO.getPage() == null || queryDTO.getPage() < 1) {
             queryDTO.setPage(1);
@@ -41,62 +45,77 @@ public class ReservoirService {
             queryDTO.setSize(10);
         }
 
-        // 使用PageHelper开始分页
+        // 使用PageHelper进行分页
         PageHelper.startPage(queryDTO.getPage(), queryDTO.getSize());
-        
-        // 查询数据，不需要传入分页参数
-        List<ReservoirResponseDTO> reservoirs = reservoirMapper.selectReservoirList(
-                queryDTO.getKeyword(),
-                queryDTO.getEngineeringGrade()
+        Page<Reservoir> reservoirs = reservoirMapper.selectReservoirList(
+                queryDTO.getKeyword()
         );
-        
+
         // 获取分页信息
-        PageInfo<ReservoirResponseDTO> pageInfo = new PageInfo<>(reservoirs);
+        long total = reservoirs.getTotal();
+        List<Reservoir> records = reservoirs.getResult();
+
+        // 转换为VO格式并补充关联信息
+        List<ReservoirVO> voList = records.stream()
+            .map(this::convertToVO)
+            .collect(java.util.stream.Collectors.toList());
 
         return new PageResult<>(
-                pageInfo.getList(),
-                (int) pageInfo.getTotal(),
-                queryDTO.getPage(),
-                queryDTO.getSize()
+                total,
+                voList
         );
     }
 
     /**
      * 根据ID查询水库详情
+     * 实现统一接口方法：queryById
      */
-    public ReservoirResponseDTO getReservoirById(Long id) {
+    @Override
+    public ReservoirResponseDTO queryById(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("水库ID不能为空");
         }
 
-        ReservoirResponseDTO reservoir = reservoirMapper.selectReservoirById(id);
+        Reservoir reservoir = reservoirMapper.selectReservoirById(id);
         if (reservoir == null) {
             throw new RuntimeException("水库不存在");
         }
-        return reservoir;
+        
+        // 转换为ResponseDTO并补充关联信息
+        ReservoirResponseDTO responseDTO = new ReservoirResponseDTO();
+        BeanUtils.copyProperties(reservoir, responseDTO);
+        
+        // 查询并设置关联信息
+        if (reservoir.getEngineeringGrade() != null) {
+            String engineeringGradeName = reservoirMapper.selectEngineeringGradeNameByReservoirId(reservoir.getId());
+            responseDTO.setEngineeringGradeName(engineeringGradeName);
+        }
+        
+        if (reservoir.getEngineeringScale() != null) {
+            String engineeringScaleName = reservoirMapper.selectEngineeringScaleNameByReservoirId(reservoir.getId());
+            responseDTO.setEngineeringScaleName(engineeringScaleName);
+        }
+        
+        return responseDTO;
     }
 
     /**
      * 创建水库
+     * 实现统一接口方法：create
      */
+    @Override
     @Transactional
-    public ReservoirResponseDTO createReservoir(ReservoirCreateDTO createDTO) {
+    public ReservoirResponseDTO create(ReservoirCreateDTO createDTO) {
         // 验证水库名称是否已存在
-        if (StringUtils.hasText(createDTO.getName()) && 
-            reservoirMapper.existsByName(createDTO.getName(), null)) {
+        if (StringUtils.hasText(createDTO.getName()) &&
+                reservoirMapper.existsByName(createDTO.getName(), null)) {
             throw new RuntimeException("水库名称已存在");
         }
 
         // 验证水库编码是否已存在
-        if (StringUtils.hasText(createDTO.getReservoirCode()) && 
-            reservoirMapper.existsByReservoirCode(createDTO.getReservoirCode(), null)) {
+        if (StringUtils.hasText(createDTO.getReservoirCode()) &&
+                reservoirMapper.existsByReservoirCode(createDTO.getReservoirCode(), null)) {
             throw new RuntimeException("水库编码已存在");
-        }
-
-        // 验证注册登记号是否已存在
-        if (StringUtils.hasText(createDTO.getRegistrationNo()) && 
-            reservoirMapper.existsByRegistrationNo(createDTO.getRegistrationNo(), null)) {
-            throw new RuntimeException("注册登记号已存在");
         }
 
         Reservoir reservoir = new Reservoir();
@@ -107,14 +126,16 @@ public class ReservoirService {
         reservoirMapper.insert(reservoir);
         log.info("创建水库成功，水库ID: {}, 水库名称: {}", reservoir.getId(), reservoir.getName());
 
-        return getReservoirById(reservoir.getId());
+        return queryById(reservoir.getId());
     }
 
     /**
      * 更新水库信息
+     * 实现统一接口方法：update
      */
+    @Override
     @Transactional
-    public ReservoirResponseDTO updateReservoir(ReservoirUpdateDTO updateDTO) {
+    public ReservoirResponseDTO update(ReservoirUpdateDTO updateDTO) {
         if (updateDTO.getId() == null) {
             throw new IllegalArgumentException("水库ID不能为空");
         }
@@ -126,21 +147,15 @@ public class ReservoirService {
         }
 
         // 验证水库名称是否已存在（排除当前记录）
-        if (StringUtils.hasText(updateDTO.getName()) && 
-            reservoirMapper.existsByName(updateDTO.getName(), updateDTO.getId())) {
+        if (StringUtils.hasText(updateDTO.getName()) &&
+                reservoirMapper.existsByName(updateDTO.getName(), updateDTO.getId())) {
             throw new RuntimeException("水库名称已存在");
         }
 
         // 验证水库编码是否已存在（排除当前记录）
-        if (StringUtils.hasText(updateDTO.getReservoirCode()) && 
-            reservoirMapper.existsByReservoirCode(updateDTO.getReservoirCode(), updateDTO.getId())) {
+        if (StringUtils.hasText(updateDTO.getReservoirCode()) &&
+                reservoirMapper.existsByReservoirCode(updateDTO.getReservoirCode(), updateDTO.getId())) {
             throw new RuntimeException("水库编码已存在");
-        }
-
-        // 验证注册登记号是否已存在（排除当前记录）
-        if (StringUtils.hasText(updateDTO.getRegistrationNo()) && 
-            reservoirMapper.existsByRegistrationNo(updateDTO.getRegistrationNo(), updateDTO.getId())) {
-            throw new RuntimeException("注册登记号已存在");
         }
 
         Reservoir reservoir = new Reservoir();
@@ -150,14 +165,16 @@ public class ReservoirService {
         reservoirMapper.updateById(reservoir);
         log.info("更新水库成功，水库ID: {}, 水库名称: {}", reservoir.getId(), reservoir.getName());
 
-        return getReservoirById(reservoir.getId());
+        return queryById(updateDTO.getId());
     }
 
     /**
      * 删除水库
+     * 实现统一接口方法：delete
      */
+    @Override
     @Transactional
-    public void deleteReservoir(Long id) {
+    public void delete(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("水库ID不能为空");
         }
@@ -168,7 +185,7 @@ public class ReservoirService {
             throw new RuntimeException("水库不存在");
         }
 
-        // 软删除
+        // 软删除：设置删除时间
         Reservoir reservoir = new Reservoir();
         reservoir.setId(id);
         reservoir.setDeletedAt(LocalDateTime.now());
@@ -183,37 +200,51 @@ public class ReservoirService {
     @Transactional
     public void batchDeleteReservoirs(List<Long> ids) {
         if (ids == null || ids.isEmpty()) {
-            throw new RuntimeException("删除ID列表不能为空");
+            throw new IllegalArgumentException("删除ID列表不能为空");
         }
 
         for (Long id : ids) {
-            deleteReservoir(id);
+            delete(id);
         }
     }
 
     /**
-     * 获取所有可用水库（用于下拉选择）
+     * 获取可用水库列表（用于下拉选择）
+     * 实现统一接口方法：queryAvailable
      */
-    public List<Reservoir> getAvailableReservoirs() {
-        return reservoirMapper.selectAvailableReservoirs();
+    @Override
+    public List<ReservoirVO> queryAvailable() {
+        List<Reservoir> reservoirs = reservoirMapper.selectAvailableReservoirs();
+        return reservoirs.stream().map(this::convertToVO).collect(java.util.stream.Collectors.toList());
     }
 
     /**
      * 统计水库总数
+     * 实现统一接口方法：countTotal
      */
+    @Override
     public long countTotal() {
         return reservoirMapper.countTotal();
     }
 
-
-
     /**
-     * 根据工程等级统计数量
+     * 将Reservoir实体转换为VO，并补充关联信息
      */
-    public long countByEngineeringGrade(String engineeringGrade) {
-        if (!StringUtils.hasText(engineeringGrade)) {
-            return 0;
+    private ReservoirVO convertToVO(Reservoir reservoir) {
+        ReservoirVO vo = new ReservoirVO();
+        BeanUtils.copyProperties(reservoir, vo);
+        
+        // 查询并设置关联信息
+        if (reservoir.getEngineeringGrade() != null) {
+            String engineeringGradeName = reservoirMapper.selectEngineeringGradeNameByReservoirId(reservoir.getId());
+            vo.setEngineeringGradeLabel(engineeringGradeName);
         }
-        return reservoirMapper.countByEngineeringGrade(engineeringGrade);
+        
+        if (reservoir.getEngineeringScale() != null) {
+            String engineeringScaleName = reservoirMapper.selectEngineeringScaleNameByReservoirId(reservoir.getId());
+            vo.setEngineeringScaleLabel(engineeringScaleName);
+        }
+        
+        return vo;
     }
 }

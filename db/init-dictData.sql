@@ -307,6 +307,38 @@ WHERE NOT EXISTS (
 -- 工程信息服务模块字典数据
 -- --------------------------------------------------------------------------------
 
+-- 设施类型基础数据初始化
+INSERT INTO facility_types (type_code, type_name, description, entity_table, entity_class, api_path, icon_class, map_icon, sort_order, is_active, created_at, updated_at)
+SELECT 'pumping_station', '加压泵站', '用于加压供水的泵站', 'pumping_stations', 'PumpingStation', 'pumping-stations', 'icon-pump', 'pump-station', 10, '1', NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM facility_types WHERE type_code = 'pumping_station');
+
+INSERT INTO facility_types (type_code, type_name, description, entity_table, entity_class, api_path, icon_class, map_icon, sort_order, is_active, created_at, updated_at)
+SELECT 'water_plant', '水厂', '水处理厂', 'water_plants', 'WaterPlant', 'water-plants', 'icon-plant', 'water-plant', 20, '1', NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM facility_types WHERE type_code = 'water_plant');
+
+INSERT INTO facility_types (type_code, type_name, description, entity_table, entity_class, api_path, icon_class, map_icon, sort_order, is_active, created_at, updated_at)
+SELECT 'reservoir', '水库', '蓄水水库', 'reservoirs', 'Reservoir', 'reservoirs', 'icon-reservoir', 'reservoir', 30, '1', NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM facility_types WHERE type_code = 'reservoir');
+
+INSERT INTO facility_types (type_code, type_name, description, entity_table, entity_class, api_path, icon_class, map_icon, sort_order, is_active, created_at, updated_at)
+SELECT 'monitoring_station', '监测站', '监测站设施', 'monitoring_stations', 'MonitoringStation', 'monitoring-stations', 'icon-monitor', 'monitoring-station', 40, '1', NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM facility_types WHERE type_code = 'monitoring_station');
+
+INSERT INTO facility_types (type_code, type_name, description, entity_table, entity_class, api_path, icon_class, map_icon, sort_order, is_active, created_at, updated_at)
+SELECT 'pipeline', '管道', '供水管道', 'pipelines', 'Pipeline', 'pipelines', 'icon-pipeline', 'pipeline', 50, '1', NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM facility_types WHERE type_code = 'pipeline');
+
+INSERT INTO facility_types (type_code, type_name, description, entity_table, entity_class, api_path, icon_class, map_icon, sort_order, is_active, created_at, updated_at)
+SELECT 'village', '村庄', '供水覆盖村庄', 'villages', 'Village', 'villages', 'icon-village', 'village', 60, '1', NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM facility_types WHERE type_code = 'village');
+
+INSERT INTO facility_types (type_code, type_name, description, entity_table, entity_class, api_path, icon_class, map_icon, sort_order, is_active, created_at, updated_at)
+SELECT 'floating_boat', '漂浮船只', '水面清洁漂浮船只', 'floating_boats', 'FloatingBoat', 'floating-boats', 'icon-boat', 'floating-boat', 70, '1', NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM facility_types WHERE type_code = 'floating_boat');
+
+INSERT INTO facility_types (type_code, type_name, description, entity_table, entity_class, api_path, icon_class, map_icon, sort_order, is_active, created_at, updated_at)
+SELECT 'disinfection_material', '消毒材料', '水处理消毒材料', 'disinfection_materials', 'DisinfectionMaterial', 'disinfection-materials', 'icon-chemical', 'disinfection-material', 80, '1', NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM facility_types WHERE type_code = 'disinfection_material');
 
 
 -- 运行方式数据

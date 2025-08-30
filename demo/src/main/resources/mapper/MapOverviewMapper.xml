@@ -82,42 +82,98 @@
     <!-- 获取所有水利设施地理位置信息 -->
     <select id="selectAllFacilityLocations" resultMap="FacilityLocationDTOMap">
         SELECT 
-            id, name, 'pumping_station' as type, '泵站' as type_name,
-            longitude, latitude, 'NORMAL' as status, '正常' as status_name,
-            station_code as code, NULL as department_id, NULL as department_name,
+            ps.id, ps.name, ft_ps.type_code as type, ft_ps.type_name as type_name,
+            ps.longitude, ps.latitude, 'NORMAL' as status, '正常' as status_name,
+            ps.station_code as code, NULL as department_id, NULL as department_name,
             NULL as remarks
-        FROM pumping_stations 
-        WHERE deleted_at IS NULL
+        FROM pumping_stations ps
+        INNER JOIN facility_types ft_ps ON ft_ps.type_code = 'pumping_station' 
+            AND ft_ps.is_active = '1' AND ft_ps.deleted_at IS NULL
+        WHERE ps.deleted_at IS NULL
         
         UNION ALL
         
         SELECT 
-            id, name, 'water_plant' as type, '水厂' as type_name,
-            longitude, latitude, 'NORMAL' as status, '正常' as status_name,
-            plant_code as code, department_id, NULL as department_name,
+            wp.id, wp.name, ft_wp.type_code as type, ft_wp.type_name as type_name,
+            wp.longitude, wp.latitude, 'NORMAL' as status, '正常' as status_name,
+            wp.plant_code as code, wp.department_id, NULL as department_name,
             NULL as remarks
-        FROM water_plants 
-        WHERE deleted_at IS NULL
+        FROM water_plants wp
+        INNER JOIN facility_types ft_wp ON ft_wp.type_code = 'water_plant' 
+            AND ft_wp.is_active = '1' AND ft_wp.deleted_at IS NULL
+        WHERE wp.deleted_at IS NULL
         
         UNION ALL
         
         SELECT 
-            id, name, 'reservoir' as type, '水库' as type_name,
-            longitude, latitude, 'NORMAL' as status, '正常' as status_name,
-            reservoir_code as code, department_id, NULL as department_name,
+            r.id, r.name, ft_r.type_code as type, ft_r.type_name as type_name,
+            r.longitude, r.latitude, 'NORMAL' as status, '正常' as status_name,
+            r.reservoir_code as code, r.department_id, NULL as department_name,
             NULL as remarks
-        FROM reservoirs 
-        WHERE deleted_at IS NULL
+        FROM reservoirs r
+        INNER JOIN facility_types ft_r ON ft_r.type_code = 'reservoir' 
+            AND ft_r.is_active = '1' AND ft_r.deleted_at IS NULL
+        WHERE r.deleted_at IS NULL
         
         UNION ALL
         
         SELECT 
-            id, name, 'monitoring_station' as type, '监测站' as type_name,
-            longitude, latitude, 'ONLINE' as status, '在线' as status_name,
-            station_code as code, NULL as department_id, NULL as department_name,
-            remark as remarks
-        FROM monitoring_stations 
-        WHERE deleted_at IS NULL
+            ms.id, ms.name, ft_ms.type_code as type, ft_ms.type_name as type_name,
+            ms.longitude, ms.latitude, 'ONLINE' as status, '在线' as status_name,
+            ms.station_code as code, NULL as department_id, NULL as department_name,
+            ms.remark as remarks
+        FROM monitoring_stations ms
+        INNER JOIN facility_types ft_ms ON ft_ms.type_code = 'monitoring_station' 
+            AND ft_ms.is_active = '1' AND ft_ms.deleted_at IS NULL
+        WHERE ms.deleted_at IS NULL
+        
+        UNION ALL
+        
+        SELECT 
+            p.id, p.name, ft_p.type_code as type, ft_p.type_name as type_name,
+            p.start_longitude as longitude, p.start_latitude as latitude, 'NORMAL' as status, '正常' as status_name,
+            p.pipeline_code as code, NULL as department_id, NULL as department_name,
+            NULL as remarks
+        FROM pipelines p
+        INNER JOIN facility_types ft_p ON ft_p.type_code = 'pipeline' 
+            AND ft_p.is_active = '1' AND ft_p.deleted_at IS NULL
+        WHERE p.deleted_at IS NULL
+        
+        UNION ALL
+        
+        SELECT 
+            v.id, v.name, ft_v.type_code as type, ft_v.type_name as type_name,
+            v.longitude, v.latitude, 'NORMAL' as status, '正常' as status_name,
+            NULL as code, NULL as department_id, NULL as department_name,
+            NULL as remarks
+        FROM villages v
+        INNER JOIN facility_types ft_v ON ft_v.type_code = 'village' 
+            AND ft_v.is_active = '1' AND ft_v.deleted_at IS NULL
+        WHERE v.deleted_at IS NULL
+        
+        UNION ALL
+        
+        SELECT 
+            fb.id, fb.name, ft_fb.type_code as type, ft_fb.type_name as type_name,
+            fb.longitude, fb.latitude, 'NORMAL' as status, '正常' as status_name,
+            fb.boat_code as code, fb.department_id, NULL as department_name,
+            NULL as remarks
+        FROM floating_boats fb
+        INNER JOIN facility_types ft_fb ON ft_fb.type_code = 'floating_boat' 
+            AND ft_fb.is_active = '1' AND ft_fb.deleted_at IS NULL
+        WHERE fb.deleted_at IS NULL
+        
+        UNION ALL
+        
+        SELECT 
+            dm.id, dm.name, ft_dm.type_code as type, ft_dm.type_name as type_name,
+            NULL as longitude, NULL as latitude, 'NORMAL' as status, '正常' as status_name,
+            NULL as code, dm.water_plant_id as department_id, NULL as department_name,
+            NULL as remarks
+        FROM disinfection_materials dm
+        INNER JOIN facility_types ft_dm ON ft_dm.type_code = 'disinfection_material' 
+            AND ft_dm.is_active = '1' AND ft_dm.deleted_at IS NULL
+        WHERE dm.deleted_at IS NULL
         
         ORDER BY type, name
     </select>

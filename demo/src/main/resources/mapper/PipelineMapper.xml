@@ -2,62 +2,38 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.demo.mapper.PipelineMapper">
 
-    <!-- 结果映射：管道信息响应DTO -->
-    <resultMap id="PipelineResponseDTOMap" type="com.example.demo.pojo.DTO.facility.PipelineResponseDTO">
-        <id property="id" column="id"/>
-        <result property="pipelineCode" column="pipeline_code"/>
-        <result property="name" column="name"/>
-        <result property="pipelineType" column="pipeline_type"/>
-        <result property="pipelineTypeName" column="pipeline_type_name"/>
-        <result property="startLongitude" column="start_longitude"/>
-        <result property="startLatitude" column="start_latitude"/>
-        <result property="endLongitude" column="end_longitude"/>
-        <result property="endLatitude" column="end_latitude"/>
-        <result property="length" column="length"/>
-        <result property="diameter" column="diameter"/>
-        <result property="designPressure" column="design_pressure"/>
-        <result property="designFlow" column="design_flow"/>
-        <result property="burialDepth" column="burial_depth"/>
-        <result property="constructionDate" column="construction_date"/>
-        <result property="createdAt" column="created_at"/>
-        <result property="updatedAt" column="updated_at"/>
-    </resultMap>
 
-    <!-- 结果映射：管道信息实体 -->
-    <resultMap id="PipelineMap" type="com.example.demo.pojo.entity.facility.Pipeline">
-        <id property="id" column="id"/>
-        <result property="pipelineCode" column="pipeline_code"/>
-        <result property="name" column="name"/>
-    </resultMap>
 
-    <!-- 分页查询管道信息列表（包含关联信息） -->
-    <select id="selectPipelinePage" resultMap="PipelineResponseDTOMap">
-        SELECT pipelines.*,
-               dict_data.data_label as pipeline_type_name
+    <!-- 分页查询管道信息列表（基础信息）- 用于PageHelper分页 -->
+    <select id="selectPipelinePage" resultType="com.example.demo.pojo.entity.facility.Pipeline">
+        SELECT *
         FROM pipelines
-        LEFT JOIN dict_data ON pipelines.pipeline_type = dict_data.data_value
-        AND dict_data.type_id = (SELECT id FROM dict_types WHERE type_code = 'pipeline_type' AND deleted_at IS NULL)
-        AND dict_data.deleted_at IS NULL
-        WHERE pipelines.deleted_at IS NULL
+        WHERE deleted_at IS NULL
         <if test="keyword != null and keyword != ''">
-            AND (pipelines.name LIKE CONCAT('%', #{keyword}, '%')
-            OR pipelines.pipeline_code LIKE CONCAT('%', #{keyword}, '%'))
+            AND (name LIKE CONCAT('%', #{keyword}, '%')
+            OR pipeline_code LIKE CONCAT('%', #{keyword}, '%'))
         </if>
         <if test="pipelineType != null and pipelineType != ''">
-            AND pipelines.pipeline_type = #{pipelineType}
+            AND pipeline_type = #{pipelineType}
         </if>
-        ORDER BY pipelines.created_at DESC
+        ORDER BY created_at DESC
     </select>
 
-    <!-- 根据ID查询管道信息详情（包含关联信息） -->
-    <select id="selectPipelineById" resultMap="PipelineResponseDTOMap">
-        SELECT pipelines.*,
-               dict_data.data_label as pipeline_type_name
+    <!-- 根据ID查询管道信息详情（基础信息） -->
+    <select id="selectPipelineById" resultType="com.example.demo.pojo.entity.facility.Pipeline">
+        SELECT *
+        FROM pipelines
+        WHERE id = #{id} AND deleted_at IS NULL
+    </select>
+
+    <!-- 查询管道类型名称 -->
+    <select id="selectPipelineTypeNameByPipelineId" resultType="java.lang.String">
+        SELECT dict_data.data_label
         FROM pipelines
         LEFT JOIN dict_data ON pipelines.pipeline_type = dict_data.data_value
         AND dict_data.type_id = (SELECT id FROM dict_types WHERE type_code = 'pipeline_type' AND deleted_at IS NULL)
         AND dict_data.deleted_at IS NULL
-        WHERE pipelines.id = #{id} AND pipelines.deleted_at IS NULL
+        WHERE pipelines.id = #{pipelineId} AND pipelines.deleted_at IS NULL
     </select>
 
     <!-- 检查管道编码是否存在 -->
@@ -71,7 +47,7 @@
     </select>
 
     <!-- 获取所有可用的管道信息（用于下拉选择） -->
-    <select id="selectAvailablePipelines" resultMap="PipelineMap">
+    <select id="selectAvailablePipelines" resultType="com.example.demo.pojo.entity.facility.Pipeline">
         SELECT id, pipeline_code, name FROM pipelines
         WHERE deleted_at IS NULL
         ORDER BY name

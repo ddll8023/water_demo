@@ -1,9 +1,10 @@
 package com.example.demo.pojo.entity.facility;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,136 +14,68 @@ import java.time.LocalDateTime;
  * 对应数据库表: water_plants
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@TableName("water_plants")
-public class WaterPlant {
+@Schema(name = "WaterPlant", description = "水厂信息实体")
+public class WaterPlant implements Serializable {
 
-    /**
-     * 主键ID
-     */
-    @TableId(value = "id", type = IdType.AUTO)
+    private static final long serialVersionUID = 1L;
+
+    @Schema(name = "id", description = "主键ID")
     private Long id;
 
-    /**
-     * 水厂编码
-     */
-    @TableField("plant_code")
+    @Schema(name = "plantCode", description = "水厂编码")
     private String plantCode;
 
-    /**
-     * 水厂名称
-     */
-    @TableField("name")
+    @Schema(name = "name", description = "水厂名称")
     private String name;
 
-    /**
-     * 所属供水工程
-     */
-    @TableField("water_project")
+    @Schema(name = "waterProject", description = "所属供水工程")
     private String waterProject;
 
-    /**
-     * 管理部门ID（关联departments.id）
-     */
-    @TableField("department_id")
+    @Schema(name = "departmentId", description = "管理部门ID（关联departments.id）")
     private Long departmentId;
 
-    /**
-     * 负责人ID（关联personnel.id）
-     */
-    @TableField("manager_id")
+    @Schema(name = "managerId", description = "负责人ID（关联personnel.id）")
     private Long managerId;
 
-    /**
-     * 地址
-     */
-    @TableField("address")
+    @Schema(name = "address", description = "地址")
     private String address;
 
-    /**
-     * 管理单位
-     */
-    @TableField("management_unit")
+    @Schema(name = "managementUnit", description = "管理单位")
     private String managementUnit;
 
-    /**
-     * 经度
-     */
-    @TableField("longitude")
+    @Schema(name = "longitude", description = "经度")
     private BigDecimal longitude;
 
-    /**
-     * 纬度
-     */
-    @TableField("latitude")
+    @Schema(name = "latitude", description = "纬度")
     private BigDecimal latitude;
 
-    /**
-     * 设计规模（m³/天）
-     */
-    @TableField("design_scale")
+    @Schema(name = "designScale", description = "设计规模（m³/天）")
     private BigDecimal designScale;
 
-    /**
-     * 供水范围（村镇）
-     */
-    @TableField("supply_area")
+    @Schema(name = "supplyArea", description = "供水范围（村镇）")
     private String supplyArea;
 
-    /**
-     * 供水负荷率（%）
-     */
-    @TableField("supply_load_ratio")
+    @Schema(name = "supplyLoadRatio", description = "供水负荷率（%）")
     private BigDecimal supplyLoadRatio;
 
-    /**
-     * 供水人口（万人）
-     */
-    @TableField("supply_population")
+    @Schema(name = "supplyPopulation", description = "供水人口（万人）")
     private Integer supplyPopulation;
 
-    /**
-     * 联系电话
-     */
-    @TableField("contact_phone")
+    @Schema(name = "contactPhone", description = "联系电话")
     private String contactPhone;
 
-    /**
-     * 建站年月
-     */
-    @TableField("establishment_date")
+    @Schema(name = "establishmentDate", description = "建站年月")
     private LocalDate establishmentDate;
 
-    /**
-     * 创建时间
-     */
-    @TableField(value = "created_at", fill = FieldFill.INSERT)
+    @Schema(name = "createdAt", description = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
-    /**
-     * 更新时间
-     */
-    @TableField(value = "updated_at", fill = FieldFill.INSERT_UPDATE)
+    @Schema(name = "updatedAt", description = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 
-    /**
-     * 软删除标记
-     */
-    @TableLogic
-    @TableField("deleted_at")
+    @Schema(name = "deletedAt", description = "软删除标记")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime deletedAt;
-
-    // ========== 关联信息字段（非数据库字段，用于存储关联查询结果） ==========
-
-    /**
-     * 管理部门名称（非数据库字段）
-     */
-    @TableField(exist = false)
-    private String departmentName;
-
-    /**
-     * 负责人姓名（非数据库字段）
-     */
-    @TableField(exist = false)
-    private String managerName;
 }

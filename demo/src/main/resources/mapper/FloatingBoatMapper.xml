@@ -2,67 +2,36 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.demo.mapper.FloatingBoatMapper">
 
-    <!-- 结果映射：浮船信息响应DTO -->
-    <resultMap id="FloatingBoatResponseDTOMap" type="com.example.demo.pojo.DTO.facility.FloatingBoatResponseDTO">
-        <id property="id" column="id"/>
-        <result property="name" column="name"/>
-        <result property="longitude" column="longitude"/>
-        <result property="latitude" column="latitude"/>
-        <result property="capacity" column="capacity"/>
-        <result property="powerConsumption" column="power_consumption"/>
-        <result property="pumpingStatus" column="pumping_status"/>
-        <result property="pumpingStatusName" column="pumping_status_name"/>
-        <result property="remark" column="remark"/>
-        <result property="createdAt" column="created_at"/>
-        <result property="updatedAt" column="updated_at"/>
-    </resultMap>
-
-    <!-- 结果映射：浮船实体 -->
-    <resultMap id="FloatingBoatMap" type="com.example.demo.pojo.entity.facility.FloatingBoat">
-        <id property="id" column="id"/>
-        <result property="name" column="name"/>
-        <result property="longitude" column="longitude"/>
-        <result property="latitude" column="latitude"/>
-        <result property="capacity" column="capacity"/>
-        <result property="powerConsumption" column="power_consumption"/>
-        <result property="pumpingStatus" column="pumping_status"/>
-        <result property="remark" column="remark"/>
-        <result property="createdAt" column="created_at"/>
-        <result property="updatedAt" column="updated_at"/>
-        <result property="deletedAt" column="deleted_at"/>
-    </resultMap>
-
-    <!-- 分页查询浮船信息列表（包含关联信息） -->
-    <select id="selectFloatingBoatPage" resultMap="FloatingBoatResponseDTOMap">
-        SELECT floating_boats.*,
-               dict_data.data_label as pumping_status_name
+    <!-- 分页查询浮船信息列表（基础信息）- 用于PageHelper分页 -->
+    <select id="selectFloatingBoatPage" resultType="com.example.demo.pojo.entity.facility.FloatingBoat">
+        SELECT *
         FROM floating_boats
-        LEFT JOIN dict_data ON floating_boats.pumping_status = dict_data.data_value
-        AND dict_data.type_id = (SELECT id FROM dict_types WHERE type_code = 'device_status' AND deleted_at IS NULL)
-        AND dict_data.deleted_at IS NULL
-        WHERE floating_boats.deleted_at IS NULL
+        WHERE deleted_at IS NULL
         <if test="keyword != null and keyword != ''">
-            AND floating_boats.name LIKE CONCAT('%', #{keyword}, '%')
+            AND name LIKE CONCAT('%', #{keyword}, '%')
         </if>
-        <if test="pumpingStatus != null and pumpingStatus != ''">
-            AND floating_boats.pumping_status = #{pumpingStatus}
-        </if>
-        ORDER BY floating_boats.created_at DESC
+        ORDER BY created_at DESC
     </select>
 
-    <!-- 根据ID查询浮船信息详情（包含关联信息） -->
-    <select id="selectFloatingBoatById" resultMap="FloatingBoatResponseDTOMap">
-        SELECT floating_boats.*,
-               dict_data.data_label as pumping_status_name
+    <!-- 查询抽水状态名称 -->
+    <select id="selectPumpingStatusNameByBoatId" resultType="java.lang.String">
+        SELECT dict_data.data_label
         FROM floating_boats
         LEFT JOIN dict_data ON floating_boats.pumping_status = dict_data.data_value
         AND dict_data.type_id = (SELECT id FROM dict_types WHERE type_code = 'device_status' AND deleted_at IS NULL)
         AND dict_data.deleted_at IS NULL
-        WHERE floating_boats.id = #{id} AND floating_boats.deleted_at IS NULL
+        WHERE floating_boats.id = #{boatId} AND floating_boats.deleted_at IS NULL
+    </select>
+
+    <!-- 根据ID查询浮船信息详情（基础信息） -->
+    <select id="selectFloatingBoatById" resultType="com.example.demo.pojo.entity.facility.FloatingBoat">
+        SELECT *
+        FROM floating_boats
+        WHERE id = #{id} AND deleted_at IS NULL
     </select>
 
     <!-- 获取所有可用的浮船信息（用于下拉选择） -->
-    <select id="selectAvailableFloatingBoats" resultMap="FloatingBoatMap">
+    <select id="selectAvailableFloatingBoats" resultType="com.example.demo.pojo.entity.facility.FloatingBoat">
         SELECT id, name
         FROM floating_boats
         WHERE deleted_at IS NULL AND pumping_status = 'normal'
@@ -96,7 +65,7 @@
         WHERE id = #{id}
     </update>
 
-    <select id="selectById" resultMap="FloatingBoatMap">
+    <select id="selectById" resultType="com.example.demo.pojo.entity.facility.FloatingBoat">
         SELECT *
         FROM floating_boats
         WHERE id = #{id} AND deleted_at IS NULL

@@ -2,6 +2,26 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.demo.mapper.DisinfectionMaterialMapper">
 
+    <!-- 分页查询消毒药材列表（基础信息） -->
+    <select id="selectDisinfectionMaterialPage" resultType="com.example.demo.pojo.entity.facility.DisinfectionMaterial">
+        SELECT *
+        FROM disinfection_materials
+        WHERE deleted_at IS NULL
+        <if test="keyword != null and keyword != ''">
+            AND name LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 根据消毒药材ID查询水厂名称 -->
+    <select id="selectWaterPlantNameByMaterialId" resultType="java.lang.String">
+        SELECT wp.name
+        FROM disinfection_materials dm
+        LEFT JOIN water_plants wp ON dm.water_plant_id = wp.id AND wp.deleted_at IS NULL
+        WHERE dm.id = #{materialId}
+          AND dm.deleted_at IS NULL
+    </select>
+
     <!-- 结果映射：消毒药材响应DTO -->
     <resultMap id="DisinfectionMaterialResponseDTOMap" type="com.example.demo.pojo.DTO.facility.DisinfectionMaterialResponseDTO">
         <id property="id" column="id"/>
@@ -17,21 +37,6 @@
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
-
-    <!-- 分页查询消毒药材列表（包含关联信息） -->
-    <select id="selectDisinfectionMaterialPage" resultMap="DisinfectionMaterialResponseDTOMap">
-        SELECT disinfection_materials.*, water_plants.name as water_plant_name
-        FROM disinfection_materials
-        LEFT JOIN water_plants ON disinfection_materials.water_plant_id = water_plants.id AND water_plants.deleted_at IS NULL
-        WHERE disinfection_materials.deleted_at IS NULL
-        <if test="keyword != null and keyword != ''">
-            AND disinfection_materials.name LIKE CONCAT('%', #{keyword}, '%')
-        </if>
-        <if test="waterPlantId != null">
-            AND disinfection_materials.water_plant_id = #{waterPlantId}
-        </if>
-        ORDER BY disinfection_materials.created_at DESC
-    </select>
 
     <!-- 根据ID查询消毒药材详情（包含关联信息） -->
     <select id="selectDisinfectionMaterialById" resultMap="DisinfectionMaterialResponseDTOMap">

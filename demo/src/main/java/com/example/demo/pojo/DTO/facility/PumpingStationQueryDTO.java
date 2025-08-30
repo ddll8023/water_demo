@@ -1,48 +1,18 @@
 package com.example.demo.pojo.DTO.facility;
 
+import com.example.demo.pojo.DTO.common.BaseQueryDTO;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
  * 泵站查询DTO
- * 用于泵站列表查询的条件参数
+ * 用于泵站分页查询的请求参数
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-public class PumpingStationQueryDTO {
-
-    /**
-     * 关键字搜索（泵站名称、编码）
-     */
-    private String keyword;
-
-    /**
-     * 泵站名称搜索
-     */
-    private String name;
-
-    /**
-     * 泵站类型
-     */
-    private String stationType;
-
-    /**
-     * 所属供水工程
-     */
-    private String waterProject;
-
-    /**
-     * 运行方式
-     */
-    private String operationMode;
-
-    /**
-     * 页码（从1开始）
-     */
-    private Integer page = 1;
-
-    /**
-     * 每页大小
-     */
-    private Integer size = 10;
+@EqualsAndHashCode(callSuper = true)
+@Schema(name = "PumpingStationQueryDTO", description = "泵站查询DTO")
+public class PumpingStationQueryDTO extends BaseQueryDTO {
+    // 泵站特有的查询字段可以在此添加
+    // 通用的分页、排序、搜索字段已由BaseQueryDTO提供
 }
